@@ -21,8 +21,9 @@ export default function MessageInput({ onSend }: Props) {
       <input
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Type your message..."
-        className="flex-1 border p-2 rounded"
+        placeholder="Start a conversation with Socratic..."
+        autoFocus
+        className="flex-1 border p-2 rounded "
         onKeyDown={(e) => {
           if (e.key === "Enter") handleSend();
         }}

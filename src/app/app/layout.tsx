@@ -5,6 +5,7 @@ import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
+import SidebarSessions from "./components/SidebarSessions";
 
 interface Props {
   children: ReactNode;
@@ -48,21 +49,12 @@ export default async function AppLayout({ children }: Props) {
           + New Chat
         </Link>
 
-        <div className="flex-1 overflow-y-auto space-y-2">
-          {sessions.map((session) => (
-            <Link
-              key={session.id}
-              href={`/app/${session.id}` as const}
-              className="block p-2 rounded hover:bg-gray-100"
-            >
-              {session.title || "Untitled Session"}
-            </Link>
-          ))}
+        <div className="flex-1 overflow-y-auto">
+          <SidebarSessions sessions={sessions} />
         </div>
       </aside>
 
       <div className="flex flex-col flex-1">
- 
         <div className="flex justify-end items-center p-4 border-b border-gray-200">
           <UserButton afterSignOutUrl={ROUTES.HOME} />
         </div>
