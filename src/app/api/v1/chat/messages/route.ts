@@ -69,6 +69,14 @@ export async function POST(req: Request) {
         content,
       },
     });
+    
+  const assistantMessage = await tx.message.create({
+    data: {
+      sessionId: activeSessionId!,
+      role: "ASSISTANT",
+      content: `You said: ${content}`,
+    },
+  });
 
     await tx.chatSession.update({
       where: { id: activeSessionId! },
@@ -78,11 +86,16 @@ export async function POST(req: Request) {
       },
     });
 
-    return createdMessage;
+    return {
+      userMessage: createdMessage,
+      assistantMessage,
+      sessionId: activeSessionId!,
+    };
   });
 
   return NextResponse.json({
-    sessionId: activeSessionId,
-    messageId: message.id,
+    sessionId: message.sessionId,
+    userMessage: message.userMessage,
+    assistantMessage: message.assistantMessage,
   });
 }
