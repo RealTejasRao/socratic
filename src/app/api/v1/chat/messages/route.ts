@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid content", { status: 400 });
   }
 
-  // 🔹 Fetch DB user
+
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId },
   });
@@ -38,7 +38,6 @@ export async function POST(req: Request) {
 
   let activeSessionId = sessionId;
 
-  // 🔹 Create or validate session
   if (!activeSessionId) {
     const newSession = await prisma.chatSession.create({
       data: {
