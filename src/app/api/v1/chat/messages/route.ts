@@ -61,6 +61,28 @@ export async function POST(req: Request) {
     }
   }
 
+  const previousMessagesRaw = await prisma.message.findMany({
+    where: {
+      sessionId: activeSessionId!,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 30,
+    select: {
+      role: true,
+      content: true,
+    },
+  });
+
+  // Reverse
+  const previousMessages = previousMessagesRaw.reverse();
+
+  const conversationHistory = previousMessages.map((msg) => ({
+    role: msg.role.toLowerCase() as "user" | "assistant",
+    content: msg.content,
+  }));
+
   // open ai call outside transcation
   const completion = await openai.chat.completions.create({
     model: process.env['OPENAI_CHAT_MODEL']!,
@@ -69,6 +91,7 @@ export async function POST(req: Request) {
         role: "system",
         content: SOCRATIC_SYSTEM_PROMPT,
       },
+      ...conversationHistory,
       {
         role: "user",
         content,
