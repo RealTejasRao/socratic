@@ -55,18 +55,22 @@ enum SessionStatus {
 }
 
 model Message {
-  id         String       @id @default(cuid())
+  id         String      @id @default(cuid())
   sessionId  String
   role       MessageRole
-  content    String       @db.Text
+  content    String      @db.Text
 
-  createdAt  DateTime     @default(now())
+  model      String?     @db.VarChar(80)
+  tokenIn    Int?
+  tokenOut   Int?
+  latencyMs  Int?
 
-  session    ChatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
 
-  @@index([sessionId, createdAt(sort: Asc)])
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
 }
-
 enum MessageRole {
   USER
   ASSISTANT

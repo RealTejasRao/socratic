@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
+import { openai } from "src/server/ai/openai";
+import { SOCRATIC_SYSTEM_PROMPT } from "src/server/ai/socratic-prompt";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 
@@ -22,7 +24,7 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid content", { status: 400 });
   }
 
-  // Get DB user
+
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId },
   });
@@ -37,7 +39,6 @@ export async function POST(req: Request) {
   let activeSessionId = sessionId;
 
   if (!activeSessionId) {
-    // Create new session
     const newSession = await prisma.chatSession.create({
       data: {
         userId: dbUser.id,
@@ -48,7 +49,6 @@ export async function POST(req: Request) {
 
     activeSessionId = newSession.id;
   } else {
-    // Ensure session belongs to user
     const existingSession = await prisma.chatSession.findFirst({
       where: {
         id: activeSessionId,
@@ -61,41 +61,92 @@ export async function POST(req: Request) {
     }
   }
 
-  const message = await prisma.$transaction(async (tx) => {
-    const createdMessage = await tx.message.create({
-      data: {
-        sessionId: activeSessionId!,
-        role: "USER",
-        content,
-      },
-    });
-    
-  const assistantMessage = await tx.message.create({
-    data: {
+  const previousMessagesRaw = await prisma.message.findMany({
+    where: {
       sessionId: activeSessionId!,
-      role: "ASSISTANT",
-      content: `You said: ${content}`,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 30,
+    select: {
+      role: true,
+      content: true,
     },
   });
 
-    await tx.chatSession.update({
-      where: { id: activeSessionId! },
-      data: {
-        lastActivityAt: now,
-        expiresAt,
-      },
-    });
+  // Reverse
+  const previousMessages = previousMessagesRaw.reverse();
 
-    return {
-      userMessage: createdMessage,
-      assistantMessage,
-      sessionId: activeSessionId!,
-    };
+  const conversationHistory = previousMessages.map((msg) => ({
+    role: msg.role.toLowerCase() as "user" | "assistant",
+    content: msg.content,
+  }));
+
+  // open ai call outside transcation
+  const stream = await openai.chat.completions.stream({
+    model: process.env['OPENAI_CHAT_MODEL']!,
+    messages: [
+      {
+        role: "system",
+        content: SOCRATIC_SYSTEM_PROMPT,
+      },
+      ...conversationHistory,
+      {
+        role: "user",
+        content,
+      },
+    ],
+    temperature: 0.7,
+    max_tokens: 300,
   });
 
-  return NextResponse.json({
-    sessionId: message.sessionId,
-    userMessage: message.userMessage,
-    assistantMessage: message.assistantMessage,
+  let assistantText = "";
+
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        const token = chunk.choices[0]?.delta?.content;
+        if (token) {
+          assistantText += token;
+          controller.enqueue(new TextEncoder().encode(token));
+        }
+      }
+
+      controller.close();
+
+    
+      await prisma.$transaction(async (tx) => {
+        const userMessage = await tx.message.create({
+          data: {
+            sessionId: activeSessionId!,
+            role: "USER",
+            content,
+          },
+        });
+
+        await tx.message.create({
+          data: {
+            sessionId: activeSessionId!,
+            role: "ASSISTANT",
+            content: assistantText,
+          },
+        });
+
+        await tx.chatSession.update({
+          where: { id: activeSessionId! },
+          data: {
+            lastActivityAt: now,
+            expiresAt,
+          },
+        });
+      });
+    },
+  });
+
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+    },
   });
 }

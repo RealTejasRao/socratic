@@ -26,7 +26,7 @@ export default function MessageList({ messages }: Props) {
         <div
           key={message.id}
           className={`p-3 rounded max-w-xl ${
-            message.role === "USER" ? "bg-blue-100 ml-auto" : "bg-gray-100"
+            message.role === "USER" ? "bg-blue-100 text-black ml-auto" : "bg-gray-100 text-black"
           }`}
         >
           {message.content}
