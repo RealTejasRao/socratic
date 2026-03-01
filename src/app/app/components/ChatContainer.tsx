@@ -20,6 +20,7 @@ interface Props {
 
 export default function ChatContainer({ initialMessages, sessionId }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   const router = useRouter();
 
@@ -36,37 +37,57 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     setMessages((prev) => [...prev, optimisticMessage]);
 
     try {
+      setIsStreaming(true);
+
       const res = await fetch("/api/v1/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, content }),
       });
 
-      const data = await res.json();
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === tempId ? { ...msg, id: data.userMessage.id } : msg,
-        ),
-      );
+      let assistantMessageId = `assistant-temp-${Date.now()}`;
 
-      // Append assistant
       setMessages((prev) => [
         ...prev,
         {
-          id: data.assistantMessage.id,
+          id: assistantMessageId,
           role: "ASSISTANT",
-          content: data.assistantMessage.content,
-          createdAt: data.assistantMessage.createdAt,
+          content: "",
+          createdAt: new Date().toISOString(),
         },
       ]);
 
-      if (!sessionId && data.sessionId) {
-        router.push(`/app/${data.sessionId}`);
-        router.refresh();
+      let assistantContent = "";
+
+      while (true) {
+        const { done, value } = await reader!.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        for (const char of chunk) {
+          assistantContent += char;
+
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: assistantContent }
+                : msg,
+            ),
+          );
+
+          // delay
+          await new Promise((r) => setTimeout(r, 10));
+        }
       }
+
+      setIsStreaming(false);
+      router.refresh();
     } catch (err) {
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+      setIsStreaming(false);
     }
   }
 
@@ -74,7 +95,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     <div className="flex flex-col h-full">
       <MessageList messages={messages} />
       <div className="mt-4">
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={handleSend} isStreaming={isStreaming} />
       </div>
     </div>
   );

@@ -84,7 +84,7 @@ export async function POST(req: Request) {
   }));
 
   // open ai call outside transcation
-  const completion = await openai.chat.completions.create({
+  const stream = await openai.chat.completions.stream({
     model: process.env['OPENAI_CHAT_MODEL']!,
     messages: [
       {
@@ -101,49 +101,52 @@ export async function POST(req: Request) {
     max_tokens: 300,
   });
 
-  const assistantText =
-    completion.choices[0]?.message?.content?.trim() ??
-    "I'm not sure how to respond to that.";
+  let assistantText = "";
 
-  // 
-  const result = await prisma.$transaction(async (tx) => {
-    const userMessage = await tx.message.create({
-      data: {
-        sessionId: activeSessionId!,
-        role: "USER",
-        content,
-      },
-    });
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        const token = chunk.choices[0]?.delta?.content;
+        if (token) {
+          assistantText += token;
+          controller.enqueue(new TextEncoder().encode(token));
+        }
+      }
 
-    const assistantMessage = await tx.message.create({
-      data: {
-        sessionId: activeSessionId!,
-        role: "ASSISTANT",
-        content: assistantText,
-        model: completion.model,
-        tokenIn: completion.usage?.prompt_tokens ?? null,
-        tokenOut: completion.usage?.completion_tokens ?? null,
-      },
-    });
+      controller.close();
 
-    await tx.chatSession.update({
-      where: { id: activeSessionId! },
-      data: {
-        lastActivityAt: now,
-        expiresAt,
-      },
-    });
+    
+      await prisma.$transaction(async (tx) => {
+        const userMessage = await tx.message.create({
+          data: {
+            sessionId: activeSessionId!,
+            role: "USER",
+            content,
+          },
+        });
 
-    return {
-      userMessage,
-      assistantMessage,
-      sessionId: activeSessionId!,
-    };
+        await tx.message.create({
+          data: {
+            sessionId: activeSessionId!,
+            role: "ASSISTANT",
+            content: assistantText,
+          },
+        });
+
+        await tx.chatSession.update({
+          where: { id: activeSessionId! },
+          data: {
+            lastActivityAt: now,
+            expiresAt,
+          },
+        });
+      });
+    },
   });
 
-  return NextResponse.json({
-    sessionId: result.sessionId,
-    userMessage: result.userMessage,
-    assistantMessage: result.assistantMessage,
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+    },
   });
 }

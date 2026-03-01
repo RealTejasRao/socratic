@@ -4,9 +4,10 @@ import { useState } from "react";
 
 interface Props {
   onSend: (content: string) => void;
+  isStreaming: boolean;
 }
 
-export default function MessageInput({ onSend }: Props) {
+export default function MessageInput({ onSend, isStreaming }: Props) {
   const [content, setContent] = useState("");
 
   function handleSend() {
@@ -29,8 +30,11 @@ export default function MessageInput({ onSend }: Props) {
         }}
       />
       <button
-        onClick={handleSend}
-        className="px-4 py-2 bg-black text-white rounded"
+        type="submit"
+        disabled={isStreaming}
+        className={`px-4 py-2 rounded ${
+          isStreaming ? "bg-gray-400 cursor-not-allowed" : "bg-black text-white"
+        }`}
       >
         Send
       </button>
