@@ -147,6 +147,7 @@ export async function POST(req: Request) {
   return new Response(readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
+      "X-Session-Id": activeSessionId!,
     },
   });
 }

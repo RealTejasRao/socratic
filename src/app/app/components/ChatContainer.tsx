@@ -45,6 +45,8 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         body: JSON.stringify({ sessionId, content }),
       });
 
+      const returnedSessionId = res.headers.get("X-Session-Id");
+
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
 
@@ -82,6 +84,10 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
           // delay
           await new Promise((r) => setTimeout(r, 10));
         }
+      }
+
+      if (!sessionId && returnedSessionId) {
+        router.push(`/app/${returnedSessionId}`);
       }
 
       setIsStreaming(false);
