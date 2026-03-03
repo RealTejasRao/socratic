@@ -66,7 +66,7 @@ export default function MessageList({
           >
             {/* chat bubble */}
             <div
-              className={`p-3 rounded max-w-xl break-words ${
+              className={`p-3 rounded max-w-xl wrap-break-word ${
                 isUser ? "bg-blue-100 text-black" : "bg-gray-100 text-black"
               }`}
             >
