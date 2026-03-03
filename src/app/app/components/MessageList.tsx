@@ -2,12 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { ChatMessage } from "src/types/chat";
-interface Message {
-  id: string;
-  role: "USER" | "ASSISTANT";
-  content: string;
-  createdAt: Date;
-}
+import ThinkingBubble from "./ThinkingBubble";
 
 interface Props {
   messages: ChatMessage[];
@@ -26,10 +21,16 @@ export default function MessageList({ messages }: Props) {
         <div
           key={message.id}
           className={`p-3 rounded max-w-xl ${
-            message.role === "USER" ? "bg-blue-100 text-black ml-auto" : "bg-gray-100 text-black"
+            message.role === "USER"
+              ? "bg-blue-100 text-black ml-auto"
+              : "bg-gray-100 text-black"
           }`}
         >
-          {message.content}
+          {message.role === "ASSISTANT" && !message.content ? (
+            <ThinkingBubble />
+          ) : (
+            message.content
+          )}
         </div>
       ))}
 

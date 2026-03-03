@@ -5,6 +5,7 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import type { ChatMessage } from "src/types/chat";
 import { useRouter } from "next/navigation";
+import ThinkingBubble from "./ThinkingBubble";
 
 interface Message {
   id: string;
@@ -22,6 +23,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
 
+
   const router = useRouter();
 
   async function handleSend(content: string) {
@@ -38,18 +40,6 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
     try {
       setIsStreaming(true);
-
-      const res = await fetch("/api/v1/chat/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, content }),
-      });
-
-      const returnedSessionId = res.headers.get("X-Session-Id");
-
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-
       let assistantMessageId = `assistant-temp-${Date.now()}`;
 
       setMessages((prev) => [
@@ -62,7 +52,23 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         },
       ]);
 
+     
+
+      const res = await fetch("/api/v1/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, content }),
+      });
+
+      const returnedSessionId = res.headers.get("X-Session-Id");
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+
+      
+   
       let assistantContent = "";
+     
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -71,6 +77,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         const chunk = decoder.decode(value);
 
         for (const char of chunk) {
+      
           assistantContent += char;
 
           setMessages((prev) =>
