@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface Props {
   onSend: (content: string) => void;
@@ -14,6 +15,25 @@ export default function MessageInput({
   initialValue,
 }: Props) {
   const [content, setContent] = useState("");
+  const pathname = usePathname();
+  const storageKey = `socratic:draft:${pathname}`;
+
+  // Restore unsent draft for this route/session.
+  useEffect(() => {
+    const saved = sessionStorage.getItem(storageKey);
+    if (saved !== null) {
+      setContent(saved);
+    }
+  }, [storageKey]);
+
+  // keep user input so router.refresh do not lose it.
+  useEffect(() => {
+    if (content) {
+      sessionStorage.setItem(storageKey, content);
+    } else {
+      sessionStorage.removeItem(storageKey);
+    }
+  }, [content, storageKey]);
 
   //  prefill input in edit mode
   useEffect(() => {
@@ -27,6 +47,7 @@ export default function MessageInput({
 
     onSend(content.trim());
     setContent(""); // clear after send or edit submit
+    sessionStorage.removeItem(storageKey);
   }
 
   return (

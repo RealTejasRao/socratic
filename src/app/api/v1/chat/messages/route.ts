@@ -6,6 +6,13 @@ import { SOCRATIC_SYSTEM_PROMPT } from "src/server/ai/socratic-prompt";
 import { generateAssistantReply } from "src/server/chat/generate";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
+const SESSION_TITLE_MAX_LENGTH = 80;
+
+function deriveSessionTitleFromContent(content: string) {
+  const normalized = content.replace(/\s+/g, " ").trim();
+  if (!normalized) return null;
+  return normalized.slice(0, SESSION_TITLE_MAX_LENGTH);
+}
 
 export async function POST(req: Request) {
   const { userId: clerkUserId } = await auth();
@@ -36,6 +43,7 @@ export async function POST(req: Request) {
 
   const now = new Date();
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
+  const derivedTitle = deriveSessionTitleFromContent(content);
 
   let activeSessionId = sessionId;
 
@@ -43,6 +51,7 @@ export async function POST(req: Request) {
     const newSession = await prisma.chatSession.create({
       data: {
         userId: dbUser.id,
+        title: derivedTitle,
         expiresAt,
         lastActivityAt: now,
       },
@@ -55,10 +64,21 @@ export async function POST(req: Request) {
         id: activeSessionId,
         userId: dbUser.id,
       },
+      select: {
+        id: true,
+        title: true,
+      },
     });
 
     if (!existingSession) {
       return new NextResponse("Session not found", { status: 404 });
+    }
+
+    if (!existingSession.title && derivedTitle) {
+      await prisma.chatSession.update({
+        where: { id: existingSession.id },
+        data: { title: derivedTitle },
+      });
     }
   }
 

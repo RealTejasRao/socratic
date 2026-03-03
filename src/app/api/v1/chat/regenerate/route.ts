@@ -17,10 +17,20 @@ export async function POST(req: Request) {
 
   if (!dbUser) return new NextResponse("User not found", { status: 404 });
 
-  // last USER message
+  const session = await prisma.chatSession.findFirst({
+    where: {
+      id: sessionId,
+      userId: dbUser.id,
+    },
+    select: { id: true },
+  });
+
+  if (!session) return new NextResponse("Session not found", { status: 404 });
+
+  // last user message
   const lastUserMessage = await prisma.message.findFirst({
     where: {
-      sessionId,
+      sessionId: session.id,
       role: "USER",
     },
     orderBy: { createdAt: "desc" },
@@ -33,7 +43,7 @@ export async function POST(req: Request) {
   // Delete last assistant message
   await prisma.message.deleteMany({
     where: {
-      sessionId,
+      sessionId: session.id,
       role: "ASSISTANT",
       createdAt: {
         gt: lastUserMessage.createdAt,
@@ -45,7 +55,7 @@ export async function POST(req: Request) {
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
 
   const readable = await generateAssistantReply({
-    sessionId,
+    sessionId: session.id,
     userContent: lastUserMessage.content,
     now,
     expiresAt,
@@ -55,7 +65,7 @@ export async function POST(req: Request) {
   return new Response(readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "X-Session-Id": sessionId,
+      "X-Session-Id": session.id,
     },
   });
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "src/types/chat";
 import ThinkingBubble from "./ThinkingBubble";
-import { RotateCcw, Pencil } from "lucide-react";
+import { RotateCcw, Pencil, Copy, Check } from "lucide-react";
 
 interface Props {
   messages: ChatMessage[];
@@ -19,6 +19,15 @@ export default function MessageList({
   isStreaming,
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+  async function handleCopy(messageId: string, content: string) {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageId(messageId);
+      setTimeout(() => setCopiedMessageId(null), 1200);
+    } catch {}
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -74,6 +83,18 @@ export default function MessageList({
                 isAssistant ? "self-end" : ""
               }`}
             >
+              <button
+                onClick={() => handleCopy(message.id, message.content)}
+                className="p-1.5 rounded-full transition hover:bg-gray-200 cursor-pointer"
+                aria-label="Copy message"
+              >
+                {copiedMessageId === message.id ? (
+                  <Check size={16} className="text-green-600" />
+                ) : (
+                  <Copy size={16} />
+                )}
+              </button>
+
               {/* regenerate only on last assistant */}
               {isAssistant && isLastAssistant && (
                 <button
@@ -82,7 +103,7 @@ export default function MessageList({
                   className={`p-1.5 rounded-full transition ${
                     isStreaming
                       ? "opacity-40 cursor-not-allowed"
-                      : "hover:bg-gray-200"
+                      : "hover:bg-gray-200 cursor-pointer"
                   }`}
                 >
                   <RotateCcw size={16} />
@@ -97,7 +118,7 @@ export default function MessageList({
                   className={`p-1.5 rounded-full transition ${
                     isStreaming
                       ? "opacity-40 cursor-not-allowed"
-                      : "hover:bg-gray-200"
+                      : "hover:bg-gray-200 cursor-pointer"
                   }`}
                 >
                   <Pencil size={16} />
