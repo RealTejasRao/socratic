@@ -5,14 +5,6 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import type { ChatMessage } from "src/types/chat";
 import { useRouter } from "next/navigation";
-import ThinkingBubble from "./ThinkingBubble";
-
-interface Message {
-  id: string;
-  role: "USER" | "ASSISTANT";
-  content: string;
-  createdAt: string;
-}
 
 interface Props {
   initialMessages: ChatMessage[];
@@ -22,16 +14,20 @@ interface Props {
 export default function ChatContainer({ initialMessages, sessionId }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
-
+  const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(
+    null,
+  );
 
   const router = useRouter();
 
   async function handleSend(content: string) {
+    if (isStreaming) return;
+
     const tempId = `temp-${Date.now()}`;
 
-    const optimisticMessage = {
+    const optimisticMessage: ChatMessage = {
       id: tempId,
-      role: "USER" as const,
+      role: "USER",
       content,
       createdAt: new Date().toISOString(),
     };
@@ -40,8 +36,10 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
     try {
       setIsStreaming(true);
-      let assistantMessageId = `assistant-temp-${Date.now()}`;
 
+      const assistantMessageId = `assistant-temp-${Date.now()}`;
+
+      // insert assistant placeholder immediately
       setMessages((prev) => [
         ...prev,
         {
@@ -51,8 +49,6 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
           createdAt: new Date().toISOString(),
         },
       ]);
-
-     
 
       const res = await fetch("/api/v1/chat/messages", {
         method: "POST",
@@ -65,10 +61,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
 
-      
-   
       let assistantContent = "";
-     
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -77,7 +70,6 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         const chunk = decoder.decode(value);
 
         for (const char of chunk) {
-      
           assistantContent += char;
 
           setMessages((prev) =>
@@ -88,7 +80,6 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
             ),
           );
 
-          // delay
           await new Promise((r) => setTimeout(r, 10));
         }
       }
@@ -99,19 +90,22 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
       setIsStreaming(false);
       router.refresh();
-    } catch (err) {
+    } catch {
       setIsStreaming(false);
     }
   }
+
+  // REGENERATE
+
 
   async function handleRegenerate() {
     if (!sessionId || isStreaming) return;
 
     setIsStreaming(true);
 
-  
-    let assistantMessageId = `assistant-temp-${Date.now()}`;
+    const assistantMessageId = `assistant-temp-${Date.now()}`;
 
+    // remove last assistant 
     setMessages((prev) => [
       ...prev.slice(0, -1),
       {
@@ -158,13 +152,95 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     router.refresh();
   }
 
+  // edit mode
+
+  function handleEdit(message: ChatMessage) {
+    if (isStreaming) return;
+    setEditingMessage(message);
+  }
+
+  async function handleEditSubmit(newContent: string) {
+    if (!editingMessage || !sessionId || isStreaming) return;
+
+    setIsStreaming(true);
+
+  
+    const index = messages.findIndex((m) => m.id === editingMessage.id);
+    const assistantMessageId = `assistant-temp-${Date.now()}`;
+
+   
+    setMessages((prev) => [
+      ...prev.slice(0, index),
+      {
+        ...editingMessage,
+        content: newContent.trim(),
+      },
+      {
+        id: assistantMessageId,
+        role: "ASSISTANT",
+        content: "",
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+
+    const res = await fetch("/api/v1/chat/edit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sessionId,
+        messageId: editingMessage.id,
+        newContent,
+      }),
+    });
+
+    const reader = res.body?.getReader();
+    const decoder = new TextDecoder();
+
+    let assistantContent = "";
+
+    while (true) {
+      const { done, value } = await reader!.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+
+      for (const char of chunk) {
+        assistantContent += char;
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, content: assistantContent }
+              : msg,
+          ),
+        );
+
+        await new Promise((r) => setTimeout(r, 10));
+      }
+    }
+
+    setEditingMessage(null);
+    setIsStreaming(false);
+    router.refresh();
+  }
+
+
   return (
     <div className="flex flex-col h-full">
-      <MessageList messages={messages} onRegenerate={handleRegenerate} isStreaming={isStreaming} />
+      <MessageList
+        messages={messages}
+        onRegenerate={handleRegenerate}
+        onEdit={handleEdit}
+        isStreaming={isStreaming}
+      />
+
       <div className="mt-4">
-        <MessageInput onSend={handleSend} isStreaming={isStreaming} />
+        <MessageInput
+          onSend={editingMessage ? handleEditSubmit : handleSend}
+          isStreaming={isStreaming}
+          initialValue={editingMessage?.content}
+        />
       </div>
     </div>
   );
 }
-

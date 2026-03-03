@@ -1,20 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   onSend: (content: string) => void;
   isStreaming: boolean;
+  initialValue: string | undefined;
 }
 
-export default function MessageInput({ onSend, isStreaming }: Props) {
+export default function MessageInput({
+  onSend,
+  isStreaming,
+  initialValue,
+}: Props) {
   const [content, setContent] = useState("");
 
-  function handleSend() {
-    if (!content.trim()) return;
+  //  prefill input in edit mode
+  useEffect(() => {
+    if (initialValue !== undefined) {
+      setContent(initialValue);
+    }
+  }, [initialValue]);
 
-    onSend(content);
-    setContent("");
+  function handleSend() {
+    if (!content.trim() || isStreaming) return;
+
+    onSend(content.trim());
+    setContent(""); // clear after send or edit submit
   }
 
   return (
@@ -24,16 +36,23 @@ export default function MessageInput({ onSend, isStreaming }: Props) {
         onChange={(e) => setContent(e.target.value)}
         placeholder="Start a conversation with Socratic..."
         autoFocus
-        className="flex-1 border p-2 rounded "
+        className="flex-1 border p-2 rounded outline-none focus:ring-2 focus:ring-black"
         onKeyDown={(e) => {
-          if (e.key === "Enter") handleSend();
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSend();
+          }
         }}
       />
+
       <button
-        type="submit"
+        type="button"
+        onClick={handleSend}
         disabled={isStreaming}
-        className={`px-4 py-2 rounded ${
-          isStreaming ? "bg-gray-400 cursor-not-allowed" : "bg-black text-white"
+        className={`px-4 py-2 rounded transition ${
+          isStreaming
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-black text-white hover:bg-black/80"
         }`}
       >
         Send
