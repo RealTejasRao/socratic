@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
 import { openai } from "src/server/ai/openai";
 import { SOCRATIC_SYSTEM_PROMPT } from "src/server/ai/socratic-prompt";
+import { generateAssistantReply } from "src/server/chat/generate";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 
@@ -61,87 +62,11 @@ export async function POST(req: Request) {
     }
   }
 
-  const previousMessagesRaw = await prisma.message.findMany({
-    where: {
-      sessionId: activeSessionId!,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 30,
-    select: {
-      role: true,
-      content: true,
-    },
-  });
-
-  // Reverse
-  const previousMessages = previousMessagesRaw.reverse();
-
-  const conversationHistory = previousMessages.map((msg) => ({
-    role: msg.role.toLowerCase() as "user" | "assistant",
-    content: msg.content,
-  }));
-
-  // open ai call outside transcation
-  const stream = await openai.chat.completions.stream({
-    model: process.env['OPENAI_CHAT_MODEL']!,
-    messages: [
-      {
-        role: "system",
-        content: SOCRATIC_SYSTEM_PROMPT,
-      },
-      ...conversationHistory,
-      {
-        role: "user",
-        content,
-      },
-    ],
-    temperature: 0.7,
-    max_tokens: 300,
-  });
-
-  let assistantText = "";
-
-  const readable = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        const token = chunk.choices[0]?.delta?.content;
-        if (token) {
-          assistantText += token;
-          controller.enqueue(new TextEncoder().encode(token));
-        }
-      }
-
-      controller.close();
-
-    
-      await prisma.$transaction(async (tx) => {
-        const userMessage = await tx.message.create({
-          data: {
-            sessionId: activeSessionId!,
-            role: "USER",
-            content,
-          },
-        });
-
-        await tx.message.create({
-          data: {
-            sessionId: activeSessionId!,
-            role: "ASSISTANT",
-            content: assistantText,
-          },
-        });
-
-        await tx.chatSession.update({
-          where: { id: activeSessionId! },
-          data: {
-            lastActivityAt: now,
-            expiresAt,
-          },
-        });
-      });
-    },
+  const readable = await generateAssistantReply({
+    sessionId: activeSessionId!,
+    userContent: content,
+    now,
+    expiresAt,
   });
 
   return new Response(readable, {

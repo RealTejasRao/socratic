@@ -104,12 +104,67 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     }
   }
 
+  async function handleRegenerate() {
+    if (!sessionId || isStreaming) return;
+
+    setIsStreaming(true);
+
+  
+    let assistantMessageId = `assistant-temp-${Date.now()}`;
+
+    setMessages((prev) => [
+      ...prev.slice(0, -1),
+      {
+        id: assistantMessageId,
+        role: "ASSISTANT",
+        content: "",
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+
+    const res = await fetch("/api/v1/chat/regenerate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    });
+
+    const reader = res.body?.getReader();
+    const decoder = new TextDecoder();
+
+    let assistantContent = "";
+
+    while (true) {
+      const { done, value } = await reader!.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+
+      for (const char of chunk) {
+        assistantContent += char;
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, content: assistantContent }
+              : msg,
+          ),
+        );
+
+        await new Promise((r) => setTimeout(r, 10));
+      }
+    }
+
+    setIsStreaming(false);
+    router.refresh();
+  }
+
   return (
     <div className="flex flex-col h-full">
-      <MessageList messages={messages} />
+      <MessageList messages={messages} onRegenerate={handleRegenerate} isStreaming={isStreaming} />
       <div className="mt-4">
         <MessageInput onSend={handleSend} isStreaming={isStreaming} />
       </div>
     </div>
   );
 }
+
