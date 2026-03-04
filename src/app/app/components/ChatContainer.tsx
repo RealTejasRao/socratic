@@ -85,6 +85,15 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       }
 
       if (!sessionId && returnedSessionId) {
+        const draftFromNewChat = sessionStorage.getItem("socratic:draft:/app");
+        if (draftFromNewChat !== null) {
+          sessionStorage.setItem(
+            `socratic:draft:/app/${returnedSessionId}`,
+            draftFromNewChat,
+          );
+          sessionStorage.removeItem("socratic:draft:/app");
+        }
+
         router.push(`/app/${returnedSessionId}`);
       }
 
