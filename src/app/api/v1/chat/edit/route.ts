@@ -1,11 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
-import { openai } from "src/server/ai/openai";
-import { SOCRATIC_SYSTEM_PROMPT } from "src/server/ai/socratic-prompt";
+import { generateAssistantReply } from "src/server/chat/generate";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
-const WINDOW_SIZE = 30;
 
 export async function POST(req: Request) {
   const { userId: clerkUserId } = await auth();
@@ -93,60 +91,14 @@ export async function POST(req: Request) {
     });
   });
 
-  const previousMessagesRaw = await prisma.message.findMany({
-    where: { sessionId: session.id },
-    orderBy: { createdAt: "desc" },
-    take: WINDOW_SIZE,
-    select: { role: true, content: true },
-  });
-
-  const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
-    role: msg.role.toLowerCase() as "user" | "assistant",
-    content: msg.content,
-  }));
-
-  const stream = await openai.chat.completions.stream({
-    model: process.env["OPENAI_CHAT_MODEL"]!,
-    messages: [
-      { role: "system", content: SOCRATIC_SYSTEM_PROMPT },
-      ...conversationHistory,
-    ],
-    temperature: 0.7,
-    max_tokens: 300,
-  });
-
-  let assistantText = "";
-
-  const readable = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        const token = chunk.choices[0]?.delta?.content;
-        if (token) {
-          assistantText += token;
-          controller.enqueue(new TextEncoder().encode(token));
-        }
-      }
-
-      controller.close();
-
-      await prisma.$transaction(async (tx) => {
-        await tx.message.create({
-          data: {
-            sessionId: session.id,
-            role: "ASSISTANT",
-            content: assistantText,
-          },
-        });
-
-        await tx.chatSession.update({
-          where: { id: session.id },
-          data: {
-            lastActivityAt: now,
-            expiresAt,
-          },
-        });
-      });
-    },
+  const readable = await generateAssistantReply({
+    sessionId: session.id,
+    userContent: newContent.trim(),
+    now,
+    expiresAt,
+    persistUserMessage: false,
+    appendUserMessageToPrompt: false,
+    maxTokens: 300,
   });
 
   return new Response(readable, {

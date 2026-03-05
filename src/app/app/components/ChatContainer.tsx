@@ -192,12 +192,29 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       },
     ]);
 
+    let messageIdForEdit = editingMessage.id;
+
+
+    if (messageIdForEdit.startsWith("temp-")) {
+      const lookupRes = await fetch(`/api/v1/chat/sessions/${sessionId}/messages`);
+      if (lookupRes.ok) {
+        const persistedMessages = (await lookupRes.json()) as ChatMessage[];
+        const latestUserMessage = [...persistedMessages]
+          .reverse()
+          .find((m) => m.role === "USER");
+
+        if (latestUserMessage) {
+          messageIdForEdit = latestUserMessage.id;
+        }
+      }
+    }
+
     const res = await fetch("/api/v1/chat/edit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         sessionId,
-        messageId: editingMessage.id,
+        messageId: messageIdForEdit,
         newContent,
       }),
     });

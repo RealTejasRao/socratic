@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
-import { openai } from "src/server/ai/openai";
-import { SOCRATIC_SYSTEM_PROMPT } from "src/server/ai/socratic-prompt";
 import { generateAssistantReply } from "src/server/chat/generate";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
