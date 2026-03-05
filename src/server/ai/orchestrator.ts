@@ -8,6 +8,10 @@ import {
   storeInsightsAsBeliefs,
   storeRawInsightExtraction,
 } from "src/server/ai/belief-store";
+import {
+  getLatestConversationMemory,
+  maybeRefreshConversationMemory,
+} from "src/server/ai/memory-store";
 
 const WINDOW_SIZE = 30; // 15 turns
 
@@ -137,18 +141,30 @@ export async function generateReply(params: {
     sessionId,
     take: 5,
   });
+  const latestConversationMemory = await getLatestConversationMemory(sessionId);
   const shouldAppendLatestUserMessage =
     appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
 
-  const builtPrompt = buildSocraticPrompt({
+  const promptBuilderParams: {
+    conversationHistory: { role: "user" | "assistant"; content: string }[];
+    beliefContext: { type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION"; belief: string; confidence: number }[];
+    userContent: string;
+    appendUserMessageToPrompt: boolean;
+    conversationMemorySummary?: string;
+  } = {
     conversationHistory,
     beliefContext,
     userContent,
     appendUserMessageToPrompt: shouldAppendLatestUserMessage,
-  });
+  };
+
+  if (latestConversationMemory?.summary !== undefined) {
+    promptBuilderParams.conversationMemorySummary = latestConversationMemory.summary;
+  }
+
+  const builtPrompt = buildSocraticPrompt(promptBuilderParams);
 
   const generationStartedAtMs = Date.now();
-  console.log(JSON.stringify(builtPrompt.messages, null, 2));
   const stream = await openai.chat.completions.stream({
     model: process.env["OPENAI_CHAT_MODEL"]!,
     messages: builtPrompt.messages,
@@ -209,6 +225,12 @@ export async function generateReply(params: {
           },
         });
       });
+
+      try {
+        await maybeRefreshConversationMemory({ sessionId });
+      } catch {
+        // Memory refresh should never block response delivery.
+      }
     },
   });
 

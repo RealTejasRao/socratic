@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
+import { invalidateConversationMemory } from "src/server/ai/memory-store";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 
@@ -90,6 +91,8 @@ export async function POST(req: Request) {
       },
     });
   });
+
+  await invalidateConversationMemory(session.id);
 
   const readable = await generateAssistantReply({
     userId: dbUser.id,

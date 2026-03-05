@@ -1,4 +1,4 @@
-export const SOCRATIC_PROMPT_VERSION = "socratic-v2.0";
+export const SOCRATIC_PROMPT_VERSION = "socratic-v2.1";
 
 export const SOCRATIC_PROMPT_SECTIONS = {
   role: [

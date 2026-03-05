@@ -75,18 +75,27 @@ function formatBeliefContext(beliefs: BeliefContextItem[]) {
 export function buildSocraticPrompt(params: {
   conversationHistory: ConversationMessage[];
   beliefContext?: BeliefContextItem[];
+  conversationMemorySummary?: string;
   userContent?: string;
   appendUserMessageToPrompt?: boolean;
 }): BuiltPrompt {
   const {
     conversationHistory,
     beliefContext = [],
+    conversationMemorySummary,
     userContent,
     appendUserMessageToPrompt = true,
   } = params;
 
   const { systemPromptLines, baseSectionOrder } = buildStructuredSystemPrompt();
   const sectionOrder = [...baseSectionOrder];
+
+  const memorySection = [
+    "",
+    "CONVERSATION_MEMORY",
+    conversationMemorySummary?.trim() || "No long-term session memory yet.",
+  ];
+  sectionOrder.push("CONVERSATION_MEMORY");
 
   const beliefSection = [
     "",
@@ -102,9 +111,12 @@ export function buildSocraticPrompt(params: {
   ];
   sectionOrder.push("LEGACY_SOCRATIC_POLICY");
 
-  const systemPrompt = [...systemPromptLines, ...beliefSection, ...legacySection].join(
-    "\n",
-  );
+  const systemPrompt = [
+    ...systemPromptLines,
+    ...memorySection,
+    ...beliefSection,
+    ...legacySection,
+  ].join("\n");
 
   const messages: PromptMessage[] = [{ role: "system", content: systemPrompt }];
 

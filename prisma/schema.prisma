@@ -43,6 +43,7 @@ model ChatSession {
   messages        Message[]
   beliefs         UserBelief[]
   insightLogs     InsightExtractionLog[]
+  memorySnapshots ConversationMemorySnapshot[]
 
   @@index([userId, createdAt(sort: Desc)])
   @@index([expiresAt])
@@ -136,4 +137,18 @@ model InsightExtractionLog {
   @@index([userId, createdAt(sort: Desc)])
   @@index([sessionId, createdAt(sort: Desc)])
   @@index([sourceMessageId])
+}
+
+model ConversationMemorySnapshot {
+  id                   String      @id @default(cuid())
+  sessionId            String
+  summary              String      @db.Text
+  coveredUntilMessageId String?
+  totalMessages        Int
+  version              String      @db.VarChar(40)
+  createdAt            DateTime    @default(now())
+
+  session              ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt(sort: Desc)])
 }
