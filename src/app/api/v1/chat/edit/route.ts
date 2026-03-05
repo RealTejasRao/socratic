@@ -92,12 +92,16 @@ export async function POST(req: Request) {
   });
 
   const readable = await generateAssistantReply({
+    userId: dbUser.id,
     sessionId: session.id,
     userContent: newContent.trim(),
     now,
     expiresAt,
     persistUserMessage: false,
     appendUserMessageToPrompt: false,
+    sourceUserMessageId: targetMessage.id,
+    runInsightExtraction: true,
+    replaceBeliefsForSourceMessage: true,
     maxTokens: 300,
   });
 

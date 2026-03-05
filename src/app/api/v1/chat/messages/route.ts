@@ -81,6 +81,7 @@ export async function POST(req: Request) {
   }
 
   const readable = await generateAssistantReply({
+    userId: dbUser.id,
     sessionId: activeSessionId!,
     userContent: content,
     now,

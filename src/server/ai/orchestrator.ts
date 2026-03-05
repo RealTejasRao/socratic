@@ -1,27 +1,124 @@
 import { openai } from "src/server/ai/openai";
 import { prisma } from "src/server/db/client";
 import { buildSocraticPrompt } from "src/server/ai/prompt-builder";
+import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
+import {
+  deleteBeliefsForSourceMessage,
+  getBeliefsForPrompt,
+  storeInsightsAsBeliefs,
+  storeRawInsightExtraction,
+} from "src/server/ai/belief-store";
 
 const WINDOW_SIZE = 30; // 15 turns
 
 export async function generateReply(params: {
+  userId: string;
   sessionId: string;
   userContent: string;
   now: Date;
   expiresAt: Date;
   persistUserMessage?: boolean;
   appendUserMessageToPrompt?: boolean;
+  sourceUserMessageId?: string;
+  runInsightExtraction?: boolean;
+  replaceBeliefsForSourceMessage?: boolean;
   maxTokens?: number;
 }) {
   const {
+    userId,
     sessionId,
     userContent,
     now,
     expiresAt,
     persistUserMessage = true,
     appendUserMessageToPrompt = true,
+    sourceUserMessageId,
+    runInsightExtraction = true,
+    replaceBeliefsForSourceMessage = false,
     maxTokens = 500,
   } = params;
+
+  let effectiveSourceMessageId = sourceUserMessageId;
+
+  if (persistUserMessage) {
+    const createdUserMessage = await prisma.message.create({
+      data: {
+        sessionId,
+        role: "USER",
+        content: userContent,
+      },
+      select: { id: true },
+    });
+
+    effectiveSourceMessageId = createdUserMessage.id;
+  }
+
+  if (runInsightExtraction && effectiveSourceMessageId) {
+    try {
+      const extraction = await extractInsightsFromMessage(userContent);
+
+      const successLogParams: {
+        userId: string;
+        sessionId: string;
+        sourceMessageId: string;
+        inputText: string;
+        extractorVersion: string;
+        extraction: unknown;
+        model?: string;
+      } = {
+        userId,
+        sessionId,
+        sourceMessageId: effectiveSourceMessageId,
+        inputText: userContent,
+        extractorVersion: INSIGHT_EXTRACTOR_VERSION,
+        extraction: extraction.raw,
+      };
+
+      if (extraction.model !== undefined) {
+        successLogParams.model = extraction.model;
+      }
+
+      await storeRawInsightExtraction(successLogParams);
+
+      if (replaceBeliefsForSourceMessage) {
+        await deleteBeliefsForSourceMessage({
+          userId,
+          sessionId,
+          sourceMessageId: effectiveSourceMessageId,
+        });
+      }
+
+      await storeInsightsAsBeliefs({
+        userId,
+        sessionId,
+        sourceMessageId: effectiveSourceMessageId,
+        insights: extraction.insights,
+      });
+    } catch (error) {
+      const errorLogParams: {
+        userId: string;
+        sessionId: string;
+        sourceMessageId: string;
+        inputText: string;
+        extractorVersion: string;
+        error: string;
+        model?: string;
+      } = {
+        userId,
+        sessionId,
+        sourceMessageId: effectiveSourceMessageId,
+        inputText: userContent,
+        extractorVersion: INSIGHT_EXTRACTOR_VERSION,
+        error: error instanceof Error ? error.message : "Unknown insight extraction error",
+      };
+
+      if (process.env["OPENAI_CHAT_MODEL"] !== undefined) {
+        errorLogParams.model = process.env["OPENAI_CHAT_MODEL"];
+      }
+
+      await storeRawInsightExtraction(errorLogParams);
+    }
+  }
 
   const previousMessagesRaw = await prisma.message.findMany({
     where: { sessionId },
@@ -35,15 +132,26 @@ export async function generateReply(params: {
     content: msg.content,
   }));
 
-  const promptMessages = buildSocraticPrompt({
+  const beliefContext = await getBeliefsForPrompt({
+    userId,
+    sessionId,
+    take: 5,
+  });
+  const shouldAppendLatestUserMessage =
+    appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
+
+  const builtPrompt = buildSocraticPrompt({
     conversationHistory,
+    beliefContext,
     userContent,
-    appendUserMessageToPrompt,
+    appendUserMessageToPrompt: shouldAppendLatestUserMessage,
   });
 
+  const generationStartedAtMs = Date.now();
+  console.log(JSON.stringify(builtPrompt.messages, null, 2));
   const stream = await openai.chat.completions.stream({
     model: process.env["OPENAI_CHAT_MODEL"]!,
-    messages: promptMessages,
+    messages: builtPrompt.messages,
     temperature: 0.7,
     max_tokens: maxTokens,
   });
@@ -62,22 +170,34 @@ export async function generateReply(params: {
 
       controller.close();
 
-      await prisma.$transaction(async (tx) => {
-        if (persistUserMessage) {
-          await tx.message.create({
-            data: {
-              sessionId,
-              role: "USER",
-              content: userContent,
-            },
-          });
-        }
+      let completionModel: string | undefined = process.env["OPENAI_CHAT_MODEL"];
+      let promptTokens: number | undefined =
+        builtPrompt.metadata.estimatedInputTokens;
+      let completionTokens: number | undefined;
 
+      try {
+        const finalCompletion = await stream.finalChatCompletion();
+        completionModel = finalCompletion.model ?? completionModel;
+        promptTokens = finalCompletion.usage?.prompt_tokens ?? promptTokens;
+        completionTokens = finalCompletion.usage?.completion_tokens;
+      } catch {
+        // Streaming can finish without usage payload. keep best effort metadata.
+      }
+
+      const latencyMs = Date.now() - generationStartedAtMs;
+
+      await prisma.$transaction(async (tx) => {
         await tx.message.create({
           data: {
             sessionId,
             role: "ASSISTANT",
             content: assistantText,
+            model: completionModel
+              ? `${completionModel} (${builtPrompt.metadata.promptVersion})`
+              : builtPrompt.metadata.promptVersion,
+            tokenIn: promptTokens ?? null,
+            tokenOut: completionTokens ?? null,
+            latencyMs,
           },
         });
 

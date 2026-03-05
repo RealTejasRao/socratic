@@ -13,7 +13,9 @@ model User {
   role         UserRole @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  sessions     ChatSession[]   
+  sessions     ChatSession[]
+  beliefs      UserBelief[]
+  insightLogs  InsightExtractionLog[]
 }
 
 enum UserRole {
@@ -39,6 +41,8 @@ model ChatSession {
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   messages        Message[]
+  beliefs         UserBelief[]
+  insightLogs     InsightExtractionLog[]
 
   @@index([userId, createdAt(sort: Desc)])
   @@index([expiresAt])
@@ -68,10 +72,68 @@ model Message {
   createdAt  DateTime    @default(now())
 
   session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sourcedBeliefs UserBelief[]
+  insightLogs InsightExtractionLog[]
 
   @@index([sessionId, createdAt])
 }
 enum MessageRole {
   USER
   ASSISTANT
+}
+
+model UserBelief {
+  id              String       @id @default(cuid())
+  userId          String
+  sessionId       String
+  belief          String       @db.Text
+  beliefKey       String       @db.VarChar(200)
+  type            BeliefType
+  confidence      Float
+  sourceMessageId String?
+  status          BeliefStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session         ChatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sourceMessage   Message?     @relation(fields: [sourceMessageId], references: [id], onDelete: SetNull)
+
+  @@index([userId, sessionId, updatedAt(sort: Desc)])
+  @@index([sessionId, updatedAt(sort: Desc)])
+  @@index([sourceMessageId])
+  @@unique([userId, sessionId, type, beliefKey])
+}
+
+enum BeliefType {
+  BELIEF
+  ASSUMPTION
+  GOAL
+  POSITION
+}
+
+enum BeliefStatus {
+  ACTIVE
+  DISMISSED
+}
+
+model InsightExtractionLog {
+  id              String   @id @default(cuid())
+  userId          String
+  sessionId       String
+  sourceMessageId String?
+  inputText       String   @db.Text
+  model           String?  @db.VarChar(80)
+  extractorVersion String  @db.VarChar(40)
+  extraction      Json?
+  error           String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session         ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sourceMessage   Message? @relation(fields: [sourceMessageId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([sessionId, createdAt(sort: Desc)])
+  @@index([sourceMessageId])
 }

@@ -55,11 +55,15 @@ export async function POST(req: Request) {
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
 
   const readable = await generateAssistantReply({
+    userId: dbUser.id,
     sessionId: session.id,
     userContent: lastUserMessage.content,
     now,
     expiresAt,
     persistUserMessage: false,
+    sourceUserMessageId: lastUserMessage.id,
+    appendUserMessageToPrompt: false,
+    runInsightExtraction: false,
   });
 
   return new Response(readable, {
