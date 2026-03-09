@@ -1,5 +1,6 @@
 import { openai } from "src/server/ai/openai";
 import { prisma } from "src/server/db/client";
+import { Prisma } from "@prisma/client";
 import { buildSocraticPrompt } from "src/server/ai/prompt-builder";
 import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
 import {
@@ -12,6 +13,7 @@ import {
   getLatestConversationMemory,
   maybeRefreshConversationMemory,
 } from "src/server/ai/memory-store";
+import { validateSocraticResponse } from "src/server/ai/response-validator";
 
 const WINDOW_SIZE = 30; // 15 turns
 
@@ -165,6 +167,11 @@ export async function generateReply(params: {
   const builtPrompt = buildSocraticPrompt(promptBuilderParams);
 
   const generationStartedAtMs = Date.now();
+  console.log(
+    "RAW_PROMPT_MESSAGES",
+    JSON.stringify(builtPrompt.messages, null, 2),
+  );
+
   const stream = await openai.chat.completions.stream({
     model: process.env["OPENAI_CHAT_MODEL"]!,
     messages: builtPrompt.messages,
@@ -201,6 +208,12 @@ export async function generateReply(params: {
       }
 
       const latencyMs = Date.now() - generationStartedAtMs;
+      const validation = validateSocraticResponse({
+        userContent,
+        assistantContent: assistantText,
+        beliefStatements: beliefContext.map((item) => item.belief),
+        conversationMemorySummary: latestConversationMemory?.summary,
+      });
 
       await prisma.$transaction(async (tx) => {
         await tx.message.create({
@@ -214,6 +227,10 @@ export async function generateReply(params: {
             tokenIn: promptTokens ?? null,
             tokenOut: completionTokens ?? null,
             latencyMs,
+            validationVersion: validation.version,
+            validationScore: validation.score,
+            validationFlags: validation.flags as Prisma.InputJsonValue,
+            validationSummary: validation.summary,
           },
         });
 

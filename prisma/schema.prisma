@@ -69,6 +69,10 @@ model Message {
   tokenIn    Int?
   tokenOut   Int?
   latencyMs  Int?
+  validationVersion String? @db.VarChar(40)
+  validationScore Int?
+  validationFlags Json?
+  validationSummary String? @db.Text
 
   createdAt  DateTime    @default(now())
 
