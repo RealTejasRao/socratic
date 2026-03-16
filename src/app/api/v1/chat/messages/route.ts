@@ -13,6 +13,7 @@ function deriveSessionTitleFromContent(content: string) {
 }
 
 export async function POST(req: Request) {
+  const requestStartedAtMs = Date.now();
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
@@ -87,11 +88,13 @@ export async function POST(req: Request) {
     now,
     expiresAt,
   });
+  const prepareMs = Date.now() - requestStartedAtMs;
 
   return new Response(readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "X-Session-Id": activeSessionId!,
+      "X-Server-Prepare-Ms": String(prepareMs),
     },
   });
 }

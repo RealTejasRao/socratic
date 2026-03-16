@@ -20,6 +20,13 @@ type BeliefContextItem = {
   confidence: number;
 };
 
+type RetrievedContextItem = {
+  title: string;
+  author: string;
+  content: string;
+  chunkIndex: number;
+};
+
 export type BuiltPrompt = {
   messages: PromptMessage[];
   metadata: {
@@ -30,19 +37,20 @@ export type BuiltPrompt = {
 };
 
 function estimateTokensFromText(text: string) {
-  // approximation for fast server-side accounting.
   return Math.ceil(text.length / 4);
 }
 
-function buildStructuredSystemPrompt() {
-  const baseSectionOrder = [
+function buildCorePolicyMessage() {
+  const sectionOrder = [
     "SYSTEM_ROLE",
     "OBJECTIVE",
     "RULES",
     "STYLE",
+    "OUTPUT",
+    "CORE_POLICY",
   ];
 
-  const systemPromptLines = [
+  const content = [
     "SYSTEM_ROLE",
     SOCRATIC_PROMPT_SECTIONS.role,
     "",
@@ -54,9 +62,15 @@ function buildStructuredSystemPrompt() {
     "",
     "STYLE",
     SOCRATIC_PROMPT_SECTIONS.style,
-  ];
+    "",
+    "OUTPUT",
+    SOCRATIC_PROMPT_SECTIONS.output,
+    "",
+    "CORE_POLICY",
+    SOCRATIC_SYSTEM_PROMPT.trim(),
+  ].join("\n");
 
-  return { systemPromptLines, baseSectionOrder };
+  return { content, sectionOrder };
 }
 
 function formatBeliefContext(beliefs: BeliefContextItem[]) {
@@ -72,9 +86,48 @@ function formatBeliefContext(beliefs: BeliefContextItem[]) {
     .join("\n");
 }
 
+function buildDynamicContextMessage(params: {
+  conversationMemorySummary: string | undefined;
+  beliefContext: BeliefContextItem[];
+  retrievedContext: RetrievedContextItem[];
+}) {
+  const sectionOrder = [
+    "CONVERSATION_MEMORY",
+    "USER_BELIEFS",
+    "RETRIEVED_PASSAGES",
+  ];
+
+  const retrievedPassages = params.retrievedContext.length
+    ? params.retrievedContext
+        .map((item, index) => {
+          const excerpt = item.content.replace(/\s+/g, " ").trim().slice(0, 650);
+          return [
+            `${index + 1}. [${item.author} - ${item.title} | chunk ${item.chunkIndex}]`,
+            `"${excerpt}"`,
+          ].join("\n");
+        })
+        .join("\n\n")
+    : "No retrieved passages for this turn.";
+
+  const content = [
+    "DYNAMIC_CONTEXT",
+    "CONVERSATION_MEMORY",
+    params.conversationMemorySummary?.trim() || "No long-term session memory yet.",
+    "",
+    "USER_BELIEFS",
+    formatBeliefContext(params.beliefContext),
+    "",
+    "RETRIEVED_PASSAGES",
+    retrievedPassages,
+  ].join("\n");
+
+  return { content, sectionOrder };
+}
+
 export function buildSocraticPrompt(params: {
   conversationHistory: ConversationMessage[];
   beliefContext?: BeliefContextItem[];
+  retrievedContext?: RetrievedContextItem[];
   conversationMemorySummary?: string;
   userContent?: string;
   appendUserMessageToPrompt?: boolean;
@@ -82,45 +135,24 @@ export function buildSocraticPrompt(params: {
   const {
     conversationHistory,
     beliefContext = [],
+    retrievedContext = [],
     conversationMemorySummary,
     userContent,
     appendUserMessageToPrompt = true,
   } = params;
 
-  const { systemPromptLines, baseSectionOrder } = buildStructuredSystemPrompt();
-  const sectionOrder = [...baseSectionOrder];
+  const corePolicy = buildCorePolicyMessage();
+  const dynamicContext = buildDynamicContextMessage({
+    beliefContext,
+    conversationMemorySummary,
+    retrievedContext,
+  });
 
-  const memorySection = [
-    "",
-    "CONVERSATION_MEMORY",
-    conversationMemorySummary?.trim() || "No long-term session memory yet.",
+  const messages: PromptMessage[] = [
+    { role: "system", content: corePolicy.content },
+    { role: "system", content: dynamicContext.content },
+    ...conversationHistory,
   ];
-  sectionOrder.push("CONVERSATION_MEMORY");
-
-  const beliefSection = [
-    "",
-    "USER_BELIEFS",
-    formatBeliefContext(beliefContext),
-  ];
-  sectionOrder.push("USER_BELIEFS");
-
-  const legacySection = [
-    "",
-    "LEGACY_SOCRATIC_POLICY",
-    SOCRATIC_SYSTEM_PROMPT.trim(),
-  ];
-  sectionOrder.push("LEGACY_SOCRATIC_POLICY");
-
-  const systemPrompt = [
-    ...systemPromptLines,
-    ...memorySection,
-    ...beliefSection,
-    ...legacySection,
-  ].join("\n");
-
-  const messages: PromptMessage[] = [{ role: "system", content: systemPrompt }];
-
-  messages.push(...conversationHistory);
 
   if (appendUserMessageToPrompt && userContent) {
     messages.push({ role: "user", content: userContent });
@@ -133,7 +165,7 @@ export function buildSocraticPrompt(params: {
     metadata: {
       promptVersion: SOCRATIC_PROMPT_VERSION,
       estimatedInputTokens: estimateTokensFromText(promptText),
-      sectionOrder,
+      sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
     },
   };
 }

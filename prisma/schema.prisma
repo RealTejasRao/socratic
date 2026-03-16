@@ -16,6 +16,7 @@ model User {
   sessions     ChatSession[]
   beliefs      UserBelief[]
   insightLogs  InsightExtractionLog[]
+  retrievalTraces RetrievalTrace[]
 }
 
 enum UserRole {
@@ -44,6 +45,7 @@ model ChatSession {
   beliefs         UserBelief[]
   insightLogs     InsightExtractionLog[]
   memorySnapshots ConversationMemorySnapshot[]
+  retrievalTraces RetrievalTrace[]
 
   @@index([userId, createdAt(sort: Desc)])
   @@index([expiresAt])
@@ -79,6 +81,7 @@ model Message {
   session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sourcedBeliefs UserBelief[]
   insightLogs InsightExtractionLog[]
+  retrievalTraces RetrievalTrace[]
 
   @@index([sessionId, createdAt])
 }
@@ -155,4 +158,56 @@ model ConversationMemorySnapshot {
   session              ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId, createdAt(sort: Desc)])
+}
+
+model KnowledgeDocument {
+  id         String           @id @default(cuid())
+  title      String           @db.VarChar(220)
+  author     String           @db.VarChar(180)
+  sourcePath String?          @db.VarChar(800)
+  isActive   Boolean          @default(true)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  chunks     KnowledgeChunk[]
+
+  @@unique([author, title])
+  @@index([isActive, updatedAt(sort: Desc)])
+}
+
+model KnowledgeChunk {
+  id         String            @id @default(cuid())
+  documentId String
+  chunkIndex Int
+  content    String            @db.Text
+  tokenCount Int
+  embedding  Unsupported("vector(1536)")?
+  createdAt  DateTime          @default(now())
+  document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+}
+
+model RetrievalTrace {
+  id               String      @id @default(cuid())
+  userId           String
+  sessionId        String
+  sourceMessageId  String?
+  rawUserQuery     String      @db.Text
+  retrievalQuery   String      @db.Text
+  vectorCandidates Json?
+  lexicalCandidates Json?
+  fusedCandidates  Json?
+  rerankedCandidates Json?
+  selectedPassages Json?
+  retrievalLatencyMs Int?
+  createdAt        DateTime    @default(now())
+
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session          ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sourceMessage    Message?    @relation(fields: [sourceMessageId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([sessionId, createdAt(sort: Desc)])
+  @@index([sourceMessageId])
 }

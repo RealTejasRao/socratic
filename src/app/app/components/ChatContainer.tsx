@@ -22,6 +22,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
   async function handleSend(content: string) {
     if (isStreaming) return;
+    const sendStartedAtMs = performance.now();
 
     const tempId = `temp-${Date.now()}`;
 
@@ -55,6 +56,8 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, content }),
       });
+      const headersReceivedAtMs = performance.now();
+      const serverPrepareMs = res.headers.get("X-Server-Prepare-Ms");
 
       const returnedSessionId = res.headers.get("X-Session-Id");
 
@@ -62,26 +65,38 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       const decoder = new TextDecoder();
 
       let assistantContent = "";
+      let firstChunkAtMs: number | null = null;
 
       while (true) {
         const { done, value } = await reader!.read();
         if (done) break;
+        if (firstChunkAtMs === null) {
+          firstChunkAtMs = performance.now();
+        }
 
         const chunk = decoder.decode(value);
+        assistantContent += chunk;
 
-        for (const char of chunk) {
-          assistantContent += char;
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, content: assistantContent }
+              : msg,
+          ),
+        );
+      }
 
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === assistantMessageId
-                ? { ...msg, content: assistantContent }
-                : msg,
-            ),
-          );
-
-          await new Promise((r) => setTimeout(r, 10));
-        }
+      if (process.env.NODE_ENV === "development") {
+        const doneAtMs = performance.now();
+        console.log("CHAT_TIMING", {
+          totalMs: Math.round(doneAtMs - sendStartedAtMs),
+          toHeadersMs: Math.round(headersReceivedAtMs - sendStartedAtMs),
+          toFirstChunkMs:
+            firstChunkAtMs === null
+              ? null
+              : Math.round(firstChunkAtMs - sendStartedAtMs),
+          serverPrepareMs: serverPrepareMs ? Number.parseInt(serverPrepareMs, 10) : null,
+        });
       }
 
       if (!sessionId && returnedSessionId) {
@@ -141,20 +156,15 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       if (done) break;
 
       const chunk = decoder.decode(value);
+      assistantContent += chunk;
 
-      for (const char of chunk) {
-        assistantContent += char;
-
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? { ...msg, content: assistantContent }
-              : msg,
-          ),
-        );
-
-        await new Promise((r) => setTimeout(r, 10));
-      }
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessageId
+            ? { ...msg, content: assistantContent }
+            : msg,
+        ),
+      );
     }
 
     setIsStreaming(false);
@@ -229,20 +239,15 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       if (done) break;
 
       const chunk = decoder.decode(value);
+      assistantContent += chunk;
 
-      for (const char of chunk) {
-        assistantContent += char;
-
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? { ...msg, content: assistantContent }
-              : msg,
-          ),
-        );
-
-        await new Promise((r) => setTimeout(r, 10));
-      }
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessageId
+            ? { ...msg, content: assistantContent }
+            : msg,
+        ),
+      );
     }
 
     setEditingMessage(null);

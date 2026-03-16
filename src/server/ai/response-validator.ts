@@ -5,6 +5,7 @@ type ValidatorInput = {
   assistantContent: string;
   beliefStatements: string[];
   conversationMemorySummary: string | undefined;
+  retrievedSources?: string[];
 };
 
 export type ValidationResult = {
@@ -45,6 +46,10 @@ function overlapScore(a: string, b: string) {
   }
 
   return overlap / Math.max(1, Math.min(setA.size, setB.size));
+}
+
+function hasCitation(text: string) {
+  return /\[[^\]]+\|\s*chunk\s+\d+\]/i.test(text);
 }
 
 export function validateSocraticResponse(input: ValidatorInput): ValidationResult {
@@ -106,6 +111,11 @@ export function validateSocraticResponse(input: ValidatorInput): ValidationResul
       flags.push("low_memory_grounding");
       score -= 5;
     }
+  }
+
+  if ((input.retrievedSources?.length ?? 0) > 0 && !hasCitation(assistant)) {
+    flags.push("missing_source_citation");
+    score -= 20;
   }
 
   if (score < 0) score = 0;

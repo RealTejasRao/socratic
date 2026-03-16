@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "report:ai:weekly": "node scripts/ai-weekly-report.mjs"
+    "report:ai:weekly": "node scripts/ai-weekly-report.mjs",
+    "rag:ingest:books": "node scripts/ingest-books.mjs",
+    "rag:eval": "node scripts/rag-eval.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.3",

@@ -14,8 +14,30 @@ import {
   maybeRefreshConversationMemory,
 } from "src/server/ai/memory-store";
 import { validateSocraticResponse } from "src/server/ai/response-validator";
+import { generateRetrievalQuery } from "src/server/ai/retrieval-query";
+import { retrieveHybridPassagesWithDetails } from "src/server/ai/hybrid-retrieval";
+import {
+  rerankRetrievedPassages,
+  type RerankedPassage,
+} from "src/server/ai/retrieval-reranker";
+import { storeRetrievalTrace } from "src/server/ai/retrieval-trace-store";
 
 const WINDOW_SIZE = 30; // 15 turns
+const QUERY_GEN_TIMEOUT_MS = 1500;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T) {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutHandle = setTimeout(() => resolve(fallback), timeoutMs);
+  });
+
+  const result = await Promise.race([promise, timeoutPromise]);
+  if (timeoutHandle) {
+    clearTimeout(timeoutHandle);
+  }
+  return result;
+}
 
 export async function generateReply(params: {
   userId: string;
@@ -59,103 +81,182 @@ export async function generateReply(params: {
     effectiveSourceMessageId = createdUserMessage.id;
   }
 
-  if (runInsightExtraction && effectiveSourceMessageId) {
-    try {
-      const extraction = await extractInsightsFromMessage(userContent);
+  const runInsightExtractionTask =
+    runInsightExtraction && effectiveSourceMessageId
+      ? async () => {
+          try {
+            const extraction = await extractInsightsFromMessage(userContent);
 
-      const successLogParams: {
-        userId: string;
-        sessionId: string;
-        sourceMessageId: string;
-        inputText: string;
-        extractorVersion: string;
-        extraction: unknown;
-        model?: string;
-      } = {
-        userId,
-        sessionId,
-        sourceMessageId: effectiveSourceMessageId,
-        inputText: userContent,
-        extractorVersion: INSIGHT_EXTRACTOR_VERSION,
-        extraction: extraction.raw,
-      };
+            const successLogParams: {
+              userId: string;
+              sessionId: string;
+              sourceMessageId: string;
+              inputText: string;
+              extractorVersion: string;
+              extraction: unknown;
+              model?: string;
+            } = {
+              userId,
+              sessionId,
+              sourceMessageId: effectiveSourceMessageId,
+              inputText: userContent,
+              extractorVersion: INSIGHT_EXTRACTOR_VERSION,
+              extraction: extraction.raw,
+            };
 
-      if (extraction.model !== undefined) {
-        successLogParams.model = extraction.model;
-      }
+            if (extraction.model !== undefined) {
+              successLogParams.model = extraction.model;
+            }
 
-      await storeRawInsightExtraction(successLogParams);
+            await storeRawInsightExtraction(successLogParams);
 
-      if (replaceBeliefsForSourceMessage) {
-        await deleteBeliefsForSourceMessage({
-          userId,
-          sessionId,
-          sourceMessageId: effectiveSourceMessageId,
-        });
-      }
+            if (replaceBeliefsForSourceMessage) {
+              await deleteBeliefsForSourceMessage({
+                userId,
+                sessionId,
+                sourceMessageId: effectiveSourceMessageId,
+              });
+            }
 
-      await storeInsightsAsBeliefs({
-        userId,
-        sessionId,
-        sourceMessageId: effectiveSourceMessageId,
-        insights: extraction.insights,
-      });
-    } catch (error) {
-      const errorLogParams: {
-        userId: string;
-        sessionId: string;
-        sourceMessageId: string;
-        inputText: string;
-        extractorVersion: string;
-        error: string;
-        model?: string;
-      } = {
-        userId,
-        sessionId,
-        sourceMessageId: effectiveSourceMessageId,
-        inputText: userContent,
-        extractorVersion: INSIGHT_EXTRACTOR_VERSION,
-        error: error instanceof Error ? error.message : "Unknown insight extraction error",
-      };
+            await storeInsightsAsBeliefs({
+              userId,
+              sessionId,
+              sourceMessageId: effectiveSourceMessageId,
+              insights: extraction.insights,
+            });
+          } catch (error) {
+            const errorLogParams: {
+              userId: string;
+              sessionId: string;
+              sourceMessageId: string;
+              inputText: string;
+              extractorVersion: string;
+              error: string;
+              model?: string;
+            } = {
+              userId,
+              sessionId,
+              sourceMessageId: effectiveSourceMessageId,
+              inputText: userContent,
+              extractorVersion: INSIGHT_EXTRACTOR_VERSION,
+              error: error instanceof Error ? error.message : "Unknown insight extraction error",
+            };
 
-      if (process.env["OPENAI_CHAT_MODEL"] !== undefined) {
-        errorLogParams.model = process.env["OPENAI_CHAT_MODEL"];
-      }
+            if (process.env["OPENAI_CHAT_MODEL"] !== undefined) {
+              errorLogParams.model = process.env["OPENAI_CHAT_MODEL"];
+            }
 
-      await storeRawInsightExtraction(errorLogParams);
-    }
-  }
+            await storeRawInsightExtraction(errorLogParams);
+          }
+        }
+      : null;
 
-  const previousMessagesRaw = await prisma.message.findMany({
-    where: { sessionId },
-    orderBy: { createdAt: "desc" },
-    take: WINDOW_SIZE,
-    select: { role: true, content: true },
-  });
+  const [previousMessagesRaw, beliefContext, latestConversationMemory] = await Promise.all([
+    prisma.message.findMany({
+      where: { sessionId },
+      orderBy: { createdAt: "desc" },
+      take: WINDOW_SIZE,
+      select: { role: true, content: true },
+    }),
+    getBeliefsForPrompt({
+      userId,
+      sessionId,
+      take: 5,
+    }),
+    getLatestConversationMemory(sessionId),
+  ]);
 
   const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
     role: msg.role.toLowerCase() as "user" | "assistant",
     content: msg.content,
   }));
 
-  const beliefContext = await getBeliefsForPrompt({
-    userId,
-    sessionId,
-    take: 5,
-  });
-  const latestConversationMemory = await getLatestConversationMemory(sessionId);
+  let retrievalQuery = userContent;
+  let retrievedPassages: Array<{
+    title: string;
+    author: string;
+    content: string;
+    chunkIndex: number;
+  }> = [];
+  let rerankedCandidates: RerankedPassage[] = [];
+  let tracePayload: {
+    vectorCandidates: Awaited<
+      ReturnType<typeof retrieveHybridPassagesWithDetails>
+    >["vectorCandidates"];
+    lexicalCandidates: Awaited<
+      ReturnType<typeof retrieveHybridPassagesWithDetails>
+    >["lexicalCandidates"];
+    fusedCandidates: Awaited<
+      ReturnType<typeof retrieveHybridPassagesWithDetails>
+    >["fusedCandidates"];
+    rerankedCandidates: RerankedPassage[];
+    selectedPassages: RerankedPassage[];
+    retrievalLatencyMs: number;
+  } | null = null;
+
+  try {
+    const retrievalStartedAtMs = Date.now();
+    retrievalQuery = await withTimeout(
+      generateRetrievalQuery(userContent),
+      QUERY_GEN_TIMEOUT_MS,
+      userContent,
+    );
+    let retrievalDetails = await retrieveHybridPassagesWithDetails({
+      query: retrievalQuery,
+      limit: 12,
+    });
+
+    // If expanded query returns nothing, retry once with raw user text.
+    if (
+      retrievalDetails.fusedCandidates.length === 0 &&
+      retrievalQuery.trim().toLowerCase() !== userContent.trim().toLowerCase()
+    ) {
+      retrievalQuery = userContent;
+      retrievalDetails = await retrieveHybridPassagesWithDetails({
+        query: retrievalQuery,
+        limit: 12,
+      });
+    }
+    rerankedCandidates = rerankRetrievedPassages({
+      query: retrievalQuery,
+      userMessage: userContent,
+      candidates: retrievalDetails.fusedCandidates,
+      minPassages: 3,
+      maxPassages: 5,
+    });
+
+    retrievedPassages = rerankedCandidates.map((item) => ({
+      title: item.title,
+      author: item.author,
+      content: item.content,
+      chunkIndex: item.chunkIndex,
+    }));
+    tracePayload = {
+      vectorCandidates: retrievalDetails.vectorCandidates,
+      lexicalCandidates: retrievalDetails.lexicalCandidates,
+      fusedCandidates: retrievalDetails.fusedCandidates,
+      rerankedCandidates,
+      selectedPassages: rerankedCandidates,
+      retrievalLatencyMs: Date.now() - retrievalStartedAtMs,
+    };
+  } catch {
+    // Retrieval is best-effort; generation should continue even if retrieval fails.
+  }
+
   const shouldAppendLatestUserMessage =
     appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
 
   const promptBuilderParams: {
     conversationHistory: { role: "user" | "assistant"; content: string }[];
     beliefContext: { type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION"; belief: string; confidence: number }[];
+    retrievedContext: { title: string; author: string; content: string; chunkIndex: number }[];
     userContent: string;
     appendUserMessageToPrompt: boolean;
     conversationMemorySummary?: string;
   } = {
     conversationHistory,
     beliefContext,
+    retrievedContext: retrievedPassages,
     userContent,
     appendUserMessageToPrompt: shouldAppendLatestUserMessage,
   };
@@ -167,15 +268,28 @@ export async function generateReply(params: {
   const builtPrompt = buildSocraticPrompt(promptBuilderParams);
 
   const generationStartedAtMs = Date.now();
-  console.log(
-    "RAW_PROMPT_MESSAGES",
-    JSON.stringify(builtPrompt.messages, null, 2),
-  );
+  if (process.env["AI_DEBUG_PROMPT"] === "true") {
+    console.log(
+      "RAW_PROMPT_MESSAGES",
+      JSON.stringify(builtPrompt.messages, null, 2),
+    );
+    console.log(
+      "RETRIEVAL_QUERY",
+      retrievalQuery,
+    );
+    console.log(
+      "RETRIEVAL_COUNTS",
+      {
+        reranked: rerankedCandidates.length,
+        selected: retrievedPassages.length,
+      },
+    );
+  }
 
   const stream = await openai.chat.completions.stream({
     model: process.env["OPENAI_CHAT_MODEL"]!,
     messages: builtPrompt.messages,
-    temperature: 0.7,
+    temperature: 1,
     max_tokens: maxTokens,
   });
 
@@ -213,6 +327,9 @@ export async function generateReply(params: {
         assistantContent: assistantText,
         beliefStatements: beliefContext.map((item) => item.belief),
         conversationMemorySummary: latestConversationMemory?.summary,
+        retrievedSources: retrievedPassages.map(
+          (item) => `${item.author} - ${item.title} | chunk ${item.chunkIndex}`,
+        ),
       });
 
       await prisma.$transaction(async (tx) => {
@@ -243,10 +360,36 @@ export async function generateReply(params: {
         });
       });
 
+      if (tracePayload) {
+        try {
+          await storeRetrievalTrace({
+            userId,
+            sessionId,
+            sourceMessageId: effectiveSourceMessageId,
+            rawUserQuery: userContent,
+            retrievalQuery,
+            vectorCandidates: tracePayload.vectorCandidates,
+            lexicalCandidates: tracePayload.lexicalCandidates,
+            fusedCandidates: tracePayload.fusedCandidates,
+            rerankedCandidates: tracePayload.rerankedCandidates,
+            selectedPassages: tracePayload.selectedPassages,
+            retrievalLatencyMs: tracePayload.retrievalLatencyMs,
+          });
+        } catch {
+          // Retrieval trace logging should never block response delivery.
+        }
+      }
+
       try {
         await maybeRefreshConversationMemory({ sessionId });
       } catch {
         // Memory refresh should never block response delivery.
+      }
+
+      if (runInsightExtractionTask) {
+        runInsightExtractionTask().catch(() => {
+          // Insight extraction must never affect response lifecycle.
+        });
       }
     },
   });

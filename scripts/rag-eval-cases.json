@@ -1,0 +1,27 @@
+[
+  {
+    "id": "solitude-community",
+    "query": "Should a person live mostly alone instead of in society?",
+    "expectedBooks": ["Politics", "Walden", "Nicomachean Ethics"]
+  },
+  {
+    "id": "power-fear-love",
+    "query": "Is it better for a ruler to be feared or loved?",
+    "expectedBooks": ["The Prince", "Leviathan"]
+  },
+  {
+    "id": "absurd-meaning",
+    "query": "If life has no objective meaning, how should we live?",
+    "expectedBooks": ["The Myth of Sisyphus", "Meditations"]
+  },
+  {
+    "id": "justice-state",
+    "query": "What is justice and why does a state need it?",
+    "expectedBooks": ["The Republic", "Politics", "Leviathan"]
+  },
+  {
+    "id": "virtue-habit",
+    "query": "Can character be trained through repeated action?",
+    "expectedBooks": ["Nicomachean Ethics", "Discourses", "Meditations"]
+  }
+]

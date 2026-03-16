@@ -5,6 +5,7 @@ import type { ExtractedInsight } from "src/server/ai/insight-extractor";
 
 const MIN_CONFIDENCE_TO_STORE = 0.65;
 const MAX_INSIGHTS_PER_MESSAGE = 8;
+const BELIEF_SIMILARITY_THRESHOLD = 0.75;
 
 function normalizeBeliefKey(text: string) {
   return text
@@ -18,6 +19,39 @@ function normalizeBeliefKey(text: string) {
 function isUsefulInsight(statement: string) {
   const normalized = statement.trim();
   return normalized.length >= 8;
+}
+
+function normalizeForSimilarity(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tokenSet(text: string) {
+  return new Set(normalizeForSimilarity(text).split(" ").filter(Boolean));
+}
+
+function overlapSimilarity(a: string, b: string) {
+  const aTokens = tokenSet(a);
+  const bTokens = tokenSet(b);
+  if (!aTokens.size || !bTokens.size) return 0;
+
+  let overlap = 0;
+  for (const token of aTokens) {
+    if (bTokens.has(token)) overlap += 1;
+  }
+
+  return overlap / Math.max(1, Math.min(aTokens.size, bTokens.size));
+}
+
+function areBeliefsSimilar(a: string, b: string) {
+  const aNorm = normalizeForSimilarity(a);
+  const bNorm = normalizeForSimilarity(b);
+  if (!aNorm || !bNorm) return false;
+  if (aNorm === bNorm) return true;
+  return overlapSimilarity(aNorm, bNorm) >= BELIEF_SIMILARITY_THRESHOLD;
 }
 
 export async function storeRawInsightExtraction(params: {
@@ -115,19 +149,53 @@ export async function getBeliefsForPrompt(params: {
   take?: number;
 }) {
   const take = params.take ?? 5;
+  const fetchLimit = Math.max(take * 4, 20);
 
-  return prisma.userBelief.findMany({
+  const rawBeliefs = await prisma.userBelief.findMany({
     where: {
       userId: params.userId,
       sessionId: params.sessionId,
       status: "ACTIVE",
     },
     orderBy: [{ updatedAt: "desc" }, { confidence: "desc" }],
-    take,
+    take: fetchLimit,
     select: {
       type: true,
       belief: true,
       confidence: true,
     },
   });
+
+  const merged: Array<{
+    type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION";
+    belief: string;
+    confidence: number;
+  }> = [];
+
+  for (const belief of rawBeliefs) {
+    const existing = merged.find(
+      (item) =>
+        item.type === belief.type &&
+        areBeliefsSimilar(item.belief, belief.belief),
+    );
+
+    if (!existing) {
+      merged.push({
+        type: belief.type,
+        belief: belief.belief,
+        confidence: belief.confidence,
+      });
+      continue;
+    }
+
+    if (belief.confidence > existing.confidence) {
+      existing.confidence = belief.confidence;
+    }
+
+    if (belief.belief.length > existing.belief.length) {
+      existing.belief = belief.belief;
+    }
+  }
+
+  return merged.slice(0, take);
 }
