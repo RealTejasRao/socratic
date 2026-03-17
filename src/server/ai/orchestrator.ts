@@ -4,15 +4,12 @@ import { Prisma } from "@prisma/client";
 import { buildSocraticPrompt } from "src/server/ai/prompt-builder";
 import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
 import {
+  buildBeliefPromptContext,
   deleteBeliefsForSourceMessage,
-  getBeliefsForPrompt,
   storeInsightsAsBeliefs,
   storeRawInsightExtraction,
 } from "src/server/ai/belief-store";
-import {
-  getLatestConversationMemory,
-  maybeRefreshConversationMemory,
-} from "src/server/ai/memory-store";
+import { maybeRefreshConversationMemory } from "src/server/ai/memory-store";
 import { validateSocraticResponse } from "src/server/ai/response-validator";
 import { generateRetrievalQuery } from "src/server/ai/retrieval-query";
 import { retrieveHybridPassagesWithDetails } from "src/server/ai/hybrid-retrieval";
@@ -23,21 +20,6 @@ import {
 import { storeRetrievalTrace } from "src/server/ai/retrieval-trace-store";
 
 const WINDOW_SIZE = 30; // 15 turns
-const QUERY_GEN_TIMEOUT_MS = 1500;
-
-async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T) {
-  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
-
-  const timeoutPromise = new Promise<T>((resolve) => {
-    timeoutHandle = setTimeout(() => resolve(fallback), timeoutMs);
-  });
-
-  const result = await Promise.race([promise, timeoutPromise]);
-  if (timeoutHandle) {
-    clearTimeout(timeoutHandle);
-  }
-  return result;
-}
 
 export async function generateReply(params: {
   userId: string;
@@ -52,6 +34,11 @@ export async function generateReply(params: {
   replaceBeliefsForSourceMessage?: boolean;
   maxTokens?: number;
 }) {
+  const pipelineStartedAtMs = Date.now();
+  let contextMs = 0;
+  let retrievalMs: number | null = null;
+  let preStreamTotalMs = 0;
+  let streamSetupMs = 0;
   const {
     userId,
     sessionId,
@@ -151,20 +138,42 @@ export async function generateReply(params: {
         }
       : null;
 
-  const [previousMessagesRaw, beliefContext, latestConversationMemory] = await Promise.all([
-    prisma.message.findMany({
-      where: { sessionId },
-      orderBy: { createdAt: "desc" },
-      take: WINDOW_SIZE,
-      select: { role: true, content: true },
-    }),
-    getBeliefsForPrompt({
-      userId,
-      sessionId,
-      take: 5,
-    }),
-    getLatestConversationMemory(sessionId),
-  ]);
+  const contextStartedAtMs = Date.now();
+  const [previousMessagesRaw, rawBeliefs, latestConversationMemory] =
+    await prisma.$transaction([
+      prisma.message.findMany({
+        where: { sessionId },
+        orderBy: { createdAt: "desc" },
+        take: WINDOW_SIZE,
+        select: { role: true, content: true },
+      }),
+      prisma.userBelief.findMany({
+        where: {
+          userId,
+          sessionId,
+          status: "ACTIVE",
+        },
+        orderBy: [{ updatedAt: "desc" }, { confidence: "desc" }],
+        take: 20,
+        select: {
+          type: true,
+          belief: true,
+          confidence: true,
+        },
+      }),
+      prisma.conversationMemorySnapshot.findFirst({
+        where: { sessionId },
+        orderBy: { createdAt: "desc" },
+        select: {
+          summary: true,
+          coveredUntilMessageId: true,
+          totalMessages: true,
+          version: true,
+        },
+      }),
+    ]);
+  const beliefContext = buildBeliefPromptContext(rawBeliefs, 5);
+  contextMs = Date.now() - contextStartedAtMs;
 
   const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
     role: msg.role.toLowerCase() as "user" | "assistant",
@@ -196,11 +205,11 @@ export async function generateReply(params: {
 
   try {
     const retrievalStartedAtMs = Date.now();
-    retrievalQuery = await withTimeout(
-      generateRetrievalQuery(userContent),
-      QUERY_GEN_TIMEOUT_MS,
-      userContent,
-    );
+    const queryExpansionEnabled =
+      process.env["RAG_QUERY_EXPANSION_ENABLED"] === "true";
+    retrievalQuery = queryExpansionEnabled
+      ? await generateRetrievalQuery(userContent)
+      : userContent;
     let retrievalDetails = await retrieveHybridPassagesWithDetails({
       query: retrievalQuery,
       limit: 12,
@@ -239,6 +248,7 @@ export async function generateReply(params: {
       selectedPassages: rerankedCandidates,
       retrievalLatencyMs: Date.now() - retrievalStartedAtMs,
     };
+    retrievalMs = tracePayload.retrievalLatencyMs;
   } catch {
     // Retrieval is best-effort; generation should continue even if retrieval fails.
   }
@@ -266,32 +276,53 @@ export async function generateReply(params: {
   }
 
   const builtPrompt = buildSocraticPrompt(promptBuilderParams);
+  preStreamTotalMs = Date.now() - pipelineStartedAtMs;
 
   const generationStartedAtMs = Date.now();
-  if (process.env["AI_DEBUG_PROMPT"] === "true") {
-    console.log(
-      "RAW_PROMPT_MESSAGES",
-      JSON.stringify(builtPrompt.messages, null, 2),
-    );
-    console.log(
-      "RETRIEVAL_QUERY",
-      retrievalQuery,
-    );
-    console.log(
-      "RETRIEVAL_COUNTS",
-      {
-        reranked: rerankedCandidates.length,
-        selected: retrievedPassages.length,
-      },
-    );
-  }
+  
+const shouldLogPromptPayload =
+  process.env["AI_DEBUG_PROMPT"] === "true" ||
+  process.env["AI_DEBUG_PROMPT_MESSAGES"] === "true";
 
+if (shouldLogPromptPayload) {
+  console.log(
+    "PROMPT_CONTEXT",
+    JSON.stringify(
+      {
+        conversationMemorySummary: latestConversationMemory?.summary ?? null,
+        beliefContext,
+        retrievalQuery,
+        retrievedPassages,
+      },
+      null,
+      2,
+    ),
+  );
+  console.log(
+    "RAW_PROMPT_MESSAGES",
+    JSON.stringify(builtPrompt.messages, null, 2),
+  );
+}
+if (process.env["AI_DEBUG_PROMPT"] === "true") {
+  console.log("RETRIEVAL_QUERY", retrievalQuery);
+  console.log("RETRIEVAL_COUNTS", {
+    reranked: rerankedCandidates.length,
+    selected: retrievedPassages.length,
+  });
+  console.log("PIPELINE_TIMING", {
+    contextMs,
+    retrievalMs: tracePayload?.retrievalLatencyMs ?? null,
+    preStreamTotalMs,
+  });
+}
+  const streamSetupStartedAtMs = Date.now();
   const stream = await openai.chat.completions.stream({
     model: process.env["OPENAI_CHAT_MODEL"]!,
     messages: builtPrompt.messages,
     temperature: 1,
     max_tokens: maxTokens,
   });
+  streamSetupMs = Date.now() - streamSetupStartedAtMs;
 
   let assistantText = "";
 
@@ -362,10 +393,9 @@ export async function generateReply(params: {
 
       if (tracePayload) {
         try {
-          await storeRetrievalTrace({
+          const traceParams: Parameters<typeof storeRetrievalTrace>[0] = {
             userId,
             sessionId,
-            sourceMessageId: effectiveSourceMessageId,
             rawUserQuery: userContent,
             retrievalQuery,
             vectorCandidates: tracePayload.vectorCandidates,
@@ -374,7 +404,13 @@ export async function generateReply(params: {
             rerankedCandidates: tracePayload.rerankedCandidates,
             selectedPassages: tracePayload.selectedPassages,
             retrievalLatencyMs: tracePayload.retrievalLatencyMs,
-          });
+          };
+
+          if (effectiveSourceMessageId !== undefined) {
+            traceParams.sourceMessageId = effectiveSourceMessageId;
+          }
+
+          await storeRetrievalTrace(traceParams);
         } catch {
           // Retrieval trace logging should never block response delivery.
         }
@@ -394,5 +430,13 @@ export async function generateReply(params: {
     },
   });
 
-  return readable;
+  return {
+    readable,
+    debug: {
+      contextMs,
+      retrievalMs,
+      preStreamTotalMs,
+      streamSetupMs,
+    },
+  };
 }

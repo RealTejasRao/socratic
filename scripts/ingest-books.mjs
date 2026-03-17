@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { config as loadEnv } from "dotenv";
 import OpenAI from "openai";
 import { PrismaClient } from "@prisma/client";
@@ -82,6 +82,10 @@ function parseAuthorTitleFromFilename(filename) {
   return { author, title };
 }
 
+function computeContentHash(text) {
+  return createHash("sha256").update(text, "utf8").digest("hex");
+}
+
 function toVectorLiteral(embedding) {
   return `[${embedding.join(",")}]`;
 }
@@ -95,6 +99,27 @@ async function embedTexts(texts) {
   return response.data.map((item) => item.embedding);
 }
 
+async function findExistingBookDocument(params) {
+  return prisma.knowledgeDocument.findUnique({
+    where: {
+      author_title: {
+        author: params.author,
+        title: params.title,
+      },
+    },
+    select: {
+      id: true,
+      contentHash: true,
+      sourcePath: true,
+      _count: {
+        select: {
+          chunks: true,
+        },
+      },
+    },
+  });
+}
+
 async function upsertBookDocument(params) {
   return prisma.knowledgeDocument.upsert({
     where: {
@@ -105,16 +130,19 @@ async function upsertBookDocument(params) {
     },
     update: {
       sourcePath: params.sourcePath,
+      contentHash: params.contentHash,
       isActive: true,
     },
     create: {
       author: params.author,
       title: params.title,
       sourcePath: params.sourcePath,
+      contentHash: params.contentHash,
       isActive: true,
     },
     select: {
       id: true,
+      contentHash: true,
     },
   });
 }
@@ -182,10 +210,15 @@ async function ingestBooks() {
   console.log(`Chunking: ${CHUNK_TOKENS} tokens, overlap: ${CHUNK_OVERLAP_TOKENS}`);
   console.log(`Embedding model: ${EMBEDDING_MODEL}`);
 
+  let skippedCount = 0;
+  let reindexedCount = 0;
+
   for (const filename of files) {
     const fullPath = path.join(booksDir, filename);
     const content = await fs.readFile(fullPath, "utf8");
     const { author, title } = parseAuthorTitleFromFilename(filename);
+    const sourcePath = `books/${filename}`;
+    const contentHash = computeContentHash(content);
     const chunks = chunkTextByTokens(content).map((item, index) => ({
       chunkIndex: index,
       text: item.text,
@@ -200,16 +233,48 @@ async function ingestBooks() {
       continue;
     }
 
+    const existingDoc = await findExistingBookDocument({
+      author,
+      title,
+    });
+
+    if (
+      existingDoc &&
+      existingDoc.contentHash === contentHash &&
+      existingDoc.sourcePath === sourcePath
+    ) {
+      skippedCount += 1;
+      console.log("  skipped (unchanged, no new embeddings needed)");
+      continue;
+    }
+
+    if (
+      existingDoc &&
+      existingDoc.contentHash === null &&
+      existingDoc.sourcePath === sourcePath &&
+      existingDoc._count.chunks > 0
+    ) {
+      await prisma.knowledgeDocument.update({
+        where: { id: existingDoc.id },
+        data: { contentHash },
+      });
+      skippedCount += 1;
+      console.log("  skipped (backfilled missing hash, no re-embedding needed)");
+      continue;
+    }
+
     const doc = await upsertBookDocument({
       author,
       title,
-      sourcePath: `books/${filename}`,
+      sourcePath,
+      contentHash,
     });
 
     await replaceDocumentChunks({
       documentId: doc.id,
       chunks,
     });
+    reindexedCount += 1;
   }
 
   const documentCount = await prisma.knowledgeDocument.count();
@@ -217,6 +282,8 @@ async function ingestBooks() {
   console.log("\nDone.");
   console.log(`KnowledgeDocument: ${documentCount}`);
   console.log(`KnowledgeChunk: ${chunkCount}`);
+  console.log(`Reindexed this run: ${reindexedCount}`);
+  console.log(`Skipped unchanged: ${skippedCount}`);
 }
 
 try {

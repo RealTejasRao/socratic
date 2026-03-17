@@ -165,6 +165,7 @@ model KnowledgeDocument {
   title      String           @db.VarChar(220)
   author     String           @db.VarChar(180)
   sourcePath String?          @db.VarChar(800)
+  contentHash String?         @db.VarChar(64)
   isActive   Boolean          @default(true)
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt

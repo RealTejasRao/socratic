@@ -32,6 +32,13 @@ function overlapScore(a: string, b: string) {
   return overlap / Math.max(1, Math.min(aSet.size, bSet.size));
 }
 
+function containsMetadataMention(query: string, author: string, title: string) {
+  const queryTokens = new Set(tokenize(query));
+  const metadataTokens = tokenize(`${author} ${title}`);
+  if (!metadataTokens.length) return false;
+  return metadataTokens.some((token) => queryTokens.has(token));
+}
+
 function normalizeScores(values: number[]) {
   if (!values.length) return [];
   const min = Math.min(...values);
@@ -53,10 +60,24 @@ export function rerankRetrievedPassages(input: RerankInput) {
   const rescored: RerankedPassage[] = input.candidates.map((candidate, index) => {
     const queryFit = overlapScore(input.query, candidate.content);
     const userFit = overlapScore(input.userMessage, candidate.content);
+    const metadataFit = overlapScore(
+      input.query,
+      `${candidate.author} ${candidate.title}`,
+    );
+    const metadataMentionBoost = containsMetadataMention(
+      input.query,
+      candidate.author,
+      candidate.title,
+    )
+      ? 1
+      : 0;
+    const fusedScore = normalizedFused[index] ?? 0;
     const relevance =
-      normalizedFused[index] * 0.55 +
-      queryFit * 0.3 +
-      userFit * 0.15;
+      fusedScore * 0.4 +
+      queryFit * 0.22 +
+      userFit * 0.13 +
+      metadataFit * 0.15 +
+      metadataMentionBoost * 0.1;
 
     return {
       ...candidate,
@@ -65,6 +86,19 @@ export function rerankRetrievedPassages(input: RerankInput) {
   });
 
   rescored.sort((a, b) => b.rerankScore - a.rerankScore);
+
+  const sourceFocusedQuery = rescored.some(
+    (passage) =>
+      containsMetadataMention(input.query, passage.author, passage.title) &&
+      passage.rerankScore >= 0.5,
+  );
+
+  if (sourceFocusedQuery) {
+    return rescored.slice(
+      0,
+      Math.max(minPassages, Math.min(maxPassages, rescored.length)),
+    );
+  }
 
   const selected: RerankedPassage[] = [];
   const seenDocuments = new Set<string>();

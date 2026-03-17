@@ -58,6 +58,10 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       });
       const headersReceivedAtMs = performance.now();
       const serverPrepareMs = res.headers.get("X-Server-Prepare-Ms");
+      const aiContextMs = res.headers.get("X-AI-Context-Ms");
+      const aiRetrievalMs = res.headers.get("X-AI-Retrieval-Ms");
+      const aiPrestreamMs = res.headers.get("X-AI-Prestream-Ms");
+      const aiStreamSetupMs = res.headers.get("X-AI-Stream-Setup-Ms");
 
       const returnedSessionId = res.headers.get("X-Session-Id");
 
@@ -96,6 +100,12 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
               ? null
               : Math.round(firstChunkAtMs - sendStartedAtMs),
           serverPrepareMs: serverPrepareMs ? Number.parseInt(serverPrepareMs, 10) : null,
+          aiContextMs: aiContextMs ? Number.parseInt(aiContextMs, 10) : null,
+          aiRetrievalMs: aiRetrievalMs ? Number.parseInt(aiRetrievalMs, 10) : null,
+          aiPrestreamMs: aiPrestreamMs ? Number.parseInt(aiPrestreamMs, 10) : null,
+          aiStreamSetupMs: aiStreamSetupMs
+            ? Number.parseInt(aiStreamSetupMs, 10)
+            : null,
         });
       }
 

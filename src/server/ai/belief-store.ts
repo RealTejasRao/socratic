@@ -166,6 +166,17 @@ export async function getBeliefsForPrompt(params: {
     },
   });
 
+  return buildBeliefPromptContext(rawBeliefs, take);
+}
+
+export function buildBeliefPromptContext(
+  rawBeliefs: Array<{
+    type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION";
+    belief: string;
+    confidence: number;
+  }>,
+  take: number,
+) {
   const merged: Array<{
     type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION";
     belief: string;
