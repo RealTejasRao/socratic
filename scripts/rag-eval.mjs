@@ -12,7 +12,8 @@ const { Pool } = pg;
 loadEnv({ path: ".env.local" });
 
 const EMBED_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-small";
-const CHAT_MODEL = process.env.OPENAI_CHAT_MODEL;
+const AUX_MODEL =
+  process.env.OPENAI_AUX_MODEL ?? process.env.OPENAI_CHAT_MODEL;
 const VECTOR_LIMIT = 20;
 const LEXICAL_LIMIT = 20;
 const CANDIDATE_LIMIT = 12;
@@ -23,8 +24,8 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is not set");
 }
 
-if (!CHAT_MODEL) {
-  throw new Error("OPENAI_CHAT_MODEL is not set");
+if (!AUX_MODEL) {
+  throw new Error("OPENAI_AUX_MODEL is not set");
 }
 
 if (!process.env.DATABASE_URL) {
@@ -83,7 +84,7 @@ function embeddingToVectorLiteral(embedding) {
 async function generateRetrievalQuery(userMessage) {
   const started = Date.now();
   const completion = await openai.chat.completions.create({
-    model: CHAT_MODEL,
+    model: AUX_MODEL,
     temperature: 0.1,
     max_tokens: 120,
     messages: [

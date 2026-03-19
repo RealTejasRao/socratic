@@ -16,6 +16,7 @@ export async function generateRetrievalQuery(userMessage: string) {
   try {
     const model =
       process.env["OPENAI_ROUTER_MODEL"] ??
+      process.env["OPENAI_AUX_MODEL"] ??
       process.env["OPENAI_CHAT_MODEL"]!;
     const controller = new AbortController();
     const timeoutMs = Number.parseInt(

@@ -20,6 +20,9 @@ async function summarizeConversationChunk(params: {
   previousSummary: string | undefined;
   transcript: string;
 }) {
+  const auxModel =
+    process.env["OPENAI_AUX_MODEL"] ??
+    process.env["OPENAI_CHAT_MODEL"]!;
   const messages: Array<{ role: "system" | "user"; content: string }> = [
     {
       role: "system",
@@ -45,7 +48,7 @@ async function summarizeConversationChunk(params: {
   });
 
   const completion = await openai.chat.completions.create({
-    model: process.env["OPENAI_CHAT_MODEL"]!,
+    model: auxModel,
     temperature: 0.2,
     max_tokens: 450,
     messages,

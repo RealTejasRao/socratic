@@ -6,6 +6,7 @@ type ValidatorInput = {
   beliefStatements: string[];
   conversationMemorySummary: string | undefined;
   retrievedSources?: string[];
+  retrievedPassageTexts?: string[];
 };
 
 export type ValidationResult = {
@@ -50,6 +51,17 @@ function overlapScore(a: string, b: string) {
 
 function hasCitation(text: string) {
   return /\[[^\]]+\|\s*chunk\s+\d+\]/i.test(text);
+}
+
+function maxOverlapWithPassages(answer: string, passages: string[]) {
+  let max = 0;
+  for (const passage of passages) {
+    const overlap = overlapScore(answer, passage);
+    if (overlap > max) {
+      max = overlap;
+    }
+  }
+  return max;
 }
 
 export function validateSocraticResponse(input: ValidatorInput): ValidationResult {
@@ -113,7 +125,16 @@ export function validateSocraticResponse(input: ValidatorInput): ValidationResul
     }
   }
 
-  if ((input.retrievedSources?.length ?? 0) > 0 && !hasCitation(assistant)) {
+  const retrievedPassages = input.retrievedPassageTexts ?? [];
+  const relevantRetrievedContext =
+    retrievedPassages.length > 0 &&
+    maxOverlapWithPassages(assistant, retrievedPassages) >= 0.08;
+
+  if (
+    relevantRetrievedContext &&
+    (input.retrievedSources?.length ?? 0) > 0 &&
+    !hasCitation(assistant)
+  ) {
     flags.push("missing_source_citation");
     score -= 20;
   }

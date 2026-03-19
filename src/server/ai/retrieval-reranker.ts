@@ -20,18 +20,6 @@ function tokenize(text: string) {
     .filter((token) => token.length > 2);
 }
 
-function overlapScore(a: string, b: string) {
-  const aSet = new Set(tokenize(a));
-  const bSet = new Set(tokenize(b));
-  if (!aSet.size || !bSet.size) return 0;
-
-  let overlap = 0;
-  for (const token of aSet) {
-    if (bSet.has(token)) overlap += 1;
-  }
-  return overlap / Math.max(1, Math.min(aSet.size, bSet.size));
-}
-
 function containsMetadataMention(query: string, author: string, title: string) {
   const queryTokens = new Set(tokenize(query));
   const metadataTokens = tokenize(`${author} ${title}`);
@@ -50,34 +38,21 @@ function normalizeScores(values: number[]) {
 }
 
 export function rerankRetrievedPassages(input: RerankInput) {
-  const minPassages = input.minPassages ?? 3;
-  const maxPassages = input.maxPassages ?? 5;
+  const minPassages = input.minPassages ?? 2;
+  const maxPassages = input.maxPassages ?? 3;
   if (!input.candidates.length) return [];
 
+  const lexicalScores = input.candidates.map((candidate) => candidate.lexicalScore);
   const fusedScores = input.candidates.map((candidate) => candidate.fusedScore);
+  const normalizedLexical = normalizeScores(lexicalScores);
   const normalizedFused = normalizeScores(fusedScores);
 
   const rescored: RerankedPassage[] = input.candidates.map((candidate, index) => {
-    const queryFit = overlapScore(input.query, candidate.content);
-    const userFit = overlapScore(input.userMessage, candidate.content);
-    const metadataFit = overlapScore(
-      input.query,
-      `${candidate.author} ${candidate.title}`,
-    );
-    const metadataMentionBoost = containsMetadataMention(
-      input.query,
-      candidate.author,
-      candidate.title,
-    )
-      ? 1
-      : 0;
+    const lexicalScore = normalizedLexical[index] ?? 0;
     const fusedScore = normalizedFused[index] ?? 0;
+    const semanticScore = candidate.semanticScore ?? candidate.embeddingSimilarity ?? 0;
     const relevance =
-      fusedScore * 0.4 +
-      queryFit * 0.22 +
-      userFit * 0.13 +
-      metadataFit * 0.15 +
-      metadataMentionBoost * 0.1;
+      semanticScore * 0.6 + fusedScore * 0.25 + lexicalScore * 0.15;
 
     return {
       ...candidate,
@@ -85,25 +60,30 @@ export function rerankRetrievedPassages(input: RerankInput) {
     };
   });
 
-  rescored.sort((a, b) => b.rerankScore - a.rerankScore);
+  const filtered = rescored.filter((candidate) => candidate.semanticScore >= 0.4);
+  if (!filtered.length) {
+    return [];
+  }
 
-  const sourceFocusedQuery = rescored.some(
+  filtered.sort((a, b) => b.rerankScore - a.rerankScore);
+
+  const sourceFocusedQuery = filtered.some(
     (passage) =>
       containsMetadataMention(input.query, passage.author, passage.title) &&
       passage.rerankScore >= 0.5,
   );
 
   if (sourceFocusedQuery) {
-    return rescored.slice(
+    return filtered.slice(
       0,
-      Math.max(minPassages, Math.min(maxPassages, rescored.length)),
+      Math.max(minPassages, Math.min(maxPassages, filtered.length)),
     );
   }
 
   const selected: RerankedPassage[] = [];
   const seenDocuments = new Set<string>();
 
-  for (const passage of rescored) {
+  for (const passage of filtered) {
     if (selected.length >= maxPassages) break;
     if (!seenDocuments.has(passage.documentId)) {
       selected.push(passage);
@@ -111,7 +91,7 @@ export function rerankRetrievedPassages(input: RerankInput) {
     }
   }
 
-  for (const passage of rescored) {
+  for (const passage of filtered) {
     if (selected.length >= maxPassages) break;
     if (selected.some((item) => item.chunkId === passage.chunkId)) continue;
     selected.push(passage);

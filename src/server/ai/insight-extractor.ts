@@ -55,8 +55,11 @@ function clampConfidence(value: number) {
 export async function extractInsightsFromMessage(
   userContent: string,
 ): Promise<InsightExtractionResult> {
+  const auxModel =
+    process.env["OPENAI_AUX_MODEL"] ??
+    process.env["OPENAI_CHAT_MODEL"]!;
   const completion = await openai.chat.completions.create({
-    model: process.env["OPENAI_CHAT_MODEL"]!,
+    model: auxModel,
     temperature: 0.1,
     max_tokens: 350,
     messages: [

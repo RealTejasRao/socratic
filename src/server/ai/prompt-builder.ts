@@ -2,7 +2,6 @@ import {
   SOCRATIC_PROMPT_SECTIONS,
   SOCRATIC_PROMPT_VERSION,
 } from "src/server/ai/prompt-config";
-import { SOCRATIC_SYSTEM_PROMPT } from "src/server/ai/socratic-prompt";
 
 export type ConversationMessage = {
   role: "user" | "assistant";
@@ -23,6 +22,7 @@ type BeliefContextItem = {
 type RetrievedContextItem = {
   title: string;
   author: string;
+  chunkType: string;
   content: string;
   chunkIndex: number;
 };
@@ -41,14 +41,7 @@ function estimateTokensFromText(text: string) {
 }
 
 function buildCorePolicyMessage() {
-  const sectionOrder = [
-    "SYSTEM_ROLE",
-    "OBJECTIVE",
-    "RULES",
-    "STYLE",
-    "OUTPUT",
-    "CORE_POLICY",
-  ];
+  const sectionOrder = ["SYSTEM_ROLE", "OBJECTIVE", "RULES", "STYLE", "OUTPUT"];
 
   const content = [
     "SYSTEM_ROLE",
@@ -65,9 +58,6 @@ function buildCorePolicyMessage() {
     "",
     "OUTPUT",
     SOCRATIC_PROMPT_SECTIONS.output,
-    "",
-    "CORE_POLICY",
-    SOCRATIC_SYSTEM_PROMPT.trim(),
   ].join("\n");
 
   return { content, sectionOrder };
@@ -101,8 +91,10 @@ function buildDynamicContextMessage(params: {
     ? params.retrievedContext
         .map((item, index) => {
           const excerpt = item.content.replace(/\s+/g, " ").trim().slice(0, 650);
+          const chunkTypeLabel =
+            item.chunkType === "explanation" ? "explanation" : "primary_text";
           return [
-            `${index + 1}. [${item.author} - ${item.title} | chunk ${item.chunkIndex}]`,
+            `${index + 1}. [${item.author} - ${item.title} | ${chunkTypeLabel} | chunk ${item.chunkIndex}]`,
             `"${excerpt}"`,
           ].join("\n");
         })

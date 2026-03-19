@@ -35,6 +35,12 @@ export async function generateReply(params: {
   maxTokens?: number;
 }) {
   const pipelineStartedAtMs = Date.now();
+  const auxModel =
+    process.env["OPENAI_AUX_MODEL"] ??
+    process.env["OPENAI_CHAT_MODEL"];
+  const messageModel =
+    process.env["OPENAI_MESSAGE_MODEL"] ??
+    auxModel!;
   let contextMs = 0;
   let retrievalMs: number | null = null;
   let preStreamTotalMs = 0;
@@ -129,8 +135,8 @@ export async function generateReply(params: {
               error: error instanceof Error ? error.message : "Unknown insight extraction error",
             };
 
-            if (process.env["OPENAI_CHAT_MODEL"] !== undefined) {
-              errorLogParams.model = process.env["OPENAI_CHAT_MODEL"];
+            if (auxModel !== undefined) {
+              errorLogParams.model = auxModel;
             }
 
             await storeRawInsightExtraction(errorLogParams);
@@ -184,6 +190,7 @@ export async function generateReply(params: {
   let retrievedPassages: Array<{
     title: string;
     author: string;
+    chunkType: string;
     content: string;
     chunkIndex: number;
   }> = [];
@@ -212,6 +219,7 @@ export async function generateReply(params: {
       : userContent;
     let retrievalDetails = await retrieveHybridPassagesWithDetails({
       query: retrievalQuery,
+      semanticQuery: userContent,
       limit: 12,
     });
 
@@ -223,6 +231,7 @@ export async function generateReply(params: {
       retrievalQuery = userContent;
       retrievalDetails = await retrieveHybridPassagesWithDetails({
         query: retrievalQuery,
+        semanticQuery: userContent,
         limit: 12,
       });
     }
@@ -230,13 +239,14 @@ export async function generateReply(params: {
       query: retrievalQuery,
       userMessage: userContent,
       candidates: retrievalDetails.fusedCandidates,
-      minPassages: 3,
-      maxPassages: 5,
+      minPassages: 2,
+      maxPassages: 3,
     });
 
     retrievedPassages = rerankedCandidates.map((item) => ({
       title: item.title,
       author: item.author,
+      chunkType: item.chunkType,
       content: item.content,
       chunkIndex: item.chunkIndex,
     }));
@@ -259,7 +269,7 @@ export async function generateReply(params: {
   const promptBuilderParams: {
     conversationHistory: { role: "user" | "assistant"; content: string }[];
     beliefContext: { type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION"; belief: string; confidence: number }[];
-    retrievedContext: { title: string; author: string; content: string; chunkIndex: number }[];
+    retrievedContext: { title: string; author: string; chunkType: string; content: string; chunkIndex: number }[];
     userContent: string;
     appendUserMessageToPrompt: boolean;
     conversationMemorySummary?: string;
@@ -304,6 +314,41 @@ if (shouldLogPromptPayload) {
   );
 }
 if (process.env["AI_DEBUG_PROMPT"] === "true") {
+  console.log(
+    "RETRIEVAL_CANDIDATE_SCORES",
+    tracePayload
+      ? tracePayload.fusedCandidates.map((candidate) => ({
+          author: candidate.author,
+          title: candidate.title,
+          chunkType: candidate.chunkType,
+          chunkIndex: candidate.chunkIndex,
+          fusedScore: Number(candidate.fusedScore.toFixed(3)),
+          lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
+          semanticScore: Number(candidate.semanticScore.toFixed(3)),
+          embeddingSimilarity: Number(candidate.embeddingSimilarity.toFixed(3)),
+          semanticRelevance: Number(candidate.semanticRelevance.toFixed(3)),
+          queryTypeFit: Number(candidate.queryTypeFit.toFixed(3)),
+          chunkTypeBoost: Number(candidate.chunkTypeBoost.toFixed(3)),
+        }))
+      : [],
+  );
+  console.log(
+    "RERANKED_SELECTION",
+    rerankedCandidates.map((candidate) => ({
+      author: candidate.author,
+      title: candidate.title,
+      chunkType: candidate.chunkType,
+      chunkIndex: candidate.chunkIndex,
+      rerankScore: Number(candidate.rerankScore.toFixed(3)),
+      fusedScore: Number(candidate.fusedScore.toFixed(3)),
+      lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
+      semanticScore: Number(candidate.semanticScore.toFixed(3)),
+      embeddingSimilarity: Number(candidate.embeddingSimilarity.toFixed(3)),
+      semanticRelevance: Number(candidate.semanticRelevance.toFixed(3)),
+      queryTypeFit: Number(candidate.queryTypeFit.toFixed(3)),
+      chunkTypeBoost: Number(candidate.chunkTypeBoost.toFixed(3)),
+    })),
+  );
   console.log("RETRIEVAL_QUERY", retrievalQuery);
   console.log("RETRIEVAL_COUNTS", {
     reranked: rerankedCandidates.length,
@@ -317,7 +362,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
 }
   const streamSetupStartedAtMs = Date.now();
   const stream = await openai.chat.completions.stream({
-    model: process.env["OPENAI_CHAT_MODEL"]!,
+    model: messageModel,
     messages: builtPrompt.messages,
     temperature: 1,
     max_tokens: maxTokens,
@@ -338,7 +383,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
 
       controller.close();
 
-      let completionModel: string | undefined = process.env["OPENAI_CHAT_MODEL"];
+      let completionModel: string | undefined = messageModel;
       let promptTokens: number | undefined =
         builtPrompt.metadata.estimatedInputTokens;
       let completionTokens: number | undefined;
@@ -361,6 +406,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
         retrievedSources: retrievedPassages.map(
           (item) => `${item.author} - ${item.title} | chunk ${item.chunkIndex}`,
         ),
+        retrievedPassageTexts: retrievedPassages.map((item) => item.content),
       });
 
       await prisma.$transaction(async (tx) => {

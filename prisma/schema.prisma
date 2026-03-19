@@ -179,6 +179,7 @@ model KnowledgeChunk {
   id         String            @id @default(cuid())
   documentId String
   chunkIndex Int
+  chunkType  String            @default("primary_text") @db.VarChar(32)
   content    String            @db.Text
   tokenCount Int
   embedding  Unsupported("vector(1536)")?
@@ -187,6 +188,7 @@ model KnowledgeChunk {
 
   @@unique([documentId, chunkIndex])
   @@index([documentId])
+  @@index([chunkType])
 }
 
 model RetrievalTrace {
