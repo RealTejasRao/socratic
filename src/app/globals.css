@@ -196,6 +196,44 @@ body {
   }
 }
 
+@keyframes signupStarsTwinkleA {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+
+  24% {
+    opacity: 0.95;
+  }
+
+  52% {
+    opacity: 0.28;
+  }
+
+  78% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes signupStarsTwinkleB {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  30% {
+    opacity: 0.88;
+  }
+
+  58% {
+    opacity: 0.26;
+  }
+
+  84% {
+    opacity: 0.82;
+  }
+}
+
 @keyframes heroCaretBlink {
   0%,
   50% {
@@ -246,6 +284,16 @@ body {
 .auth-stars-layer-b {
   animation: authStarsTwinkleB 2.9s ease-in-out infinite;
   mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+.signup-stars-layer-a {
+  animation: signupStarsTwinkleA 2.4s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.signup-stars-layer-b {
+  animation: signupStarsTwinkleB 3.1s ease-in-out infinite;
   will-change: opacity;
 }
 
@@ -320,6 +368,8 @@ body {
   .auth-card-rise,
   .auth-stars-layer-a,
   .auth-stars-layer-b,
+  .signup-stars-layer-a,
+  .signup-stars-layer-b,
   .hero-bg-fade,
   .hero-content-fade,
   .hero-caret,

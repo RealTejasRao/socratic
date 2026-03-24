@@ -4,7 +4,7 @@ import ClickPulse from "@/src/components/ClickPulse";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Socratic AI- Think Better",
+  title: "Socratic AI- Your Personal AI for Philosophy",
   description: "Question-first Socratic dialogue system",
   icons: {
     icon: [

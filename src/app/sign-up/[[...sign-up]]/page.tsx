@@ -7,7 +7,7 @@ export default function SignUpPage() {
     elements: {
       rootBox: "auth-card-rise w-full justify-center",
       cardBox: "shadow-none",
-      card: "w-full max-w-[440px] border border-white/16 bg-[#0b1320]/52 text-white shadow-[0_28px_90px_rgba(0,0,0,0.52)] backdrop-blur-[28px] backdrop-saturate-150 supports-[backdrop-filter]:bg-[#0b1320]/52",
+      card: "w-full max-w-[440px] border border-white/22 bg-[#04070d]/92 text-white shadow-[0_28px_90px_rgba(0,0,0,0.56)] backdrop-blur-[28px] backdrop-saturate-140 supports-[backdrop-filter]:bg-[#04070d]/92",
       headerTitle: "text-white",
       headerSubtitle: "text-white/70",
       socialButtonsBlockButton:
@@ -27,13 +27,13 @@ export default function SignUpPage() {
       formResendCodeLink: "text-white hover:text-white",
       modalBackdrop: "bg-black/34 backdrop-blur-[2px]",
       modalContent:
-        "border border-white/16 bg-[#0b1320]/52 text-white shadow-[0_28px_90px_rgba(0,0,0,0.52)] backdrop-blur-[28px] backdrop-saturate-150",
+        "border border-white/22 bg-[#04070d]/92 text-white shadow-[0_28px_90px_rgba(0,0,0,0.56)] backdrop-blur-[28px] backdrop-saturate-140",
     },
     variables: {
       colorPrimary: "#bfecff",
       colorText: "#ffffff",
       colorTextSecondary: "rgba(255,255,255,0.68)",
-      colorBackground: "rgba(11,19,32,0.52)",
+      colorBackground: "rgba(4,7,13,0.92)",
       colorInputBackground: "rgba(255,255,255,0.08)",
       colorInputText: "#ffffff",
       colorNeutral: "rgba(255,255,255,0.78)",
@@ -43,21 +43,22 @@ export default function SignUpPage() {
   };
 
   return (
-    <LoadGate fallbackClassName="min-h-svh w-screen bg-black">
-      <main className="auth-page-fade relative min-h-svh w-screen overflow-hidden bg-black text-[#0f1720] lg:h-svh">
-        <div className="absolute inset-0 bg-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.9)_0.78px,transparent_1.04px)] bg-size-[42px_42px]" />
-        <div className="auth-stars-layer-a absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.98)_1px,transparent_1.26px)] bg-size-[60px_60px] bg-position-[14px_20px]" />
-        <div className="auth-stars-layer-b absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.9)_0.92px,transparent_1.2px)] bg-size-[74px_74px] bg-position-[30px_10px]" />
+    <LoadGate fallbackClassName="min-h-svh w-screen bg-white">
+      <main className="auth-page-fade relative min-h-svh w-screen overflow-hidden bg-white text-[#0f1720] lg:h-svh">
+        <div className="absolute inset-0 bg-white" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.34)_0.64px,transparent_0.86px)] bg-size-[37px_37px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.24)_0.56px,transparent_0.8px)] bg-size-[59px_59px] bg-position-[17px_9px]" />
+        <div className="signup-stars-layer-a absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.88)_0.94px,transparent_1.2px)] bg-size-[63px_63px] bg-position-[12px_20px]" />
+        <div className="signup-stars-layer-b absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.76)_0.88px,transparent_1.14px)] bg-size-[81px_81px] bg-position-[31px_13px]" />
         <div className="relative z-10 grid min-h-svh grid-cols-1 lg:h-svh lg:grid-cols-2">
-          <section className="flex items-center justify-center px-4 py-6 lg:px-10 lg:py-8">
+          <section className="relative z-20 flex items-center justify-center px-4 py-6 lg:px-10 lg:py-8">
             <div className="auth-sign-up-zoom w-full max-w-md">
               <SignUp appearance={clerkGlassAppearance} />
             </div>
           </section>
 
-          <section className="relative hidden overflow-hidden bg-transparent lg:block">
-            <div className="absolute inset-x-0 bottom-0 flex justify-center -translate-x-20">
+          <section className="relative hidden overflow-visible bg-transparent lg:block">
+            <div className="absolute inset-x-0 bottom-0 z-0 flex justify-center -translate-x-20">
               <Image
                 src="/media/Socrates_component.png"
                 alt="Socrates component"
