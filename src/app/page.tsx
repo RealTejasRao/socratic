@@ -1,62 +1,155 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
-import { useUser, UserButton } from "@clerk/nextjs";
-import { ROUTES } from "src/lib/routes";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Inter, Poppins } from "next/font/google";
+import { GLSLHills } from "@/src/components/ui/glsl-hills";
+import { LoadGate } from "@/src/components/ui/load-gate";
+import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
+import { ROUTES } from "@/src/lib/routes";
 
-export default function MarketingHomePage() {
-  const { isSignedIn, isLoaded } = useUser();
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
 
-  if (!isLoaded) {
-    return null; // Prevent hydration mismatch
-  }
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
+const navLinks = [
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Use Cases", href: "#use-cases" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
+];
+
+export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col">
-      <header className="flex justify-end p-6">
-        {isSignedIn ? (
-          <UserButton />
-        ) : (
-          <div className="flex gap-4">
-            <Link href={ROUTES.SIGN_IN} className="underline">
-              Sign In
-            </Link>
+    <LoadGate
+      fallbackClassName={`min-h-screen w-full bg-white ${poppins.className}`}
+    >
+      <main
+        className={`relative min-h-screen overflow-hidden bg-white ${poppins.className}`}
+      >
+        <header className="absolute inset-x-0 top-0 z-20 px-6 pt-3 sm:px-8 sm:pt-4">
+          <nav className="relative mx-auto flex w-full max-w-365 items-center justify-between">
             <Link
-              href={ROUTES.SIGN_UP}
-              className="px-4 py-2 bg-black text-white rounded-md"
+              href={ROUTES.HOME}
+              className="group relative flex h-9.5 w-fit cursor-pointer items-center"
             >
-              Sign Up
+              <div className="shrink-0 overflow-hidden">
+                <Image
+                  src="/brand/Logo_Dark_SVG.svg"
+                  alt="Socratic AI logo"
+                  width={50}
+                  height={50}
+                  className="h-11.25 w-11.25 cursor-pointer object-contain transition duration-500 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.02]"
+                  priority
+                />
+              </div>
+
+              <div className="pointer-events-none absolute left-13 top-1/2 flex -translate-y-1/2 items-center overflow-hidden">
+                <span className="mr-3 h-4 w-px shrink-0 origin-center scale-y-0 bg-black/22 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-y-100 group-hover:opacity-100" />
+                <span className="-translate-x-4.5 whitespace-nowrap text-[0.82rem] font-normal tracking-[0.01em] text-black/78 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:opacity-100">
+                  Socratic AI
+                </span>
+              </div>
             </Link>
+
+            <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
+              <div className="pointer-events-auto flex items-center justify-center gap-10">
+                {navLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="cursor-pointer text-[0.88rem] font-normal text-black/60 transition-colors duration-200 hover:text-black"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <SignedOut>
+                <Link
+                  href={ROUTES.SIGN_IN}
+                  className="cursor-pointer border border-black/12 px-4 py-2 text-[0.88rem] font-medium text-black transition-colors duration-200 hover:bg-black/3 sm:px-5"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href={ROUTES.SIGN_UP}
+                  className="cursor-pointer border border-black/12 bg-black px-4 py-2 text-[0.88rem] font-medium text-white transition-colors duration-200 hover:bg-black/90 sm:px-5"
+                >
+                  Sign up
+                </Link>
+              </SignedOut>
+
+              <SignedIn>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={ROUTES.APP}
+                    className="cursor-pointer border border-black/12 bg-black px-4 py-2 text-[0.88rem] font-medium text-white transition-colors duration-200 hover:bg-black/90 sm:px-5"
+                  >
+                    Open app
+                  </Link>
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        userButtonTrigger: "!h-[35px] !w-[35px]",
+                        userButtonAvatarBox: "!h-[35px] !w-[35px]",
+                      },
+                    }}
+                  />
+                </div>
+              </SignedIn>
+            </div>
+          </nav>
+
+          <div className="mx-auto mt-2 w-full max-w-365">
+            <div className="h-px w-full bg-[radial-gradient(circle,rgba(120,120,120,0.45)_1px,transparent_1.2px)] bg-position-[left_center] bg-size-[10px_1px] bg-repeat-x" />
           </div>
-        )}
-      </header>
+        </header>
 
-      <section className="flex flex-col items-center justify-center flex-1 text-center px-6">
-        <h1 className="text-4xl font-bold">Socratic</h1>
-
-        <p className="mt-4 max-w-xl text-lg">
-          A question-first AI dialogue system designed to help you clarify
-          beliefs, assumptions, and goals.
-        </p>
-
-        <div className="mt-8">
-          {isSignedIn ? (
-            <Link
-              href={ROUTES.APP}
-              className="px-6 py-3 bg-black text-white rounded-md"
-            >
-              Go to App
-            </Link>
-          ) : (
-            <Link
-              href={ROUTES.SIGN_UP}
-              className="px-6 py-3 bg-black text-white rounded-md"
-            >
-              Try Socratic
-            </Link>
-          )}
-        </div>
-      </section>
-    </main>
+        <section className="relative h-screen w-full">
+          <GLSLHills className="hero-bg-fade" />
+          <div className="hero-content-fade absolute inset-0 flex items-center justify-center px-6">
+            <div className="mt-4 flex max-w-190 flex-col items-center text-center">
+              <p className="mb-4 inline-flex items-center gap-2 text-[0.78rem] font-light tracking-[0.02em] text-black/60 sm:text-[0.8rem]">
+                <span
+                  className="relative inline-flex h-2.5 w-2.5 items-center justify-center"
+                  aria-hidden="true"
+                >
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/55" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                </span>
+                <span>Your personal AI for Philosophy.</span>
+              </p>
+              <h1 className="mt-3">
+                <TypewriterHeading
+                  text="Think Deeper. Question Everything"
+                  className={`${inter.className} inline-flex items-center whitespace-nowrap text-[clamp(1rem,2.5vw,2.2rem)] font-medium leading-[1.08] text-black`}
+                />
+              </h1>
+              <p className="mt-5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
+                Built for the restless mind.
+              </p>
+              <p className="mt-0.5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
+                From ethics to existentialism, from logic to metaphysics.
+              </p>
+              <Link
+                href={ROUTES.SIGN_UP}
+                className="mt-6 inline-flex items-center gap-2 cursor-pointer border border-black/12 bg-black px-5 py-2 text-[0.84rem] font-medium text-white transition-colors duration-200 hover:bg-black/90"
+              >
+                <span>Try Socratic AI</span>
+                <span aria-hidden="true">&gt;</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+    </LoadGate>
   );
 }

@@ -1,10 +1,34 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import ClickPulse from "@/src/components/ClickPulse";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Socratic",
-  description: "Question-first Socratic dialogue system"
+  title: "Socratic AI- Think Better",
+  description: "Question-first Socratic dialogue system",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      {
+        url: "/favicon/favicon.svg",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/favicon/favicon-96x96.png",
+        type: "image/png",
+        sizes: "96x96",
+      },
+    ],
+    apple: [
+      {
+        url: "/favicon/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+    shortcut: ["/favicon/favicon.ico"],
+  },
+  manifest: "/favicon/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -15,7 +39,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          <ClickPulse />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

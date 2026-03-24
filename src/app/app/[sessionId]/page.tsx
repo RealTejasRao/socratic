@@ -2,8 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
-import MessageInput from "../components/MessageInput";
-import MessageList from "../components/MessageList";
 import ChatContainer from "../components/ChatContainer";
 import type { ChatMessage } from "src/types/chat";
 

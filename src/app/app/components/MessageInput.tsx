@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ArrowUp, CornerDownLeft } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { Textarea } from "@/src/components/ui/textarea";
+import { cn } from "@/src/lib/utils";
 
 interface Props {
   onSend: (content: string) => void;
@@ -14,19 +18,21 @@ export default function MessageInput({
   isStreaming,
   initialValue,
 }: Props) {
-  const [content, setContent] = useState("");
   const pathname = usePathname();
   const storageKey = `socratic:draft:${pathname}`;
-
-  // Restore unsent draft for this route/session.
-  useEffect(() => {
-    const saved = sessionStorage.getItem(storageKey);
-    if (saved !== null) {
-      setContent(saved);
+  const [content, setContent] = useState(() => {
+    if (initialValue !== undefined) {
+      return initialValue;
     }
-  }, [storageKey]);
 
-  // keep user input so router.refresh do not lose it.
+    if (typeof window === "undefined") {
+      return "";
+    }
+
+    return sessionStorage.getItem(storageKey) ?? "";
+  });
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
   useEffect(() => {
     if (content) {
       sessionStorage.setItem(storageKey, content);
@@ -35,49 +41,60 @@ export default function MessageInput({
     }
   }, [content, storageKey]);
 
-  //  prefill input in edit mode
   useEffect(() => {
-    if (initialValue !== undefined) {
-      setContent(initialValue);
-    }
-  }, [initialValue]);
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.style.height = "0px";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 220)}px`;
+  }, [content]);
 
   function handleSend() {
     if (!content.trim() || isStreaming) return;
 
     onSend(content.trim());
-    setContent(""); // clear after send or edit submit
+    setContent("");
     sessionStorage.removeItem(storageKey);
   }
 
   return (
-    <div className="border-t pt-4 flex gap-2">
-      <input
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Start a conversation with Socratic..."
-        autoFocus
-        className="flex-1 border p-2 rounded outline-none focus:ring-2 focus:ring-black"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleSend();
-          }
-        }}
-      />
+    <div className="mx-auto w-full max-w-4xl">
+      <div className="rounded-[30px] border border-border/70 bg-background/80 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+        <Textarea
+          ref={textareaRef}
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          placeholder="Ask a sharper question, test an assumption, or continue the thread..."
+          autoFocus
+          rows={1}
+          className="min-h-0 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:ring-0"
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              handleSend();
+            }
+          }}
+        />
 
-      <button
-        type="button"
-        onClick={handleSend}
-        disabled={isStreaming}
-        className={`px-4 py-2 rounded transition ${
-          isStreaming
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-black text-white hover:bg-black/80"
-        }`}
-      >
-        Send
-      </button>
+        <div className="mt-3 flex flex-col gap-3 border-t border-border/60 px-1 pt-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CornerDownLeft size={14} />
+            <span>Enter sends</span>
+            <span className="text-border">/</span>
+            <span>Shift + Enter adds a new line</span>
+          </div>
+
+          <Button
+            type="button"
+            onClick={handleSend}
+            disabled={isStreaming || !content.trim()}
+            className={cn("h-11 rounded-2xl px-5", !content.trim() && "shadow-none")}
+          >
+            <span>{isStreaming ? "Thinking..." : "Send message"}</span>
+            <ArrowUp size={16} />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
