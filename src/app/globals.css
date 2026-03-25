@@ -199,38 +199,224 @@ body {
 @keyframes signupStarsTwinkleA {
   0%,
   100% {
-    opacity: 0.22;
+    opacity: 0.06;
+    transform: translate3d(0, 0, 0) scale(0.98);
   }
 
-  24% {
-    opacity: 0.95;
+  17% {
+    opacity: 1;
+    transform: translate3d(-0.4px, 0.2px, 0) scale(1.03);
   }
 
-  52% {
-    opacity: 0.28;
+  41% {
+    opacity: 0.14;
+    transform: translate3d(0.5px, -0.3px, 0) scale(1);
   }
 
-  78% {
-    opacity: 0.9;
+  67% {
+    opacity: 0.96;
+    transform: translate3d(-0.2px, 0.4px, 0) scale(1.02);
+  }
+
+  86% {
+    opacity: 0.1;
+    transform: translate3d(0.3px, -0.2px, 0) scale(0.99);
   }
 }
 
 @keyframes signupStarsTwinkleB {
   0%,
   100% {
-    opacity: 0.2;
+    opacity: 0.05;
+    transform: translate3d(0, 0, 0) scale(0.99);
   }
 
-  30% {
-    opacity: 0.88;
+  14% {
+    opacity: 0.94;
+    transform: translate3d(0.3px, -0.4px, 0) scale(1.03);
   }
 
-  58% {
-    opacity: 0.26;
+  36% {
+    opacity: 0.11;
+    transform: translate3d(-0.3px, 0.3px, 0) scale(1);
   }
 
-  84% {
-    opacity: 0.82;
+  62% {
+    opacity: 1;
+    transform: translate3d(0.5px, 0.1px, 0) scale(1.02);
+  }
+
+  83% {
+    opacity: 0.08;
+    transform: translate3d(-0.2px, -0.3px, 0) scale(0.99);
+  }
+}
+
+@keyframes signupStarsTwinkleC {
+  0%,
+  100% {
+    opacity: 0.07;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  21% {
+    opacity: 0.98;
+    transform: translate3d(-0.4px, -0.2px, 0) scale(1.04);
+  }
+
+  49% {
+    opacity: 0.12;
+    transform: translate3d(0.2px, 0.4px, 0) scale(0.99);
+  }
+
+  73% {
+    opacity: 0.9;
+    transform: translate3d(-0.1px, -0.4px, 0) scale(1.03);
+  }
+
+  91% {
+    opacity: 0.09;
+    transform: translate3d(0.4px, 0.2px, 0) scale(1);
+  }
+}
+
+@keyframes signupStarsTwinkleD {
+  0%,
+  100% {
+    opacity: 0.06;
+    transform: translate3d(0, 0, 0) scale(0.99);
+  }
+
+  19% {
+    opacity: 0.93;
+    transform: translate3d(0.4px, 0.2px, 0) scale(1.03);
+  }
+
+  44% {
+    opacity: 0.1;
+    transform: translate3d(-0.2px, -0.3px, 0) scale(1);
+  }
+
+  69% {
+    opacity: 1;
+    transform: translate3d(0.2px, 0.4px, 0) scale(1.02);
+  }
+
+  88% {
+    opacity: 0.08;
+    transform: translate3d(-0.4px, 0.1px, 0) scale(0.98);
+  }
+}
+
+@keyframes signinStarsTwinkleA {
+  0%,
+  100% {
+    opacity: 0.06;
+    transform: translate3d(0, 0, 0) scale(0.98);
+  }
+
+  17% {
+    opacity: 1;
+    transform: translate3d(-0.4px, 0.2px, 0) scale(1.03);
+  }
+
+  41% {
+    opacity: 0.14;
+    transform: translate3d(0.5px, -0.3px, 0) scale(1);
+  }
+
+  67% {
+    opacity: 0.96;
+    transform: translate3d(-0.2px, 0.4px, 0) scale(1.02);
+  }
+
+  86% {
+    opacity: 0.1;
+    transform: translate3d(0.3px, -0.2px, 0) scale(0.99);
+  }
+}
+
+@keyframes signinStarsTwinkleB {
+  0%,
+  100% {
+    opacity: 0.05;
+    transform: translate3d(0, 0, 0) scale(0.99);
+  }
+
+  14% {
+    opacity: 0.94;
+    transform: translate3d(0.3px, -0.4px, 0) scale(1.03);
+  }
+
+  36% {
+    opacity: 0.11;
+    transform: translate3d(-0.3px, 0.3px, 0) scale(1);
+  }
+
+  62% {
+    opacity: 1;
+    transform: translate3d(0.5px, 0.1px, 0) scale(1.02);
+  }
+
+  83% {
+    opacity: 0.08;
+    transform: translate3d(-0.2px, -0.3px, 0) scale(0.99);
+  }
+}
+
+@keyframes signinStarsTwinkleC {
+  0%,
+  100% {
+    opacity: 0.07;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  21% {
+    opacity: 0.98;
+    transform: translate3d(-0.4px, -0.2px, 0) scale(1.04);
+  }
+
+  49% {
+    opacity: 0.12;
+    transform: translate3d(0.2px, 0.4px, 0) scale(0.99);
+  }
+
+  73% {
+    opacity: 0.9;
+    transform: translate3d(-0.1px, -0.4px, 0) scale(1.03);
+  }
+
+  91% {
+    opacity: 0.09;
+    transform: translate3d(0.4px, 0.2px, 0) scale(1);
+  }
+}
+
+@keyframes signinStarsTwinkleD {
+  0%,
+  100% {
+    opacity: 0.06;
+    transform: translate3d(0, 0, 0) scale(0.99);
+  }
+
+  19% {
+    opacity: 0.93;
+    transform: translate3d(0.4px, 0.2px, 0) scale(1.03);
+  }
+
+  44% {
+    opacity: 0.1;
+    transform: translate3d(-0.2px, -0.3px, 0) scale(1);
+  }
+
+  69% {
+    opacity: 1;
+    transform: translate3d(0.2px, 0.4px, 0) scale(1.02);
+  }
+
+  88% {
+    opacity: 0.08;
+    transform: translate3d(-0.4px, 0.1px, 0) scale(0.98);
   }
 }
 
@@ -288,13 +474,43 @@ body {
 }
 
 .signup-stars-layer-a {
-  animation: signupStarsTwinkleA 2.4s ease-in-out infinite;
-  will-change: opacity;
+  animation: signupStarsTwinkleA 1.65s steps(1, end) infinite;
+  will-change: opacity, transform;
 }
 
 .signup-stars-layer-b {
-  animation: signupStarsTwinkleB 3.1s ease-in-out infinite;
-  will-change: opacity;
+  animation: signupStarsTwinkleB 2.1s steps(1, end) 180ms infinite;
+  will-change: opacity, transform;
+}
+
+.signup-stars-layer-c {
+  animation: signupStarsTwinkleC 2.55s steps(1, end) 420ms infinite;
+  will-change: opacity, transform;
+}
+
+.signup-stars-layer-d {
+  animation: signupStarsTwinkleD 3.2s steps(1, end) 760ms infinite;
+  will-change: opacity, transform;
+}
+
+.signin-stars-layer-a {
+  animation: signinStarsTwinkleA 1.65s steps(1, end) infinite;
+  will-change: opacity, transform;
+}
+
+.signin-stars-layer-b {
+  animation: signinStarsTwinkleB 2.1s steps(1, end) 180ms infinite;
+  will-change: opacity, transform;
+}
+
+.signin-stars-layer-c {
+  animation: signinStarsTwinkleC 2.55s steps(1, end) 420ms infinite;
+  will-change: opacity, transform;
+}
+
+.signin-stars-layer-d {
+  animation: signinStarsTwinkleD 3.2s steps(1, end) 760ms infinite;
+  will-change: opacity, transform;
 }
 
 .auth-sign-up-zoom {
@@ -370,6 +586,12 @@ body {
   .auth-stars-layer-b,
   .signup-stars-layer-a,
   .signup-stars-layer-b,
+  .signup-stars-layer-c,
+  .signup-stars-layer-d,
+  .signin-stars-layer-a,
+  .signin-stars-layer-b,
+  .signin-stars-layer-c,
+  .signin-stars-layer-d,
   .hero-bg-fade,
   .hero-content-fade,
   .hero-caret,

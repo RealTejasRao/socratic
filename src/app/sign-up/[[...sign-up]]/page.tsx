@@ -48,8 +48,10 @@ export default function SignUpPage() {
         <div className="absolute inset-0 bg-white" />
         <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.34)_0.64px,transparent_0.86px)] bg-size-[37px_37px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.24)_0.56px,transparent_0.8px)] bg-size-[59px_59px] bg-position-[17px_9px]" />
-        <div className="signup-stars-layer-a absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.88)_0.94px,transparent_1.2px)] bg-size-[63px_63px] bg-position-[12px_20px]" />
-        <div className="signup-stars-layer-b absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.76)_0.88px,transparent_1.14px)] bg-size-[81px_81px] bg-position-[31px_13px]" />
+        <div className="signup-stars-layer-a absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.95)_1.02px,transparent_1.3px)] bg-size-[54px_54px] bg-position-[11px_19px]" />
+        <div className="signup-stars-layer-b absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.9)_0.94px,transparent_1.22px)] bg-size-[69px_69px] bg-position-[33px_9px]" />
+        <div className="signup-stars-layer-c absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.82)_0.84px,transparent_1.08px)] bg-size-[87px_87px] bg-position-[23px_37px]" />
+        <div className="signup-stars-layer-d absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.78)_0.78px,transparent_1.04px)] bg-size-[112px_112px] bg-position-[49px_26px]" />
         <div className="relative z-10 grid min-h-svh grid-cols-1 lg:h-svh lg:grid-cols-2">
           <section className="relative z-20 flex items-center justify-center px-4 py-6 lg:px-10 lg:py-8">
             <div className="auth-sign-up-zoom w-full max-w-md">
