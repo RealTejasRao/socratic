@@ -5,6 +5,13 @@ import { Inter, Poppins } from "next/font/google";
 import { GLSLHills } from "@/src/components/ui/glsl-hills";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
+import { FeaturesSection } from "@/src/components/home/features-section";
+import { HomeHashScroll } from "@/src/components/home/home-hash-scroll";
+import { SecuritySeparator } from "@/src/components/home/security-separator";
+import { UseCasesSection } from "@/src/components/home/use-cases-section";
+import { ContactSection } from "@/src/components/home/contact-section";
+import { Footer } from "@/src/components/home/footer";
+import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { ROUTES } from "@/src/lib/routes";
 
 const poppins = Poppins({
@@ -18,9 +25,10 @@ const inter = Inter({
 });
 
 const navLinks = [
-  { label: "How It Works", href: "#how-it-works" },
+  { label: "Home", href: "#" },
+  { label: "Features", href: "#features" },
   { label: "Use Cases", href: "#use-cases" },
-  { label: "About", href: "#about" },
+  { label: "About", href: ROUTES.ABOUT },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -32,10 +40,11 @@ export default function HomePage() {
       <main
         className={`relative min-h-screen overflow-hidden bg-white ${poppins.className}`}
       >
-        <header className="absolute inset-x-0 top-0 z-20 px-6 pt-3 sm:px-8 sm:pt-4">
+        <HomeHashScroll />
+        <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-6 pt-3 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-8 sm:pt-4">
           <nav className="relative mx-auto flex w-full max-w-365 items-center justify-between">
-            <Link
-              href={ROUTES.HOME}
+            <a
+              href="#"
               className="group relative flex h-9.5 w-fit cursor-pointer items-center"
             >
               <div className="shrink-0 overflow-hidden">
@@ -55,7 +64,7 @@ export default function HomePage() {
                   Socratic AI
                 </span>
               </div>
-            </Link>
+            </a>
 
             <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
               <div className="pointer-events-auto flex items-center justify-center gap-10">
@@ -105,6 +114,14 @@ export default function HomePage() {
                   />
                 </div>
               </SignedIn>
+
+              <StaggeredMenu
+                items={navLinks.map((link) => ({
+                  label: link.label,
+                  link: link.href,
+                  ariaLabel: `Go to ${link.label}`,
+                }))}
+              />
             </div>
           </nav>
 
@@ -129,7 +146,7 @@ export default function HomePage() {
               </p>
               <h1 className="mt-3">
                 <TypewriterHeading
-                  text="Think Deeper. Question Everything"
+                  text="Stop Scrolling. Start Thinking"
                   className={`${inter.className} inline-flex items-center whitespace-nowrap text-[clamp(1rem,2.5vw,2.2rem)] font-medium leading-[1.08] text-black`}
                 />
               </h1>
@@ -149,6 +166,12 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <FeaturesSection interClassName={inter.className} />
+        <SecuritySeparator interClassName={inter.className} />
+        <UseCasesSection interClassName={inter.className} />
+        <ContactSection interClassName={inter.className} />
+        <Footer interClassName={inter.className} />
       </main>
     </LoadGate>
   );
