@@ -1,9 +1,12 @@
 import { generateReply } from "src/server/ai/orchestrator";
+import type { ChatImageAttachment } from "src/types/chat";
 
 export async function generateAssistantReply(params: {
   userId: string;
   sessionId: string;
   userContent: string;
+  userAttachments?: ChatImageAttachment[];
+  forceWebSearch?: boolean;
   now: Date;
   expiresAt: Date;
   persistUserMessage?: boolean;
@@ -17,6 +20,8 @@ export async function generateAssistantReply(params: {
     userId: string;
     sessionId: string;
     userContent: string;
+    userAttachments?: ChatImageAttachment[];
+    forceWebSearch?: boolean;
     now: Date;
     expiresAt: Date;
     persistUserMessage?: boolean;
@@ -32,6 +37,14 @@ export async function generateAssistantReply(params: {
     now: params.now,
     expiresAt: params.expiresAt,
   };
+
+  if (params.userAttachments !== undefined) {
+    orchestratorParams.userAttachments = params.userAttachments;
+  }
+
+  if (params.forceWebSearch !== undefined) {
+    orchestratorParams.forceWebSearch = params.forceWebSearch;
+  }
 
   if (params.persistUserMessage !== undefined) {
     orchestratorParams.persistUserMessage = params.persistUserMessage;

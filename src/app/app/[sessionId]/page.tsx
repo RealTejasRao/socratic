@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import ChatContainer from "../components/ChatContainer";
-import type { ChatMessage } from "src/types/chat";
+import type { ChatImageAttachment, ChatMessage } from "src/types/chat";
 
 interface Props {
   params: Promise<{ sessionId: string }>;
@@ -47,6 +47,9 @@ export default async function SessionPage({ params }: Props) {
     id: msg.id,
     role: msg.role,
     content: msg.content,
+    attachments: (Array.isArray(msg.attachments)
+      ? (msg.attachments as unknown as ChatImageAttachment[])
+      : []),
     createdAt: msg.createdAt.toISOString(),
   }));
 

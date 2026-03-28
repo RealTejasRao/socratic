@@ -66,6 +66,7 @@ model Message {
   sessionId  String
   role       MessageRole
   content    String      @db.Text
+  attachments Json?
 
   model      String?     @db.VarChar(80)
   tokenIn    Int?

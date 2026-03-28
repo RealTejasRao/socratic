@@ -2,8 +2,41 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
+import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
+
+function normalizeImageAttachments(value: unknown): ChatImageAttachment[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((item) => {
+    if (
+      item &&
+      typeof item === "object" &&
+      "type" in item &&
+      "dataUrl" in item &&
+      "mimeType" in item &&
+      "name" in item &&
+      item.type === "image" &&
+      typeof item.dataUrl === "string" &&
+      typeof item.mimeType === "string" &&
+      typeof item.name === "string"
+    ) {
+      return [
+        {
+          type: "image" as const,
+          dataUrl: item.dataUrl,
+          mimeType: item.mimeType,
+          name: item.name,
+        },
+      ];
+    }
+
+    return [];
+  });
+}
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -30,6 +63,12 @@ export async function POST(req: Request) {
       role: "USER",
     },
     orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      attachments: true,
+    },
   });
 
   if (!lastUserMessage) {
@@ -54,6 +93,7 @@ export async function POST(req: Request) {
     userId: session.userId,
     sessionId: session.id,
     userContent: lastUserMessage.content,
+    userAttachments: normalizeImageAttachments(lastUserMessage.attachments),
     now,
     expiresAt,
     persistUserMessage: false,

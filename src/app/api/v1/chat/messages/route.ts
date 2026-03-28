@@ -2,14 +2,31 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
+import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 const SESSION_TITLE_MAX_LENGTH = 80;
+const MAX_ATTACHMENTS = 3;
 
 function deriveSessionTitleFromContent(content: string) {
   const normalized = content.replace(/\s+/g, " ").trim();
   if (!normalized) return null;
   return normalized.slice(0, SESSION_TITLE_MAX_LENGTH);
+}
+
+function isValidAttachment(value: unknown): value is ChatImageAttachment {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "type" in value &&
+      "dataUrl" in value &&
+      "mimeType" in value &&
+      "name" in value &&
+      value.type === "image" &&
+      typeof value.dataUrl === "string" &&
+      typeof value.mimeType === "string" &&
+      typeof value.name === "string",
+  );
 }
 
 export async function POST(req: Request) {
@@ -25,14 +42,25 @@ export async function POST(req: Request) {
   const { sessionId, content } = body as {
     sessionId?: string;
     content?: string;
+    attachments?: unknown;
+    webSearch?: unknown;
   };
+  const attachments = Array.isArray(body?.attachments)
+    ? body.attachments.filter(isValidAttachment).slice(0, MAX_ATTACHMENTS)
+    : [];
+  const forceWebSearch = body?.webSearch === true;
 
-  if (!content || typeof content !== "string") {
+  if (typeof content !== "string") {
     return new NextResponse("Invalid content", { status: 400 });
+  }
+  if (!content.trim() && attachments.length === 0) {
+    return new NextResponse("Message must include text or image", { status: 400 });
   }
   const now = new Date();
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
-  const derivedTitle = deriveSessionTitleFromContent(content);
+  const derivedTitle =
+    deriveSessionTitleFromContent(content) ??
+    (attachments.length > 0 ? "Image upload" : null);
 
   let activeSessionId = sessionId;
   let activeUserId: string;
@@ -91,6 +119,8 @@ export async function POST(req: Request) {
     userId: activeUserId,
     sessionId: activeSessionId!,
     userContent: content,
+    userAttachments: attachments,
+    forceWebSearch,
     now,
     expiresAt,
   });
@@ -103,6 +133,7 @@ export async function POST(req: Request) {
       "X-Server-Prepare-Ms": String(prepareMs),
       "X-AI-Context-Ms": String(generationResult.debug.contextMs),
       "X-AI-Retrieval-Ms": String(generationResult.debug.retrievalMs ?? 0),
+      "X-AI-Web-Search-Ms": String(generationResult.debug.webSearchMs ?? 0),
       "X-AI-Prestream-Ms": String(generationResult.debug.preStreamTotalMs),
       "X-AI-Stream-Setup-Ms": String(generationResult.debug.streamSetupMs),
     },

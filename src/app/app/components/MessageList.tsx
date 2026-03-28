@@ -50,7 +50,7 @@ export default function MessageList({
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 pb-6 pt-2">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 pb-6 pt-1">
         {messages.map((message, index) => {
           const isLastUser = index === actualLastUserIndex;
           const isLastAssistant = index === actualLastAssistantIndex;
@@ -62,32 +62,48 @@ export default function MessageList({
               key={message.id}
               className={cn("group flex flex-col", isUser ? "items-end" : "items-start")}
             >
-              <div className="mb-2 flex items-center gap-2 px-1 text-[0.68rem] uppercase tracking-[0.24em] text-muted-foreground">
-                <span>{isUser ? "You" : "Socratic"}</span>
+              <div className="mb-1.5 px-1 text-xs font-medium text-slate-400">
+                {isUser ? "You" : "Script"}
               </div>
 
               <div
                 className={cn(
-                  "max-w-3xl whitespace-pre-wrap rounded-[28px] px-5 py-4 text-[15px] leading-7 shadow-[0_18px_60px_rgba(15,23,42,0.08)]",
+                  "max-w-3xl whitespace-pre-wrap rounded-2xl border px-4 py-3 text-sm leading-7",
                   isUser
-                    ? "rounded-br-md bg-[linear-gradient(135deg,rgba(53,57,60,1),rgba(34,40,43,1))] text-white"
-                    : "rounded-bl-md border border-border/70 bg-background/88 text-foreground backdrop-blur-sm",
+                    ? "border-sky-200 bg-sky-50 text-slate-900"
+                    : "border-slate-200 bg-white text-slate-800",
                 )}
               >
+                {message.attachments && message.attachments.length > 0 && (
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    {message.attachments.map((attachment, attachmentIndex) => (
+                      <a
+                        key={`${attachment.name}-${attachmentIndex}`}
+                        href={attachment.dataUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block overflow-hidden rounded-xl border border-slate-200 bg-white"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={attachment.dataUrl}
+                          alt={attachment.name}
+                          className="h-28 w-28 object-cover"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                )}
                 {isAssistant && !message.content ? <ThinkingBubble /> : message.content}
               </div>
 
               <div className="mt-2 flex gap-1.5 opacity-0 transition group-hover:opacity-100">
                 <button
                   onClick={() => handleCopy(message.id, message.content)}
-                  className="rounded-full border border-border/70 bg-background/80 p-2 text-muted-foreground transition hover:border-border hover:bg-background hover:text-foreground"
+                  className="rounded-full border border-slate-300 bg-white p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                   aria-label="Copy message"
                 >
-                  {copiedMessageId === message.id ? (
-                    <Check size={16} className="text-green-600" />
-                  ) : (
-                    <Copy size={16} />
-                  )}
+                  {copiedMessageId === message.id ? <Check size={15} /> : <Copy size={15} />}
                 </button>
 
                 {isAssistant && isLastAssistant && (
@@ -95,14 +111,14 @@ export default function MessageList({
                     onClick={onRegenerate}
                     disabled={isStreaming}
                     className={cn(
-                      "rounded-full border border-border/70 bg-background/80 p-2 transition",
+                      "rounded-full border border-slate-300 bg-white p-2",
                       isStreaming
                         ? "cursor-not-allowed opacity-40"
-                        : "text-muted-foreground hover:border-border hover:bg-background hover:text-foreground",
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                     )}
                     aria-label="Regenerate response"
                   >
-                    <RotateCcw size={16} />
+                    <RotateCcw size={15} />
                   </button>
                 )}
 
@@ -111,14 +127,14 @@ export default function MessageList({
                     onClick={() => onEdit(message)}
                     disabled={isStreaming}
                     className={cn(
-                      "rounded-full border border-border/70 bg-background/80 p-2 transition",
+                      "rounded-full border border-slate-300 bg-white p-2",
                       isStreaming
                         ? "cursor-not-allowed opacity-40"
-                        : "text-muted-foreground hover:border-border hover:bg-background hover:text-foreground",
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                     )}
                     aria-label="Edit message"
                   >
-                    <Pencil size={16} />
+                    <Pencil size={15} />
                   </button>
                 )}
               </div>

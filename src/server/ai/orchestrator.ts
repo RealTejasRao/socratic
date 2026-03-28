@@ -2,6 +2,7 @@ import { openai } from "src/server/ai/openai";
 import { prisma } from "src/server/db/client";
 import { Prisma } from "@prisma/client";
 import { buildSocraticPrompt } from "src/server/ai/prompt-builder";
+import type { ChatImageAttachment } from "src/types/chat";
 import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
 import {
   buildBeliefPromptContext,
@@ -18,13 +19,46 @@ import {
   type RerankedPassage,
 } from "src/server/ai/retrieval-reranker";
 import { storeRetrievalTrace } from "src/server/ai/retrieval-trace-store";
+import { decideKnowledgeRoute } from "src/server/ai/source-router";
+import { performWebSearch } from "src/server/ai/web-search";
 
 const WINDOW_SIZE = 30; // 15 turns
+
+function normalizeImageAttachments(value: Prisma.JsonValue | null | undefined): ChatImageAttachment[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.flatMap((item) => {
+    const record = item as Record<string, unknown> | null;
+
+    if (
+      record &&
+      record["type"] === "image" &&
+      typeof record["dataUrl"] === "string" &&
+      typeof record["mimeType"] === "string" &&
+      typeof record["name"] === "string"
+    ) {
+      return [
+        {
+          type: "image" as const,
+          dataUrl: record["dataUrl"],
+          mimeType: record["mimeType"],
+          name: record["name"],
+        },
+      ];
+    }
+
+    return [];
+  });
+}
 
 export async function generateReply(params: {
   userId: string;
   sessionId: string;
   userContent: string;
+  userAttachments?: ChatImageAttachment[];
+  forceWebSearch?: boolean;
   now: Date;
   expiresAt: Date;
   persistUserMessage?: boolean;
@@ -43,12 +77,15 @@ export async function generateReply(params: {
     auxModel!;
   let contextMs = 0;
   let retrievalMs: number | null = null;
+  let webSearchMs: number | null = null;
   let preStreamTotalMs = 0;
   let streamSetupMs = 0;
   const {
     userId,
     sessionId,
     userContent,
+    userAttachments = [],
+    forceWebSearch = false,
     now,
     expiresAt,
     persistUserMessage = true,
@@ -62,12 +99,20 @@ export async function generateReply(params: {
   let effectiveSourceMessageId = sourceUserMessageId;
 
   if (persistUserMessage) {
-    const createdUserMessage = await prisma.message.create({
-      data: {
-        sessionId,
-        role: "USER",
-        content: userContent,
+    const createUserMessageData: Prisma.MessageCreateInput = {
+      session: {
+        connect: { id: sessionId },
       },
+      role: "USER",
+      content: userContent,
+    };
+
+    if (userAttachments.length > 0) {
+      createUserMessageData.attachments = userAttachments as unknown as Prisma.InputJsonValue;
+    }
+
+    const createdUserMessage = await prisma.message.create({
+      data: createUserMessageData,
       select: { id: true },
     });
 
@@ -151,7 +196,7 @@ export async function generateReply(params: {
         where: { sessionId },
         orderBy: { createdAt: "desc" },
         take: WINDOW_SIZE,
-        select: { role: true, content: true },
+        select: { role: true, content: true, attachments: true },
       }),
       prisma.userBelief.findMany({
         where: {
@@ -184,7 +229,13 @@ export async function generateReply(params: {
   const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
     role: msg.role.toLowerCase() as "user" | "assistant",
     content: msg.content,
+    attachments: msg.role === "USER" ? normalizeImageAttachments(msg.attachments) : undefined,
   }));
+  const knowledgeRoute = decideKnowledgeRoute({
+    userContent,
+    userAttachments,
+    forceWebSearch,
+  });
 
   let retrievalQuery = userContent;
   let retrievedPassages: Array<{
@@ -207,60 +258,90 @@ export async function generateReply(params: {
     >["fusedCandidates"];
     rerankedCandidates: RerankedPassage[];
     selectedPassages: RerankedPassage[];
-    retrievalLatencyMs: number;
+      retrievalLatencyMs: number;
   } | null = null;
+  let webSearchSummary: string | undefined;
+  let webSearchSources:
+    | Array<{
+        title: string;
+        url: string;
+      }>
+    | undefined;
+  const shouldUseRetrieval =
+    knowledgeRoute === "rag" || knowledgeRoute === "hybrid";
+  const shouldUseWebSearch =
+    knowledgeRoute === "web" || knowledgeRoute === "hybrid";
 
-  try {
-    const retrievalStartedAtMs = Date.now();
-    const queryExpansionEnabled =
-      process.env["RAG_QUERY_EXPANSION_ENABLED"] === "true";
-    retrievalQuery = queryExpansionEnabled
-      ? await generateRetrievalQuery(userContent)
-      : userContent;
-    let retrievalDetails = await retrieveHybridPassagesWithDetails({
-      query: retrievalQuery,
-      semanticQuery: userContent,
-      limit: 12,
-    });
-
-    // If expanded query returns nothing, retry once with raw user text.
-    if (
-      retrievalDetails.fusedCandidates.length === 0 &&
-      retrievalQuery.trim().toLowerCase() !== userContent.trim().toLowerCase()
-    ) {
-      retrievalQuery = userContent;
-      retrievalDetails = await retrieveHybridPassagesWithDetails({
+  if (!shouldUseRetrieval) {
+    retrievalQuery = `retrieval-skipped-for-${knowledgeRoute}`;
+  } else {
+    try {
+      const retrievalStartedAtMs = Date.now();
+      const queryExpansionEnabled =
+        process.env["RAG_QUERY_EXPANSION_ENABLED"] === "true";
+      retrievalQuery = queryExpansionEnabled
+        ? await generateRetrievalQuery(userContent)
+        : userContent;
+      let retrievalDetails = await retrieveHybridPassagesWithDetails({
         query: retrievalQuery,
         semanticQuery: userContent,
         limit: 12,
       });
-    }
-    rerankedCandidates = rerankRetrievedPassages({
-      query: retrievalQuery,
-      userMessage: userContent,
-      candidates: retrievalDetails.fusedCandidates,
-      minPassages: 2,
-      maxPassages: 3,
-    });
 
-    retrievedPassages = rerankedCandidates.map((item) => ({
-      title: item.title,
-      author: item.author,
-      chunkType: item.chunkType,
-      content: item.content,
-      chunkIndex: item.chunkIndex,
-    }));
-    tracePayload = {
-      vectorCandidates: retrievalDetails.vectorCandidates,
-      lexicalCandidates: retrievalDetails.lexicalCandidates,
-      fusedCandidates: retrievalDetails.fusedCandidates,
-      rerankedCandidates,
-      selectedPassages: rerankedCandidates,
-      retrievalLatencyMs: Date.now() - retrievalStartedAtMs,
-    };
-    retrievalMs = tracePayload.retrievalLatencyMs;
-  } catch {
-    // Retrieval is best-effort; generation should continue even if retrieval fails.
+      // If expanded query returns nothing, retry once with raw user text.
+      if (
+        retrievalDetails.fusedCandidates.length === 0 &&
+        retrievalQuery.trim().toLowerCase() !== userContent.trim().toLowerCase()
+      ) {
+        retrievalQuery = userContent;
+        retrievalDetails = await retrieveHybridPassagesWithDetails({
+          query: retrievalQuery,
+          semanticQuery: userContent,
+          limit: 12,
+        });
+      }
+      rerankedCandidates = rerankRetrievedPassages({
+        query: retrievalQuery,
+        userMessage: userContent,
+        candidates: retrievalDetails.fusedCandidates,
+        minPassages: 2,
+        maxPassages: 3,
+      });
+
+      retrievedPassages = rerankedCandidates.map((item) => ({
+        title: item.title,
+        author: item.author,
+        chunkType: item.chunkType,
+        content: item.content,
+        chunkIndex: item.chunkIndex,
+      }));
+      tracePayload = {
+        vectorCandidates: retrievalDetails.vectorCandidates,
+        lexicalCandidates: retrievalDetails.lexicalCandidates,
+        fusedCandidates: retrievalDetails.fusedCandidates,
+        rerankedCandidates,
+        selectedPassages: rerankedCandidates,
+        retrievalLatencyMs: Date.now() - retrievalStartedAtMs,
+      };
+      retrievalMs = tracePayload.retrievalLatencyMs;
+    } catch {
+      // Retrieval is best-effort; generation should continue even if retrieval fails.
+    }
+  }
+
+  if (shouldUseWebSearch) {
+    try {
+      const webSearchStartedAtMs = Date.now();
+      const webSearchResult = await performWebSearch(userContent);
+      webSearchMs = Date.now() - webSearchStartedAtMs;
+
+      if (webSearchResult) {
+        webSearchSummary = webSearchResult.summary;
+        webSearchSources = webSearchResult.sources;
+      }
+    } catch {
+      // Web search is best-effort; generation should continue even if it fails.
+    }
   }
 
   const shouldAppendLatestUserMessage =
@@ -270,15 +351,23 @@ export async function generateReply(params: {
     conversationHistory: { role: "user" | "assistant"; content: string }[];
     beliefContext: { type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION"; belief: string; confidence: number }[];
     retrievedContext: { title: string; author: string; chunkType: string; content: string; chunkIndex: number }[];
+    webSearchSummary?: string;
+    webSearchSources?: { title: string; url: string }[];
     userContent: string;
+    userAttachments?: ChatImageAttachment[];
     appendUserMessageToPrompt: boolean;
     conversationMemorySummary?: string;
+    knowledgeRoute: "conversation_only" | "rag" | "web" | "hybrid";
   } = {
     conversationHistory,
     beliefContext,
     retrievedContext: retrievedPassages,
+    webSearchSummary,
+    webSearchSources,
     userContent,
+    userAttachments,
     appendUserMessageToPrompt: shouldAppendLatestUserMessage,
+    knowledgeRoute,
   };
 
   if (latestConversationMemory?.summary !== undefined) {
@@ -301,8 +390,11 @@ if (shouldLogPromptPayload) {
       {
         conversationMemorySummary: latestConversationMemory?.summary ?? null,
         beliefContext,
+        knowledgeRoute,
         retrievalQuery,
         retrievedPassages,
+        webSearchSummary,
+        webSearchSources,
       },
       null,
       2,
@@ -357,6 +449,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
   console.log("PIPELINE_TIMING", {
     contextMs,
     retrievalMs: tracePayload?.retrievalLatencyMs ?? null,
+    webSearchMs,
     preStreamTotalMs,
   });
 }
@@ -481,6 +574,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
     debug: {
       contextMs,
       retrievalMs,
+      webSearchMs,
       preStreamTotalMs,
       streamSetupMs,
     },

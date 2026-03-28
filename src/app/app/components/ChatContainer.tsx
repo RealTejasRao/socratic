@@ -1,44 +1,129 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import type { ChatMessage } from "src/types/chat";
+import { useUser } from "@clerk/nextjs";
+import type { ChatImageAttachment, ChatMessage } from "src/types/chat";
+import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
-import { Button } from "@/src/components/ui/button";
 
 interface Props {
   initialMessages: ChatMessage[];
   sessionId?: string;
 }
 
-const STARTER_PROMPTS = [
-  "Help me unpack a difficult belief I keep returning to.",
-  "Challenge my current plan with Socratic questions before I act.",
-  "Compare Stoicism and existentialism on how to respond to anxiety.",
+const MORNING_GREETINGS = [
+  "A new day, a new tabula rasa.",
+  "Clarity is just a few prompts away.",
+  "Everything's ready, let's begin.",
+  "Good morning, {name}.",
 ];
 
+const AFTERNOON_GREETINGS = [
+  "The day is half gone, let's make the second half count.",
+  "Peak efficiency mode engaged.",
+  "Time is moving, are you?",
+  "Good afternoon, {name}.",
+];
+
+const EVENING_GREETINGS = [
+  "The distractions are winding down. The thinking can begin.",
+  "Aristotle did his best work at dusk. Now it's your turn.",
+  "The sun sets, {name}. The mind rises.",
+  "Good evening, {name}.",
+];
+
+const LATE_GREETINGS = [
+  "The best philosophers were night owls too.",
+  "Seek the light in the dark.",
+  "The world's quiet, best time to talk.",
+];
+
+const STARTER_CHIPS = [
+  "Why do we fear death if we won't be there to experience it?",
+  "Was Socrates right to accept his own death?",
+];
+
+let greetingSeedStore = 0;
+const greetingSeedListeners = new Set<() => void>();
+
+function getGreetingBucket(hour: number) {
+  if (hour >= 5 && hour < 12) return MORNING_GREETINGS;
+  if (hour >= 12 && hour < 17) return AFTERNOON_GREETINGS;
+  if (hour >= 17 && hour < 21) return EVENING_GREETINGS;
+  return LATE_GREETINGS;
+}
+
+function subscribeToGreetingSeed(listener: () => void) {
+  greetingSeedListeners.add(listener);
+
+  if (typeof window !== "undefined" && greetingSeedStore === 0) {
+    const seedArray = new Uint32Array(1);
+    window.crypto.getRandomValues(seedArray);
+    greetingSeedStore = seedArray[0] || 1;
+
+    queueMicrotask(() => {
+      greetingSeedListeners.forEach((currentListener) => currentListener());
+    });
+  }
+
+  return () => {
+    greetingSeedListeners.delete(listener);
+  };
+}
+
+function getGreetingSeedSnapshot() {
+  return greetingSeedStore;
+}
+
 export default function ChatContainer({ initialMessages, sessionId }: Props) {
+  const { user } = useUser();
+  const greetingSeed = useSyncExternalStore(
+    subscribeToGreetingSeed,
+    getGreetingSeedSnapshot,
+    () => 0,
+  );
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null);
   const tempIdRef = useRef(0);
   const router = useRouter();
+  const hasMessages = messages.length > 0;
+  const rawName = user?.firstName?.trim() || user?.username?.trim() || "there";
+  const name = rawName.length > 0 ? rawName : "there";
+  const inputPlaceholder =
+    name === "there" ? "What's on your mind?" : `What's on your mind, ${name}?`;
+  const greetingLine = (() => {
+    if (greetingSeed === 0) {
+      return "";
+    }
+
+    const bucket = getGreetingBucket(new Date().getHours());
+    const template = bucket[greetingSeed % bucket.length] ?? "Clarity is just a few prompts away.";
+
+    return template.replace("{name}", name);
+  })();
 
   function createTempId(prefix: string) {
     tempIdRef.current += 1;
     return `${prefix}-${tempIdRef.current}`;
   }
 
-  async function handleSend(content: string) {
+  async function handleSend(payload: {
+    content: string;
+    attachments: ChatImageAttachment[];
+    webSearch: boolean;
+  }) {
     if (isStreaming) return;
     const tempId = createTempId("temp");
+    const { content, attachments, webSearch } = payload;
 
     const optimisticMessage: ChatMessage = {
       id: tempId,
       role: "USER",
       content,
+      attachments,
       createdAt: new Date().toISOString(),
     };
 
@@ -62,7 +147,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       const res = await fetch("/api/v1/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, content }),
+        body: JSON.stringify({ sessionId, content, attachments, webSearch }),
       });
 
       const returnedSessionId = res.headers.get("X-Session-Id");
@@ -155,8 +240,13 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     setEditingMessage(message);
   }
 
-  async function handleEditSubmit(newContent: string) {
+  async function handleEditSubmit(payload: {
+    content: string;
+    attachments: ChatImageAttachment[];
+    webSearch: boolean;
+  }) {
     if (!editingMessage || !sessionId || isStreaming) return;
+    const newContent = payload.content;
 
     setIsStreaming(true);
 
@@ -165,10 +255,16 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
     setMessages((prev) => [
       ...prev.slice(0, index),
-      {
-        ...editingMessage,
-        content: newContent.trim(),
-      },
+      editingMessage.attachments
+        ? {
+            ...editingMessage,
+            content: newContent.trim(),
+            attachments: editingMessage.attachments,
+          }
+        : {
+            ...editingMessage,
+            content: newContent.trim(),
+          },
       {
         id: assistantMessageId,
         role: "ASSISTANT",
@@ -226,56 +322,68 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     router.refresh();
   }
 
-  return (
-    <div className="flex h-full flex-col">
-      {messages.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-4xl">
-            <div className="rounded-[36px] border border-border/60 bg-background/75 px-6 py-8 shadow-[0_28px_100px_rgba(15,23,42,0.08)] backdrop-blur-xl md:px-10 md:py-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-4 py-2 text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                <Sparkles size={14} />
-                Deliberate conversation
-              </div>
-              <h3 className="mt-6 max-w-2xl text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-                Build a calmer chat space that rewards better questions.
-              </h3>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-                Start with a prompt below or write your own. The interface is tuned for
-                long-form thinking, editing, and revisiting past threads without losing
-                the thread.
-              </p>
+  if (!hasMessages) {
+    return (
+      <div className="flex h-full min-h-0 items-center justify-center">
+        <div className="w-full max-w-3xl">
+          <div className="text-center">
+            <h2
+              className="text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl"
+              style={{ visibility: greetingLine ? "visible" : "hidden" }}
+            >
+              {greetingLine ? (
+                <TypewriterHeading key={greetingLine} text={greetingLine} speedMs={34} />
+              ) : (
+                "Clarity is just a few prompts away."
+              )}
+            </h2>
+          </div>
 
-              <div className="mt-8 grid gap-3 md:grid-cols-3">
-                {STARTER_PROMPTS.map((prompt) => (
-                  <Button
-                    key={prompt}
-                    variant="outline"
-                    className="h-auto min-h-28 justify-start rounded-[24px] px-5 py-4 text-left whitespace-normal"
-                    onClick={() => handleSend(prompt)}
-                    disabled={isStreaming}
-                  >
-                    {prompt}
-                  </Button>
-                ))}
-              </div>
-            </div>
+          <div className="mt-7 md:mt-8">
+            <MessageInput
+              key={editingMessage?.id ?? sessionId ?? "new-chat"}
+              onSend={editingMessage ? handleEditSubmit : handleSend}
+              isStreaming={isStreaming}
+              initialValue={editingMessage?.content}
+              variant="hero"
+              placeholder={inputPlaceholder}
+            />
+          </div>
+
+        <div className="mt-3 flex flex-wrap justify-center gap-2">
+          {STARTER_CHIPS.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => handleSend({ content: chip, attachments: [], webSearch: false })}
+                disabled={isStreaming}
+                className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:border-slate-400 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {chip}
+              </button>
+            ))}
           </div>
         </div>
-      ) : (
-        <MessageList
-          messages={messages}
-          onRegenerate={handleRegenerate}
-          onEdit={handleEdit}
-          isStreaming={isStreaming}
-        />
-      )}
+      </div>
+    );
+  }
 
-      <div className="mt-4 md:mt-6">
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      <MessageList
+        messages={messages}
+        onRegenerate={handleRegenerate}
+        onEdit={handleEdit}
+        isStreaming={isStreaming}
+      />
+
+      <div className="animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-3 pb-1">
         <MessageInput
           key={editingMessage?.id ?? sessionId ?? "new-chat"}
           onSend={editingMessage ? handleEditSubmit : handleSend}
           isStreaming={isStreaming}
           initialValue={editingMessage?.content}
+          placeholder={inputPlaceholder}
         />
       </div>
     </div>

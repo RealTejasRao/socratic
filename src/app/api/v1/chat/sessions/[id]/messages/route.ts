@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
-
-interface Params {
-  params: {
-    id: string;
-  };
-}
+import type { ChatImageAttachment } from "src/types/chat";
 
 export async function GET(
   req: Request,
@@ -50,9 +45,16 @@ export async function GET(
       id: true,
       role: true,
       content: true,
+      attachments: true,
       createdAt: true
     }
   });
-
-  return NextResponse.json(messages);
+  return NextResponse.json(
+    messages.map((message) => ({
+      ...message,
+      attachments: (Array.isArray(message.attachments)
+        ? (message.attachments as unknown as ChatImageAttachment[])
+        : []),
+    })),
+  );
 }
