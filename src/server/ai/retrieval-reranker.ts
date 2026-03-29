@@ -12,6 +12,9 @@ export type RerankedPassage = RetrievedPassage & {
   rerankScore: number;
 };
 
+const MAX_CHUNKS_PER_DOC = 1;
+const SEMANTIC_CUTOFF = 0.32;
+
 function tokenize(text: string) {
   return text
     .toLowerCase()
@@ -37,9 +40,13 @@ function normalizeScores(values: number[]) {
   return values.map((value) => (value - min) / (max - min));
 }
 
+function countDistinctDocuments(candidates: RerankedPassage[]) {
+  return new Set(candidates.map((candidate) => candidate.documentId)).size;
+}
+
 export function rerankRetrievedPassages(input: RerankInput) {
-  const minPassages = input.minPassages ?? 2;
-  const maxPassages = input.maxPassages ?? 3;
+  const minPassages = input.minPassages ?? 4;
+  const maxPassages = input.maxPassages ?? 5;
   if (!input.candidates.length) return [];
 
   const lexicalScores = input.candidates.map((candidate) => candidate.lexicalScore);
@@ -52,7 +59,9 @@ export function rerankRetrievedPassages(input: RerankInput) {
     const fusedScore = normalizedFused[index] ?? 0;
     const semanticScore = candidate.semanticScore ?? candidate.embeddingSimilarity ?? 0;
     const relevance =
-      semanticScore * 0.6 + fusedScore * 0.25 + lexicalScore * 0.15;
+      semanticScore * 0.75 +
+      lexicalScore * 0.1 +
+      fusedScore * 0.15;
 
     return {
       ...candidate,
@@ -60,42 +69,45 @@ export function rerankRetrievedPassages(input: RerankInput) {
     };
   });
 
-  const filtered = rescored.filter((candidate) => candidate.semanticScore >= 0.4);
+  const filtered = rescored.filter(
+    (candidate) => candidate.semanticScore >= SEMANTIC_CUTOFF,
+  );
   if (!filtered.length) {
     return [];
   }
 
   filtered.sort((a, b) => b.rerankScore - a.rerankScore);
-
+  const desiredLimit = Math.max(minPassages, Math.min(maxPassages, filtered.length));
   const sourceFocusedQuery = filtered.some(
     (passage) =>
       containsMetadataMention(input.query, passage.author, passage.title) &&
       passage.rerankScore >= 0.5,
   );
-
-  if (sourceFocusedQuery) {
-    return filtered.slice(
-      0,
-      Math.max(minPassages, Math.min(maxPassages, filtered.length)),
-    );
-  }
+  const shouldPreferDiversity =
+    !sourceFocusedQuery || countDistinctDocuments(filtered) > 1;
 
   const selected: RerankedPassage[] = [];
-  const seenDocuments = new Set<string>();
+  const documentCounts = new Map<string, number>();
 
-  for (const passage of filtered) {
-    if (selected.length >= maxPassages) break;
-    if (!seenDocuments.has(passage.documentId)) {
+  if (shouldPreferDiversity) {
+    for (const passage of filtered) {
+      if (selected.length >= desiredLimit) break;
+      const existingCount = documentCounts.get(passage.documentId) ?? 0;
+      if (existingCount >= MAX_CHUNKS_PER_DOC) continue;
       selected.push(passage);
-      seenDocuments.add(passage.documentId);
+      documentCounts.set(passage.documentId, existingCount + 1);
     }
   }
 
   for (const passage of filtered) {
-    if (selected.length >= maxPassages) break;
+    if (selected.length >= desiredLimit) break;
     if (selected.some((item) => item.chunkId === passage.chunkId)) continue;
     selected.push(passage);
+    documentCounts.set(
+      passage.documentId,
+      (documentCounts.get(passage.documentId) ?? 0) + 1,
+    );
   }
 
-  return selected.slice(0, Math.max(minPassages, Math.min(maxPassages, selected.length)));
+  return selected.slice(0, desiredLimit);
 }

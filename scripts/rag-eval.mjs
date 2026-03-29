@@ -11,7 +11,7 @@ const { Pool } = pg;
 
 loadEnv({ path: ".env.local" });
 
-const EMBED_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-small";
+const EMBED_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-large";
 const AUX_MODEL =
   process.env.OPENAI_AUX_MODEL ?? process.env.OPENAI_CHAT_MODEL;
 const VECTOR_LIMIT = 20;

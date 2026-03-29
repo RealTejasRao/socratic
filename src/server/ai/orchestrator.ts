@@ -237,6 +237,8 @@ export async function generateReply(params: {
     forceWebSearch,
   });
 
+  const originalQuery = userContent;
+  let rewrittenQuery = userContent;
   let retrievalQuery = userContent;
   let retrievedPassages: Array<{
     title: string;
@@ -277,35 +279,18 @@ export async function generateReply(params: {
   } else {
     try {
       const retrievalStartedAtMs = Date.now();
-      const queryExpansionEnabled =
-        process.env["RAG_QUERY_EXPANSION_ENABLED"] === "true";
-      retrievalQuery = queryExpansionEnabled
-        ? await generateRetrievalQuery(userContent)
-        : userContent;
-      let retrievalDetails = await retrieveHybridPassagesWithDetails({
+      rewrittenQuery = await generateRetrievalQuery(originalQuery);
+      retrievalQuery = rewrittenQuery || originalQuery;
+      const retrievalDetails = await retrieveHybridPassagesWithDetails({
         query: retrievalQuery,
-        semanticQuery: userContent,
         limit: 12,
       });
-
-      // If expanded query returns nothing, retry once with raw user text.
-      if (
-        retrievalDetails.fusedCandidates.length === 0 &&
-        retrievalQuery.trim().toLowerCase() !== userContent.trim().toLowerCase()
-      ) {
-        retrievalQuery = userContent;
-        retrievalDetails = await retrieveHybridPassagesWithDetails({
-          query: retrievalQuery,
-          semanticQuery: userContent,
-          limit: 12,
-        });
-      }
       rerankedCandidates = rerankRetrievedPassages({
         query: retrievalQuery,
         userMessage: userContent,
         candidates: retrievalDetails.fusedCandidates,
-        minPassages: 2,
-        maxPassages: 3,
+        minPassages: 4,
+        maxPassages: 5,
       });
 
       retrievedPassages = rerankedCandidates.map((item) => ({
@@ -391,6 +376,8 @@ if (shouldLogPromptPayload) {
         conversationMemorySummary: latestConversationMemory?.summary ?? null,
         beliefContext,
         knowledgeRoute,
+        originalQuery,
+        rewrittenQuery,
         retrievalQuery,
         retrievedPassages,
         webSearchSummary,
@@ -406,6 +393,40 @@ if (shouldLogPromptPayload) {
   );
 }
 if (process.env["AI_DEBUG_PROMPT"] === "true") {
+  const finalDocumentDistribution = rerankedCandidates.reduce<
+    Record<string, { documentId: string; count: number }>
+  >((accumulator, candidate) => {
+    const existing = accumulator[candidate.title];
+    if (existing) {
+      existing.count += 1;
+      return accumulator;
+    }
+
+    accumulator[candidate.title] = {
+      documentId: candidate.documentId,
+      count: 1,
+    };
+    return accumulator;
+  }, {});
+  console.log("RETRIEVAL_QUERY_FLOW", {
+    originalQuery,
+    rewrittenQuery,
+    retrievalQuery,
+  });
+  console.log(
+    "TOP_RETRIEVED_CHUNKS",
+    tracePayload
+      ? tracePayload.fusedCandidates.slice(0, 10).map((candidate) => ({
+          author: candidate.author,
+          title: candidate.title,
+          chunkType: candidate.chunkType,
+          chunkIndex: candidate.chunkIndex,
+          fusedScore: Number(candidate.fusedScore.toFixed(3)),
+          lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
+          semanticScore: Number(candidate.semanticScore.toFixed(3)),
+        }))
+      : [],
+  );
   console.log(
     "RETRIEVAL_CANDIDATE_SCORES",
     tracePayload
@@ -446,6 +467,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
     reranked: rerankedCandidates.length,
     selected: retrievedPassages.length,
   });
+  console.log("FINAL_DOCUMENT_DISTRIBUTION", finalDocumentDistribution);
   console.log("PIPELINE_TIMING", {
     contextMs,
     retrievalMs: tracePayload?.retrievalLatencyMs ?? null,

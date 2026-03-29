@@ -169,7 +169,7 @@ function buildDynamicContextMessage(params: {
   const retrievedPassages = params.retrievedContext.length
     ? params.retrievedContext
         .map((item, index) => {
-          const excerpt = item.content.replace(/\s+/g, " ").trim().slice(0, 650);
+          const excerpt = item.content.replace(/\s+/g, " ").trim().slice(0, 1250);
           const chunkTypeLabel =
             item.chunkType === "explanation" ? "explanation" : "primary_text";
           return [

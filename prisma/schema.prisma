@@ -183,7 +183,7 @@ model KnowledgeChunk {
   chunkType  String            @default("primary_text") @db.VarChar(32)
   content    String            @db.Text
   tokenCount Int
-  embedding  Unsupported("vector(1536)")?
+  embedding  Unsupported("vector(3072)")?
   createdAt  DateTime          @default(now())
   document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
 

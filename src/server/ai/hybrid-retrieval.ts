@@ -2,12 +2,12 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "src/server/db/client";
 import { openai } from "src/server/ai/openai";
 
-const DEFAULT_VECTOR_LIMIT = 20;
-const DEFAULT_LEXICAL_LIMIT = 20;
-const DEFAULT_OUTPUT_LIMIT = 5;
+const DEFAULT_VECTOR_LIMIT = 50;
+const DEFAULT_LEXICAL_LIMIT = 50;
+const DEFAULT_OUTPUT_LIMIT = 18;
 const RRF_K = 60;
 const EMBEDDING_TIMEOUT_MS = 1600;
-const MIN_LEXICAL_ROWS_TO_SKIP_VECTOR = 8;
+const MIN_LEXICAL_ROWS_TO_SKIP_VECTOR = 20;
 const MAX_LOOSE_LEXICAL_TERMS = 6;
 const LOOSE_LEXICAL_STOPWORDS = new Set([
   "about",
@@ -398,7 +398,7 @@ function chunkTypeBoostScore(
 }
 
 async function embedQuery(query: string) {
-  const model = process.env["OPENAI_EMBED_MODEL"] ?? "text-embedding-3-small";
+  const model = process.env["OPENAI_EMBED_MODEL"] ?? "text-embedding-3-large";
   const timeoutMs = Number.parseInt(
     process.env["RETRIEVAL_EMBED_TIMEOUT_MS"] ?? `${EMBEDDING_TIMEOUT_MS}`,
     10,
@@ -548,7 +548,6 @@ async function runLooseLexicalSearch(params: {
 
 export async function retrieveHybridPassages(params: {
   query: string;
-  semanticQuery?: string;
   vectorLimit?: number;
   lexicalLimit?: number;
   limit?: number;
@@ -559,16 +558,14 @@ export async function retrieveHybridPassages(params: {
 
 export async function retrieveHybridPassagesWithDetails(params: {
   query: string;
-  semanticQuery?: string;
   vectorLimit?: number;
   lexicalLimit?: number;
   limit?: number;
 }) {
-  const lexicalQuery = params.query.trim();
-  const semanticQuery = (params.semanticQuery ?? params.query).trim();
-  const analysisQuery = semanticQuery || lexicalQuery;
+  const retrievalQuery = params.query.trim();
+  const analysisQuery = retrievalQuery;
 
-  if (!lexicalQuery && !semanticQuery) {
+  if (!retrievalQuery) {
     return {
       vectorCandidates: [] as VectorCandidate[],
       lexicalCandidates: [] as LexicalCandidate[],
@@ -579,19 +576,19 @@ export async function retrieveHybridPassagesWithDetails(params: {
   const vectorLimit = params.vectorLimit ?? DEFAULT_VECTOR_LIMIT;
   const lexicalLimit = params.lexicalLimit ?? DEFAULT_LEXICAL_LIMIT;
   const limit = params.limit ?? DEFAULT_OUTPUT_LIMIT;
-  const authorFilters = detectAuthorFilters(`${analysisQuery} ${lexicalQuery}`);
+  const authorFilters = detectAuthorFilters(retrievalQuery);
   const queryType = detectQueryType(analysisQuery);
   const queryComplexity = detectQueryComplexity(analysisQuery);
 
   let lexicalRows: LexicalCandidate[] = [];
   try {
     lexicalRows = await runLexicalSearch({
-      query: lexicalQuery,
+      query: retrievalQuery,
       limit: lexicalLimit,
       authors: authorFilters,
     });
     if (!lexicalRows.length) {
-      const looseLexicalQuery = buildLooseLexicalQuery(lexicalQuery);
+      const looseLexicalQuery = buildLooseLexicalQuery(retrievalQuery);
       if (looseLexicalQuery) {
         lexicalRows = await runLooseLexicalSearch({
           query: looseLexicalQuery,
@@ -615,7 +612,7 @@ export async function retrieveHybridPassagesWithDetails(params: {
   let queryEmbedding: number[] = [];
   if (shouldRunVector) {
     try {
-      queryEmbedding = await embedQuery(semanticQuery);
+      queryEmbedding = await embedQuery(retrievalQuery);
       vectorRows = await runVectorSearch({
         embedding: queryEmbedding,
         limit: vectorLimit,
@@ -679,13 +676,22 @@ export async function retrieveHybridPassagesWithDetails(params: {
     existing.fusedScore += fused;
   });
 
-  const fusedCandidates = [...merged.values()]
-    .sort((a, b) => b.fusedScore - a.fusedScore)
-    .slice(0, limit);
+const sorted = [...merged.values()].sort((a, b) => b.fusedScore - a.fusedScore);
+
+const perDocCap = 3;
+const docCount = new Map<string, number>();
+const fusedCandidates = sorted
+  .filter((candidate) => {
+    const count = docCount.get(candidate.documentId) ?? 0;
+    if (count >= perDocCap) return false;
+    docCount.set(candidate.documentId, count + 1);
+    return true;
+  })
+  .slice(0, limit);
 
   if (!queryEmbedding.length && fusedCandidates.length) {
     try {
-      queryEmbedding = await embedQuery(semanticQuery);
+      queryEmbedding = await embedQuery(retrievalQuery);
     } catch {
       queryEmbedding = [];
     }

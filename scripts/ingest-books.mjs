@@ -12,10 +12,10 @@ const { Pool } = pg;
 
 loadEnv({ path: ".env.local" });
 
-const CHUNK_TOKENS = 700;
-const CHUNK_OVERLAP_TOKENS = 120;
+const CHUNK_WORDS = 320;
+const CHUNK_OVERLAP_WORDS = 100;
 const EMBEDDING_BATCH_SIZE = 32;
-const EMBEDDING_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-small";
+const EMBEDDING_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-large";
 const PRIMARY_TEXT_CHUNK_TYPE = "primary_text";
 const EXPLANATION_CHUNK_TYPE = "explanation";
 
@@ -45,15 +45,15 @@ function tokenizeForChunking(text) {
     .filter(Boolean);
 }
 
-function chunkTextByTokens(text, chunkTokens = CHUNK_TOKENS, overlapTokens = CHUNK_OVERLAP_TOKENS) {
+function chunkTextByWords(text, chunkWords = CHUNK_WORDS, overlapWords = CHUNK_OVERLAP_WORDS) {
   const words = tokenizeForChunking(text);
   if (!words.length) return [];
 
   const chunks = [];
-  const step = Math.max(1, chunkTokens - overlapTokens);
+  const step = Math.max(1, chunkWords - overlapWords);
 
   for (let start = 0; start < words.length; start += step) {
-    const end = Math.min(words.length, start + chunkTokens);
+    const end = Math.min(words.length, start + chunkWords);
     const slice = words.slice(start, end);
     if (!slice.length) continue;
     chunks.push({
@@ -259,7 +259,7 @@ async function ingestBooks() {
   }
 
   console.log(`Found ${files.length} corpus files.`);
-  console.log(`Chunking: ${CHUNK_TOKENS} tokens, overlap: ${CHUNK_OVERLAP_TOKENS}`);
+  console.log(`Chunking: ${CHUNK_WORDS} words, overlap: ${CHUNK_OVERLAP_WORDS}`);
   console.log(`Embedding model: ${EMBEDDING_MODEL}`);
 
   let skippedCount = 0;
@@ -270,7 +270,7 @@ async function ingestBooks() {
     const { author, title } = file.parseMetadata(file.filename);
     const sourcePath = `${file.dirName}/${file.filename}`;
     const contentHash = computeContentHash(content);
-    const chunks = chunkTextByTokens(content).map((item, index) => ({
+    const chunks = chunkTextByWords(content).map((item, index) => ({
       chunkIndex: index,
       text: item.text,
       tokenCount: item.tokenCount,
@@ -293,7 +293,8 @@ async function ingestBooks() {
     if (
       existingDoc &&
       existingDoc.contentHash === contentHash &&
-      existingDoc.sourcePath === sourcePath
+      existingDoc.sourcePath === sourcePath &&
+      existingDoc._count.chunks > 0
     ) {
       skippedCount += 1;
       console.log("  skipped (unchanged, no new embeddings needed)");

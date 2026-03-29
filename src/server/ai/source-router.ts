@@ -5,6 +5,9 @@ export type KnowledgeRoute = "conversation_only" | "rag" | "web" | "hybrid";
 const PHILOSOPHY_PATTERN =
   /\b(philosophy|philosopher|socrates|plato|aristotle|nietzsche|stoic|stoicism|epicurean|camus|sartre|kant|hegel|dialectic|ethics|virtue|nihilism|existential|metaphysics|epistemology|ressentiment|logos|telos|justice|morality|wisdom)\b/i;
 
+const PHILOSOPHICAL_QUESTION_PATTERN =
+  /\b(what is|what are|why do|why does|why is|how should|should we|can we|do we|is there|what makes|what does it mean|is it|are we|does|how do we|what would)\b.{0,60}\b(life|death|meaning|purpose|truth|reality|mind|soul|self|free will|freedom|good|evil|right|wrong|happy|happiness|exist|existence|god|time|consciousness|knowledge|belief|power|justice|love|beauty|pain|suffering|fear|choice|fate|destiny|nature|society|identity)\b/i;
+
 const WEB_TRIGGER_PATTERN =
   /\b(search|web|internet|online|look up|lookup|browse|google|find sources|source this|fact check|fact-check)\b/i;
 
@@ -36,12 +39,14 @@ export function decideKnowledgeRoute(params: {
   }
 
   const mentionsPhilosophy = PHILOSOPHY_PATTERN.test(normalized);
+  const isPhilosophicalQuestion = PHILOSOPHICAL_QUESTION_PATTERN.test(normalized);
+  const shouldUseRag = mentionsPhilosophy || isPhilosophicalQuestion;
   const requestsWeb = WEB_TRIGGER_PATTERN.test(normalized);
   const needsFreshness = FRESHNESS_PATTERN.test(normalized);
   const blendsDomains = MIXED_COMPARISON_PATTERN.test(normalized);
   const shouldPreferWeb = requestsWeb || needsFreshness;
 
-  if (shouldPreferWeb && (mentionsPhilosophy || blendsDomains)) {
+  if (shouldPreferWeb && (shouldUseRag || blendsDomains)) {
     return "hybrid";
   }
 
@@ -49,7 +54,7 @@ export function decideKnowledgeRoute(params: {
     return "web";
   }
 
-  if (mentionsPhilosophy) {
+  if (shouldUseRag) {
     return "rag";
   }
 
