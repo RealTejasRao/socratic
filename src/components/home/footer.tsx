@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ROUTES } from "@/src/lib/routes";
 
 type FooterProps = {
@@ -46,13 +47,25 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
             ))}
           </div>
 
-          <Link
-            href={ROUTES.SIGN_UP}
-            className="inline-flex items-center gap-2 border border-white/18 px-4 py-2 text-[0.72rem] text-white transition-colors duration-200 hover:bg-white hover:text-black"
-          >
-            <span>Try Socratic AI</span>
-            <span aria-hidden="true">&gt;</span>
-          </Link>
+          <SignedOut>
+            <Link
+              href={ROUTES.SIGN_UP}
+              className="inline-flex items-center gap-2 border border-white/18 px-4 py-2 text-[0.72rem] text-white transition-colors duration-200 hover:bg-white hover:text-black"
+            >
+              <span>Try Socratic AI</span>
+              <span aria-hidden="true">&gt;</span>
+            </Link>
+          </SignedOut>
+
+          <SignedIn>
+            <Link
+              href={ROUTES.APP}
+              className="inline-flex items-center gap-2 border border-white/18 px-4 py-2 text-[0.72rem] text-white transition-colors duration-200 hover:bg-white hover:text-black"
+            >
+              <span>Try Socratic AI</span>
+              <span aria-hidden="true">&gt;</span>
+            </Link>
+          </SignedIn>
         </div>
 
         <div className="mt-5 border-t border-white/10 pt-3">

@@ -156,13 +156,24 @@ export default function HomePage() {
               <p className="mt-0.5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
                 From ethics to existentialism, from logic to metaphysics.
               </p>
-              <Link
-                href={ROUTES.SIGN_UP}
-                className="mt-6 inline-flex items-center gap-2 cursor-pointer border border-black/12 bg-black px-5 py-2 text-[0.84rem] font-medium text-white transition-colors duration-200 hover:bg-black/90"
-              >
-                <span>Try Socratic AI</span>
-                <span aria-hidden="true">&gt;</span>
-              </Link>
+              <SignedOut>
+                <Link
+                  href={ROUTES.SIGN_UP}
+                  className="mt-6 inline-flex cursor-pointer items-center gap-2 border border-black/12 bg-black px-5 py-2 text-[0.84rem] font-medium text-white transition-colors duration-200 hover:bg-black/90"
+                >
+                  <span>Try Socratic AI</span>
+                  <span aria-hidden="true">&gt;</span>
+                </Link>
+              </SignedOut>
+              <SignedIn>
+                <Link
+                  href={ROUTES.APP}
+                  className="mt-6 inline-flex cursor-pointer items-center gap-2 border border-black/12 bg-black px-5 py-2 text-[0.84rem] font-medium text-white transition-colors duration-200 hover:bg-black/90"
+                >
+                  <span>Try Socratic AI</span>
+                  <span aria-hidden="true">&gt;</span>
+                </Link>
+              </SignedIn>
             </div>
           </div>
         </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Pencil, RotateCcw } from "lucide-react";
+import { Check, Copy, Pencil, RotateCcw, X } from "lucide-react";
 import type { ChatMessage } from "src/types/chat";
 import ThinkingBubble from "./ThinkingBubble";
 import { cn } from "@/src/lib/utils";
@@ -21,6 +21,7 @@ export default function MessageList({
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ name: string; dataUrl: string } | null>(null);
 
   async function handleCopy(messageId: string, content: string) {
     try {
@@ -33,6 +34,24 @@ export default function MessageList({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!previewImage) {
+      return;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setPreviewImage(null);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [previewImage]);
 
   const lastUserIndex = [...messages]
     .reverse()
@@ -77,12 +96,17 @@ export default function MessageList({
                 {message.attachments && message.attachments.length > 0 && (
                   <div className="mb-3 flex flex-wrap gap-2">
                     {message.attachments.map((attachment, attachmentIndex) => (
-                      <a
+                      <button
                         key={`${attachment.name}-${attachmentIndex}`}
-                        href={attachment.dataUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block overflow-hidden rounded-xl border border-slate-200 bg-white"
+                        type="button"
+                        onClick={() =>
+                          setPreviewImage({
+                            name: attachment.name,
+                            dataUrl: attachment.dataUrl,
+                          })
+                        }
+                        className="block overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
+                        aria-label={`Open ${attachment.name} preview`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -90,7 +114,7 @@ export default function MessageList({
                           alt={attachment.name}
                           className="h-28 w-28 object-cover"
                         />
-                      </a>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -144,6 +168,36 @@ export default function MessageList({
 
         <div ref={bottomRef} />
       </div>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Preview of ${previewImage.name}`}
+          onClick={() => setPreviewImage(null)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
+            onClick={() => setPreviewImage(null)}
+            aria-label="Close image preview"
+          >
+            <X size={18} />
+          </button>
+          <div
+            className="max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewImage.dataUrl}
+              alt={previewImage.name}
+              className="max-h-[90vh] max-w-[90vw] object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

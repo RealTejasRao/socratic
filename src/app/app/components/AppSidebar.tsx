@@ -70,7 +70,7 @@ export default function AppSidebar({ sessions }: Props) {
       <button
         type="button"
         onClick={() => setCollapsed((current) => !current)}
-        className="absolute top-1/2 -right-4 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-[0_8px_20px_rgba(15,23,42,0.08)] transition hover:text-slate-900"
+        className="absolute top-[56px] -right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-[0_8px_20px_rgba(15,23,42,0.08)] transition hover:text-slate-900"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
