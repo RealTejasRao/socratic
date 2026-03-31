@@ -282,13 +282,13 @@ export default function SidebarSessions({ sessions }: Props) {
                 </button>
 
                 {openMenuId === session.id && (
-                  <div className="absolute top-full right-0 z-40 mt-1.5 w-[120px] origin-top-right rounded-md border border-transparent bg-white p-1 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_12px_30px_rgba(15,23,42,0.12)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                  <div className="absolute top-full right-0 z-40 mt-1.5 w-[124px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_1px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                     <button
                       type="button"
                       onClick={() => startRename(session)}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[11px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
                     >
-                      <Pencil size={12} />
+                      <Pencil size={13} />
                       Rename
                     </button>
                     <button
@@ -302,9 +302,9 @@ export default function SidebarSessions({ sessions }: Props) {
                           currentTitle: session.title || "Untitled Session",
                         });
                       }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[11px] text-rose-600 transition hover:bg-rose-50"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#EF4444] transition hover:bg-rose-50"
                     >
-                      <Trash2 size={12} />
+                      <Trash2 size={13} />
                       Delete
                     </button>
                   </div>
@@ -350,7 +350,7 @@ export default function SidebarSessions({ sessions }: Props) {
           }}
         >
           <div
-            className="w-full max-w-[320px] rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-[0_18px_44px_rgba(15,23,42,0.14)]"
+            className="w-full max-w-[320px] rounded-[9px] border border-[#C8C8C2] bg-white px-4 py-3.5"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-3">

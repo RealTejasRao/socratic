@@ -101,7 +101,7 @@ export default function MessageList({
 
   return (
     <div className="flex-1">
-      <div className="mx-auto flex w-full max-w-[680px] flex-col gap-4.5 px-3 pb-10 pt-3 md:px-4">
+      <div className="mx-auto flex w-full max-w-[680px] flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
         {messages.map((message, index) => {
           const isLastUser = index === actualLastUserIndex;
           const isLastAssistant = index === actualLastAssistantIndex;
@@ -155,9 +155,9 @@ export default function MessageList({
               ) : (
                 <div
                   className={cn(
-                    "max-w-[560px] whitespace-pre-wrap px-3.5 py-3",
+                    "max-w-[560px] whitespace-pre-wrap px-3 py-2",
                     isUser
-                      ? `${poppinsClassName} rounded-[10px] tracking-wider border border-slate-300 bg-slate-200 text-[13px] text-slate-900`
+                      ? `${poppinsClassName} rounded-[9px] tracking-wider border border-slate-300 bg-slate-200 text-[13px] text-slate-900`
                       : "bg-transparent text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 [font-family:Georgia,serif]",
                   )}
                 >
@@ -173,7 +173,7 @@ export default function MessageList({
                               dataUrl: attachment.dataUrl,
                             })
                           }
-                          className="block overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
+                          className="block cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
                           aria-label={`Open ${attachment.name} preview`}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}

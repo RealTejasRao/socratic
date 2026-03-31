@@ -64,7 +64,7 @@ export default function AppTopBar({ sessions }: Props) {
     return sessions.find((session) => session.id === sessionId) ?? null;
   }, [pathname, sessions]);
 
-  const title = activeSession?.title || "New chat";
+  const title = activeSession?.title || "Start of a new conversation";
   const isDialogBusy = pendingAction !== null;
   const encodedShareUrl = shareUrl ? encodeURIComponent(shareUrl) : "";
   const encodedShareText = encodeURIComponent(
@@ -352,7 +352,7 @@ export default function AppTopBar({ sessions }: Props) {
               }}
               disabled={!activeSession}
               className={cn(
-                "inline-flex max-w-[340px] items-center gap-1 rounded-full px-2 py-1 text-[13px] text-slate-700",
+                "inline-flex max-w-[340px] tracking-wide items-center gap-1 rounded-full px-2 py-1 text-[13px] text-slate-700",
                 activeSession
                   ? "cursor-pointer transition hover:bg-slate-100 hover:text-slate-900"
                   : "cursor-default",
@@ -363,21 +363,21 @@ export default function AppTopBar({ sessions }: Props) {
             </button>
 
             {menuOpen && activeSession && (
-              <div className="absolute left-1/2 top-full z-40 mt-1.5 w-[126px] origin-top -translate-x-1/2 rounded-md border border-transparent bg-white p-1 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_14px_32px_rgba(15,23,42,0.12)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+              <div className="absolute left-1/2 top-full z-40 mt-1.5 w-[124px] origin-top -translate-x-1/2 rounded-[9px] bg-white p-1.5 shadow-[0_0_0_1px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                 <button
                   type="button"
                   onClick={openRenameDialog}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
                 >
-                  <Pencil size={11} />
+                  <Pencil size={13} />
                   Rename
                 </button>
                 <button
                   type="button"
                   onClick={openDeleteDialog}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[10px] text-rose-600 transition hover:bg-rose-50"
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#EF4444] transition hover:bg-rose-50"
                 >
-                  <Trash2 size={11} />
+                  <Trash2 size={13} />
                   Delete
                 </button>
               </div>
@@ -398,21 +398,21 @@ export default function AppTopBar({ sessions }: Props) {
               </button>
 
               {shareMenuOpen && (
-                <div className="absolute right-0 top-full z-40 mt-1.5 w-[214px] origin-top-right rounded-md border border-transparent bg-white p-2 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_14px_32px_rgba(15,23,42,0.12)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                <div className="absolute right-0 top-full z-40 mt-1.5 w-[214px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_1px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                   <button
                     type="button"
                     onClick={() => void handleCopyLink()}
                     disabled={isPreparingShare}
-                    className="flex w-full cursor-pointer items-center justify-between rounded-[6px] px-2 py-2 text-left text-[10px] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full cursor-pointer items-center justify-between rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span className="inline-flex items-center gap-2">
-                      <Copy size={11} />
+                      <Copy size={13} />
                       {copied ? "Copied" : "Copy link"}
                     </span>
-                    {isPreparingShare && <LoaderCircle size={11} className="animate-spin" />}
+                    {isPreparingShare && <LoaderCircle size={12} className="animate-spin" />}
                   </button>
 
-                  <div className="mt-1 grid grid-cols-4 gap-1">
+                  <div className="mt-1.5 grid grid-cols-4 gap-1">
                     <button
                       type="button"
                       onClick={() =>
@@ -421,7 +421,7 @@ export default function AppTopBar({ sessions }: Props) {
                         )
                       }
                       disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       <XBrandIcon />
                       <span>X</span>
@@ -434,7 +434,7 @@ export default function AppTopBar({ sessions }: Props) {
                         )
                       }
                       disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       <LinkedInIcon />
                       <span>LinkedIn</span>
@@ -449,7 +449,7 @@ export default function AppTopBar({ sessions }: Props) {
                         )
                       }
                       disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       <WhatsAppIcon />
                       <span>WhatsApp</span>
@@ -464,7 +464,7 @@ export default function AppTopBar({ sessions }: Props) {
                         )
                       }
                       disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       <EmailIcon />
                       <span>Email</span>
@@ -472,7 +472,7 @@ export default function AppTopBar({ sessions }: Props) {
                   </div>
 
                   {shareError && (
-                    <p className="mt-1 px-2 text-[9px] text-rose-600">{shareError}</p>
+                    <p className="mt-1.5 px-2 text-[10px] text-rose-600">{shareError}</p>
                   )}
                 </div>
               )}
@@ -493,7 +493,7 @@ export default function AppTopBar({ sessions }: Props) {
           }}
         >
           <div
-            className="w-full max-w-[320px] rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-[0_18px_44px_rgba(15,23,42,0.14)]"
+            className="w-full max-w-[320px] rounded-[9px] border border-[#C8C8C2] bg-white px-4 py-3.5"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-3">
