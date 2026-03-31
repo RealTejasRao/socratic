@@ -3,23 +3,16 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Inter, Poppins } from "next/font/google";
 import { AboutContent } from "@/src/components/about/about-content";
 import { Footer } from "@/src/components/home/footer";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { SpiralAnimation } from "@/src/components/ui/spiral-animation";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
+import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
+const poppinsClassName = "[font-family:Poppins,sans-serif]";
+const interClassName = "[font-family:Inter,sans-serif]";
 
 const navLinks = [
   { label: "Home", href: ROUTES.HOME },
@@ -35,7 +28,7 @@ async function getAboutParagraphs() {
     "public",
     "media",
     "About",
-    "content.txt"
+    "content.txt",
   );
   const content = await readFile(filePath, "utf8");
 
@@ -49,7 +42,7 @@ export default async function AboutPage() {
   const paragraphs = await getAboutParagraphs();
 
   return (
-    <main className={`min-h-screen bg-white ${poppins.className}`}>
+    <main className={`min-h-screen bg-white ${poppinsClassName}`}>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-6 pt-3 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-8 sm:pt-4">
         <nav className="relative mx-auto flex w-full max-w-365 items-center justify-between">
           <a
@@ -58,7 +51,7 @@ export default async function AboutPage() {
           >
             <div className="shrink-0 overflow-hidden">
               <Image
-                src="/brand/Logo_Dark_SVG.svg"
+                src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
                 alt="Socratic AI logo"
                 width={50}
                 height={50}
@@ -146,7 +139,7 @@ export default async function AboutPage() {
         <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
           <TypewriterHeading
             text="About Us"
-            className={`${inter.className} inline-flex items-center text-[clamp(1.15rem,3.4vw,2.75rem)] font-medium tracking-[-0.02em] text-black`}
+            className={`${interClassName} inline-flex items-center text-[clamp(1.15rem,3.4vw,2.75rem)] font-medium tracking-[-0.02em] text-black`}
           />
         </div>
 
@@ -160,8 +153,11 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <AboutContent interClassName={poppins.className} paragraphs={paragraphs} />
-      <Footer interClassName={inter.className} sectionPrefix={ROUTES.HOME} />
+      <AboutContent
+        interClassName={poppinsClassName}
+        paragraphs={paragraphs}
+      />
+      <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOME} />
     </main>
   );
 }

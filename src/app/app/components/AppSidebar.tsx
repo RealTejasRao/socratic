@@ -13,151 +13,147 @@ import {
   Settings,
 } from "lucide-react";
 import { ROUTES } from "src/lib/routes";
+import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import SidebarSearch from "./SidebarSearch";
 import SidebarSessions from "./SidebarSessions";
 
 interface Session {
   id: string;
   title: string | null;
+  firstMessagePreview: string | null;
 }
 
 interface Props {
   sessions: Session[];
 }
 
+const poppinsClassName = "[font-family:Poppins,sans-serif]";
+
 export default function AppSidebar({ sessions }: Props) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside
-      className={`relative hidden shrink-0 border-r border-slate-200/90 bg-[#eef0f5] p-3 transition-[width] duration-300 ease-out lg:flex lg:flex-col ${
-        collapsed ? "w-[72px]" : "w-[230px]"
+      className={`${poppinsClassName} relative hidden shrink-0 border-r border-transparent bg-white p-2 shadow-[inset_-1px_0_0_rgba(0,0,0,0.10)] transition-[width] duration-300 ease-out lg:flex lg:flex-col ${
+        collapsed ? "w-[58px]" : "w-[248px]"
       }`}
     >
-      <div className={`mb-3 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}>
-        {collapsed ? (
-          <div className="flex flex-col items-center">
-            <Link href={ROUTES.APP} className="flex items-center justify-center">
-              <Image
-                src="/brand/Logo_Dark.png"
-                alt="Socratic AI logo"
-                width={26}
-                height={26}
-                className="h-[26px] w-[26px] object-contain"
-                priority
-              />
-            </Link>
-          </div>
-        ) : (
-          <>
-            <Link href={ROUTES.APP} className="flex items-center gap-2 px-1.5">
-              <Image
-                src="/brand/Logo_Dark.png"
-                alt="Socratic AI logo"
-                width={26}
-                height={26}
-                className="h-[26px] w-[26px] object-contain"
-                priority
-              />
-              <span className="text-lg font-semibold tracking-tight text-slate-900">
-                Socratic AI
-              </span>
-            </Link>
-          </>
-        )}
+      <div
+        className={`mb-2 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}
+      >
+        <Link
+          href={ROUTES.APP}
+          className={collapsed ? "flex items-center justify-center" : "flex items-center gap-2 px-1"}
+        >
+          <Image
+            src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
+            alt="Socratic AI logo"
+            width={24}
+            height={24}
+            className="h-5 w-5 shrink-0 object-contain"
+            priority
+          />
+          {!collapsed && (
+            <span className="text-[17px] tracking-wider font-normal  text-slate-900 [font-family:Georgia,serif]">
+              Socratic AI
+            </span>
+          )}
+        </Link>
       </div>
 
       <button
         type="button"
         onClick={() => setCollapsed((current) => !current)}
-        className="absolute top-[56px] -right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-[0_8px_20px_rgba(15,23,42,0.08)] transition hover:text-slate-900"
+        className="absolute top-[44px] -right-3 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-300 bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        {collapsed ? <PanelLeftOpen size={13} /> : <PanelLeftClose size={13} />}
       </button>
 
       {collapsed ? (
         <>
-          <div className="mt-2 flex flex-col items-center gap-1">
+          <div className="mt-1 flex flex-col items-center gap-0.5">
             <Link
               href={ROUTES.APP}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
               aria-label="New chat"
             >
-              <PenSquare size={16} />
+              <PenSquare size={13} />
             </Link>
             <button
               type="button"
               onClick={() => setCollapsed(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
               aria-label="Expand search and sidebar"
             >
-              <Search size={16} />
+              <Search size={13} />
             </button>
           </div>
 
-          <div className="mt-auto space-y-1 border-t border-slate-200 pt-3">
+          <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
             <Link
               href={ROUTES.HOME}
-              className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+              className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
               aria-label="Home"
             >
-              <House size={16} />
+              <House size={13} />
             </Link>
             <button
               type="button"
-              className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+              className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
               aria-label="Settings"
             >
-              <Settings size={16} />
+              <Settings size={13} />
             </button>
             <Link
               href={`${ROUTES.HOME}#contact`}
               target="_blank"
               rel="noreferrer"
-              className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+              className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
               aria-label="Contact us"
             >
-              <Mail size={16} />
+              <Mail size={13} />
             </Link>
           </div>
         </>
       ) : (
         <>
-          <div className="mb-1 mt-2">
+          <div className="mb-1 mt-1">
             <Link
               href={ROUTES.APP}
-              className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-[5px] text-[12px] text-black/90 transition hover:bg-white/70 hover:text-black"
             >
-              <PenSquare size={15} />
+              <PenSquare size={12} />
               <span>New Chat</span>
             </Link>
           </div>
 
           <SidebarSearch />
 
-          <div className="mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-            <p className="mb-2 px-2 text-xs uppercase tracking-[0.14em] text-slate-400">Chats</p>
+          <div className="sidebar-scroll mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+            <p className="mb-1.5 px-2 text-[9px] uppercase tracking-[0.18em] text-slate-400">
+              Chats
+            </p>
             <SidebarSessions sessions={sessions} />
           </div>
 
-          <div className="mt-3 space-y-1 border-t border-slate-200 pt-3">
+          <div className="mt-3 space-y-0.5 border-t border-slate-200 pt-2">
             <Link
               href={ROUTES.HOME}
-              className="flex w-full items-center gap-3 rounded-lg px-2.5 py-1.5 text-sm text-slate-600 hover:bg-white/70 hover:text-slate-900"
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-[5px] text-[12px] text-black/90 hover:bg-white/70 hover:text-black"
             >
-              <House size={15} /> Home
+              <House size={12} /> Home
             </Link>
-            <button className="flex w-full items-center gap-3 rounded-lg px-2.5 py-1.5 text-sm text-slate-600 hover:bg-white/70 hover:text-slate-900">
-              <Settings size={15} /> Settings
+            <button className="flex w-full items-center gap-2 rounded-lg px-2 py-[5px] text-[12px] text-black/90 hover:bg-white/70 hover:text-black">
+              <Settings size={12} /> Settings
             </button>
             <Link
               href={`${ROUTES.HOME}#contact`}
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center gap-3 rounded-lg px-2.5 py-1.5 text-sm text-slate-600 hover:bg-white/70 hover:text-slate-900"
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-[5px] text-[12px] text-black/90 hover:bg-white/70 hover:text-black"
             >
-              <Mail size={15} /> Contact Us
+              <Mail size={12} /> Send Us a Message
             </Link>
           </div>
         </>

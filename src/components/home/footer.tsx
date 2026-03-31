@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ROUTES } from "@/src/lib/routes";
+import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 type FooterProps = {
   interClassName: string;
@@ -9,7 +10,8 @@ type FooterProps = {
 };
 
 export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
-  const withPrefix = (hash: string) => (sectionPrefix ? `${sectionPrefix}${hash}` : hash);
+  const withPrefix = (hash: string) =>
+    sectionPrefix ? `${sectionPrefix}${hash}` : hash;
   const footerLinks = [
     { label: "Home", href: sectionPrefix || "#" },
     { label: "Features", href: withPrefix("#features") },
@@ -24,7 +26,7 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
         <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
           <div className="flex items-center gap-3">
             <Image
-              src="/brand/Logo_Dark_SVG.svg"
+              src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
               alt="Socratic AI logo"
               width={38}
               height={38}
@@ -69,7 +71,9 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
         </div>
 
         <div className="mt-5 border-t border-white/10 pt-3">
-          <p className={`${interClassName} text-center text-[0.68rem] text-white/50`}>
+          <p
+            className={`${interClassName} text-center text-[0.68rem] text-white/50`}
+          >
             © 2026 Socratic AI. All rights reserved.
           </p>
         </div>

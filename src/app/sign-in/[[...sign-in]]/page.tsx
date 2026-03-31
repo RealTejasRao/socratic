@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SignIn } from "@clerk/nextjs";
 import { LoadGate } from "@/src/components/ui/load-gate";
+import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 export default function SignInPage() {
   const nietzscheImageScale = 0.8; // 1 = 100% of right panel width
@@ -69,7 +70,13 @@ export default function SignInPage() {
               style={{ transform: `translateX(${nietzscheImageOffsetXPx}px)` }}
             >
               <Image
-                src="/media/nietzsche_component2.png"
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/media/nietzsche_component2.png",
+                  {
+                    width: 2000,
+                    crop: "limit",
+                  },
+                )}
                 alt="Nietzsche component"
                 width={1050}
                 height={1050}

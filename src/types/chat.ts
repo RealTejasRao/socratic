@@ -3,6 +3,10 @@ export interface ChatImageAttachment {
   dataUrl: string;
   mimeType: string;
   name: string;
+  publicId?: string;
+  width?: number;
+  height?: number;
+  bytes?: number;
 }
 
 export interface ChatMessage {

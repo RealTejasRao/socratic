@@ -3,30 +3,63 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Check, MoreHorizontal, Pencil, Trash2, X } from "lucide-react";
+import {
+  Check,
+  CircleCheck,
+  LoaderCircle,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  X,
+} from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
 interface Session {
   id: string;
   title: string | null;
+  firstMessagePreview: string | null;
 }
 
 interface Props {
   sessions: Session[];
 }
 
+type SessionActionDialog =
+  | {
+      mode: "rename";
+      sessionId: string;
+      currentTitle: string;
+    }
+  | {
+      mode: "delete";
+      sessionId: string;
+      currentTitle: string;
+    };
+
+type SuccessToastState = {
+  message: string;
+  isLeaving: boolean;
+} | null;
+
 export default function SidebarSessions({ sessions }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [hoveredSession, setHoveredSession] = useState<{
-    title: string;
+    id: string;
+    preview: string;
     x: number;
     y: number;
   } | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [actionDialog, setActionDialog] = useState<SessionActionDialog | null>(
+    null,
+  );
   const [renameValue, setRenameValue] = useState("");
+  const [successToast, setSuccessToast] = useState<SuccessToastState>(null);
+  const [pendingAction, setPendingAction] = useState<"rename" | "delete" | null>(
+    null,
+  );
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -42,173 +75,380 @@ export default function SidebarSessions({ sessions }: Props) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!actionDialog) {
+      return;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && !pendingAction) {
+        setActionDialog(null);
+        setRenameValue("");
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [actionDialog, pendingAction]);
+
+  useEffect(() => {
+    if (!successToast) {
+      return;
+    }
+
+    if (successToast.isLeaving) {
+      const timeoutId = window.setTimeout(() => {
+        setSuccessToast(null);
+      }, 240);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSuccessToast((current) =>
+        current
+          ? {
+              ...current,
+              isLeaving: true,
+            }
+          : null,
+      );
+    }, 1900);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [successToast]);
+
+  function showSuccessToast(message: string) {
+    setSuccessToast({
+      message,
+      isLeaving: false,
+    });
+  }
+
   function startRename(session: Session) {
     setOpenMenuId(null);
     setHoveredSession(null);
-    setRenamingId(session.id);
+    setActionDialog({
+      mode: "rename",
+      sessionId: session.id,
+      currentTitle: session.title || "Untitled Session",
+    });
     setRenameValue(session.title || "");
   }
 
-  function cancelRename() {
-    setRenamingId(null);
+  function closeActionDialog() {
+    if (pendingAction) {
+      return;
+    }
+
+    setActionDialog(null);
     setRenameValue("");
   }
 
   async function handleRenameSubmit(id: string) {
     const title = renameValue.trim();
-    if (!title) return;
+    if (!title || pendingAction) return;
 
-    const res = await fetch(`/api/v1/chat/sessions/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title }),
-    });
+    setPendingAction("rename");
 
-    if (!res.ok) return;
+    try {
+      const res = await fetch(`/api/v1/chat/sessions/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      });
 
-    setRenamingId(null);
-    setRenameValue("");
-    router.refresh();
-  }
+      if (!res.ok) return;
 
-  async function handleDelete(id: string) {
-    const confirmed = confirm("Delete this session?");
-    if (!confirmed) return;
-
-    await fetch(`/api/v1/chat/sessions/${id}`, {
-      method: "DELETE",
-    });
-
-    if (pathname === `/app/${id}`) {
-      router.push("/app");
+      setActionDialog(null);
+      setRenameValue("");
+      showSuccessToast("Renamed successfully");
       router.refresh();
-    } else {
-      router.refresh();
+    } finally {
+      setPendingAction(null);
     }
   }
 
+  async function handleDelete(id: string) {
+    if (pendingAction) return;
+
+    setPendingAction("delete");
+
+    try {
+      const res = await fetch(`/api/v1/chat/sessions/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) return;
+
+      setActionDialog(null);
+      setRenameValue("");
+      showSuccessToast("Deleted successfully");
+
+      if (pathname === `/app/${id}`) {
+        router.push("/app");
+        router.refresh();
+      } else {
+        router.refresh();
+      }
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  const isDialogBusy = pendingAction !== null;
+
+  function renderPendingLabel(label: string) {
+    return (
+      <>
+        <LoaderCircle size={11} className="animate-spin" />
+        {label}
+      </>
+    );
+  }
+
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5">
+      {successToast && (
+        <div className="pointer-events-none fixed right-4 top-4 z-[70]">
+          <div
+            className={cn(
+              "flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/96 px-3 py-2 text-[11px] text-emerald-800 shadow-[0_14px_34px_rgba(16,185,129,0.14)] backdrop-blur-sm",
+              successToast.isLeaving
+                ? "animate-[toastSlideOut_240ms_cubic-bezier(0.4,0,0.2,1)_both]"
+                : "animate-[toastSlideIn_220ms_cubic-bezier(0.22,1,0.36,1)_both]",
+            )}
+          >
+            <CircleCheck size={14} className="text-emerald-600" />
+            <span>{successToast.message}</span>
+          </div>
+        </div>
+      )}
+
       {sessions.map((session) => {
         const isActive = pathname === `/app/${session.id}`;
+        const hoverPreview =
+          session.firstMessagePreview?.trim() ||
+          session.title ||
+          "Untitled Session";
 
         return (
           <div
             key={session.id}
             className={cn(
-              "group flex items-center justify-between rounded-lg px-2 py-1.5",
-              isActive ? "bg-white text-slate-900" : "text-slate-600 hover:bg-white/70",
+              "group flex items-center justify-between rounded-[8px] px-2 py-[5px]",
+              isActive
+                ? "bg-white text-slate-900"
+                : "text-slate-600 hover:bg-slate-100",
             )}
             onMouseEnter={(event) => {
-              if (!session.title || openMenuId === session.id || renamingId === session.id) return;
+              if (openMenuId === session.id || actionDialog?.sessionId === session.id) return;
 
               const rect = event.currentTarget.getBoundingClientRect();
               setHoveredSession({
-                title: session.title,
+                id: session.id,
+                preview: hoverPreview,
                 x: rect.right + 14,
                 y: rect.top + rect.height / 2,
               });
             }}
             onMouseLeave={() => {
               setHoveredSession((current) =>
-                current?.title === session.title ? null : current,
+                current?.id === session.id ? null : current,
               );
             }}
           >
-            {renamingId === session.id ? (
-              <div className="flex min-w-0 flex-1 items-center gap-1.5">
-                <input
-                  value={renameValue}
-                  onChange={(event) => setRenameValue(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      void handleRenameSubmit(session.id);
-                    }
+            <>
+              <Link href={`/app/${session.id}`} className="min-w-0 flex-1">
+                <p className="truncate text-[12px]">{session.title || "Untitled Session"}</p>
+              </Link>
+              <div className="relative ml-1.5" ref={openMenuId === session.id ? menuRef : null}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenMenuId((current) => (current === session.id ? null : session.id))
+                  }
+                  className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-600"
+                  aria-label="Open chat actions"
+                >
+                  <MoreHorizontal size={13} />
+                </button>
 
-                    if (event.key === "Escape") {
-                      cancelRename();
-                    }
-                  }}
-                  maxLength={80}
-                  autoFocus
-                  className="h-8 min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-800 outline-none focus:border-slate-400"
-                />
-                <button
-                  type="button"
-                  onClick={() => void handleRenameSubmit(session.id)}
-                  className="rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                  aria-label="Save name"
-                >
-                  <Check size={14} />
-                </button>
-                <button
-                  type="button"
-                  onClick={cancelRename}
-                  className="rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                  aria-label="Cancel rename"
-                >
-                  <X size={14} />
-                </button>
+                {openMenuId === session.id && (
+                  <div className="absolute top-full right-0 z-40 mt-1.5 w-[120px] origin-top-right rounded-md border border-transparent bg-white p-1 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_12px_30px_rgba(15,23,42,0.12)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                    <button
+                      type="button"
+                      onClick={() => startRename(session)}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[11px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                    >
+                      <Pencil size={12} />
+                      Rename
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenMenuId(null);
+                        setHoveredSession(null);
+                        setActionDialog({
+                          mode: "delete",
+                          sessionId: session.id,
+                          currentTitle: session.title || "Untitled Session",
+                        });
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[11px] text-rose-600 transition hover:bg-rose-50"
+                    >
+                      <Trash2 size={12} />
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
-            ) : (
-              <>
-                <Link href={`/app/${session.id}`} className="min-w-0 flex-1">
-                  <p className="truncate text-sm">{session.title || "Untitled Session"}</p>
-                </Link>
-                <div className="relative ml-2" ref={openMenuId === session.id ? menuRef : null}>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setOpenMenuId((current) => (current === session.id ? null : session.id))
-                    }
-                    className="rounded-md p-1 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-600"
-                    aria-label="Open chat actions"
-                  >
-                    <MoreHorizontal size={14} />
-                  </button>
-
-                  {openMenuId === session.id && (
-                    <div className="absolute top-full right-0 z-40 mt-1.5 w-32 rounded-lg border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
-                      <button
-                        type="button"
-                        onClick={() => startRename(session)}
-                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-                      >
-                        <Pencil size={13} />
-                        Rename
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void handleDelete(session.id)}
-                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-rose-600 transition hover:bg-rose-50"
-                      >
-                        <Trash2 size={13} />
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+            </>
           </div>
         );
       })}
 
       {sessions.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-3 text-xs text-slate-500">
+        <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-2.5 text-[11px] text-slate-500">
           Chats will appear here.
         </div>
       )}
 
       {hoveredSession && (
         <div
-          className="pointer-events-none fixed z-50 w-72 -translate-y-1/2"
+          className="pointer-events-none fixed z-50 w-64 -translate-y-1/2"
           style={{ left: hoveredSession.x, top: hoveredSession.y }}
         >
-          <div className="relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2.5 text-xs leading-5 text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
-            <div className="absolute top-1/2 -left-1.5 h-3 w-3 -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
-            <p className="line-clamp-6">{hoveredSession.title}</p>
+          <div className="relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2 text-[11px] leading-[18px] text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
+            <div className="absolute top-1/2 -left-1.5 h-[10px] w-[10px] -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
+            <p className="line-clamp-6 whitespace-pre-wrap break-words">
+              {hoveredSession.preview}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {actionDialog && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/16 p-4 backdrop-blur-[2px]"
+          role="dialog"
+          aria-modal="true"
+          aria-label={
+            actionDialog.mode === "rename" ? "Rename chat" : "Delete chat"
+          }
+          onClick={() => {
+            if (!isDialogBusy) {
+              closeActionDialog();
+            }
+          }}
+        >
+          <div
+            className="w-full max-w-[320px] rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-[0_18px_44px_rgba(15,23,42,0.14)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[12px] font-medium text-slate-900">
+                  {actionDialog.mode === "rename" ? "Rename chat" : "Delete chat"}
+                </p>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                  {actionDialog.mode === "rename"
+                    ? "Give this chat a cleaner title."
+                    : "This removes the chat permanently."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeActionDialog}
+                disabled={isDialogBusy}
+                className="cursor-pointer rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Close dialog"
+              >
+                <X size={12} />
+              </button>
+            </div>
+
+            {actionDialog.mode === "rename" ? (
+              <>
+                <input
+                  value={renameValue}
+                  onChange={(event) => setRenameValue(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void handleRenameSubmit(actionDialog.sessionId);
+                    }
+                  }}
+                  disabled={isDialogBusy}
+                  maxLength={80}
+                  autoFocus
+                  className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-[11px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                />
+                <div className="mt-3 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeActionDialog}
+                    disabled={isDialogBusy}
+                    className="cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleRenameSubmit(actionDialog.sessionId)}
+                    disabled={isDialogBusy || !renameValue.trim()}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {pendingAction === "rename" ? (
+                      renderPendingLabel("Saving...")
+                    ) : (
+                      <>
+                        <Check size={11} />
+                        Save
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="rounded-xl bg-slate-50 px-3 py-2 text-[10px] leading-4 text-slate-600">
+                  {actionDialog.currentTitle}
+                </div>
+                <div className="mt-3 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeActionDialog}
+                    disabled={isDialogBusy}
+                    className="cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleDelete(actionDialog.sessionId)}
+                    disabled={isDialogBusy}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 py-1.5 text-[10px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {pendingAction === "delete" ? (
+                      renderPendingLabel("Deleting...")
+                    ) : (
+                      <>
+                        <Trash2 size={11} />
+                        Delete
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

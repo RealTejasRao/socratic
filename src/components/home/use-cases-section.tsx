@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   BookOpenText,
@@ -11,6 +11,7 @@ import {
   MessagesSquare,
   type LucideIcon,
 } from "lucide-react";
+import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 type UseCasesSectionProps = {
   interClassName: string;
@@ -76,6 +77,23 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   const [restartHeadingSignal, setRestartHeadingSignal] = useState(0);
   const activeItem =
     useCaseItems.find((item) => item.id === activeId) ?? useCaseItems[0]!;
+  const useCaseImageUrls = useMemo(
+    () =>
+      useCaseItems.map((item) => ({
+        id: item.id,
+        url: item.imageSrc
+          ? resolveOptimizedCloudinaryPublicAsset(item.imageSrc, {
+              width: 1200,
+              crop: "limit",
+              quality: "auto:good",
+            })
+          : undefined,
+      })),
+    [],
+  );
+  const activeImageUrl = useCaseImageUrls.find(
+    (item) => item.id === activeItem.id,
+  )?.url;
 
   useEffect(() => {
     const onRestart = (event: Event) => {
@@ -86,7 +104,8 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
     };
 
     window.addEventListener("section:typewriter:restart", onRestart);
-    return () => window.removeEventListener("section:typewriter:restart", onRestart);
+    return () =>
+      window.removeEventListener("section:typewriter:restart", onRestart);
   }, []);
 
   useEffect(() => {
@@ -115,6 +134,19 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
 
     return () => window.clearInterval(interval);
   }, [headingInView, restartHeadingSignal]);
+
+  useEffect(() => {
+    if (!headingInView) {
+      return;
+    }
+
+    for (const item of useCaseImageUrls) {
+      if (!item.url) continue;
+      const image = new window.Image();
+      image.decoding = "async";
+      image.src = item.url;
+    }
+  }, [headingInView, useCaseImageUrls]);
 
   const typedHeading = USE_CASES_HEADING_TEXT.slice(0, visibleHeadingChars);
 
@@ -178,13 +210,19 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                     type="button"
                     onClick={() => setActiveId(item.id)}
                     className={`group relative block w-full cursor-pointer border-b border-black/10 px-3 py-3 text-left last:border-b-0 transition-colors duration-200 lg:flex-1 ${
-                      isActive ? "bg-white" : "bg-[#f7f7f7] hover:bg-black/[0.02]"
+                      isActive
+                        ? "bg-white"
+                        : "bg-[#f7f7f7] hover:bg-black/[0.02]"
                     }`}
                     aria-pressed={isActive}
                     initial={{ opacity: 0, x: -18 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, amount: 0.55 }}
-                    transition={{ duration: 0.45, delay: 0.06 * index, ease: "easeOut" }}
+                    transition={{
+                      duration: 0.45,
+                      delay: 0.06 * index,
+                      ease: "easeOut",
+                    }}
                   >
                     <span
                       className={`absolute inset-y-0 left-0 w-1 bg-black ${
@@ -235,12 +273,14 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
 
               <div className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1">
                 <div className="relative flex h-[9rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[10.25rem] lg:h-full lg:min-h-[12.75rem]">
-                  {activeItem.imageSrc ? (
+                  {activeImageUrl ? (
                     <Image
-                      src={activeItem.imageSrc}
+                      src={activeImageUrl}
                       alt={activeItem.placeholderLabel}
                       fill
+                      unoptimized
                       className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 72vw, 58vw"
                     />
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-black/55">

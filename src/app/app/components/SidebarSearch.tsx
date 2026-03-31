@@ -1,65 +1,265 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/src/components/ui/input";
-import { cn } from "@/src/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Globe, Search, X } from "lucide-react";
 
-export default function SidebarSearch() {
-  const [expanded, setExpanded] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+type SearchResult = {
+  id: string;
+  title: string;
+  snippet: string;
+  matchType: "title" | "message";
+};
 
-  useEffect(() => {
-    if (!expanded) return;
-    inputRef.current?.focus();
-  }, [expanded]);
-
-  function collapseIfOutsideFocus() {
-    const nextFocused = document.activeElement;
-    if (!wrapperRef.current?.contains(nextFocused)) {
-      setExpanded(false);
-    }
+function highlightQuery(text: string, query: string) {
+  if (!query.trim()) {
+    return text;
   }
 
-  return (
-    <div ref={wrapperRef} className="relative mb-3 h-8">
-      <button
-        type="button"
-        onClick={() => setExpanded(true)}
-        className={cn(
-          "absolute inset-0 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-slate-600 transition-all duration-200 hover:bg-white/70 hover:text-slate-900",
-          expanded && "pointer-events-none -translate-y-1 opacity-0",
-        )}
-      >
-        <Search size={15} />
-        <span>Search</span>
-      </button>
+  const normalizedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const segments = text.split(new RegExp(`(${normalizedQuery})`, "ig"));
 
-      <div
-        className={cn(
-          "absolute inset-0 transition-all duration-200",
-          expanded ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0",
-        )}
-      >
-        <div className="relative h-full">
-          <Search
-            size={14}
-            className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-slate-400"
-          />
-          <Input
-            ref={inputRef}
-            placeholder="Search chats"
-            className="h-8 pl-8 pr-3 text-xs"
-            onBlur={collapseIfOutsideFocus}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                setExpanded(false);
-              }
-            }}
-          />
-        </div>
+  return segments.map((segment, index) => {
+    if (segment.toLowerCase() === query.toLowerCase()) {
+      return (
+        <mark
+          key={`${segment}-${index}`}
+          className="rounded-sm bg-amber-100 px-[1px] text-slate-900"
+        >
+          {segment}
+        </mark>
+      );
+    }
+
+    return <span key={`${segment}-${index}`}>{segment}</span>;
+  });
+}
+
+export default function SidebarSearch() {
+  const pathname = usePathname();
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const requestIdRef = useRef(0);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    inputRef.current?.focus();
+  }, [open]);
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (
+        wrapperRef.current?.contains(event.target as Node) ||
+        panelRef.current?.contains(event.target as Node)
+      ) {
+        return;
+      }
+
+      setOpen(false);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    function handleFocusIn(event: FocusEvent) {
+      if (
+        wrapperRef.current?.contains(event.target as Node) ||
+        panelRef.current?.contains(event.target as Node)
+      ) {
+        return;
+      }
+
+      setOpen(false);
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const normalizedQuery = query.trim();
+
+    if (!normalizedQuery) {
+      setResults([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+
+    const timeoutId = window.setTimeout(async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(
+          `/api/v1/chat/sessions/search?q=${encodeURIComponent(normalizedQuery)}`,
+          { signal: controller.signal },
+        );
+
+        if (!response.ok) {
+          if (requestId === requestIdRef.current) {
+            setResults([]);
+          }
+          return;
+        }
+
+        const data = (await response.json()) as SearchResult[];
+        if (requestId === requestIdRef.current) {
+          setResults(data);
+        }
+      } catch {
+        if (requestId === requestIdRef.current) {
+          setResults([]);
+        }
+      } finally {
+        if (requestId === requestIdRef.current) {
+          setIsLoading(false);
+        }
+      }
+    }, 180);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeoutId);
+    };
+  }, [open, query]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) {
+      setQuery("");
+      setResults([]);
+      setIsLoading(false);
+    }
+  }, [open]);
+
+  return (
+    <div ref={wrapperRef} className="relative mb-2">
+      <div className="h-[24px]">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="absolute inset-x-0 top-0 flex h-[24px] cursor-pointer items-center gap-1.5 rounded-lg px-2 py-[5px] text-[12px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black"
+        >
+          <Search size={12} />
+          <span>Search chats</span>
+        </button>
       </div>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/12 backdrop-blur-[3px]"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            ref={panelRef}
+            onClick={(event) => event.stopPropagation()}
+            className="absolute left-1/2 top-1/2 w-[min(620px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-slate-200 bg-white px-4 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.16)]"
+          >
+            <div className="mb-3 flex items-center justify-between gap-3 px-1">
+              <div>
+                <p className="text-[13px] font-medium text-slate-900">Search chats</p>
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  Search titles and message content.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                aria-label="Close search"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <div className="relative">
+              <Search
+                size={14}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search through your chats"
+                autoComplete="off"
+                spellCheck={false}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-[13px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-300 focus:bg-white"
+              />
+            </div>
+
+            <div className="mt-4 max-h-[460px] overflow-y-auto">
+              {!query.trim() ? (
+                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
+                  Start typing to search titles and message content.
+                </div>
+              ) : isLoading ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] text-slate-500">
+                  Searching...
+                </div>
+              ) : results.length === 0 ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
+                  No matching chats found.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {results.map((result) => (
+                    <Link
+                      key={result.id}
+                      href={`/app/${result.id}`}
+                      className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50/60"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="line-clamp-1 text-[12px] font-medium text-slate-900">
+                          {result.title}
+                        </p>
+                        {result.matchType === "message" && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-1.5 py-0.5 text-[9px] text-sky-700">
+                            <Globe size={9} />
+                            In chat
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1.5 line-clamp-2 text-[11px] leading-[18px] text-slate-500">
+                        {highlightQuery(result.snippet, query)}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

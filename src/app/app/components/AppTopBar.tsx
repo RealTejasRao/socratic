@@ -1,0 +1,599 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Check,
+  ChevronDown,
+  Copy,
+  LoaderCircle,
+  Pencil,
+  Send,
+  Trash2,
+  X,
+} from "lucide-react";
+import { cn } from "@/src/lib/utils";
+import AppUserButton from "./AppUserButton";
+
+interface Session {
+  id: string;
+  title: string | null;
+  firstMessagePreview: string | null;
+}
+
+interface Props {
+  sessions: Session[];
+}
+
+type ActionDialog =
+  | {
+      mode: "rename";
+      sessionId: string;
+      currentTitle: string;
+    }
+  | {
+      mode: "delete";
+      sessionId: string;
+      currentTitle: string;
+    };
+
+export default function AppTopBar({ sessions }: Props) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [actionDialog, setActionDialog] = useState<ActionDialog | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [pendingAction, setPendingAction] = useState<"rename" | "delete" | null>(
+    null,
+  );
+  const [shareUrl, setShareUrl] = useState("");
+  const [shareTitle, setShareTitle] = useState("");
+  const [isPreparingShare, setIsPreparingShare] = useState(false);
+  const [shareError, setShareError] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const activeSession = useMemo(() => {
+    const matched = pathname.match(/^\/app\/([^/]+)$/);
+    const sessionId = matched?.[1];
+
+    if (!sessionId) {
+      return null;
+    }
+
+    return sessions.find((session) => session.id === sessionId) ?? null;
+  }, [pathname, sessions]);
+
+  const title = activeSession?.title || "New chat";
+  const isDialogBusy = pendingAction !== null;
+  const encodedShareUrl = shareUrl ? encodeURIComponent(shareUrl) : "";
+  const encodedShareText = encodeURIComponent(
+    shareTitle ? `Check out this Socratic AI chat: ${shareTitle}` : "Check out this Socratic AI chat",
+  );
+
+  useEffect(() => {
+    setMenuOpen(false);
+    setShareMenuOpen(false);
+    setActionDialog(null);
+    setRenameValue("");
+    setPendingAction(null);
+    setShareUrl("");
+    setShareTitle("");
+    setShareError("");
+    setCopied(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+
+      if (target.closest("[data-topbar-interactive]")) {
+        return;
+      }
+
+      setMenuOpen(false);
+      setShareMenuOpen(false);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && !isDialogBusy) {
+        setMenuOpen(false);
+        setShareMenuOpen(false);
+        setActionDialog(null);
+        setRenameValue("");
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDialogBusy]);
+
+  useEffect(() => {
+    if (!copied) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCopied(false);
+    }, 1600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [copied]);
+
+  async function ensureShareLink() {
+    if (!activeSession) {
+      return null;
+    }
+
+    if (shareUrl) {
+      return shareUrl;
+    }
+
+    setIsPreparingShare(true);
+    setShareError("");
+
+    try {
+      const response = await fetch(`/api/v1/chat/sessions/${activeSession.id}/share`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        setShareError("Could not create share link.");
+        return null;
+      }
+
+      const data = (await response.json()) as {
+        shareUrl: string;
+        title: string;
+      };
+
+      setShareUrl(data.shareUrl);
+      setShareTitle(data.title);
+      return data.shareUrl;
+    } catch {
+      setShareError("Could not create share link.");
+      return null;
+    } finally {
+      setIsPreparingShare(false);
+    }
+  }
+
+  async function handleShareMenuToggle() {
+    if (!activeSession) {
+      return;
+    }
+
+    const nextOpen = !shareMenuOpen;
+    setShareMenuOpen(nextOpen);
+    setMenuOpen(false);
+
+    if (nextOpen) {
+      await ensureShareLink();
+    }
+  }
+
+  async function handleCopyLink() {
+    const nextShareUrl = shareUrl || (await ensureShareLink());
+
+    if (!nextShareUrl) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(nextShareUrl);
+      setCopied(true);
+    } catch {
+      setShareError("Could not copy link.");
+    }
+  }
+
+  function openShareTarget(url: string) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function openRenameDialog() {
+    if (!activeSession) return;
+
+    setMenuOpen(false);
+    setActionDialog({
+      mode: "rename",
+      sessionId: activeSession.id,
+      currentTitle: activeSession.title || "Untitled Session",
+    });
+    setRenameValue(activeSession.title || "");
+  }
+
+  function openDeleteDialog() {
+    if (!activeSession) return;
+
+    setMenuOpen(false);
+    setActionDialog({
+      mode: "delete",
+      sessionId: activeSession.id,
+      currentTitle: activeSession.title || "Untitled Session",
+    });
+  }
+
+  function closeDialog() {
+    if (isDialogBusy) {
+      return;
+    }
+
+    setActionDialog(null);
+    setRenameValue("");
+  }
+
+  async function handleRenameSubmit() {
+    if (!actionDialog || actionDialog.mode !== "rename" || isDialogBusy) {
+      return;
+    }
+
+    const nextTitle = renameValue.trim();
+    if (!nextTitle) {
+      return;
+    }
+
+    setPendingAction("rename");
+
+    try {
+      const response = await fetch(`/api/v1/chat/sessions/${actionDialog.sessionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: nextTitle }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      setActionDialog(null);
+      setRenameValue("");
+      router.refresh();
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  async function handleDeleteSubmit() {
+    if (!actionDialog || actionDialog.mode !== "delete" || isDialogBusy) {
+      return;
+    }
+
+    setPendingAction("delete");
+
+    try {
+      const response = await fetch(`/api/v1/chat/sessions/${actionDialog.sessionId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const deletedId = actionDialog.sessionId;
+      setActionDialog(null);
+      setRenameValue("");
+
+      if (pathname === `/app/${deletedId}`) {
+        router.push("/app");
+      }
+
+      router.refresh();
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  function pendingLabel(label: string) {
+    return (
+      <>
+        <LoaderCircle size={11} className="animate-spin" />
+        {label}
+      </>
+    );
+  }
+
+  function XBrandIcon() {
+    return (
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-black" aria-hidden="true">
+        <path d="M18.9 2H21l-6.55 7.49L22 22h-5.94l-4.65-7.6L4.76 22H2.64l7.01-8.01L2 2h6.09l4.2 6.92L18.9 2Zm-1.04 18h1.64L7.2 3.9H5.44Z" />
+      </svg>
+    );
+  }
+
+  function LinkedInIcon() {
+    return (
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-[#0A66C2]" aria-hidden="true">
+        <path d="M4.98 3.5A1.48 1.48 0 1 0 5 6.46 1.48 1.48 0 0 0 4.98 3.5ZM3.5 8h3V20h-3V8Zm5 0h2.88v1.64h.04c.4-.76 1.38-1.64 2.84-1.64 3.04 0 3.6 2 3.6 4.6V20h-3v-5.68c0-1.36-.02-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3V20h-3V8Z" />
+      </svg>
+    );
+  }
+
+  function WhatsAppIcon() {
+    return (
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-[#25D366]" aria-hidden="true">
+        <path d="M12.04 2C6.55 2 2.1 6.44 2.1 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.3-1.39a9.96 9.96 0 0 0 4.74 1.2h.01c5.48 0 9.94-4.44 9.94-9.91A9.9 9.9 0 0 0 12.04 2Zm0 18.14h-.01a8.28 8.28 0 0 1-4.22-1.15l-.3-.18-3.15.82.84-3.06-.2-.31a8.2 8.2 0 0 1-1.27-4.35c0-4.55 3.73-8.25 8.31-8.25 4.58 0 8.3 3.7 8.3 8.25 0 4.55-3.73 8.23-8.3 8.23Zm4.54-6.18c-.25-.12-1.48-.73-1.71-.82-.23-.08-.39-.12-.56.12-.17.25-.65.82-.8.98-.15.17-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.21-.73-.65-1.22-1.45-1.36-1.69-.14-.25-.02-.38.1-.5.1-.1.25-.29.38-.43.12-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.41-.56-.42h-.48c-.17 0-.43.06-.66.31-.23.25-.87.85-.87 2.08 0 1.22.9 2.4 1.02 2.56.12.17 1.76 2.68 4.26 3.75.59.25 1.05.4 1.41.52.59.18 1.12.15 1.54.09.47-.07 1.48-.6 1.69-1.18.21-.58.21-1.08.15-1.18-.06-.09-.23-.15-.48-.27Z" />
+      </svg>
+    );
+  }
+
+  function EmailIcon() {
+    return (
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="3" fill="#EA4335" />
+        <path d="M6 8.2 12 12.8 18 8.2" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <>
+      <header className="sticky top-0 z-20 flex h-10 shrink-0 items-center bg-white px-3 shadow-[inset_0_-1px_0_rgba(0,0,0,0.12)] md:px-5">
+        <div className="w-[88px] shrink-0" />
+
+        <div className="flex min-w-0 flex-1 justify-center">
+          <div className="relative" data-topbar-interactive="">
+            <button
+              type="button"
+              onClick={() => {
+                if (!activeSession) {
+                  return;
+                }
+
+                setShareMenuOpen(false);
+                setMenuOpen((current) => !current);
+              }}
+              disabled={!activeSession}
+              className={cn(
+                "inline-flex max-w-[340px] items-center gap-1 rounded-full px-2 py-1 text-[13px] text-slate-700",
+                activeSession
+                  ? "cursor-pointer transition hover:bg-slate-100 hover:text-slate-900"
+                  : "cursor-default",
+              )}
+            >
+              <span className="truncate">{title}</span>
+              {activeSession && <ChevronDown size={12} className="shrink-0" />}
+            </button>
+
+            {menuOpen && activeSession && (
+              <div className="absolute left-1/2 top-full z-40 mt-1.5 w-[126px] origin-top -translate-x-1/2 rounded-md border border-transparent bg-white p-1 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_14px_32px_rgba(15,23,42,0.12)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                <button
+                  type="button"
+                  onClick={openRenameDialog}
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                >
+                  <Pencil size={11} />
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  onClick={openDeleteDialog}
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1.5 text-left text-[10px] text-rose-600 transition hover:bg-rose-50"
+                >
+                  <Trash2 size={11} />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex w-[108px] shrink-0 items-center justify-end gap-3">
+          {activeSession && (
+            <div className="relative" data-topbar-interactive="">
+              <button
+                type="button"
+                onClick={() => void handleShareMenuToggle()}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-700 transition hover:bg-slate-50"
+              >
+                <Send size={12} />
+                Share
+              </button>
+
+              {shareMenuOpen && (
+                <div className="absolute right-0 top-full z-40 mt-1.5 w-[214px] origin-top-right rounded-md border border-transparent bg-white p-2 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_14px_32px_rgba(15,23,42,0.12)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                  <button
+                    type="button"
+                    onClick={() => void handleCopyLink()}
+                    disabled={isPreparingShare}
+                    className="flex w-full cursor-pointer items-center justify-between rounded-[6px] px-2 py-2 text-left text-[10px] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <Copy size={11} />
+                      {copied ? "Copied" : "Copy link"}
+                    </span>
+                    {isPreparingShare && <LoaderCircle size={11} className="animate-spin" />}
+                  </button>
+
+                  <div className="mt-1 grid grid-cols-4 gap-1">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openShareTarget(
+                          `https://twitter.com/intent/tweet?url=${encodedShareUrl}&text=${encodedShareText}`,
+                        )
+                      }
+                      disabled={!shareUrl || isPreparingShare}
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      <XBrandIcon />
+                      <span>X</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openShareTarget(
+                          `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl}`,
+                        )
+                      }
+                      disabled={!shareUrl || isPreparingShare}
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      <LinkedInIcon />
+                      <span>LinkedIn</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openShareTarget(
+                          `https://wa.me/?text=${encodeURIComponent(
+                            `${shareTitle ? `Check out this Socratic AI chat: ${shareTitle}\n` : ""}${shareUrl}`,
+                          )}`,
+                        )
+                      }
+                      disabled={!shareUrl || isPreparingShare}
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      <WhatsAppIcon />
+                      <span>WhatsApp</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openShareTarget(
+                          `mailto:?subject=${encodeURIComponent(
+                            shareTitle || "Socratic AI chat",
+                          )}&body=${encodeURIComponent(shareUrl)}`,
+                        )
+                      }
+                      disabled={!shareUrl || isPreparingShare}
+                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[8px] px-1.5 py-2 text-[9px] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      <EmailIcon />
+                      <span>Email</span>
+                    </button>
+                  </div>
+
+                  {shareError && (
+                    <p className="mt-1 px-2 text-[9px] text-rose-600">{shareError}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <AppUserButton size="sm" />
+        </div>
+      </header>
+
+      {actionDialog && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/12 p-4 backdrop-blur-[2px]"
+          onClick={() => {
+            if (!isDialogBusy) {
+              closeDialog();
+            }
+          }}
+        >
+          <div
+            className="w-full max-w-[320px] rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-[0_18px_44px_rgba(15,23,42,0.14)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[12px] font-medium text-slate-900">
+                  {actionDialog.mode === "rename" ? "Rename chat" : "Delete chat"}
+                </p>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                  {actionDialog.mode === "rename"
+                    ? "Give this chat a cleaner title."
+                    : "This removes the chat permanently."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeDialog}
+                disabled={isDialogBusy}
+                className="cursor-pointer rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <X size={12} />
+              </button>
+            </div>
+
+            {actionDialog.mode === "rename" ? (
+              <>
+                <input
+                  value={renameValue}
+                  onChange={(event) => setRenameValue(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void handleRenameSubmit();
+                    }
+                  }}
+                  disabled={isDialogBusy}
+                  maxLength={80}
+                  autoFocus
+                  className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-[11px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                />
+                <div className="mt-3 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeDialog}
+                    disabled={isDialogBusy}
+                    className="cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleRenameSubmit()}
+                    disabled={isDialogBusy || !renameValue.trim()}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {pendingAction === "rename" ? (
+                      pendingLabel("Saving...")
+                    ) : (
+                      <>
+                        <Check size={11} />
+                        Save
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="rounded-xl bg-slate-50 px-3 py-2 text-[10px] leading-4 text-slate-600">
+                  {actionDialog.currentTitle}
+                </div>
+                <div className="mt-3 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeDialog}
+                    disabled={isDialogBusy}
+                    className="cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleDeleteSubmit()}
+                    disabled={isDialogBusy}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 py-1.5 text-[10px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {pendingAction === "delete" ? (
+                      pendingLabel("Deleting...")
+                    ) : (
+                      <>
+                        <Trash2 size={11} />
+                        Delete
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

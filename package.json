@@ -9,7 +9,8 @@
     "lint": "eslint",
     "report:ai:weekly": "node scripts/ai-weekly-report.mjs",
     "rag:ingest:books": "node scripts/ingest-books.mjs",
-    "rag:eval": "node scripts/rag-eval.mjs"
+    "rag:eval": "node scripts/rag-eval.mjs",
+    "assets:upload:media": "node scripts/upload-media.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.3",
@@ -19,6 +20,7 @@
     "@prisma/client": "^7.4.1",
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "gsap": "^3.14.2",

@@ -2,17 +2,11 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
+import { generateSessionTitle } from "src/server/chat/generate-session-title";
 import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
-const SESSION_TITLE_MAX_LENGTH = 80;
 const MAX_ATTACHMENTS = 3;
-
-function deriveSessionTitleFromContent(content: string) {
-  const normalized = content.replace(/\s+/g, " ").trim();
-  if (!normalized) return null;
-  return normalized.slice(0, SESSION_TITLE_MAX_LENGTH);
-}
 
 function isValidAttachment(value: unknown): value is ChatImageAttachment {
   return Boolean(
@@ -58,9 +52,6 @@ export async function POST(req: Request) {
   }
   const now = new Date();
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
-  const derivedTitle =
-    deriveSessionTitleFromContent(content) ??
-    (attachments.length > 0 ? "Image upload" : null);
 
   let activeSessionId = sessionId;
   let activeUserId: string;
@@ -74,6 +65,10 @@ export async function POST(req: Request) {
     if (!dbUser) {
       return new NextResponse("User not found in DB", { status: 404 });
     }
+
+    const derivedTitle =
+      (await generateSessionTitle(content)) ??
+      (attachments.length > 0 ? "Image upload" : null);
 
     const newSession = await prisma.chatSession.create({
       data: {
@@ -105,11 +100,17 @@ export async function POST(req: Request) {
       return new NextResponse("Session not found", { status: 404 });
     }
 
-    if (!existingSession.title && derivedTitle) {
-      await prisma.chatSession.update({
-        where: { id: existingSession.id },
-        data: { title: derivedTitle },
-      });
+    if (!existingSession.title) {
+      const derivedTitle =
+        (await generateSessionTitle(content)) ??
+        (attachments.length > 0 ? "Image upload" : null);
+
+      if (derivedTitle) {
+        await prisma.chatSession.update({
+          where: { id: existingSession.id },
+          data: { title: derivedTitle },
+        });
+      }
     }
 
     activeUserId = existingSession.userId;

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import AppSidebar from "./components/AppSidebar";
+import AppTopBar from "./components/AppTopBar";
 
 interface Props {
   children: ReactNode;
@@ -32,17 +33,34 @@ export default async function AppLayout({ children }: Props) {
       id: true,
       title: true,
       lastActivityAt: true,
+      messages: {
+        where: { role: "USER" },
+        orderBy: { createdAt: "asc" },
+        take: 1,
+        select: {
+          content: true,
+        },
+      },
     },
   });
 
-  return (
-    <div className="h-svh bg-[#e9ecf4]">
-      <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[#f4f5f9]">
-        <div className="flex min-h-0 flex-1">
-          <AppSidebar sessions={sessions} />
+  const sidebarSessions = sessions.map((session) => ({
+    id: session.id,
+    title: session.title,
+    firstMessagePreview: session.messages[0]?.content ?? null,
+  }));
 
-          <section className="flex min-h-0 flex-1 flex-col bg-[#f7f8fb]">
-            <main className="min-h-0 flex-1 p-2.5 md:p-4">{children}</main>
+  return (
+    <div className="h-svh bg-white">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+        <div className="flex min-h-0 flex-1">
+          <AppSidebar sessions={sidebarSessions} />
+
+          <section className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+            <AppTopBar sessions={sidebarSessions} />
+            <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
+              {children}
+            </main>
           </section>
         </div>
       </div>

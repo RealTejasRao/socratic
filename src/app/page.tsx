@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Inter, Poppins } from "next/font/google";
 import { GLSLHills } from "@/src/components/ui/glsl-hills";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
@@ -12,17 +11,11 @@ import { UseCasesSection } from "@/src/components/home/use-cases-section";
 import { ContactSection } from "@/src/components/home/contact-section";
 import { Footer } from "@/src/components/home/footer";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
+import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
+const poppinsClassName = "[font-family:Poppins,sans-serif]";
+const interClassName = "[font-family:Inter,sans-serif]";
 
 const navLinks = [
   { label: "Home", href: "#" },
@@ -35,10 +28,10 @@ const navLinks = [
 export default function HomePage() {
   return (
     <LoadGate
-      fallbackClassName={`min-h-screen w-full bg-white ${poppins.className}`}
+      fallbackClassName={`min-h-screen w-full bg-white ${poppinsClassName}`}
     >
       <main
-        className={`relative min-h-screen overflow-hidden bg-white ${poppins.className}`}
+        className={`relative min-h-screen overflow-hidden bg-white ${poppinsClassName}`}
       >
         <HomeHashScroll />
         <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-6 pt-3 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-8 sm:pt-4">
@@ -49,7 +42,7 @@ export default function HomePage() {
             >
               <div className="shrink-0 overflow-hidden">
                 <Image
-                  src="/brand/Logo_Dark_SVG.svg"
+                  src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
                   alt="Socratic AI logo"
                   width={50}
                   height={50}
@@ -147,7 +140,7 @@ export default function HomePage() {
               <h1 className="mt-3">
                 <TypewriterHeading
                   text="Stop Scrolling. Start Thinking"
-                  className={`${inter.className} inline-flex items-center whitespace-nowrap text-[clamp(1rem,2.5vw,2.2rem)] font-medium leading-[1.08] text-black`}
+                  className={`${interClassName} inline-flex items-center whitespace-nowrap text-[clamp(1rem,2.5vw,2.2rem)] font-medium leading-[1.08] text-black`}
                 />
               </h1>
               <p className="mt-5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
@@ -178,11 +171,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <FeaturesSection interClassName={inter.className} />
-        <SecuritySeparator interClassName={inter.className} />
-        <UseCasesSection interClassName={inter.className} />
-        <ContactSection interClassName={inter.className} />
-        <Footer interClassName={inter.className} />
+        <FeaturesSection interClassName={interClassName} />
+        <SecuritySeparator interClassName={interClassName} />
+        <UseCasesSection interClassName={interClassName} />
+        <ContactSection interClassName={interClassName} />
+        <Footer interClassName={interClassName} />
       </main>
     </LoadGate>
   );

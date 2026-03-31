@@ -31,7 +31,7 @@ export function TypewriterHeading({
 
   return (
     <span className={className}>
-      {text.slice(0, visibleChars)}
+      <span>{text.slice(0, visibleChars)}</span>
       <span className="hero-caret" aria-hidden="true" />
     </span>
   );

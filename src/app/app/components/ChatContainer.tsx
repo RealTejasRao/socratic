@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import type { ChatImageAttachment, ChatMessage } from "src/types/chat";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
+import { SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 
@@ -40,13 +41,19 @@ const LATE_GREETINGS = [
   "The world's quiet, best time to talk.",
 ];
 
-const STARTER_CHIPS = [
+const FALLBACK_STARTER_CHIPS = [
   "Why do we fear death if we won't be there to experience it?",
   "Was Socrates right to accept his own death?",
 ];
 
+const STARTER_CHIP_COUNT = 2;
+
+const poppinsClassName = "[font-family:Poppins,sans-serif]";
+
 let greetingSeedStore = 0;
 const greetingSeedListeners = new Set<() => void>();
+let starterChipStore: string[] | null = null;
+const starterChipListeners = new Set<() => void>();
 
 function getGreetingBucket(hour: number) {
   if (hour >= 5 && hour < 12) return MORNING_GREETINGS;
@@ -77,6 +84,51 @@ function getGreetingSeedSnapshot() {
   return greetingSeedStore;
 }
 
+function subscribeToStarterChips(listener: () => void) {
+  starterChipListeners.add(listener);
+
+  if (typeof window !== "undefined" && starterChipStore === null) {
+    queueMicrotask(() => {
+      if (starterChipStore !== null) {
+        return;
+      }
+
+      const randomQuestions = pickRandomQuestions(
+        [...SUGGESTION_QUESTIONS],
+        STARTER_CHIP_COUNT,
+      );
+
+      starterChipStore =
+        randomQuestions.length > 0
+          ? randomQuestions
+          : pickRandomQuestions(FALLBACK_STARTER_CHIPS, STARTER_CHIP_COUNT);
+
+      starterChipListeners.forEach((currentListener) => currentListener());
+    });
+  }
+
+  return () => {
+    starterChipListeners.delete(listener);
+  };
+}
+
+function getStarterChipSnapshot() {
+  return starterChipStore ?? FALLBACK_STARTER_CHIPS;
+}
+
+function pickRandomQuestions(questions: string[], count: number) {
+  const uniqueQuestions = Array.from(new Set(questions));
+
+  for (let index = uniqueQuestions.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    const current = uniqueQuestions[index];
+    uniqueQuestions[index] = uniqueQuestions[randomIndex];
+    uniqueQuestions[randomIndex] = current;
+  }
+
+  return uniqueQuestions.slice(0, count);
+}
+
 export default function ChatContainer({ initialMessages, sessionId }: Props) {
   const { user } = useUser();
   const greetingSeed = useSyncExternalStore(
@@ -84,16 +136,23 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     getGreetingSeedSnapshot,
     () => 0,
   );
+  const starterChips = useSyncExternalStore(
+    subscribeToStarterChips,
+    getStarterChipSnapshot,
+    () => FALLBACK_STARTER_CHIPS,
+  );
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const tempIdRef = useRef(0);
   const router = useRouter();
   const hasMessages = messages.length > 0;
-  const rawName = user?.firstName?.trim() || user?.username?.trim() || "there";
-  const name = rawName.length > 0 ? rawName : "there";
+  const rawName = user?.firstName?.trim() || user?.username?.trim() || "friend";
+  const name = rawName.length > 0 ? rawName : "friend";
+  const userLabel = name === "friend" ? "You" : name;
   const inputPlaceholder =
-    name === "there" ? "What's on your mind?" : `What's on your mind, ${name}?`;
+    name === "friend" ? "What's on your mind?" : `What's on your mind, ${name}?`;
   const greetingLine = (() => {
     if (greetingSeed === 0) {
       return "";
@@ -238,15 +297,18 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   function handleEdit(message: ChatMessage) {
     if (isStreaming) return;
     setEditingMessage(message);
+    setEditDraft(message.content);
   }
 
-  async function handleEditSubmit(payload: {
-    content: string;
-    attachments: ChatImageAttachment[];
-    webSearch: boolean;
-  }) {
+  function handleEditCancel() {
+    if (isStreaming) return;
+    setEditingMessage(null);
+    setEditDraft("");
+  }
+
+  async function handleEditSubmit() {
     if (!editingMessage || !sessionId || isStreaming) return;
-    const newContent = payload.content;
+    const newContent = editDraft;
 
     setIsStreaming(true);
 
@@ -318,6 +380,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     }
 
     setEditingMessage(null);
+    setEditDraft("");
     setIsStreaming(false);
     router.refresh();
   }
@@ -325,43 +388,50 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   if (!hasMessages) {
     return (
       <div className="flex h-full min-h-0 items-center justify-center">
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-[560px] px-4 md:px-8">
           <div className="text-center">
             <h2
-              className="text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl"
+              className="mx-auto max-w-[400px] text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 [font-family:Georgia,serif] md:text-[30px]"
               style={{ visibility: greetingLine ? "visible" : "hidden" }}
             >
               {greetingLine ? (
-                <TypewriterHeading key={greetingLine} text={greetingLine} speedMs={34} />
+                <TypewriterHeading
+                  key={greetingLine}
+                  text={greetingLine}
+                  speedMs={34}
+                  className="inline"
+                />
               ) : (
                 "Clarity is just a few prompts away."
               )}
             </h2>
           </div>
 
-          <div className="mt-7 md:mt-8">
+          <div className="mt-6 md:mt-7">
             <MessageInput
-              key={editingMessage?.id ?? sessionId ?? "new-chat"}
-              onSend={editingMessage ? handleEditSubmit : handleSend}
+              key={sessionId ?? "new-chat"}
+              onSend={handleSend}
               isStreaming={isStreaming}
-              initialValue={editingMessage?.content}
+              initialValue={undefined}
               variant="hero"
               placeholder={inputPlaceholder}
             />
           </div>
 
-        <div className="mt-3 flex flex-wrap justify-center gap-2">
-          {STARTER_CHIPS.map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => handleSend({ content: chip, attachments: [], webSearch: false })}
-                disabled={isStreaming}
-                className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:border-slate-400 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {chip}
-              </button>
-            ))}
+          <div className="mt-4 flex justify-center">
+            <div className="flex w-max items-center justify-center gap-2 whitespace-nowrap">
+              {starterChips.map((chip) => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => handleSend({ content: chip, attachments: [], webSearch: false })}
+                  disabled={isStreaming}
+                  className={`${poppinsClassName} shrink-0 cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -374,15 +444,21 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         messages={messages}
         onRegenerate={handleRegenerate}
         onEdit={handleEdit}
+        onEditCancel={handleEditCancel}
+        onEditSubmit={handleEditSubmit}
+        onEditDraftChange={setEditDraft}
         isStreaming={isStreaming}
+        userLabel={userLabel}
+        editingMessageId={editingMessage?.id ?? null}
+        editDraft={editDraft}
       />
 
-      <div className="animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-3 pb-1">
+      <div className="sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] bg-white pt-4 pb-2">
         <MessageInput
-          key={editingMessage?.id ?? sessionId ?? "new-chat"}
-          onSend={editingMessage ? handleEditSubmit : handleSend}
+          key={sessionId ?? "new-chat"}
+          onSend={handleSend}
           isStreaming={isStreaming}
-          initialValue={editingMessage?.content}
+          initialValue={undefined}
           placeholder={inputPlaceholder}
         />
       </div>

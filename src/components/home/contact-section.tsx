@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 type ContactSectionProps = {
   interClassName: string;
@@ -291,7 +292,13 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           <div className="relative overflow-hidden rounded-xl border border-black/12 bg-[#f2f2f2]">
             <div className="relative h-42 w-full sm:h-48 lg:h-full lg:min-h-62">
               <Image
-                src="/media/About/final_flower.png"
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/media/About/final_flower.png",
+                  {
+                    width: 1200,
+                    crop: "limit",
+                  },
+                )}
                 alt="Floral artwork"
                 fill
                 className="object-cover"

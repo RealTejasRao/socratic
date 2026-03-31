@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SignUp } from "@clerk/nextjs";
 import { LoadGate } from "@/src/components/ui/load-gate";
+import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 export default function SignUpPage() {
   const clerkGlassAppearance = {
@@ -62,7 +63,13 @@ export default function SignUpPage() {
           <section className="relative hidden overflow-visible bg-transparent lg:block">
             <div className="absolute inset-x-0 bottom-0 z-0 flex justify-center -translate-x-20">
               <Image
-                src="/media/Socrates_component.png"
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/media/Socrates_component.png",
+                  {
+                    width: 2000,
+                    crop: "limit",
+                  },
+                )}
                 alt="Socrates component"
                 width={1050}
                 height={1050}
