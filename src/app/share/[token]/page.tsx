@@ -73,7 +73,7 @@ export default async function SharedChatPage({ params }: Props) {
                 <div
                   className={
                     isUser
-                      ? "[font-family:Poppins,sans-serif] max-w-[560px] whitespace-pre-wrap rounded-[14px] border border-slate-300 bg-slate-200 px-3.5 py-3 text-[13px] text-slate-900"
+                      ? "[font-family:Poppins,sans-serif] max-w-[560px] whitespace-pre-wrap rounded-[14px] border border-slate-300 bg-[#f4f4f4] px-3.5 py-3 text-[13px] text-slate-900"
                       : "max-w-[560px] whitespace-pre-wrap bg-transparent px-1 py-1 text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 [font-family:Georgia,serif]"
                   }
                 >

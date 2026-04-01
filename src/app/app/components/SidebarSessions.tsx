@@ -57,9 +57,9 @@ export default function SidebarSessions({ sessions }: Props) {
   );
   const [renameValue, setRenameValue] = useState("");
   const [successToast, setSuccessToast] = useState<SuccessToastState>(null);
-  const [pendingAction, setPendingAction] = useState<"rename" | "delete" | null>(
-    null,
-  );
+  const [pendingAction, setPendingAction] = useState<
+    "rename" | "delete" | null
+  >(null);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -243,13 +243,17 @@ export default function SidebarSessions({ sessions }: Props) {
           <div
             key={session.id}
             className={cn(
-              "group flex items-center justify-between rounded-[8px] px-2 py-[5px]",
+              "app-session-row group flex items-center justify-between rounded-[8px] px-2 py-[5px]",
               isActive
                 ? "bg-white text-slate-900"
-                : "text-slate-600 hover:bg-slate-100",
+                : "text-slate-600 hover:bg-black hover:text-white",
             )}
             onMouseEnter={(event) => {
-              if (openMenuId === session.id || actionDialog?.sessionId === session.id) return;
+              if (
+                openMenuId === session.id ||
+                actionDialog?.sessionId === session.id
+              )
+                return;
 
               const rect = event.currentTarget.getBoundingClientRect();
               setHoveredSession({
@@ -266,14 +270,24 @@ export default function SidebarSessions({ sessions }: Props) {
             }}
           >
             <>
-              <Link href={`/app/${session.id}`} className="min-w-0 flex-1">
-                <p className="truncate text-[12px]">{session.title || "Untitled Session"}</p>
+              <Link
+                href={`/app/${session.id}`}
+                className="block min-w-0 flex-1"
+              >
+                <p className="truncate text-[11px]">
+                  {session.title || "Untitled Session"}
+                </p>
               </Link>
-              <div className="relative ml-1.5" ref={openMenuId === session.id ? menuRef : null}>
+              <div
+                className="relative ml-1.5"
+                ref={openMenuId === session.id ? menuRef : null}
+              >
                 <button
                   type="button"
                   onClick={() =>
-                    setOpenMenuId((current) => (current === session.id ? null : session.id))
+                    setOpenMenuId((current) =>
+                      current === session.id ? null : session.id,
+                    )
                   }
                   className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-600"
                   aria-label="Open chat actions"
@@ -282,11 +296,11 @@ export default function SidebarSessions({ sessions }: Props) {
                 </button>
 
                 {openMenuId === session.id && (
-                  <div className="absolute top-full right-0 z-40 mt-1.5 w-[124px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_1px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                  <div className="app-card absolute top-full right-0 z-40 mt-1.5 w-[124px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                     <button
                       type="button"
                       onClick={() => startRename(session)}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
                     >
                       <Pencil size={13} />
                       Rename
@@ -302,7 +316,7 @@ export default function SidebarSessions({ sessions }: Props) {
                           currentTitle: session.title || "Untitled Session",
                         });
                       }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#EF4444] transition hover:bg-rose-50"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#EF4444] transition hover:bg-rose-50"
                     >
                       <Trash2 size={13} />
                       Delete
@@ -316,7 +330,7 @@ export default function SidebarSessions({ sessions }: Props) {
       })}
 
       {sessions.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-2.5 text-[11px] text-slate-500">
+        <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-2.5 text-[10px] text-slate-500">
           Chats will appear here.
         </div>
       )}
@@ -326,9 +340,9 @@ export default function SidebarSessions({ sessions }: Props) {
           className="pointer-events-none fixed z-50 w-64 -translate-y-1/2"
           style={{ left: hoveredSession.x, top: hoveredSession.y }}
         >
-          <div className="relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2 text-[11px] leading-[18px] text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
-            <div className="absolute top-1/2 -left-1.5 h-[10px] w-[10px] -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
-            <p className="line-clamp-6 whitespace-pre-wrap break-words">
+          <div className="app-card app-session-preview-card relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2 text-[11px] leading-[18px] text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
+            <div className="app-session-preview-arrow absolute top-1/2 -left-1.5 h-[10px] w-[10px] -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
+            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap break-words">
               {hoveredSession.preview}
             </p>
           </div>
@@ -350,13 +364,15 @@ export default function SidebarSessions({ sessions }: Props) {
           }}
         >
           <div
-            className="w-full max-w-[320px] rounded-[9px] border border-[#C8C8C2] bg-white px-4 py-3.5"
+            className="app-card app-session-dialog w-full max-w-[320px] rounded-[9px] border border-[#C8C8C2] bg-white px-4 py-3.5"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
                 <p className="text-[12px] font-medium text-slate-900">
-                  {actionDialog.mode === "rename" ? "Rename chat" : "Delete chat"}
+                  {actionDialog.mode === "rename"
+                    ? "Rename chat"
+                    : "Delete chat"}
                 </p>
                 <p className="mt-1 text-[10px] leading-4 text-slate-500">
                   {actionDialog.mode === "rename"
@@ -389,22 +405,24 @@ export default function SidebarSessions({ sessions }: Props) {
                   disabled={isDialogBusy}
                   maxLength={80}
                   autoFocus
-                  className="h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-[11px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="app-session-dialog-input h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-[11px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
                 />
                 <div className="mt-3 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={closeActionDialog}
                     disabled={isDialogBusy}
-                    className="cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="app-session-dialog-cancel cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    onClick={() => void handleRenameSubmit(actionDialog.sessionId)}
+                    onClick={() =>
+                      void handleRenameSubmit(actionDialog.sessionId)
+                    }
                     disabled={isDialogBusy || !renameValue.trim()}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="app-session-dialog-save inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {pendingAction === "rename" ? (
                       renderPendingLabel("Saving...")
@@ -419,7 +437,7 @@ export default function SidebarSessions({ sessions }: Props) {
               </>
             ) : (
               <>
-                <div className="rounded-xl bg-slate-50 px-3 py-2 text-[10px] leading-4 text-slate-600">
+                <div className="app-session-dialog-danger-box rounded-xl bg-slate-50 px-3 py-2 text-[10px] leading-4 text-slate-600">
                   {actionDialog.currentTitle}
                 </div>
                 <div className="mt-3 flex justify-end gap-2">
@@ -427,7 +445,7 @@ export default function SidebarSessions({ sessions }: Props) {
                     type="button"
                     onClick={closeActionDialog}
                     disabled={isDialogBusy}
-                    className="cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="app-session-dialog-cancel cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Cancel
                   </button>
@@ -435,7 +453,7 @@ export default function SidebarSessions({ sessions }: Props) {
                     type="button"
                     onClick={() => void handleDelete(actionDialog.sessionId)}
                     disabled={isDialogBusy}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 py-1.5 text-[10px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="app-session-dialog-delete inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 py-1.5 text-[10px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {pendingAction === "delete" ? (
                       renderPendingLabel("Deleting...")

@@ -51,14 +51,14 @@ export default async function AppLayout({ children }: Props) {
   }));
 
   return (
-    <div className="h-svh bg-white">
-      <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+    <div className="app-layout h-svh bg-white">
+      <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-white">
         <div className="flex min-h-0 flex-1">
           <AppSidebar sessions={sidebarSessions} />
 
-          <section className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+          <section className="app-chat-section relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
             <AppTopBar sessions={sidebarSessions} />
-            <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
+            <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
               {children}
             </main>
           </section>

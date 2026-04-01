@@ -487,13 +487,13 @@ export default function MessageInput({
         variant === "hero" ? "max-w-[500px]" : "max-w-[620px]",
       )}
     >
-      <div className="overflow-hidden rounded-[12px] border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]">
+      <div className="app-input-shell overflow-visible rounded-[12px] border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]">
         {composerAttachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 border-b border-slate-200 px-3.5 py-2.5">
+          <div className="app-input-attachments flex flex-wrap gap-2 px-3.5 py-2.5">
             {composerAttachments.map((attachment) => (
               <div
                 key={attachment.id}
-                className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
+                className="app-card relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -514,8 +514,9 @@ export default function MessageInput({
                 <button
                   type="button"
                   onClick={() => removeAttachmentById(attachment.id)}
-                className="absolute top-1 right-1 cursor-pointer rounded-[8px] bg-white/90 p-1 text-slate-500 shadow-sm transition hover:text-slate-900"
+                  className="absolute top-1 right-1 cursor-pointer rounded-[8px] bg-white/90 p-1 text-slate-500 shadow-sm transition hover:text-slate-900"
                   aria-label={`Remove ${attachment.name}`}
+                  data-tooltip={`Remove ${attachment.name}`}
                 >
                   <X size={12} />
                 </button>
@@ -531,7 +532,7 @@ export default function MessageInput({
           placeholder={placeholder}
           maxLength={3000}
           rows={1}
-          className={`${poppinsClassName} min-h-[44px] w-full resize-none px-3.5 pt-2.5 pb-1.5 text-[12px] leading-5 text-slate-900 outline-none placeholder:text-slate-400`}
+          className={`${poppinsClassName} app-input-textarea block min-h-[44px] w-full resize-none px-3.5 pt-2.5 pb-1.5 text-[12px] leading-5 text-slate-900 outline-none placeholder:text-slate-400`}
           onKeyDown={(event) => {
             if (event.key === "Enter" && !event.shiftKey) {
               event.preventDefault();
@@ -540,8 +541,10 @@ export default function MessageInput({
           }}
         />
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 px-3 py-1.5">
-          <div className={`${poppinsClassName} flex flex-wrap items-center gap-1 text-[10px] text-slate-600`}>
+        <div className="app-input-toolbar -mt-px flex flex-wrap items-center justify-between gap-2 px-3 py-1.5">
+          <div
+            className={`${poppinsClassName} flex flex-wrap items-center gap-1 text-[10px] text-slate-600`}
+          >
             <input
               ref={fileInputRef}
               type="file"
@@ -556,13 +559,14 @@ export default function MessageInput({
                 onClick={() => setIsActionMenuOpen((current) => !current)}
                 className="inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[8px] hover:bg-slate-100"
                 aria-label="Open actions"
+                data-tooltip="Attach files and more..."
                 aria-expanded={isActionMenuOpen}
               >
                 <Plus size={15} />
               </button>
 
               {isActionMenuOpen && (
-                <div className="absolute bottom-full left-0 z-20 mb-2 min-w-[132px] rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
+                <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-[132px] rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
                   <button
                     type="button"
                     onClick={() => {
@@ -570,6 +574,7 @@ export default function MessageInput({
                       fileInputRef.current?.click();
                     }}
                     className="flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50"
+                    data-tooltip="Attach photos"
                   >
                     <Paperclip size={11} />
                     Attach photos
@@ -581,11 +586,16 @@ export default function MessageInput({
                       setIsActionMenuOpen(false);
                     }}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
+                      "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
                       webSearchEnabled
                         ? "bg-sky-50 text-sky-700"
                         : "text-slate-700",
                     )}
+                    data-tooltip={
+                      webSearchEnabled
+                        ? "Disable web search"
+                        : "Enable web search"
+                    }
                   >
                     <Globe size={11} />
                     Web search
@@ -597,8 +607,9 @@ export default function MessageInput({
               <button
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}
-                className="group inline-flex cursor-pointer items-center gap-1 rounded-[8px] border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
+                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1 rounded-[8px] border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
                 aria-label="Disable web search"
+                data-tooltip="Disable web search"
               >
                 <span className="grid place-items-center">
                   <Globe size={11} className="group-hover:hidden" />
@@ -614,6 +625,7 @@ export default function MessageInput({
                   disabled
                   aria-disabled="true"
                   className="relative inline-flex cursor-not-allowed items-center gap-1 rounded-[8px] px-1.5 py-1 text-slate-400"
+                  data-tooltip="Voice input not supported on this browser"
                 >
                   <Mic size={11} /> Voice
                   <span
@@ -636,6 +648,9 @@ export default function MessageInput({
                 onClick={handleVoiceToggle}
                 disabled={isStreaming}
                 className="inline-flex h-[30px] cursor-pointer items-center gap-1 rounded-[8px] px-2 hover:bg-slate-100 disabled:cursor-not-allowed"
+                data-tooltip={
+                  isListening ? "Stop listening" : "Start voice input"
+                }
               >
                 <Mic size={14} className={cn(isListening && "text-sky-600")} />{" "}
                 {isListening ? "Listening..." : "Voice"}
@@ -645,7 +660,9 @@ export default function MessageInput({
 
           <div className="flex items-center gap-2">
             {content.length >= 3000 && (
-              <span className="text-[10px] text-amber-700">Max limit reached</span>
+              <span className="text-[10px] text-amber-700">
+                Max limit reached
+              </span>
             )}
             {isUploadingAttachments && content.length < 3000 && (
               <span className="text-[10px] text-slate-500">
@@ -671,7 +688,7 @@ export default function MessageInput({
                 (!content.trim() && attachments.length === 0)
               }
               className={cn(
-                "inline-flex h-[30px] w-[30px] items-center justify-center rounded-full bg-black text-white",
+                "app-send-button inline-flex h-[30px] w-[30px] items-center justify-center rounded-full bg-black text-white",
                 isStreaming ||
                   isUploadingAttachments ||
                   (!content.trim() && attachments.length === 0)
@@ -679,6 +696,7 @@ export default function MessageInput({
                   : "cursor-pointer transition hover:bg-slate-800",
               )}
               aria-label="Send"
+              data-tooltip="Send message"
             >
               <ArrowUp size={13} strokeWidth={2.4} />
             </button>

@@ -167,9 +167,9 @@ export default function SidebarSearch() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="absolute inset-x-0 top-0 flex h-[24px] cursor-pointer items-center gap-1.5 rounded-lg px-2 py-[5px] text-[12px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black"
+          className="absolute inset-x-0 top-0 flex h-[24px] cursor-pointer items-center gap-1.5 rounded-lg px-2 py-[5px] text-[11px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black"
         >
-          <Search size={12} />
+          <Search size={11} />
           <span>Search chats</span>
         </button>
       </div>
@@ -182,11 +182,13 @@ export default function SidebarSearch() {
           <div
             ref={panelRef}
             onClick={(event) => event.stopPropagation()}
-            className="absolute left-1/2 top-1/2 w-[min(620px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-slate-200 bg-white px-4 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.16)]"
+            className="app-card absolute left-1/2 top-1/2 w-[min(620px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 rounded-[9px] border border-slate-200 bg-white px-4 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.16)]"
           >
             <div className="mb-3 flex items-center justify-between gap-3 px-1">
               <div>
-                <p className="text-[13px] font-medium text-slate-900">Search chats</p>
+                <p className="text-[13px] font-medium text-slate-900">
+                  Search chats
+                </p>
                 <p className="mt-0.5 text-[10px] text-slate-500">
                   Search titles and message content.
                 </p>
@@ -236,7 +238,7 @@ export default function SidebarSearch() {
                     <Link
                       key={result.id}
                       href={`/app/${result.id}`}
-                      className="block rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50/60"
+                      className="app-card block rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50/60"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <p className="line-clamp-1 text-[12px] font-medium text-slate-900">

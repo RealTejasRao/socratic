@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Check, Copy, PenLine, RotateCcw, X } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Pause,
+  PenLine,
+  Play,
+  RotateCcw,
+  Square,
+  Volume2,
+  X,
+} from "lucide-react";
 import type { ChatMessage } from "src/types/chat";
 import ThinkingBubble from "./ThinkingBubble";
 import { cn } from "@/src/lib/utils";
@@ -25,6 +35,80 @@ interface Props {
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 
+function pickPreferredVoice(voices: SpeechSynthesisVoice[]) {
+  if (!voices.length) {
+    return null;
+  }
+
+  const englishVoices = voices.filter((voice) =>
+    voice.lang.toLowerCase().startsWith("en"),
+  );
+  const pool = englishVoices.length ? englishVoices : voices;
+
+  const britishFemalePriorityNames = [
+    "google uk english female",
+    "libby",
+    "hazel",
+    "susan",
+    "serena",
+    "kate",
+    "sophie",
+  ];
+
+  for (const keyword of britishFemalePriorityNames) {
+    const exactBritishFemale = pool.find((voice) => {
+      const name = voice.name.toLowerCase();
+      const lang = voice.lang.toLowerCase();
+      return lang.startsWith("en-gb") && name.includes(keyword);
+    });
+
+    if (exactBritishFemale) {
+      return exactBritishFemale;
+    }
+  }
+
+  const britishFemaleByLang = pool.find((voice) => {
+    const name = voice.name.toLowerCase();
+    const lang = voice.lang.toLowerCase();
+    return (
+      lang.startsWith("en-gb") &&
+      (name.includes("female") || name.includes("woman"))
+    );
+  });
+
+  if (britishFemaleByLang) {
+    return britishFemaleByLang;
+  }
+
+  const britishAny = pool.find((voice) =>
+    voice.lang.toLowerCase().startsWith("en-gb"),
+  );
+
+  if (britishAny) {
+    return britishAny;
+  }
+
+  const previousFallbackNames = [
+    "aria",
+    "jenny",
+    "samantha",
+    "zira",
+    "google us english",
+  ];
+
+  for (const keyword of previousFallbackNames) {
+    const match = pool.find((voice) =>
+      voice.name.toLowerCase().includes(keyword),
+    );
+
+    if (match) {
+      return match;
+    }
+  }
+
+  return pool[0] ?? null;
+}
+
 export default function MessageList({
   messages,
   onRegenerate,
@@ -39,11 +123,20 @@ export default function MessageList({
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<{
     name: string;
     dataUrl: string;
   } | null>(null);
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(
+    null,
+  );
+  const [isSpeechPaused, setIsSpeechPaused] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState<
+    SpeechSynthesisVoice[]
+  >([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
   async function handleCopy(messageId: string, content: string) {
     try {
@@ -53,9 +146,163 @@ export default function MessageList({
     } catch {}
   }
 
+  function resetSpeechState() {
+    activeUtteranceRef.current = null;
+    setSpeakingMessageId(null);
+    setIsSpeechPaused(false);
+  }
+
+  function stopSpeech() {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    resetSpeechState();
+  }
+
+  function speakMessage(messageId: string, content: string) {
+    if (
+      typeof window === "undefined" ||
+      !("speechSynthesis" in window) ||
+      typeof SpeechSynthesisUtterance === "undefined"
+    ) {
+      return;
+    }
+
+    const cleanedContent = content.trim();
+    if (!cleanedContent) {
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(cleanedContent);
+    const selectedVoice = selectedVoiceURI
+      ? (availableVoices.find((voice) => voice.voiceURI === selectedVoiceURI) ??
+        null)
+      : pickPreferredVoice(availableVoices);
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang;
+    }
+
+    utterance.onstart = () => {
+      setSpeakingMessageId(messageId);
+      setIsSpeechPaused(false);
+    };
+
+    utterance.onpause = () => {
+      setIsSpeechPaused(true);
+    };
+
+    utterance.onresume = () => {
+      setIsSpeechPaused(false);
+    };
+
+    utterance.onend = () => {
+      setSpeakingMessageId((current) => {
+        if (current === messageId) {
+          activeUtteranceRef.current = null;
+          return null;
+        }
+
+        return current;
+      });
+      setIsSpeechPaused(false);
+    };
+
+    utterance.onerror = () => {
+      setSpeakingMessageId((current) => {
+        if (current === messageId) {
+          activeUtteranceRef.current = null;
+          return null;
+        }
+
+        return current;
+      });
+      setIsSpeechPaused(false);
+    };
+
+    activeUtteranceRef.current = utterance;
+    setSpeakingMessageId(messageId);
+    setIsSpeechPaused(false);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function togglePauseSpeech() {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      return;
+    }
+
+    if (!speakingMessageId) {
+      return;
+    }
+
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      setIsSpeechPaused(false);
+      return;
+    }
+
+    window.speechSynthesis.pause();
+    setIsSpeechPaused(true);
+  }
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      return;
+    }
+
+    const synth = window.speechSynthesis;
+
+    const syncVoices = () => {
+      const voices = synth.getVoices();
+      setAvailableVoices(voices);
+
+      setSelectedVoiceURI((current) => {
+        if (current && voices.some((voice) => voice.voiceURI === current)) {
+          return current;
+        }
+
+        return pickPreferredVoice(voices)?.voiceURI ?? null;
+      });
+    };
+
+    syncVoices();
+    synth.addEventListener("voiceschanged", syncVoices);
+
+    return () => {
+      synth.removeEventListener("voiceschanged", syncVoices);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!speakingMessageId) {
+      return;
+    }
+
+    const hasSpeakingMessage = messages.some(
+      (message) => message.id === speakingMessageId,
+    );
+
+    if (!hasSpeakingMessage) {
+      stopSpeech();
+    }
+  }, [messages, speakingMessageId]);
 
   useEffect(() => {
     if (!previewImage) {
@@ -108,6 +355,7 @@ export default function MessageList({
           const isAssistant = message.role === "ASSISTANT";
           const isUser = message.role === "USER";
           const isEditingThisMessage = editingMessageId === message.id;
+          const isSpeakingThisMessage = speakingMessageId === message.id;
 
           return (
             <div
@@ -124,7 +372,7 @@ export default function MessageList({
               )}
 
               {isEditingThisMessage ? (
-                <div className="w-full max-w-[560px] rounded-[14px] border border-slate-300 bg-slate-200 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+                <div className="app-user-edit-shell w-full max-w-[560px] rounded-[14px] border border-slate-300 bg-[#f4f4f4] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
                   <textarea
                     ref={editTextareaRef}
                     value={editDraft}
@@ -157,37 +405,39 @@ export default function MessageList({
                   className={cn(
                     "max-w-[560px] whitespace-pre-wrap px-3 py-2",
                     isUser
-                      ? `${poppinsClassName} rounded-[9px] tracking-wider border border-slate-300 bg-slate-200 text-[13px] text-slate-900`
-                      : "bg-transparent text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 [font-family:Georgia,serif]",
+                      ? `${poppinsClassName} app-user-bubble rounded-[9px] tracking-wider border border-slate-300 bg-[#f4f4f4] text-[13px] text-slate-900`
+                      : "app-assistant-text bg-transparent text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 font-[Georgia,serif]",
                   )}
                 >
                   {message.attachments && message.attachments.length > 0 && (
                     <div className="mb-3 flex flex-wrap gap-2">
-                      {message.attachments.map((attachment, attachmentIndex) => (
-                        <button
-                          key={`${attachment.name}-${attachmentIndex}`}
-                          type="button"
-                          onClick={() =>
-                            setPreviewImage({
-                              name: attachment.name,
-                              dataUrl: attachment.dataUrl,
-                            })
-                          }
-                          className="block cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
-                          aria-label={`Open ${attachment.name} preview`}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={buildChatAttachmentThumbnailUrl(
-                              attachment.dataUrl,
-                            )}
-                            alt={attachment.name}
-                            className="h-24 w-24 object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </button>
-                      ))}
+                      {message.attachments.map(
+                        (attachment, attachmentIndex) => (
+                          <button
+                            key={`${attachment.name}-${attachmentIndex}`}
+                            type="button"
+                            onClick={() =>
+                              setPreviewImage({
+                                name: attachment.name,
+                                dataUrl: attachment.dataUrl,
+                              })
+                            }
+                            className="block cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
+                            aria-label={`Open ${attachment.name} preview`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={buildChatAttachmentThumbnailUrl(
+                                attachment.dataUrl,
+                              )}
+                              alt={attachment.name}
+                              className="h-24 w-24 object-cover"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </button>
+                        ),
+                      )}
                     </div>
                   )}
                   {isAssistant && !message.content ? (
@@ -205,64 +455,112 @@ export default function MessageList({
                     isUser ? "justify-end pr-0.5" : "justify-start pl-2",
                   )}
                 >
-                <button
-                  onClick={() => handleCopy(message.id, message.content)}
-                  className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-400 transition hover:border-slate-300 hover:bg-white hover:text-slate-700"
-                  aria-label="Copy message"
-                >
-                  {copiedMessageId === message.id ? (
-                    <Check size={12} />
-                  ) : (
-                    <Copy size={12} />
-                  )}
-                </button>
-
-                {isAssistant && isLastAssistant && (
                   <button
-                    onClick={onRegenerate}
-                    disabled={isStreaming}
-                      className={cn(
-                      "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white/90",
-                      isStreaming
-                        ? "cursor-not-allowed opacity-40"
-                        : "text-slate-400 transition hover:border-slate-300 hover:bg-white hover:text-slate-700",
-                    )}
-                    aria-label="Regenerate response"
+                    onClick={() => handleCopy(message.id, message.content)}
+                    className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                    aria-label="Copy message"
+                    data-tooltip="Copy message"
                   >
-                    <RotateCcw size={12} />
+                    {copiedMessageId === message.id ? (
+                      <Check size={12} />
+                    ) : (
+                      <Copy size={12} />
+                    )}
                   </button>
-                )}
 
-                {isUser && isLastUser && (
-                  <>
-                    <button
-                      onClick={() => onEdit(message)}
-                      disabled={isStreaming}
-                      className={cn(
-                        "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white/90",
-                        isStreaming
-                          ? "cursor-not-allowed opacity-40"
-                          : "text-slate-400 transition hover:border-slate-300 hover:bg-white hover:text-slate-700",
+                  {isAssistant && message.content.trim() && (
+                    <>
+                      {!isSpeakingThisMessage ? (
+                        <button
+                          onClick={() =>
+                            speakMessage(message.id, message.content)
+                          }
+                          className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                          aria-label="Speak response"
+                          data-tooltip="Speak response"
+                        >
+                          <Volume2 size={12} />
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={togglePauseSpeech}
+                            className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                            aria-label={
+                              isSpeechPaused ? "Resume speech" : "Pause speech"
+                            }
+                            data-tooltip={
+                              isSpeechPaused ? "Resume speech" : "Pause speech"
+                            }
+                          >
+                            {isSpeechPaused ? (
+                              <Play size={12} />
+                            ) : (
+                              <Pause size={12} />
+                            )}
+                          </button>
+                          <button
+                            onClick={stopSpeech}
+                            className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                            aria-label="Stop speech"
+                            data-tooltip="Stop speech"
+                          >
+                            <Square size={11} />
+                          </button>
+                        </>
                       )}
-                      aria-label="Edit message"
-                    >
-                      <PenLine size={12} />
-                    </button>
+                    </>
+                  )}
+
+                  {isAssistant && isLastAssistant && (
                     <button
                       onClick={onRegenerate}
                       disabled={isStreaming}
                       className={cn(
-                        "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white/90",
+                        "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
                         isStreaming
                           ? "cursor-not-allowed opacity-40"
-                          : "text-slate-400 transition hover:border-slate-300 hover:bg-white hover:text-slate-700",
+                          : "text-slate-400 transition hover:text-slate-700",
                       )}
                       aria-label="Regenerate response"
+                      data-tooltip="Regenerate response"
                     >
                       <RotateCcw size={12} />
                     </button>
-                  </>
-                )}
+                  )}
+
+                  {isUser && isLastUser && (
+                    <>
+                      <button
+                        onClick={() => onEdit(message)}
+                        disabled={isStreaming}
+                        className={cn(
+                          "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
+                          isStreaming
+                            ? "cursor-not-allowed opacity-40"
+                            : "text-slate-400 transition hover:text-slate-700",
+                        )}
+                        aria-label="Edit message"
+                        data-tooltip="Edit message"
+                      >
+                        <PenLine size={12} />
+                      </button>
+                      <button
+                        onClick={onRegenerate}
+                        disabled={isStreaming}
+                        className={cn(
+                          "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
+                          isStreaming
+                            ? "cursor-not-allowed opacity-40"
+                            : "text-slate-400 transition hover:text-slate-700",
+                        )}
+                        aria-label="Regenerate response"
+                        data-tooltip="Regenerate response"
+                      >
+                        <RotateCcw size={12} />
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -285,6 +583,7 @@ export default function MessageList({
             className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
             onClick={() => setPreviewImage(null)}
             aria-label="Close image preview"
+            data-tooltip="Close image preview"
           >
             <X size={18} />
           </button>

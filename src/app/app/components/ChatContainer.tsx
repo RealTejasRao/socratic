@@ -143,7 +143,9 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   );
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null);
+  const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(
+    null,
+  );
   const [editDraft, setEditDraft] = useState("");
   const tempIdRef = useRef(0);
   const router = useRouter();
@@ -152,14 +154,18 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   const name = rawName.length > 0 ? rawName : "friend";
   const userLabel = name === "friend" ? "You" : name;
   const inputPlaceholder =
-    name === "friend" ? "What's on your mind?" : `What's on your mind, ${name}?`;
+    name === "friend"
+      ? "What's on your mind?"
+      : `What's on your mind, ${name}?`;
   const greetingLine = (() => {
     if (greetingSeed === 0) {
       return "";
     }
 
     const bucket = getGreetingBucket(new Date().getHours());
-    const template = bucket[greetingSeed % bucket.length] ?? "Clarity is just a few prompts away.";
+    const template =
+      bucket[greetingSeed % bucket.length] ??
+      "Clarity is just a few prompts away.";
 
     return template.replace("{name}", name);
   })();
@@ -312,7 +318,9 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
     setIsStreaming(true);
 
-    const index = messages.findIndex((message) => message.id === editingMessage.id);
+    const index = messages.findIndex(
+      (message) => message.id === editingMessage.id,
+    );
     const assistantMessageId = createTempId("assistant-temp");
 
     setMessages((prev) => [
@@ -338,7 +346,9 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     let messageIdForEdit = editingMessage.id;
 
     if (messageIdForEdit.startsWith("temp-")) {
-      const lookupRes = await fetch(`/api/v1/chat/sessions/${sessionId}/messages`);
+      const lookupRes = await fetch(
+        `/api/v1/chat/sessions/${sessionId}/messages`,
+      );
       if (lookupRes.ok) {
         const persistedMessages = (await lookupRes.json()) as ChatMessage[];
         const latestUserMessage = [...persistedMessages]
@@ -391,7 +401,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         <div className="w-full max-w-[560px] px-4 md:px-8">
           <div className="text-center">
             <h2
-              className="mx-auto max-w-[400px] text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 [font-family:Georgia,serif] md:text-[30px]"
+              className="app-greeting-heading mx-auto max-w-[400px] text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 [font-family:Georgia,serif] md:text-[30px]"
               style={{ visibility: greetingLine ? "visible" : "hidden" }}
             >
               {greetingLine ? (
@@ -424,9 +434,15 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
                 <button
                   key={chip}
                   type="button"
-                  onClick={() => handleSend({ content: chip, attachments: [], webSearch: false })}
+                  onClick={() =>
+                    handleSend({
+                      content: chip,
+                      attachments: [],
+                      webSearch: false,
+                    })
+                  }
                   disabled={isStreaming}
-                  className={`${poppinsClassName} shrink-0 cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
+                  className={`${poppinsClassName} app-suggestion-pill shrink-0 cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
                 >
                   {chip}
                 </button>
@@ -453,7 +469,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         editDraft={editDraft}
       />
 
-      <div className="sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] bg-white pt-4 pb-2">
+      <div className="app-composer-dock sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-4 pb-2">
         <MessageInput
           key={sessionId ?? "new-chat"}
           onSend={handleSend}
