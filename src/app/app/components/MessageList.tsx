@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Check,
   Copy,
@@ -146,20 +146,20 @@ export default function MessageList({
     } catch {}
   }
 
-  function resetSpeechState() {
+  const resetSpeechState = useCallback(() => {
     activeUtteranceRef.current = null;
     setSpeakingMessageId(null);
     setIsSpeechPaused(false);
-  }
+  }, []);
 
-  function stopSpeech() {
+  const stopSpeech = useCallback(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;
     }
 
     window.speechSynthesis.cancel();
     resetSpeechState();
-  }
+  }, [resetSpeechState]);
 
   function speakMessage(messageId: string, content: string) {
     if (
@@ -300,9 +300,15 @@ export default function MessageList({
     );
 
     if (!hasSpeakingMessage) {
-      stopSpeech();
+      const timeoutId = window.setTimeout(() => {
+        stopSpeech();
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
-  }, [messages, speakingMessageId]);
+  }, [messages, speakingMessageId, stopSpeech]);
 
   useEffect(() => {
     if (!previewImage) {

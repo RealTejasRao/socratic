@@ -122,7 +122,13 @@ function pickRandomQuestions(questions: string[], count: number) {
   for (let index = uniqueQuestions.length - 1; index > 0; index -= 1) {
     const randomIndex = Math.floor(Math.random() * (index + 1));
     const current = uniqueQuestions[index];
-    uniqueQuestions[index] = uniqueQuestions[randomIndex];
+    const randomValue = uniqueQuestions[randomIndex];
+
+    if (current === undefined || randomValue === undefined) {
+      continue;
+    }
+
+    uniqueQuestions[index] = randomValue;
     uniqueQuestions[randomIndex] = current;
   }
 

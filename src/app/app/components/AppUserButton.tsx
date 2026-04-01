@@ -2,19 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 
 interface Props {
   size?: "sm" | "md";
 }
 
 export default function AppUserButton({ size = "md" }: Props) {
-  const [isMounted, setIsMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-
     const root = document.documentElement;
     const syncTheme = () => {
       setIsDarkMode(root.classList.contains("app-dark"));
@@ -36,10 +32,6 @@ export default function AppUserButton({ size = "md" }: Props) {
     };
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
-
   const triggerClassName =
     size === "sm"
       ? "!h-[28px] !w-[28px] border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
@@ -51,15 +43,9 @@ export default function AppUserButton({ size = "md" }: Props) {
     <UserButton
       key={isDarkMode ? "clerk-user-dark" : "clerk-user-light"}
       appearance={{
-        baseTheme: isDarkMode ? dark : undefined,
         elements: {
           userButtonTrigger: triggerClassName,
           userButtonAvatarBox: avatarClassName,
-        },
-      }}
-      userProfileProps={{
-        appearance: {
-          baseTheme: isDarkMode ? dark : undefined,
         },
       }}
     />

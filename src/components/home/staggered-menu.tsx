@@ -54,11 +54,18 @@ export function StaggeredMenu({
       gsap.killTweensOf([panel, ...layers]);
       gsap.set([panel, ...layers], { xPercent: 100 });
       const itemEls = Array.from(panel.querySelectorAll(".sm-panel-itemLabel")) as HTMLElement[];
+      const firstLayer = layers[0];
+      const secondLayer = layers[1];
+
+      if (!firstLayer || !secondLayer) {
+        return;
+      }
+
       gsap.set(itemEls, { yPercent: 140, rotate: 10 });
 
       const tl = gsap.timeline();
-      tl.to(layers[0], { xPercent: 0, duration: 0.42, ease: "power4.out" }, 0);
-      tl.to(layers[1], { xPercent: 0, duration: 0.5, ease: "power4.out" }, 0.05);
+      tl.to(firstLayer, { xPercent: 0, duration: 0.42, ease: "power4.out" }, 0);
+      tl.to(secondLayer, { xPercent: 0, duration: 0.5, ease: "power4.out" }, 0.05);
       tl.to(panel, { xPercent: 0, duration: 0.6, ease: "power4.out" }, 0.1);
       tl.to(itemEls, { yPercent: 0, rotate: 0, duration: 0.65, stagger: 0.08, ease: "power4.out" }, 0.22);
       return;

@@ -229,7 +229,9 @@ export async function generateReply(params: {
   const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
     role: msg.role.toLowerCase() as "user" | "assistant",
     content: msg.content,
-    attachments: msg.role === "USER" ? normalizeImageAttachments(msg.attachments) : undefined,
+    ...(msg.role === "USER"
+      ? { attachments: normalizeImageAttachments(msg.attachments) }
+      : {}),
   }));
   const knowledgeRoute = decideKnowledgeRoute({
     userContent,
@@ -332,32 +334,20 @@ export async function generateReply(params: {
   const shouldAppendLatestUserMessage =
     appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
 
-  const promptBuilderParams: {
-    conversationHistory: { role: "user" | "assistant"; content: string }[];
-    beliefContext: { type: "BELIEF" | "ASSUMPTION" | "GOAL" | "POSITION"; belief: string; confidence: number }[];
-    retrievedContext: { title: string; author: string; chunkType: string; content: string; chunkIndex: number }[];
-    webSearchSummary?: string;
-    webSearchSources?: { title: string; url: string }[];
-    userContent: string;
-    userAttachments?: ChatImageAttachment[];
-    appendUserMessageToPrompt: boolean;
-    conversationMemorySummary?: string;
-    knowledgeRoute: "conversation_only" | "rag" | "web" | "hybrid";
-  } = {
+  const promptBuilderParams: Parameters<typeof buildSocraticPrompt>[0] = {
     conversationHistory,
     beliefContext,
     retrievedContext: retrievedPassages,
-    webSearchSummary,
-    webSearchSources,
     userContent,
-    userAttachments,
     appendUserMessageToPrompt: shouldAppendLatestUserMessage,
     knowledgeRoute,
+    ...(webSearchSummary !== undefined ? { webSearchSummary } : {}),
+    ...(webSearchSources !== undefined ? { webSearchSources } : {}),
+    ...(userAttachments !== undefined ? { userAttachments } : {}),
+    ...(latestConversationMemory?.summary !== undefined
+      ? { conversationMemorySummary: latestConversationMemory.summary }
+      : {}),
   };
-
-  if (latestConversationMemory?.summary !== undefined) {
-    promptBuilderParams.conversationMemorySummary = latestConversationMemory.summary;
-  }
 
   const builtPrompt = buildSocraticPrompt(promptBuilderParams);
   preStreamTotalMs = Date.now() - pipelineStartedAtMs;

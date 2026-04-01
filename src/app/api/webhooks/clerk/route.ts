@@ -3,6 +3,18 @@ import { Webhook } from "svix";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 
+type ClerkWebhookEvent = {
+  type: string;
+  data: {
+    id?: string;
+    primary_email_address_id?: string | null;
+    email_addresses?: Array<{
+      id?: string;
+      email_address?: string | null;
+    }>;
+  };
+};
+
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env["CLERK_WEBHOOK_SECRET"];
 
@@ -24,14 +36,14 @@ export async function POST(req: Request) {
 
   const wh = new Webhook(WEBHOOK_SECRET);
 
-  let evt: any;
+  let evt: ClerkWebhookEvent;
 
   try {
     evt = wh.verify(body, {
       "svix-id": svixId,
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature
-    });
+    }) as ClerkWebhookEvent;
   } catch (err) {
     console.error("Webhook verification failed:", err);
     return new NextResponse("Invalid signature", { status: 400 });
@@ -43,7 +55,7 @@ export async function POST(req: Request) {
     const { id, email_addresses } = evt.data;
 
     const primaryEmail =
-      email_addresses?.find((e: any) => e.id === evt.data.primary_email_address_id)?.email_address ??
+      email_addresses?.find((email) => email.id === evt.data.primary_email_address_id)?.email_address ??
       email_addresses?.[0]?.email_address ??
       null;
 

@@ -155,8 +155,8 @@ function buildDynamicContextMessage(params: {
   conversationMemorySummary: string | undefined;
   beliefContext: BeliefContextItem[];
   retrievedContext: RetrievedContextItem[];
-  webSearchSummary?: string;
-  webSearchSources?: WebSource[];
+  webSearchSummary: string | undefined;
+  webSearchSources: WebSource[] | undefined;
   knowledgeRoute: KnowledgeRoute;
 }) {
   const sectionOrder = [
