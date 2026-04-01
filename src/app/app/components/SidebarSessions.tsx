@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  type MouseEvent as ReactMouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -60,6 +65,7 @@ export default function SidebarSessions({ sessions }: Props) {
   const [pendingAction, setPendingAction] = useState<
     "rename" | "delete" | null
   >(null);
+  const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -93,6 +99,24 @@ export default function SidebarSessions({ sessions }: Props) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [actionDialog, pendingAction]);
+
+  useEffect(() => {
+    setPendingSessionId(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!pendingSessionId) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setPendingSessionId(null);
+    }, 7000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [pendingSessionId]);
 
   useEffect(() => {
     if (!successToast) {
@@ -214,6 +238,31 @@ export default function SidebarSessions({ sessions }: Props) {
     );
   }
 
+  function handleSessionOpen(
+    event: ReactMouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    if (pathname === `/app/${id}`) {
+      setPendingSessionId(null);
+      return;
+    }
+
+    setPendingSessionId(id);
+    setOpenMenuId(null);
+    setHoveredSession(null);
+  }
+
   return (
     <div className="space-y-0.5">
       {successToast && (
@@ -234,6 +283,7 @@ export default function SidebarSessions({ sessions }: Props) {
 
       {sessions.map((session) => {
         const isActive = pathname === `/app/${session.id}`;
+        const isOpening = pendingSessionId === session.id && !isActive;
         const hoverPreview =
           session.firstMessagePreview?.trim() ||
           session.title ||
@@ -244,12 +294,14 @@ export default function SidebarSessions({ sessions }: Props) {
             key={session.id}
             className={cn(
               "app-session-row group flex items-center justify-between rounded-[8px] px-2 py-[5px]",
+              isOpening && "app-session-row-loading",
               isActive
                 ? "bg-white text-slate-900"
                 : "text-slate-600 hover:bg-black hover:text-white",
             )}
             onMouseEnter={(event) => {
               if (
+                isOpening ||
                 openMenuId === session.id ||
                 actionDialog?.sessionId === session.id
               )
@@ -273,57 +325,65 @@ export default function SidebarSessions({ sessions }: Props) {
               <Link
                 href={`/app/${session.id}`}
                 className="block min-w-0 flex-1"
+                onClick={(event) => handleSessionOpen(event, session.id)}
               >
                 <p className="truncate text-[11px]">
                   {session.title || "Untitled Session"}
                 </p>
               </Link>
-              <div
-                className="relative ml-1.5"
-                ref={openMenuId === session.id ? menuRef : null}
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setOpenMenuId((current) =>
-                      current === session.id ? null : session.id,
-                    )
-                  }
-                  className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-600"
-                  aria-label="Open chat actions"
+              {isOpening ? (
+                <div className="app-session-opening-chip ml-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 px-2 py-1 text-[10px] text-slate-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
+                  <LoaderCircle size={10} className="animate-spin" />
+                  <span className="font-medium">Opening</span>
+                </div>
+              ) : (
+                <div
+                  className="relative ml-1.5"
+                  ref={openMenuId === session.id ? menuRef : null}
                 >
-                  <MoreHorizontal size={13} />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenMenuId((current) =>
+                        current === session.id ? null : session.id,
+                      )
+                    }
+                    className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-600"
+                    aria-label="Open chat actions"
+                  >
+                    <MoreHorizontal size={13} />
+                  </button>
 
-                {openMenuId === session.id && (
-                  <div className="app-card absolute top-full right-0 z-40 mt-1.5 w-[124px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
-                    <button
-                      type="button"
-                      onClick={() => startRename(session)}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
-                    >
-                      <Pencil size={13} />
-                      Rename
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOpenMenuId(null);
-                        setHoveredSession(null);
-                        setActionDialog({
-                          mode: "delete",
-                          sessionId: session.id,
-                          currentTitle: session.title || "Untitled Session",
-                        });
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#EF4444] transition hover:bg-rose-50"
-                    >
-                      <Trash2 size={13} />
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
+                  {openMenuId === session.id && (
+                    <div className="app-card absolute top-full right-0 z-40 mt-1.5 w-[124px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                      <button
+                        type="button"
+                        onClick={() => startRename(session)}
+                        className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
+                      >
+                        <Pencil size={13} />
+                        Rename
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOpenMenuId(null);
+                          setHoveredSession(null);
+                          setActionDialog({
+                            mode: "delete",
+                            sessionId: session.id,
+                            currentTitle: session.title || "Untitled Session",
+                          });
+                        }}
+                        className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#EF4444] transition hover:bg-rose-50"
+                      >
+                        <Trash2 size={13} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           </div>
         );

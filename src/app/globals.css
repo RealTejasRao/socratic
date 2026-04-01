@@ -439,6 +439,51 @@ html.app-dark .app-session-row button:hover {
   background: transparent !important;
 }
 
+.app-session-row-loading {
+  background: linear-gradient(90deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.app-session-row-loading:hover {
+  background: linear-gradient(
+    90deg,
+    #f8fafc 0%,
+    #ffffff 50%,
+    #f8fafc 100%
+  ) !important;
+}
+
+.app-session-opening-chip {
+  animation: sessionOpenChipPulse 1.25s ease-in-out infinite;
+}
+
+html.app-dark .app-session-row-loading {
+  background: linear-gradient(
+    90deg,
+    #292826 0%,
+    #2e2d2b 50%,
+    #292826 100%
+  ) !important;
+  border-color: #4a4946 !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.app-dark .app-session-row-loading:hover {
+  background: linear-gradient(
+    90deg,
+    #292826 0%,
+    #2e2d2b 50%,
+    #292826 100%
+  ) !important;
+}
+
+html.app-dark .app-session-opening-chip {
+  background: #2c2b29 !important;
+  border-color: #57554f !important;
+  color: #ecebe8 !important;
+}
+
 html.app-dark .app-composer-dock {
   background: transparent !important;
 }
@@ -561,6 +606,19 @@ html.app-dark .msg-action-btn:hover {
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes sessionOpenChipPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  }
+
+  50% {
+    transform: translateY(-0.5px);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
   }
 }
 

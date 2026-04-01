@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 interface Props {
   size?: "sm" | "md";
@@ -9,9 +10,30 @@ interface Props {
 
 export default function AppUserButton({ size = "md" }: Props) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+
+    const root = document.documentElement;
+    const syncTheme = () => {
+      setIsDarkMode(root.classList.contains("app-dark"));
+    };
+
+    syncTheme();
+
+    const observer = new MutationObserver(() => {
+      syncTheme();
+    });
+
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   if (!isMounted) {
@@ -27,10 +49,17 @@ export default function AppUserButton({ size = "md" }: Props) {
 
   return (
     <UserButton
+      key={isDarkMode ? "clerk-user-dark" : "clerk-user-light"}
       appearance={{
+        baseTheme: isDarkMode ? dark : undefined,
         elements: {
           userButtonTrigger: triggerClassName,
           userButtonAvatarBox: avatarClassName,
+        },
+      }}
+      userProfileProps={{
+        appearance: {
+          baseTheme: isDarkMode ? dark : undefined,
         },
       }}
     />

@@ -1,11 +1,7 @@
 "use client";
 
+import { Loading } from "@/src/components/ui/circle-unique-load";
+
 export default function ThinkingBubble() {
-  return (
-    <div className="flex items-center gap-1 py-1">
-      <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]" />
-      <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]" />
-      <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400" />
-    </div>
-  );
+  return <Loading screenHFull={false} compact />;
 }
