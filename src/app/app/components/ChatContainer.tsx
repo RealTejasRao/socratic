@@ -3,15 +3,24 @@
 import { useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import type { ChatImageAttachment, ChatMessage } from "src/types/chat";
+import { AnimatePresence, motion } from "framer-motion";
+import { Swords } from "lucide-react";
+import { cn } from "@/src/lib/utils";
+import type {
+  ChatImageAttachment,
+  ChatMessage,
+  ChatSessionMeta,
+} from "src/types/chat";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
 import { SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
+import DebateModeSetup from "./DebateModeSetup";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 
 interface Props {
   initialMessages: ChatMessage[];
   sessionId?: string;
+  sessionMeta?: ChatSessionMeta;
 }
 
 const MORNING_GREETINGS = [
@@ -135,7 +144,11 @@ function pickRandomQuestions(questions: string[], count: number) {
   return uniqueQuestions.slice(0, count);
 }
 
-export default function ChatContainer({ initialMessages, sessionId }: Props) {
+export default function ChatContainer({
+  initialMessages,
+  sessionId,
+  sessionMeta = { mode: "SOCRATIC" },
+}: Props) {
   const { user } = useUser();
   const greetingSeed = useSyncExternalStore(
     subscribeToGreetingSeed,
@@ -153,14 +166,21 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     null,
   );
   const [editDraft, setEditDraft] = useState("");
+  const [modeSelection, setModeSelection] = useState<"SOCRATIC" | "DEBATE">(
+    sessionMeta.mode,
+  );
+  const [activeSessionMeta] = useState<ChatSessionMeta>(sessionMeta);
   const tempIdRef = useRef(0);
   const router = useRouter();
   const hasMessages = messages.length > 0;
+  const isDebateSession = activeSessionMeta.mode === "DEBATE";
+  const isDebateCompleted = activeSessionMeta.debate?.status === "COMPLETED";
   const rawName = user?.firstName?.trim() || user?.username?.trim() || "friend";
   const name = rawName.length > 0 ? rawName : "friend";
   const userLabel = name === "friend" ? "You" : name;
-  const inputPlaceholder =
-    name === "friend"
+  const inputPlaceholder = isDebateSession
+    ? "Defend your side."
+    : name === "friend"
       ? "What's on your mind?"
       : `What's on your mind, ${name}?`;
   const greetingLine = (() => {
@@ -186,7 +206,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
     attachments: ChatImageAttachment[];
     webSearch: boolean;
   }) {
-    if (isStreaming) return;
+    if (isStreaming || isDebateCompleted) return;
     const tempId = createTempId("temp");
     const { content, attachments, webSearch } = payload;
 
@@ -221,13 +241,24 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         body: JSON.stringify({ sessionId, content, attachments, webSearch }),
       });
 
-      const returnedSessionId = res.headers.get("X-Session-Id");
+      if (!res.ok || !res.body) {
+        setMessages((prev) =>
+          prev.filter(
+            (message) =>
+              message.id !== assistantMessageId && message.id !== optimisticMessage.id,
+          ),
+        );
+        setIsStreaming(false);
+        router.refresh();
+        return;
+      }
 
-      const reader = res.body?.getReader();
+      const returnedSessionId = res.headers.get("X-Session-Id");
+      const reader = res.body.getReader();
       const decoder = new TextDecoder();
 
       while (true) {
-        const { done, value } = await reader!.read();
+        const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value);
@@ -262,7 +293,7 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   }
 
   async function handleRegenerate() {
-    if (!sessionId || isStreaming) return;
+    if (!sessionId || isStreaming || isDebateCompleted) return;
 
     setIsStreaming(true);
 
@@ -284,11 +315,17 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       body: JSON.stringify({ sessionId }),
     });
 
-    const reader = res.body?.getReader();
+    if (!res.ok || !res.body) {
+      setIsStreaming(false);
+      router.refresh();
+      return;
+    }
+
+    const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
     while (true) {
-      const { done, value } = await reader!.read();
+      const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value);
@@ -307,19 +344,19 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
   }
 
   function handleEdit(message: ChatMessage) {
-    if (isStreaming) return;
+    if (isStreaming || isDebateSession) return;
     setEditingMessage(message);
     setEditDraft(message.content);
   }
 
   function handleEditCancel() {
-    if (isStreaming) return;
+    if (isStreaming || isDebateSession) return;
     setEditingMessage(null);
     setEditDraft("");
   }
 
   async function handleEditSubmit() {
-    if (!editingMessage || !sessionId || isStreaming) return;
+    if (!editingMessage || !sessionId || isStreaming || isDebateSession) return;
     const newContent = editDraft;
 
     setIsStreaming(true);
@@ -377,11 +414,17 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
       }),
     });
 
-    const reader = res.body?.getReader();
+    if (!res.ok || !res.body) {
+      setIsStreaming(false);
+      router.refresh();
+      return;
+    }
+
+    const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
     while (true) {
-      const { done, value } = await reader!.read();
+      const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value);
@@ -403,58 +446,111 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
 
   if (!hasMessages) {
     return (
-      <div className="flex h-full min-h-0 items-center justify-center">
-        <div className="w-full max-w-[560px] px-4 md:px-8">
-          <div className="text-center">
-            <h2
-              className="app-greeting-heading mx-auto max-w-[400px] text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 [font-family:Georgia,serif] md:text-[30px]"
-              style={{ visibility: greetingLine ? "visible" : "hidden" }}
-            >
-              {greetingLine ? (
-                <TypewriterHeading
-                  key={greetingLine}
-                  text={greetingLine}
-                  speedMs={34}
-                  className="inline"
-                />
-              ) : (
-                "Clarity is just a few prompts away."
-              )}
-            </h2>
-          </div>
-
-          <div className="mt-6 md:mt-7">
-            <MessageInput
-              key={sessionId ?? "new-chat"}
-              onSend={handleSend}
-              isStreaming={isStreaming}
-              initialValue={undefined}
-              variant="hero"
-              placeholder={inputPlaceholder}
-            />
-          </div>
-
-          <div className="mt-4 flex justify-center">
-            <div className="flex w-max items-center justify-center gap-2 whitespace-nowrap">
-              {starterChips.map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  onClick={() =>
-                    handleSend({
-                      content: chip,
-                      attachments: [],
-                      webSearch: false,
-                    })
-                  }
-                  disabled={isStreaming}
-                  className={`${poppinsClassName} app-suggestion-pill shrink-0 cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
-                >
-                  {chip}
-                </button>
-              ))}
+      <div className="relative flex h-full min-h-0 items-center justify-center px-4 md:px-6">
+        <div className="w-full">
+          <div className="absolute top-[-10px] left-4 z-10 md:left-6 md:top-[-12px]">
+            <div className="inline-flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setModeSelection("SOCRATIC")}
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-[11px] transition",
+                  modeSelection === "SOCRATIC"
+                    ? "bg-black text-white"
+                    : "text-zinc-600 hover:text-black",
+                )}
+              >
+                Socratic
+              </button>
+              <button
+                type="button"
+                onClick={() => setModeSelection("DEBATE")}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-[11px] transition",
+                  modeSelection === "DEBATE"
+                    ? "bg-black text-white"
+                    : "text-zinc-600 hover:text-black",
+                )}
+              >
+                <Swords size={13} />
+                Debate
+              </button>
             </div>
           </div>
+
+          <AnimatePresence mode="wait">
+            {modeSelection === "SOCRATIC" ? (
+              <motion.div
+                key="socratic"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mx-auto max-w-[760px] text-center">
+                  <h2
+                    className="app-greeting-heading mx-auto max-w-[400px] text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 [font-family:Georgia,serif] md:text-[30px]"
+                    style={{ visibility: greetingLine ? "visible" : "hidden" }}
+                  >
+                    {greetingLine ? (
+                      <TypewriterHeading
+                        key={greetingLine}
+                        text={greetingLine}
+                        speedMs={34}
+                        className="inline"
+                      />
+                    ) : (
+                      "Clarity is just a few prompts away."
+                    )}
+                  </h2>
+                </div>
+
+                <div className="mt-6 md:mt-7">
+                  <MessageInput
+                    key={sessionId ?? "new-chat"}
+                    onSend={handleSend}
+                    isStreaming={isStreaming}
+                    initialValue={undefined}
+                    variant="hero"
+                    placeholder={inputPlaceholder}
+                  />
+                </div>
+
+                <div className="mt-4 flex justify-center">
+                  <div className="flex w-max items-center justify-center gap-2 whitespace-nowrap">
+                    {starterChips.map((chip) => (
+                      <button
+                        key={chip}
+                        type="button"
+                        onClick={() =>
+                          handleSend({
+                            content: chip,
+                            attachments: [],
+                            webSearch: false,
+                          })
+                        }
+                        disabled={isStreaming}
+                        className={`${poppinsClassName} app-suggestion-pill shrink-0 cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
+                      >
+                        {chip}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="debate"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                className="flex w-full justify-center"
+              >
+                <DebateModeSetup />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );
@@ -473,17 +569,25 @@ export default function ChatContainer({ initialMessages, sessionId }: Props) {
         userLabel={userLabel}
         editingMessageId={editingMessage?.id ?? null}
         editDraft={editDraft}
+        disableRevisionActions={isDebateSession}
       />
 
-      <div className="app-composer-dock sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-4 pb-2">
-        <MessageInput
-          key={sessionId ?? "new-chat"}
-          onSend={handleSend}
-          isStreaming={isStreaming}
-          initialValue={undefined}
-          placeholder={inputPlaceholder}
-        />
-      </div>
+      {!isDebateCompleted && (
+        <div className="app-composer-dock sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-4 pb-2">
+          <MessageInput
+            key={sessionId ?? "new-chat"}
+            onSend={handleSend}
+            isStreaming={isStreaming}
+            initialValue={undefined}
+            placeholder={inputPlaceholder}
+            showWebSearch={!isDebateSession}
+          />
+        </div>
+      )}
     </div>
   );
 }
+
+
+
+

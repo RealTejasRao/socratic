@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
+import { serializeSessionMeta } from "src/server/chat/session-meta";
 
 export async function GET() {
   const { userId: clerkUserId } = await auth();
@@ -24,11 +25,28 @@ export async function GET() {
     select: {
       id: true,
       title: true,
+      mode: true,
       status: true,
+      debateTone: true,
+      debateDurationPreset: true,
+      debateHasTimer: true,
+      debateTopic: true,
+      debateTopicSource: true,
+      userDebateSide: true,
+      aiDebateSide: true,
+      debateStatus: true,
+      debateStartedAt: true,
+      debateEndedAt: true,
+      debateWinner: true,
+      debateVerdictSummary: true,
+      debateSummary: true,
       lastActivityAt: true,
       createdAt: true
     }
   });
 
-  return NextResponse.json(sessions);
+  return NextResponse.json(sessions.map((session) => ({
+    ...session,
+    meta: serializeSessionMeta(session),
+  })));
 }

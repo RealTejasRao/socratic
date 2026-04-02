@@ -139,12 +139,12 @@ export default function HomePage() {
               </p>
               <h1 className="mt-3">
                 <TypewriterHeading
-                  text="Stop Scrolling. Start Thinking"
+                  text="✨ Philosophy Reimagined ✨"
                   className={`${interClassName} inline-flex items-center whitespace-nowrap text-[clamp(1rem,2.5vw,2.2rem)] font-medium leading-[1.08] text-black`}
                 />
               </h1>
               <p className="mt-5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
-                Built for the restless mind.
+                Engage. Debate. Learn
               </p>
               <p className="mt-0.5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
                 From ethics to existentialism, from logic to metaphysics.

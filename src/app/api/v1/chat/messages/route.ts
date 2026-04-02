@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
 import { generateSessionTitle } from "src/server/chat/generate-session-title";
+import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
 import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
@@ -93,11 +94,35 @@ export async function POST(req: Request) {
         id: true,
         title: true,
         userId: true,
+        mode: true,
+        debateStatus: true,
+        debateStartedAt: true,
+        debateDurationPreset: true,
       },
     });
 
     if (!existingSession) {
       return new NextResponse("Session not found", { status: 404 });
+    }
+
+    if (existingSession.mode === "DEBATE") {
+      if (existingSession.debateStatus === "COMPLETED") {
+        return new NextResponse("This debate has already ended.", {
+          status: 409,
+        });
+      }
+
+      const remainingSeconds = getDebateTimeRemainingSeconds({
+        startedAt: existingSession.debateStartedAt,
+        durationPreset: existingSession.debateDurationPreset,
+      });
+
+      if (remainingSeconds !== null && remainingSeconds <= 0) {
+        await finalizeDebateSession({ sessionId: existingSession.id });
+        return new NextResponse("This debate has already ended.", {
+          status: 409,
+        });
+      }
     }
 
     if (!existingSession.title) {

@@ -54,6 +54,7 @@ interface Props {
   initialValue: string | undefined;
   variant?: "default" | "hero";
   placeholder?: string;
+  showWebSearch?: boolean;
 }
 
 interface ComposerImageAttachment {
@@ -81,6 +82,7 @@ export default function MessageInput({
   initialValue,
   variant = "default",
   placeholder = "What's on your mind?",
+  showWebSearch = true,
 }: Props) {
   const pathname = usePathname();
   const storageKey = `socratic:draft:${pathname}`;
@@ -579,31 +581,33 @@ export default function MessageInput({
                     <Paperclip size={11} />
                     Attach photos
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setWebSearchEnabled((current) => !current);
-                      setIsActionMenuOpen(false);
-                    }}
-                    className={cn(
-                      "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
-                      webSearchEnabled
-                        ? "bg-sky-50 text-sky-700"
-                        : "text-slate-700",
-                    )}
-                    data-tooltip={
-                      webSearchEnabled
-                        ? "Disable web search"
-                        : "Enable web search"
-                    }
-                  >
-                    <Globe size={11} />
-                    Web search
-                  </button>
+                  {showWebSearch && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWebSearchEnabled((current) => !current);
+                        setIsActionMenuOpen(false);
+                      }}
+                      className={cn(
+                        "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
+                        webSearchEnabled
+                          ? "bg-sky-50 text-sky-700"
+                          : "text-slate-700",
+                      )}
+                      data-tooltip={
+                        webSearchEnabled
+                          ? "Disable web search"
+                          : "Enable web search"
+                      }
+                    >
+                      <Globe size={11} />
+                      Web search
+                    </button>
+                  )}
                 </div>
               )}
             </div>
-            {webSearchEnabled && (
+            {showWebSearch && webSearchEnabled && (
               <button
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}

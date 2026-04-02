@@ -15,12 +15,15 @@ import {
 } from "lucide-react";
 import { ROUTES } from "src/lib/routes";
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import type { DebateSessionState } from "src/types/chat";
 import SidebarSearch from "./SidebarSearch";
 import SidebarSessions from "./SidebarSessions";
 
 interface Session {
   id: string;
   title: string | null;
+  mode: "SOCRATIC" | "DEBATE";
+  debate: DebateSessionState | null;
   firstMessagePreview: string | null;
 }
 

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
 import { invalidateConversationMemory } from "src/server/ai/memory-store";
+import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
 import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
@@ -72,11 +73,38 @@ export async function POST(req: Request) {
         clerkUserId,
       },
     },
-    select: { id: true, userId: true },
+    select: {
+      id: true,
+      userId: true,
+      mode: true,
+      debateStatus: true,
+      debateStartedAt: true,
+      debateDurationPreset: true,
+    },
   });
 
   if (!session) {
     return new NextResponse("Session not found", { status: 404 });
+  }
+
+  if (session.mode === "DEBATE") {
+    if (session.debateStatus === "COMPLETED") {
+      return new NextResponse("Debate messages cannot be edited after the debate ends.", {
+        status: 409,
+      });
+    }
+
+    const remainingSeconds = getDebateTimeRemainingSeconds({
+      startedAt: session.debateStartedAt,
+      durationPreset: session.debateDurationPreset,
+    });
+
+    if (remainingSeconds !== null && remainingSeconds <= 0) {
+      await finalizeDebateSession({ sessionId: session.id });
+      return new NextResponse("This debate has already ended.", {
+        status: 409,
+      });
+    }
   }
 
   const targetMessage = await prisma.message.findFirst({

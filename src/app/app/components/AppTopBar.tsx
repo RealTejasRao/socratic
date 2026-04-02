@@ -1,26 +1,34 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Check,
   ChevronDown,
+  Clock3,
   Copy,
   LoaderCircle,
   Moon,
   Pencil,
+  ScrollText,
   Send,
+  Swords,
   Sun,
   Trash2,
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { formatDebateCountdown, getDebateDurationMeta } from "src/lib/debate";
+import type { DebateSessionState } from "src/types/chat";
 import AppUserButton from "./AppUserButton";
 
 interface Session {
   id: string;
   title: string | null;
+  mode: "SOCRATIC" | "DEBATE";
+  debate: DebateSessionState | null;
   firstMessagePreview: string | null;
 }
 
@@ -61,6 +69,8 @@ export default function AppTopBar({ sessions }: Props) {
     id: number;
     dark: boolean;
   } | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const finalizeRequestedRef = useRef(false);
 
   const activeSession = useMemo(() => {
     const matched = pathname.match(/^\/app\/([^/]+)$/);
@@ -75,6 +85,24 @@ export default function AppTopBar({ sessions }: Props) {
 
   const title = activeSession?.title || "Start of a new conversation";
   const isDialogBusy = pendingAction !== null;
+  const activeDebate = activeSession?.debate ?? null;
+  const debateDurationMeta = activeDebate
+    ? getDebateDurationMeta(activeDebate.durationPreset)
+    : null;
+  const remainingSeconds =
+    activeDebate?.hasTimer &&
+    activeDebate.startedAt &&
+    debateDurationMeta?.minutes
+      ? Math.max(
+          0,
+          Math.ceil(
+            (new Date(activeDebate.startedAt).getTime() +
+              debateDurationMeta.minutes * 60 * 1000 -
+              nowMs) /
+              1000,
+          ),
+        )
+      : null;
   const encodedShareUrl = shareUrl ? encodeURIComponent(shareUrl) : "";
   const encodedShareText = encodeURIComponent(
     shareTitle
@@ -154,6 +182,58 @@ export default function AppTopBar({ sessions }: Props) {
       window.clearTimeout(timeoutId);
     };
   }, [copied]);
+
+  useEffect(() => {
+    if (
+      !activeDebate?.hasTimer ||
+      !activeDebate.startedAt ||
+      !debateDurationMeta?.minutes ||
+      activeDebate.status === "COMPLETED"
+    ) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [
+    activeDebate?.hasTimer,
+    activeDebate?.startedAt,
+    activeDebate?.status,
+    debateDurationMeta?.minutes,
+  ]);
+
+  useEffect(() => {
+    if (
+      !activeSession ||
+      !activeDebate ||
+      activeDebate.status === "COMPLETED" ||
+      !activeDebate.hasTimer ||
+      remainingSeconds === null ||
+      remainingSeconds > 0 ||
+      finalizeRequestedRef.current
+    ) {
+      return;
+    }
+
+    finalizeRequestedRef.current = true;
+
+    fetch("/api/v1/chat/debates/finalize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: activeSession.id }),
+    }).finally(() => {
+      router.refresh();
+    });
+  }, [activeDebate, activeSession, remainingSeconds, router]);
+
+  useEffect(() => {
+    finalizeRequestedRef.current = false;
+  }, [activeSession?.id]);
 
   async function ensureShareLink() {
     if (!activeSession) {
@@ -423,108 +503,123 @@ export default function AppTopBar({ sessions }: Props) {
       <header className="app-topbar sticky top-0 z-20 flex h-10 shrink-0 items-center bg-white px-3 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:px-5">
         <div className="flex w-[188px] shrink-0 items-center">
           {activeSession && (
-            <div className="relative" data-topbar-interactive="">
-              <button
-                type="button"
-                onClick={() => void handleShareMenuToggle()}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-700 transition hover:bg-slate-50"
-                data-tooltip="Share chat"
-              >
-                <Send size={12} />
-                Share
-              </button>
-
-              {shareMenuOpen && (
-                <div className="app-card absolute left-0 top-full z-40 mt-1.5 w-[214px] origin-top-left rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
-                  <button
-                    type="button"
-                    onClick={() => void handleCopyLink()}
-                    disabled={isPreparingShare}
-                    className="flex w-full cursor-pointer items-center justify-between rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-50"
-                    data-tooltip="Copy share link"
+            <div className="flex items-center gap-2">
+              {activeSession.mode === "DEBATE" &&
+                activeSession.debate?.status === "COMPLETED" && (
+                  <Link
+                    href={`/app/${activeSession.id}/summary`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-700 transition hover:bg-slate-50"
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <Copy size={13} />
-                      {copied ? "Copied" : "Copy link"}
-                    </span>
-                    {isPreparingShare && (
-                      <LoaderCircle
-                        size={12}
-                        className="animate-spin text-slate-400"
-                      />
+                    <ScrollText size={12} />
+                    Show Summary
+                  </Link>
+                )}
+
+              <div className="relative" data-topbar-interactive="">
+                <button
+                  type="button"
+                  onClick={() => void handleShareMenuToggle()}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-700 transition hover:bg-slate-50"
+                  data-tooltip="Share chat"
+                >
+                  <Send size={12} />
+                  Share
+                </button>
+
+                {shareMenuOpen && (
+                  <div className="app-card absolute left-0 top-full z-40 mt-1.5 w-[214px] origin-top-left rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                    <button
+                      type="button"
+                      onClick={() => void handleCopyLink()}
+                      disabled={isPreparingShare}
+                      className="flex w-full cursor-pointer items-center justify-between rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-50"
+                      data-tooltip="Copy share link"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <Copy size={13} />
+                        {copied ? "Copied" : "Copy link"}
+                      </span>
+                      {isPreparingShare && (
+                        <LoaderCircle
+                          size={12}
+                          className="animate-spin text-slate-400"
+                        />
+                      )}
+                    </button>
+
+                    <div className="mt-1.5 grid grid-cols-4 gap-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openShareTarget(
+                            `https://twitter.com/intent/tweet?url=${encodedShareUrl}&text=${encodedShareText}`,
+                          )
+                        }
+                        disabled={!shareUrl || isPreparingShare}
+                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        data-tooltip="Share to X"
+                      >
+                        <XBrandIcon />
+                        <span>X</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openShareTarget(
+                            `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl}`,
+                          )
+                        }
+                        disabled={!shareUrl || isPreparingShare}
+                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        data-tooltip="Share to LinkedIn"
+                      >
+                        <LinkedInIcon />
+                        <span>LinkedIn</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openShareTarget(
+                            `https://wa.me/?text=${encodeURIComponent(
+                              `${shareTitle ? `Check out this Socratic AI chat: ${shareTitle}\n` : ""}${shareUrl}`,
+                            )}`,
+                          )
+                        }
+                        disabled={!shareUrl || isPreparingShare}
+                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        data-tooltip="Share to WhatsApp"
+                      >
+                        <WhatsAppIcon />
+                        <span>WhatsApp</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openShareTarget(
+                            `mailto:?subject=${encodeURIComponent(
+                              shareTitle || "Socratic AI chat",
+                            )}&body=${encodeURIComponent(shareUrl)}`,
+                          )
+                        }
+                        disabled={!shareUrl || isPreparingShare}
+                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        data-tooltip="Share via email"
+                      >
+                        <EmailIcon />
+                        <span>Email</span>
+                      </button>
+                    </div>
+
+                    {shareError && (
+                      <p className="mt-1.5 px-2 text-[10px] text-rose-600">
+                        {shareError}
+                      </p>
                     )}
-                  </button>
-
-                  <div className="mt-1.5 grid grid-cols-4 gap-1">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openShareTarget(
-                          `https://twitter.com/intent/tweet?url=${encodedShareUrl}&text=${encodedShareText}`,
-                        )
-                      }
-                      disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
-                      data-tooltip="Share to X"
-                    >
-                      <XBrandIcon />
-                      <span>X</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openShareTarget(
-                          `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl}`,
-                        )
-                      }
-                      disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
-                      data-tooltip="Share to LinkedIn"
-                    >
-                      <LinkedInIcon />
-                      <span>LinkedIn</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openShareTarget(
-                          `https://wa.me/?text=${encodeURIComponent(
-                            `${shareTitle ? `Check out this Socratic AI chat: ${shareTitle}\n` : ""}${shareUrl}`,
-                          )}`,
-                        )
-                      }
-                      disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
-                      data-tooltip="Share to WhatsApp"
-                    >
-                      <WhatsAppIcon />
-                      <span>WhatsApp</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openShareTarget(
-                          `mailto:?subject=${encodeURIComponent(
-                            shareTitle || "Socratic AI chat",
-                          )}&body=${encodeURIComponent(shareUrl)}`,
-                        )
-                      }
-                      disabled={!shareUrl || isPreparingShare}
-                      className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
-                      data-tooltip="Share via email"
-                    >
-                      <EmailIcon />
-                      <span>Email</span>
-                    </button>
                   </div>
-
-                  {shareError && (
-                    <p className="mt-1.5 px-2 text-[10px] text-rose-600">
-                      {shareError}
-                    </p>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -550,6 +645,12 @@ export default function AppTopBar({ sessions }: Props) {
               )}
               data-tooltip={activeSession ? "Chat menu" : "No active chat"}
             >
+              {activeSession?.mode === "DEBATE" && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-0.5 text-[9px] uppercase tracking-[0.12em] text-slate-600">
+                  <Swords size={9} />
+                  Debate
+                </span>
+              )}
               <span className="truncate">{title}</span>
               {activeSession && <ChevronDown size={12} className="shrink-0" />}
             </button>
@@ -579,7 +680,16 @@ export default function AppTopBar({ sessions }: Props) {
           </div>
         </div>
 
-        <div className="flex w-[188px] shrink-0 items-center justify-end gap-4">
+        <div className="flex w-[240px] shrink-0 items-center justify-end gap-3">
+          {activeDebate?.hasTimer && remainingSeconds !== null && (
+            <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-2.5 py-1 text-[12px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+              <Clock3 size={12} className="text-slate-500" />
+              <span className="font-medium tabular-nums">
+                {formatDebateCountdown(remainingSeconds)}
+              </span>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => handleThemeChange(!isDarkMode)}

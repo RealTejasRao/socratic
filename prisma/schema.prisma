@@ -30,6 +30,20 @@ model ChatSession {
   mode            SessionMode   @default(SOCRATIC)
   title           String?       @db.VarChar(140)
   status          SessionStatus @default(ACTIVE)
+  debateTone      DebateTone?
+  debateDurationPreset DebateDurationPreset?
+  debateHasTimer  Boolean       @default(false)
+  debateTopic     String?       @db.VarChar(240)
+  debateTopicSource DebateTopicSource?
+  userDebateSide  String?       @db.VarChar(160)
+  aiDebateSide    String?       @db.VarChar(160)
+  debateStatus    DebateStatus?
+  debateStartedAt DateTime?
+  debateEndedAt   DateTime?
+  debateWinner    DebateWinner?
+  debateVerdictSummary String?  @db.Text
+  debateSummary   String?       @db.Text
+  debateMeta      Json?
 
   startedAt       DateTime      @default(now())
   endedAt         DateTime?
@@ -53,6 +67,38 @@ model ChatSession {
 
 enum SessionMode {
   SOCRATIC
+  DEBATE
+}
+
+enum DebateTone {
+  RUTHLESS_RESPECTFUL
+  BLUNT_AGGRESSIVE
+  TOUGH_POLISHED
+}
+
+enum DebateDurationPreset {
+  MIN_15
+  MIN_20
+  MIN_30
+  HOUR_1
+  NO_TIMER
+}
+
+enum DebateTopicSource {
+  USER_PROVIDED
+  AI_GENERATED
+}
+
+enum DebateStatus {
+  SETUP
+  ACTIVE
+  COMPLETED
+}
+
+enum DebateWinner {
+  USER
+  ASSISTANT
+  DRAW
 }
 
 enum SessionStatus {

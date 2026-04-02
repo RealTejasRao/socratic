@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
+import { serializeSessionMeta } from "src/server/chat/session-meta";
 import AppSidebar from "./components/AppSidebar";
 import AppTopBar from "./components/AppTopBar";
 
@@ -32,6 +33,21 @@ export default async function AppLayout({ children }: Props) {
     select: {
       id: true,
       title: true,
+      mode: true,
+      status: true,
+      debateTone: true,
+      debateDurationPreset: true,
+      debateHasTimer: true,
+      debateTopic: true,
+      debateTopicSource: true,
+      userDebateSide: true,
+      aiDebateSide: true,
+      debateStatus: true,
+      debateStartedAt: true,
+      debateEndedAt: true,
+      debateWinner: true,
+      debateVerdictSummary: true,
+      debateSummary: true,
       lastActivityAt: true,
       messages: {
         where: { role: "USER" },
@@ -47,6 +63,8 @@ export default async function AppLayout({ children }: Props) {
   const sidebarSessions = sessions.map((session) => ({
     id: session.id,
     title: session.title,
+    mode: session.mode,
+    debate: serializeSessionMeta(session).debate ?? null,
     firstMessagePreview: session.messages[0]?.content ?? null,
   }));
 

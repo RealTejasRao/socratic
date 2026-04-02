@@ -14,14 +14,18 @@ import {
   LoaderCircle,
   MoreHorizontal,
   Pencil,
+  Swords,
   Trash2,
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import type { DebateSessionState } from "src/types/chat";
 
 interface Session {
   id: string;
   title: string | null;
+  mode: "SOCRATIC" | "DEBATE";
+  debate: DebateSessionState | null;
   firstMessagePreview: string | null;
 }
 
@@ -296,7 +300,9 @@ export default function SidebarSessions({ sessions }: Props) {
               "app-session-row group flex items-center justify-between rounded-[8px] px-2 py-[5px]",
               isOpening && "app-session-row-loading",
               isActive
-                ? "bg-white text-slate-900"
+                ? session.mode === "DEBATE"
+                  ? "bg-white text-slate-900"
+                  : "bg-white text-slate-900"
                 : "text-slate-600 hover:bg-black hover:text-white",
             )}
             onMouseEnter={(event) => {
@@ -327,9 +333,28 @@ export default function SidebarSessions({ sessions }: Props) {
                 className="block min-w-0 flex-1"
                 onClick={(event) => handleSessionOpen(event, session.id)}
               >
-                <p className="truncate text-[11px]">
-                  {session.title || "Untitled Session"}
-                </p>
+                <div className="flex min-w-0 items-center gap-2">
+                  {session.mode === "DEBATE" && (
+                    <span
+                      className={cn(
+                        "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500",
+                        isActive
+                          ? "border-slate-300 bg-slate-50"
+                          : "border-slate-200 bg-white",
+                      )}
+                    >
+                      <Swords size={11} />
+                    </span>
+                  )}
+                  <p className="truncate text-[11px]">
+                    {session.title || "Untitled Session"}
+                  </p>
+                  {session.mode === "DEBATE" && !isActive && (
+                    <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500">
+                      Debate
+                    </span>
+                  )}
+                </div>
               </Link>
               {isOpening ? (
                 <div className="app-session-opening-chip ml-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 px-2 py-1 text-[10px] text-slate-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)]">

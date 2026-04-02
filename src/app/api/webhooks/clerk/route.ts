@@ -54,6 +54,10 @@ export async function POST(req: Request) {
   if (eventType === "user.created" || eventType === "user.updated") {
     const { id, email_addresses } = evt.data;
 
+    if (!id) {
+      return NextResponse.json({ received: true });
+    }
+
     const primaryEmail =
       email_addresses?.find((email) => email.id === evt.data.primary_email_address_id)?.email_address ??
       email_addresses?.[0]?.email_address ??
@@ -71,16 +75,17 @@ export async function POST(req: Request) {
     });
   }
 
-  if (eventType==='user.deleted'){
-    const {id}=evt.data;
+  if (eventType === "user.deleted") {
+    const { id } = evt.data;
+
+    if (!id) {
+      return NextResponse.json({ received: true });
+    }
 
     await prisma.user.delete({
-        where:{clerkUserId:id}
+      where: { clerkUserId: id },
     });
   }
-
-
-
 
   return NextResponse.json({ received: true });
 }

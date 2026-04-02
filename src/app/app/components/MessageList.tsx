@@ -31,6 +31,7 @@ interface Props {
   userLabel: string;
   editingMessageId: string | null;
   editDraft: string;
+  disableRevisionActions?: boolean;
 }
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
@@ -120,6 +121,7 @@ export default function MessageList({
   userLabel,
   editingMessageId,
   editDraft,
+  disableRevisionActions = false,
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -518,7 +520,7 @@ export default function MessageList({
                     </>
                   )}
 
-                  {isAssistant && isLastAssistant && (
+                  {isAssistant && isLastAssistant && !disableRevisionActions && (
                     <button
                       onClick={onRegenerate}
                       disabled={isStreaming}
@@ -535,7 +537,7 @@ export default function MessageList({
                     </button>
                   )}
 
-                  {isUser && isLastUser && (
+                  {isUser && isLastUser && !disableRevisionActions && (
                     <>
                       <button
                         onClick={() => onEdit(message)}

@@ -8,11 +8,14 @@ import type {
 } from "openai/resources/chat/completions";
 import type { ChatImageAttachment } from "src/types/chat";
 import {
+  DEBATE_PROMPT_SECTIONS,
+  DEBATE_PROMPT_VERSION,
   SOCRATIC_PROMPT_SECTIONS,
   SOCRATIC_PROMPT_VERSION,
 } from "src/server/ai/prompt-config";
 import type { KnowledgeRoute } from "src/server/ai/source-router";
 import type { WebSource } from "src/server/ai/web-search";
+import { getDebateDurationMeta, getDebateToneMeta, type DebateDurationPreset, type DebateTone } from "src/lib/debate";
 
 export type ConversationMessage = {
   role: "user" | "assistant";
@@ -43,6 +46,15 @@ export type BuiltPrompt = {
     estimatedInputTokens: number;
     sectionOrder: string[];
   };
+};
+
+type DebatePromptParams = {
+  topic: string;
+  tone: DebateTone;
+  durationPreset: DebateDurationPreset;
+  userSide: string;
+  aiSide: string;
+  hasTimer: boolean;
 };
 
 function estimateTokensFromText(text: string) {
@@ -133,6 +145,63 @@ function buildCorePolicyMessage() {
     "",
     "OUTPUT",
     SOCRATIC_PROMPT_SECTIONS.output,
+  ].join("\n");
+
+  return { content, sectionOrder };
+}
+
+function buildDebateCorePolicyMessage(params: DebatePromptParams) {
+  const durationMeta = getDebateDurationMeta(params.durationPreset);
+  const toneMeta = getDebateToneMeta(params.tone);
+  const lengthInstruction = (() => {
+    switch (params.durationPreset) {
+      case "MIN_15":
+        return "For 15-minute debates, reply in 2-4 sentences and never more than one short paragraph.";
+      case "MIN_20":
+        return "For 20-minute debates, reply in 3-5 sentences and keep it to one compact paragraph.";
+      case "MIN_30":
+        return "For 30-minute debates, reply in 4-6 sentences and avoid sprawling multi-paragraph answers unless the user forces it.";
+      case "HOUR_1":
+        return "For 1-hour debates, you may use 1-2 paragraphs, but each paragraph must carry a distinct argumentative purpose.";
+      case "NO_TIMER":
+        return "For untimed debates, stay disciplined and concise unless depth is genuinely needed.";
+      default:
+        return "Keep replies concise and argument-dense.";
+    }
+  })();
+  const sectionOrder = [
+    "SYSTEM_ROLE",
+    "OBJECTIVE",
+    "RULES",
+    "STYLE",
+    "DEBATE_CONFIG",
+    "OUTPUT",
+  ];
+
+  const content = [
+    "SYSTEM_ROLE",
+    DEBATE_PROMPT_SECTIONS.role,
+    "",
+    "OBJECTIVE",
+    DEBATE_PROMPT_SECTIONS.objective,
+    "",
+    "RULES",
+    DEBATE_PROMPT_SECTIONS.rules,
+    "",
+    "STYLE",
+    DEBATE_PROMPT_SECTIONS.style,
+    "",
+    "DEBATE_CONFIG",
+    `Topic: ${params.topic}`,
+    `User side: ${params.userSide}`,
+    `Assistant side: ${params.aiSide}`,
+    `Tone: ${toneMeta.label}`,
+    `Duration: ${durationMeta.label}`,
+    `Timer enabled: ${params.hasTimer ? "yes" : "no"}`,
+    lengthInstruction,
+    "",
+    "OUTPUT",
+    DEBATE_PROMPT_SECTIONS.output,
   ].join("\n");
 
   return { content, sectionOrder };
@@ -309,6 +378,93 @@ export function buildSocraticPrompt(params: {
     messages,
     metadata: {
       promptVersion: SOCRATIC_PROMPT_VERSION,
+      estimatedInputTokens: promptText,
+      sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
+    },
+  };
+}
+
+export function buildDebatePrompt(params: {
+  conversationHistory: ConversationMessage[];
+  beliefContext?: BeliefContextItem[];
+  retrievedContext?: RetrievedContextItem[];
+  webSearchSummary?: string;
+  webSearchSources?: WebSource[];
+  conversationMemorySummary?: string;
+  userContent?: string;
+  userAttachments?: ChatImageAttachment[];
+  appendUserMessageToPrompt?: boolean;
+  knowledgeRoute?: KnowledgeRoute;
+  debate: DebatePromptParams;
+}): BuiltPrompt {
+  const {
+    conversationHistory,
+    beliefContext = [],
+    retrievedContext = [],
+    webSearchSummary,
+    webSearchSources,
+    conversationMemorySummary,
+    userContent,
+    userAttachments,
+    appendUserMessageToPrompt = true,
+    knowledgeRoute = "conversation_only",
+    debate,
+  } = params;
+
+  const corePolicy = buildDebateCorePolicyMessage(debate);
+  const dynamicContext = buildDynamicContextMessage({
+    beliefContext,
+    conversationMemorySummary,
+    retrievedContext,
+    webSearchSummary,
+    webSearchSources,
+    knowledgeRoute,
+  });
+  const includesImages = hasImageAttachments(conversationHistory, userAttachments);
+
+  const messages: PromptMessage[] = [
+    { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
+    { role: "system", content: dynamicContext.content } satisfies ChatCompletionSystemMessageParam,
+    ...(includesImages
+      ? ([
+          {
+            role: "system",
+            content: [
+              "VISION_MODE",
+              "This debate includes attached images.",
+              "If the user uses an image as evidence, inspect it directly before responding.",
+            ].join("\n"),
+          } satisfies ChatCompletionSystemMessageParam,
+        ])
+      : []),
+    ...conversationHistory.map((message) =>
+      message.role === "user"
+        ? ({
+            role: "user",
+            content: buildUserPromptContent(message.content, message.attachments),
+          } satisfies ChatCompletionUserMessageParam)
+        : ({
+            role: "assistant",
+            content: message.content,
+          } satisfies ChatCompletionAssistantMessageParam),
+    ),
+  ];
+
+  if (appendUserMessageToPrompt && (userContent || userAttachments?.length)) {
+    messages.push({
+      role: "user",
+      content: buildUserPromptContent(userContent ?? "", userAttachments),
+    } satisfies ChatCompletionUserMessageParam);
+  }
+
+  const promptText = messages
+    .map((message) => estimateMessageTokens(message))
+    .reduce((total, count) => total + count, 0);
+
+  return {
+    messages,
+    metadata: {
+      promptVersion: DEBATE_PROMPT_VERSION,
       estimatedInputTokens: promptText,
       sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
     },

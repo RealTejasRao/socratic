@@ -1,7 +1,7 @@
 import { openai } from "src/server/ai/openai";
 import { prisma } from "src/server/db/client";
 import { Prisma } from "@prisma/client";
-import { buildSocraticPrompt } from "src/server/ai/prompt-builder";
+import { buildDebatePrompt, buildSocraticPrompt } from "src/server/ai/prompt-builder";
 import type { ChatImageAttachment } from "src/types/chat";
 import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
 import {
@@ -21,8 +21,50 @@ import {
 import { storeRetrievalTrace } from "src/server/ai/retrieval-trace-store";
 import { decideKnowledgeRoute } from "src/server/ai/source-router";
 import { performWebSearch } from "src/server/ai/web-search";
+import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
 
 const WINDOW_SIZE = 30; // 15 turns
+
+function getDebateGenerationModel(params: {
+  durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER";
+  defaultModel: string;
+  auxModel: string;
+}) {
+  const shortModel =
+    process.env["OPENAI_DEBATE_SHORT_MODEL"] ??
+    process.env["OPENAI_AUX_MODEL"] ??
+    params.auxModel;
+  const longModel =
+    process.env["OPENAI_DEBATE_LONG_MODEL"] ??
+    process.env["OPENAI_CHAT_MODEL"] ??
+    params.defaultModel;
+
+  if (
+    params.durationPreset === "MIN_15" ||
+    params.durationPreset === "MIN_20"
+  ) {
+    return shortModel;
+  }
+
+  return longModel;
+}
+
+function getDebateMaxTokens(durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER") {
+  switch (durationPreset) {
+    case "MIN_15":
+      return 140;
+    case "MIN_20":
+      return 180;
+    case "MIN_30":
+      return 240;
+    case "HOUR_1":
+      return 360;
+    case "NO_TIMER":
+      return 320;
+    default:
+      return 220;
+  }
+}
 
 function normalizeImageAttachments(value: Prisma.JsonValue | null | undefined): ChatImageAttachment[] {
   if (!Array.isArray(value)) {
@@ -71,10 +113,11 @@ export async function generateReply(params: {
   const pipelineStartedAtMs = Date.now();
   const auxModel =
     process.env["OPENAI_AUX_MODEL"] ??
-    process.env["OPENAI_CHAT_MODEL"];
+    process.env["OPENAI_CHAT_MODEL"] ??
+    "gpt-4o-mini";
   const messageModel =
     process.env["OPENAI_MESSAGE_MODEL"] ??
-    auxModel!;
+    auxModel;
   let contextMs = 0;
   let retrievalMs: number | null = null;
   let webSearchMs: number | null = null;
@@ -190,8 +233,23 @@ export async function generateReply(params: {
       : null;
 
   const contextStartedAtMs = Date.now();
-  const [previousMessagesRaw, rawBeliefs, latestConversationMemory] =
+  const [session, previousMessagesRaw, rawBeliefs, latestConversationMemory] =
     await prisma.$transaction([
+      prisma.chatSession.findUnique({
+        where: { id: sessionId },
+        select: {
+          id: true,
+          mode: true,
+          debateTone: true,
+          debateDurationPreset: true,
+          debateHasTimer: true,
+          debateTopic: true,
+          userDebateSide: true,
+          aiDebateSide: true,
+          debateStatus: true,
+          debateStartedAt: true,
+        },
+      }),
       prisma.message.findMany({
         where: { sessionId },
         orderBy: { createdAt: "desc" },
@@ -223,6 +281,37 @@ export async function generateReply(params: {
         },
       }),
     ]);
+
+  if (!session) {
+    throw new Error("Session not found for generation.");
+  }
+
+  if (session.mode === "DEBATE") {
+    if (
+      !session.debateTone ||
+      !session.debateDurationPreset ||
+      !session.debateTopic ||
+      !session.userDebateSide ||
+      !session.aiDebateSide
+    ) {
+      throw new Error("Debate session is missing required configuration.");
+    }
+
+    if (session.debateStatus === "COMPLETED") {
+      throw new Error("Debate session is already completed.");
+    }
+
+    const remainingSeconds = getDebateTimeRemainingSeconds({
+      startedAt: session.debateStartedAt,
+      durationPreset: session.debateDurationPreset,
+      now,
+    });
+
+    if (remainingSeconds !== null && remainingSeconds <= 0) {
+      await finalizeDebateSession({ sessionId });
+      throw new Error("Debate session is already completed.");
+    }
+  }
   const beliefContext = buildBeliefPromptContext(rawBeliefs, 5);
   contextMs = Date.now() - contextStartedAtMs;
 
@@ -233,11 +322,15 @@ export async function generateReply(params: {
       ? { attachments: normalizeImageAttachments(msg.attachments) }
       : {}),
   }));
-  const knowledgeRoute = decideKnowledgeRoute({
+  const baseKnowledgeRoute = decideKnowledgeRoute({
     userContent,
     userAttachments,
     forceWebSearch,
   });
+  const knowledgeRoute =
+    session.mode === "DEBATE" && baseKnowledgeRoute === "web"
+      ? "conversation_only"
+      : baseKnowledgeRoute;
 
   const originalQuery = userContent;
   let rewrittenQuery = userContent;
@@ -274,7 +367,10 @@ export async function generateReply(params: {
   const shouldUseRetrieval =
     knowledgeRoute === "rag" || knowledgeRoute === "hybrid";
   const shouldUseWebSearch =
-    knowledgeRoute === "web" || knowledgeRoute === "hybrid";
+    session.mode === "DEBATE"
+      ? forceWebSearch &&
+        (knowledgeRoute === "web" || knowledgeRoute === "hybrid")
+      : knowledgeRoute === "web" || knowledgeRoute === "hybrid";
 
   if (!shouldUseRetrieval) {
     retrievalQuery = `retrieval-skipped-for-${knowledgeRoute}`;
@@ -334,7 +430,7 @@ export async function generateReply(params: {
   const shouldAppendLatestUserMessage =
     appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
 
-  const promptBuilderParams: Parameters<typeof buildSocraticPrompt>[0] = {
+  const sharedPromptBuilderParams = {
     conversationHistory,
     beliefContext,
     retrievedContext: retrievedPassages,
@@ -349,7 +445,25 @@ export async function generateReply(params: {
       : {}),
   };
 
-  const builtPrompt = buildSocraticPrompt(promptBuilderParams);
+  const builtPrompt =
+    session.mode === "DEBATE" &&
+    session.debateTone &&
+    session.debateDurationPreset &&
+    session.debateTopic &&
+    session.userDebateSide &&
+    session.aiDebateSide
+      ? buildDebatePrompt({
+          ...sharedPromptBuilderParams,
+          debate: {
+            topic: session.debateTopic,
+            tone: session.debateTone,
+            durationPreset: session.debateDurationPreset,
+            userSide: session.userDebateSide,
+            aiSide: session.aiDebateSide,
+            hasTimer: session.debateHasTimer,
+          },
+        })
+      : buildSocraticPrompt(sharedPromptBuilderParams);
   preStreamTotalMs = Date.now() - pipelineStartedAtMs;
 
   const generationStartedAtMs = Date.now();
@@ -466,11 +580,23 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
   });
 }
   const streamSetupStartedAtMs = Date.now();
+  const effectiveModel =
+    session.mode === "DEBATE" && session.debateDurationPreset
+      ? getDebateGenerationModel({
+          durationPreset: session.debateDurationPreset,
+          defaultModel: messageModel,
+          auxModel,
+        })
+      : messageModel;
+  const effectiveMaxTokens =
+    session.mode === "DEBATE" && session.debateDurationPreset
+      ? Math.min(maxTokens, getDebateMaxTokens(session.debateDurationPreset))
+      : maxTokens;
   const stream = await openai.chat.completions.stream({
-    model: messageModel,
+    model: effectiveModel,
     messages: builtPrompt.messages,
     temperature: 1,
-    max_tokens: maxTokens,
+    max_tokens: effectiveMaxTokens,
   });
   streamSetupMs = Date.now() - streamSetupStartedAtMs;
 
@@ -488,7 +614,7 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
 
       controller.close();
 
-      let completionModel: string | undefined = messageModel;
+      let completionModel: string | undefined = effectiveModel;
       let promptTokens: number | undefined =
         builtPrompt.metadata.estimatedInputTokens;
       let completionTokens: number | undefined;
@@ -503,16 +629,24 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
       }
 
       const latencyMs = Date.now() - generationStartedAtMs;
-      const validation = validateSocraticResponse({
-        userContent,
-        assistantContent: assistantText,
-        beliefStatements: beliefContext.map((item) => item.belief),
-        conversationMemorySummary: latestConversationMemory?.summary,
-        retrievedSources: retrievedPassages.map(
-          (item) => `${item.author} - ${item.title} | chunk ${item.chunkIndex}`,
-        ),
-        retrievedPassageTexts: retrievedPassages.map((item) => item.content),
-      });
+      const validation =
+        session.mode === "DEBATE"
+          ? {
+              version: "debate-validator-v1",
+              score: 100,
+              flags: [],
+              summary: "Debate response validation not yet specialized.",
+            }
+          : validateSocraticResponse({
+              userContent,
+              assistantContent: assistantText,
+              beliefStatements: beliefContext.map((item) => item.belief),
+              conversationMemorySummary: latestConversationMemory?.summary,
+              retrievedSources: retrievedPassages.map(
+                (item) => `${item.author} - ${item.title} | chunk ${item.chunkIndex}`,
+              ),
+              retrievedPassageTexts: retrievedPassages.map((item) => item.content),
+            });
 
       await prisma.$transaction(async (tx) => {
         await tx.message.create({

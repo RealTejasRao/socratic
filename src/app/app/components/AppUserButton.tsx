@@ -8,27 +8,15 @@ interface Props {
 }
 
 export default function AppUserButton({ size = "md" }: Props) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const root = document.documentElement;
-    const syncTheme = () => {
-      setIsDarkMode(root.classList.contains("app-dark"));
-    };
-
-    syncTheme();
-
-    const observer = new MutationObserver(() => {
-      syncTheme();
-    });
-
-    observer.observe(root, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+    const timeoutId = window.setTimeout(() => {
+      setIsMounted(true);
+    }, 0);
 
     return () => {
-      observer.disconnect();
+      window.clearTimeout(timeoutId);
     };
   }, []);
 
@@ -39,9 +27,20 @@ export default function AppUserButton({ size = "md" }: Props) {
   const avatarClassName =
     size === "sm" ? "!h-[28px] !w-[28px]" : "!h-[34px] !w-[34px]";
 
+  if (!isMounted) {
+    return (
+      <div
+        className={
+          size === "sm"
+            ? "h-[28px] w-[28px] rounded-full border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
+            : "h-[34px] w-[34px] rounded-full border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
+        }
+      />
+    );
+  }
+
   return (
     <UserButton
-      key={isDarkMode ? "clerk-user-dark" : "clerk-user-light"}
       appearance={{
         elements: {
           userButtonTrigger: triggerClassName,

@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import ChatContainer from "../components/ChatContainer";
+import { serializeSessionMeta } from "src/server/chat/session-meta";
 import type { ChatImageAttachment, ChatMessage } from "src/types/chat";
 
 interface Props {
@@ -32,6 +33,25 @@ export default async function SessionPage({ params }: Props) {
       id: sessionId,
       userId: dbUser.id,
     },
+    select: {
+      id: true,
+      title: true,
+      mode: true,
+      status: true,
+      debateTone: true,
+      debateDurationPreset: true,
+      debateHasTimer: true,
+      debateTopic: true,
+      debateTopicSource: true,
+      userDebateSide: true,
+      aiDebateSide: true,
+      debateStatus: true,
+      debateStartedAt: true,
+      debateEndedAt: true,
+      debateWinner: true,
+      debateVerdictSummary: true,
+      debateSummary: true,
+    },
   });
 
   if (!session) {
@@ -57,6 +77,7 @@ export default async function SessionPage({ params }: Props) {
     <ChatContainer
       initialMessages={serializedMessages}
       sessionId={session.id}
+      sessionMeta={serializeSessionMeta(session)}
     />
   );
 }
