@@ -303,7 +303,9 @@ export default function SidebarSessions({ sessions }: Props) {
                 ? session.mode === "DEBATE"
                   ? "bg-white text-slate-900"
                   : "bg-white text-slate-900"
-                : "text-slate-600 hover:bg-black hover:text-white",
+                : isOpening
+                  ? "text-slate-600"
+                  : "text-slate-600 hover:bg-black hover:text-white",
             )}
             onMouseEnter={(event) => {
               if (

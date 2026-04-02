@@ -448,7 +448,7 @@ export default function ChatContainer({
     return (
       <div className="relative flex h-full min-h-0 items-center justify-center px-4 md:px-6">
         <div className="w-full">
-          <div className="absolute top-[-10px] left-4 z-10 md:left-6 md:top-[-12px]">
+          <div className="absolute -top-2.5 left-4 z-10 md:left-6 md:-top-3">
             <div className="inline-flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
               <button
                 type="button"
@@ -487,9 +487,9 @@ export default function ChatContainer({
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="mx-auto max-w-[760px] text-center">
+                <div className="mx-auto max-w-190 text-center">
                   <h2
-                    className="app-greeting-heading mx-auto max-w-[400px] text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 [font-family:Georgia,serif] md:text-[30px]"
+                    className="app-greeting-heading mx-auto max-w-100 text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 font-[Georgia,serif] md:text-[30px]"
                     style={{ visibility: greetingLine ? "visible" : "hidden" }}
                   >
                     {greetingLine ? (
