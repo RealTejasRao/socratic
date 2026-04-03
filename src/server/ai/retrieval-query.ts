@@ -1,4 +1,4 @@
-import { openai } from "src/server/ai/openai";
+import { deepseek, getDeepSeekQueryRewriteModel } from "src/server/ai/providers";
 
 const MAX_QUERY_CHARS = 400;
 const QUERY_GEN_TIMEOUT_MS = 3500;
@@ -41,11 +41,7 @@ export async function generateRetrievalQuery(userMessage: string) {
   }
 
   try {
-    const model =
-      process.env["OPENAI_QUERY_REWRITE_MODEL"] ??
-      process.env["OPENAI_ROUTER_MODEL"] ??
-      process.env["OPENAI_AUX_MODEL"] ??
-      process.env["OPENAI_CHAT_MODEL"]!;
+    const model = getDeepSeekQueryRewriteModel();
     const controller = new AbortController();
     const timeoutMs = Number.parseInt(
       process.env["RETRIEVAL_QUERY_TIMEOUT_MS"] ?? `${QUERY_GEN_TIMEOUT_MS}`,
@@ -54,7 +50,7 @@ export async function generateRetrievalQuery(userMessage: string) {
     const timeoutHandle = setTimeout(() => controller.abort(), timeoutMs);
     let completion;
     try {
-      completion = await openai.chat.completions.create(
+      completion = await deepseek.chat.completions.create(
         {
           model,
           temperature: 0.3,

@@ -1,4 +1,4 @@
-import { openai } from "src/server/ai/openai";
+import { deepseek, getDeepSeekAuxModel } from "src/server/ai/providers";
 import { prisma } from "src/server/db/client";
 
 export const CONVERSATION_MEMORY_VERSION = "memory-v1.0";
@@ -20,9 +20,7 @@ async function summarizeConversationChunk(params: {
   previousSummary: string | undefined;
   transcript: string;
 }) {
-  const auxModel =
-    process.env["OPENAI_AUX_MODEL"] ??
-    process.env["OPENAI_CHAT_MODEL"]!;
+  const auxModel = getDeepSeekAuxModel();
   const messages: Array<{ role: "system" | "user"; content: string }> = [
     {
       role: "system",
@@ -47,7 +45,7 @@ async function summarizeConversationChunk(params: {
     content: `New conversation chunk to integrate:\n${params.transcript}`,
   });
 
-  const completion = await openai.chat.completions.create({
+  const completion = await deepseek.chat.completions.create({
     model: auxModel,
     temperature: 0.2,
     max_tokens: 450,

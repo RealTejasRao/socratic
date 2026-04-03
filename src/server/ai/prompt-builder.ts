@@ -82,6 +82,7 @@ function estimateMessageTokens(message: PromptMessage) {
 function buildUserPromptContent(
   text: string,
   attachments: ChatImageAttachment[] | undefined,
+  includeVisionContent = true,
 ): string | Array<ChatCompletionContentPartText | ChatCompletionContentPartImage> {
   if (!attachments?.length) {
     return text;
@@ -107,13 +108,20 @@ function buildUserPromptContent(
     });
   }
 
-  for (const attachment of attachments) {
+  if (includeVisionContent) {
+    for (const attachment of attachments) {
+      parts.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.dataUrl,
+          detail: "high",
+        },
+      });
+    }
+  } else {
     parts.push({
-      type: "image_url",
-      image_url: {
-        url: attachment.dataUrl,
-        detail: "high",
-      },
+      type: "text",
+      text: "Attached image content is omitted in this text-only provider route.",
     });
   }
 
@@ -292,6 +300,7 @@ export function buildSocraticPrompt(params: {
   userAttachments?: ChatImageAttachment[];
   appendUserMessageToPrompt?: boolean;
   knowledgeRoute?: KnowledgeRoute;
+  includeVisionContent?: boolean;
 }): BuiltPrompt {
   const {
     conversationHistory,
@@ -304,6 +313,7 @@ export function buildSocraticPrompt(params: {
     userAttachments,
     appendUserMessageToPrompt = true,
     knowledgeRoute = "conversation_only",
+    includeVisionContent = true,
   } = params;
 
   const corePolicy = buildCorePolicyMessage();
@@ -315,7 +325,9 @@ export function buildSocraticPrompt(params: {
     webSearchSources,
     knowledgeRoute,
   });
-  const includesImages = hasImageAttachments(conversationHistory, userAttachments);
+  const includesImages =
+    includeVisionContent &&
+    hasImageAttachments(conversationHistory, userAttachments);
 
   const messages: PromptMessage[] = [
     { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
@@ -354,7 +366,11 @@ export function buildSocraticPrompt(params: {
       message.role === "user"
         ? ({
             role: "user",
-            content: buildUserPromptContent(message.content, message.attachments),
+            content: buildUserPromptContent(
+              message.content,
+              message.attachments,
+              includeVisionContent,
+            ),
           } satisfies ChatCompletionUserMessageParam)
         : ({
             role: "assistant",
@@ -366,7 +382,11 @@ export function buildSocraticPrompt(params: {
   if (appendUserMessageToPrompt && (userContent || userAttachments?.length)) {
     messages.push({
       role: "user",
-      content: buildUserPromptContent(userContent ?? "", userAttachments),
+      content: buildUserPromptContent(
+        userContent ?? "",
+        userAttachments,
+        includeVisionContent,
+      ),
     } satisfies ChatCompletionUserMessageParam);
   }
 
@@ -396,6 +416,7 @@ export function buildDebatePrompt(params: {
   appendUserMessageToPrompt?: boolean;
   knowledgeRoute?: KnowledgeRoute;
   debate: DebatePromptParams;
+  includeVisionContent?: boolean;
 }): BuiltPrompt {
   const {
     conversationHistory,
@@ -409,6 +430,7 @@ export function buildDebatePrompt(params: {
     appendUserMessageToPrompt = true,
     knowledgeRoute = "conversation_only",
     debate,
+    includeVisionContent = true,
   } = params;
 
   const corePolicy = buildDebateCorePolicyMessage(debate);
@@ -420,7 +442,9 @@ export function buildDebatePrompt(params: {
     webSearchSources,
     knowledgeRoute,
   });
-  const includesImages = hasImageAttachments(conversationHistory, userAttachments);
+  const includesImages =
+    includeVisionContent &&
+    hasImageAttachments(conversationHistory, userAttachments);
 
   const messages: PromptMessage[] = [
     { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
@@ -441,7 +465,11 @@ export function buildDebatePrompt(params: {
       message.role === "user"
         ? ({
             role: "user",
-            content: buildUserPromptContent(message.content, message.attachments),
+            content: buildUserPromptContent(
+              message.content,
+              message.attachments,
+              includeVisionContent,
+            ),
           } satisfies ChatCompletionUserMessageParam)
         : ({
             role: "assistant",
@@ -453,7 +481,11 @@ export function buildDebatePrompt(params: {
   if (appendUserMessageToPrompt && (userContent || userAttachments?.length)) {
     messages.push({
       role: "user",
-      content: buildUserPromptContent(userContent ?? "", userAttachments),
+      content: buildUserPromptContent(
+        userContent ?? "",
+        userAttachments,
+        includeVisionContent,
+      ),
     } satisfies ChatCompletionUserMessageParam);
   }
 

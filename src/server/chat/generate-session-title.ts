@@ -1,4 +1,4 @@
-import { openai } from "src/server/ai/openai";
+import { deepseek, getDeepSeekAuxModel } from "src/server/ai/providers";
 
 const SESSION_TITLE_MAX_LENGTH = 80;
 const SESSION_TITLE_MAX_WORDS = 6;
@@ -35,8 +35,8 @@ export async function generateSessionTitle(content: string) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await deepseek.chat.completions.create({
+      model: getDeepSeekAuxModel(),
       temperature: 0.2,
       max_tokens: 24,
       messages: [

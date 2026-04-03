@@ -5,7 +5,11 @@ import {
   type DebateTopicSource,
   type DebateWinner,
 } from "@prisma/client";
-import { openai } from "src/server/ai/openai";
+import {
+  deepseek,
+  getDeepSeekAuxModel,
+  getDeepSeekChatModel,
+} from "src/server/ai/providers";
 import { prisma } from "src/server/db/client";
 import {
   getDebateDurationMeta,
@@ -15,14 +19,9 @@ import {
 } from "src/lib/debate";
 
 const DEFAULT_MODEL =
-  process.env["OPENAI_MESSAGE_MODEL"] ??
-  process.env["OPENAI_CHAT_MODEL"] ??
-  "gpt-4o-mini";
+  getDeepSeekChatModel();
 
-const AUX_MODEL =
-  process.env["OPENAI_AUX_MODEL"] ??
-  process.env["OPENAI_CHAT_MODEL"] ??
-  DEFAULT_MODEL;
+const AUX_MODEL = getDeepSeekAuxModel();
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 
@@ -220,7 +219,7 @@ export async function validateDebateTopic(topic: string) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
       temperature: 0.2,
       max_tokens: 220,
@@ -275,7 +274,7 @@ export async function generateDebateTopicSuggestions(
     const durationMeta = getDebateDurationMeta(params.durationPreset);
     const toneMeta = getDebateToneMeta(params.tone);
 
-    const completion = await openai.chat.completions.create({
+    const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
       temperature: 0.9,
       max_tokens: 320,
@@ -324,7 +323,7 @@ export async function generateDebateOpening(params: DebateOpeningParams) {
   const toneMeta = getDebateToneMeta(params.tone);
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await deepseek.chat.completions.create({
       model: DEFAULT_MODEL,
       temperature: 0.85,
       max_tokens: params.durationPreset === "HOUR_1" ? 240 : 170,
@@ -372,7 +371,7 @@ export async function generateDebateVerdict(params: DebateVerdictParams) {
     .join("\n\n");
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
       temperature: 0.2,
       max_tokens: 320,
@@ -470,7 +469,7 @@ async function generateDebateDashboard(params: {
       : "No durable user beliefs were extracted for this debate.";
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
       temperature: 0.25,
       max_tokens: 950,

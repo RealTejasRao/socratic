@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "src/server/db/client";
-import { openai } from "src/server/ai/openai";
+import { openai } from "src/server/ai/providers";
 
 const DEFAULT_VECTOR_LIMIT = 50;
 const DEFAULT_LEXICAL_LIMIT = 50;

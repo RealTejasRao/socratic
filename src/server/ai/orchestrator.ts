@@ -1,4 +1,13 @@
-import { openai } from "src/server/ai/openai";
+import {
+  deepseek,
+  getDeepSeekAuxModel,
+  getDeepSeekChatModel,
+  getDeepSeekDebateLongModel,
+  getDeepSeekDebateShortModel,
+  getOpenAIVisionModel,
+  openai,
+  shouldUseVisionModel,
+} from "src/server/ai/providers";
 import { prisma } from "src/server/db/client";
 import { Prisma } from "@prisma/client";
 import { buildDebatePrompt, buildSocraticPrompt } from "src/server/ai/prompt-builder";
@@ -30,14 +39,8 @@ function getDebateGenerationModel(params: {
   defaultModel: string;
   auxModel: string;
 }) {
-  const shortModel =
-    process.env["OPENAI_DEBATE_SHORT_MODEL"] ??
-    process.env["OPENAI_AUX_MODEL"] ??
-    params.auxModel;
-  const longModel =
-    process.env["OPENAI_DEBATE_LONG_MODEL"] ??
-    process.env["OPENAI_CHAT_MODEL"] ??
-    params.defaultModel;
+  const shortModel = getDeepSeekDebateShortModel() ?? params.auxModel;
+  const longModel = getDeepSeekDebateLongModel() ?? params.defaultModel;
 
   if (
     params.durationPreset === "MIN_15" ||
@@ -111,13 +114,8 @@ export async function generateReply(params: {
   maxTokens?: number;
 }) {
   const pipelineStartedAtMs = Date.now();
-  const auxModel =
-    process.env["OPENAI_AUX_MODEL"] ??
-    process.env["OPENAI_CHAT_MODEL"] ??
-    "gpt-4o-mini";
-  const messageModel =
-    process.env["OPENAI_MESSAGE_MODEL"] ??
-    auxModel;
+  const auxModel = getDeepSeekAuxModel();
+  const messageModel = getDeepSeekChatModel();
   let contextMs = 0;
   let retrievalMs: number | null = null;
   let webSearchMs: number | null = null;
@@ -429,6 +427,7 @@ export async function generateReply(params: {
 
   const shouldAppendLatestUserMessage =
     appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
+  const useVisionModel = shouldUseVisionModel(userAttachments);
 
   const sharedPromptBuilderParams = {
     conversationHistory,
@@ -440,6 +439,7 @@ export async function generateReply(params: {
     ...(webSearchSummary !== undefined ? { webSearchSummary } : {}),
     ...(webSearchSources !== undefined ? { webSearchSources } : {}),
     ...(userAttachments !== undefined ? { userAttachments } : {}),
+    includeVisionContent: useVisionModel,
     ...(latestConversationMemory?.summary !== undefined
       ? { conversationMemorySummary: latestConversationMemory.summary }
       : {}),
@@ -580,8 +580,9 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
   });
 }
   const streamSetupStartedAtMs = Date.now();
-  const effectiveModel =
-    session.mode === "DEBATE" && session.debateDurationPreset
+  const effectiveModel = useVisionModel
+    ? getOpenAIVisionModel()
+    : session.mode === "DEBATE" && session.debateDurationPreset
       ? getDebateGenerationModel({
           durationPreset: session.debateDurationPreset,
           defaultModel: messageModel,
@@ -592,7 +593,8 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
     session.mode === "DEBATE" && session.debateDurationPreset
       ? Math.min(maxTokens, getDebateMaxTokens(session.debateDurationPreset))
       : maxTokens;
-  const stream = await openai.chat.completions.stream({
+  const generationClient = useVisionModel ? openai : deepseek;
+  const stream = await generationClient.chat.completions.stream({
     model: effectiveModel,
     messages: builtPrompt.messages,
     temperature: 1,

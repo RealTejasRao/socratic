@@ -1,4 +1,4 @@
-import { openai } from "src/server/ai/openai";
+import { deepseek, getDeepSeekAuxModel } from "src/server/ai/providers";
 
 export const INSIGHT_EXTRACTOR_VERSION = "insight-v1.0";
 
@@ -55,10 +55,8 @@ function clampConfidence(value: number) {
 export async function extractInsightsFromMessage(
   userContent: string,
 ): Promise<InsightExtractionResult> {
-  const auxModel =
-    process.env["OPENAI_AUX_MODEL"] ??
-    process.env["OPENAI_CHAT_MODEL"]!;
-  const completion = await openai.chat.completions.create({
+  const auxModel = getDeepSeekAuxModel();
+  const completion = await deepseek.chat.completions.create({
     model: auxModel,
     temperature: 0.1,
     max_tokens: 350,
