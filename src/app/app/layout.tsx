@@ -48,6 +48,7 @@ export default async function AppLayout({ children }: Props) {
       debateWinner: true,
       debateVerdictSummary: true,
       debateSummary: true,
+      roleplayMeta: true,
       lastActivityAt: true,
       messages: {
         where: { role: "USER" },
@@ -65,6 +66,7 @@ export default async function AppLayout({ children }: Props) {
     title: session.title,
     mode: session.mode,
     debate: serializeSessionMeta(session).debate ?? null,
+    roleplay: serializeSessionMeta(session).roleplay ?? null,
     firstMessagePreview: session.messages[0]?.content ?? null,
   }));
 

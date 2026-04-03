@@ -1,0 +1,4 @@
+ALTER TYPE "SessionMode" ADD VALUE 'ROLEPLAY';
+
+ALTER TABLE "ChatSession"
+ADD COLUMN "roleplayMeta" JSONB;

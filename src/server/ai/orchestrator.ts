@@ -10,7 +10,11 @@ import {
 } from "src/server/ai/providers";
 import { prisma } from "src/server/db/client";
 import { Prisma } from "@prisma/client";
-import { buildDebatePrompt, buildSocraticPrompt } from "src/server/ai/prompt-builder";
+import {
+  buildDebatePrompt,
+  buildRoleplayPrompt,
+  buildSocraticPrompt,
+} from "src/server/ai/prompt-builder";
 import type { ChatImageAttachment } from "src/types/chat";
 import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
 import {
@@ -31,6 +35,10 @@ import { storeRetrievalTrace } from "src/server/ai/retrieval-trace-store";
 import { decideKnowledgeRoute } from "src/server/ai/source-router";
 import { performWebSearch } from "src/server/ai/web-search";
 import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
+import {
+  getRoleplayPhilosopherConfig,
+  isRoleplayPhilosopherId,
+} from "src/lib/roleplay";
 
 const WINDOW_SIZE = 30; // 15 turns
 
@@ -246,6 +254,7 @@ export async function generateReply(params: {
           aiDebateSide: true,
           debateStatus: true,
           debateStartedAt: true,
+          roleplayMeta: true,
         },
       }),
       prisma.message.findMany({
@@ -312,6 +321,20 @@ export async function generateReply(params: {
   }
   const beliefContext = buildBeliefPromptContext(rawBeliefs, 5);
   contextMs = Date.now() - contextStartedAtMs;
+  const roleplayMetaRecord =
+    session.roleplayMeta &&
+    typeof session.roleplayMeta === "object" &&
+    !Array.isArray(session.roleplayMeta)
+      ? (session.roleplayMeta as Record<string, unknown>)
+      : null;
+  const roleplayPhilosopherId =
+    isRoleplayPhilosopherId(roleplayMetaRecord?.["philosopherId"])
+      ? roleplayMetaRecord["philosopherId"]
+      : null;
+  const roleplayPhilosopher =
+    session.mode === "ROLEPLAY" && roleplayPhilosopherId
+      ? getRoleplayPhilosopherConfig(roleplayPhilosopherId)
+      : null;
 
   const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
     role: msg.role.toLowerCase() as "user" | "assistant",
@@ -328,7 +351,11 @@ export async function generateReply(params: {
   const knowledgeRoute =
     session.mode === "DEBATE" && baseKnowledgeRoute === "web"
       ? "conversation_only"
-      : baseKnowledgeRoute;
+      : session.mode === "ROLEPLAY"
+        ? forceWebSearch
+          ? "hybrid"
+          : "rag"
+        : baseKnowledgeRoute;
 
   const originalQuery = userContent;
   let rewrittenQuery = userContent;
@@ -377,6 +404,11 @@ export async function generateReply(params: {
       const retrievalStartedAtMs = Date.now();
       rewrittenQuery = await generateRetrievalQuery(originalQuery);
       retrievalQuery = rewrittenQuery || originalQuery;
+
+      if (session.mode === "ROLEPLAY" && roleplayPhilosopher) {
+        retrievalQuery = `${retrievalQuery} ${roleplayPhilosopher.retrievalHint}`;
+      }
+
       const retrievalDetails = await retrieveHybridPassagesWithDetails({
         query: retrievalQuery,
         limit: 12,
@@ -463,6 +495,20 @@ export async function generateReply(params: {
             hasTimer: session.debateHasTimer,
           },
         })
+      : session.mode === "ROLEPLAY" && roleplayPhilosopher
+        ? buildRoleplayPrompt({
+            ...sharedPromptBuilderParams,
+            knowledgeRoute:
+              knowledgeRoute === "conversation_only" ? "rag" : knowledgeRoute,
+            roleplay: {
+              philosopherName: roleplayPhilosopher.name,
+              tradition: roleplayPhilosopher.tradition,
+              schoolLabel: roleplayPhilosopher.schoolLabel,
+              voiceGuide: roleplayPhilosopher.voiceGuide,
+              openingPrompt: roleplayPhilosopher.openingPrompt,
+              retrievalAuthors: [...roleplayPhilosopher.retrievalAuthors],
+            },
+          })
       : buildSocraticPrompt(sharedPromptBuilderParams);
   preStreamTotalMs = Date.now() - pipelineStartedAtMs;
 

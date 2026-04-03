@@ -17,7 +17,9 @@ export interface ChatMessage {
   createdAt: string; // always string on client
 }
 
-export type SessionMode = "SOCRATIC" | "DEBATE";
+import type { RoleplayPhilosopherId } from "src/lib/roleplay";
+
+export type SessionMode = "SOCRATIC" | "DEBATE" | "ROLEPLAY";
 
 export type DebateTone =
   | "RUTHLESS_RESPECTFUL"
@@ -51,10 +53,22 @@ export interface DebateSessionState {
   summary: string | null;
 }
 
+export interface RoleplaySessionState {
+  philosopherId: RoleplayPhilosopherId;
+  philosopherName: string;
+  imagePath: string;
+  tradition: string;
+  schoolLabel: string;
+  description: string;
+  introBlurb: string;
+  retrievalAuthors: string[];
+}
+
 export interface ChatSessionMeta {
   id?: string;
   title?: string | null;
   mode: SessionMode;
   status?: "ACTIVE" | "CLOSED" | "ARCHIVED";
   debate?: DebateSessionState | null;
+  roleplay?: RoleplaySessionState | null;
 }

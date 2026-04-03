@@ -484,6 +484,34 @@ html.app-dark .app-session-opening-chip {
   color: #ecebe8 !important;
 }
 
+html.app-dark .app-session-mode-icon {
+  color: #d7d7d4 !important;
+}
+
+html.app-dark .app-session-row .app-session-mode-icon.border-slate-300,
+html.app-dark .app-session-row .app-session-mode-icon.border-slate-200 {
+  border-color: #5a5956 !important;
+}
+
+html.app-dark .app-session-row .app-session-mode-icon.bg-slate-50,
+html.app-dark .app-session-row .app-session-mode-icon.bg-white {
+  background: #3a3937 !important;
+}
+
+html.app-dark .app-session-success-toast {
+  background: linear-gradient(180deg, rgba(19, 78, 53, 0.94) 0%, rgba(17, 94, 57, 0.92) 100%) !important;
+  border-color: rgba(74, 222, 128, 0.38) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32) !important;
+}
+
+html.app-dark .app-session-success-toast-text {
+  color: #ecfdf3 !important;
+}
+
+html.app-dark .app-session-success-toast-icon {
+  color: #86efac !important;
+}
+
 html.app-dark .app-composer-dock {
   background: transparent !important;
 }
@@ -511,6 +539,154 @@ html.app-dark .app-card a,
 html.app-dark .app-card button,
 html.app-dark .app-card input {
   color: #e7e7e4;
+}
+
+html.app-dark .app-debate-ended-card {
+  background: #252423 !important;
+  border-color: #3a3937 !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.app-dark .app-debate-ended-title {
+  color: #f1f1ef !important;
+}
+
+html.app-dark .app-debate-ended-copy,
+html.app-dark .app-debate-ended-verdict {
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-debate-ended-primary,
+html.app-dark .app-debate-ended-secondary {
+  background: transparent !important;
+  border-color: #67655f !important;
+  color: #ecebe8 !important;
+}
+
+html.app-dark .app-debate-ended-primary:hover,
+html.app-dark .app-debate-ended-secondary:hover {
+  background: #333230 !important;
+  border-color: #7a7770 !important;
+  color: #ffffff !important;
+}
+
+html.app-dark .app-debate-ended-reveal {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+}
+
+html.app-dark .app-debate-winner-backdrop {
+  background: rgba(10, 10, 10, 0.62) !important;
+  backdrop-filter: blur(3px);
+}
+
+html.app-dark .app-debate-winner-modal {
+  background: #252423 !important;
+  border-color: #3a3937 !important;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34) !important;
+}
+
+html.app-dark .app-debate-winner-title {
+  color: #f1f1ef !important;
+}
+
+html.app-dark .app-debate-winner-copy {
+  color: #c3c3be !important;
+}
+
+html.app-dark .app-debate-winner-close {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #d7d7d4 !important;
+}
+
+html.app-dark .app-debate-winner-close:hover {
+  background: #333230 !important;
+  border-color: #67655f !important;
+  color: #ffffff !important;
+}
+
+html.app-dark .summary-page {
+  color: #e7e7e4 !important;
+}
+
+html.app-dark .summary-hero,
+html.app-dark .summary-section,
+html.app-dark .summary-details {
+  border-color: #3a3937 !important;
+}
+
+html.app-dark .summary-title,
+html.app-dark .summary-section-title,
+html.app-dark .summary-subheading,
+html.app-dark .summary-details summary {
+  color: #f1f1ef !important;
+}
+
+html.app-dark .summary-kicker,
+html.app-dark .summary-section-kicker,
+html.app-dark .summary-generated {
+  color: #9d9b95 !important;
+}
+
+html.app-dark .summary-section-copy,
+html.app-dark .summary-note,
+html.app-dark .summary-step-copy,
+html.app-dark .summary-advice,
+html.app-dark .summary-body,
+html.app-dark .summary-list,
+html.app-dark .summary-details div,
+html.app-dark .summary-generated {
+  color: #c3c3be !important;
+}
+
+html.app-dark .summary-back-link,
+html.app-dark .summary-jump-link,
+html.app-dark .summary-meta-pill,
+html.app-dark .summary-step-number {
+  border-color: #4a4946 !important;
+  background: #2b2a28 !important;
+}
+
+html.app-dark .summary-back-link,
+html.app-dark .summary-jump-link,
+html.app-dark .summary-meta-pill {
+  color: #e3e3df !important;
+}
+
+html.app-dark .summary-back-link:hover,
+html.app-dark .summary-jump-link:hover {
+  border-color: #67655f !important;
+  color: #ffffff !important;
+  background: #333230 !important;
+}
+
+html.app-dark .summary-step-number {
+  color: #ecebe8 !important;
+}
+
+html.app-dark .summary-body {
+  color: #e7e7e4 !important;
+}
+
+html.app-dark .summary-subheading.text-emerald-700 {
+  color: #6ee7b7 !important;
+}
+
+html.app-dark .summary-subheading.text-amber-700 {
+  color: #fbbf24 !important;
+}
+
+html.app-dark .summary-list .bg-emerald-500 {
+  background: #34d399 !important;
+}
+
+html.app-dark .summary-list .bg-amber-500 {
+  background: #f59e0b !important;
+}
+
+html.app-dark .summary-details summary:hover {
+  color: #ffffff !important;
 }
 
 html.app-dark .app-session-preview-card {
@@ -583,6 +759,10 @@ html.app-dark .app-session-dialog-delete:hover {
   box-shadow: 0 8px 20px rgba(190, 63, 63, 0.33) !important;
 }
 
+html.app-dark .app-session-skeleton {
+  background: rgba(126, 124, 118, 0.26) !important;
+}
+
 html.app-dark .app-sidebar img {
   filter: none;
 }
@@ -597,6 +777,244 @@ html.app-dark .msg-action-btn:hover {
   background: transparent !important;
   border-color: transparent !important;
   color: #f2f2f0 !important;
+}
+
+html.app-dark .app-debate-step-label,
+html.app-dark .app-debate-label {
+  color: #9d9b95 !important;
+}
+
+html.app-dark .app-debate-progress-active {
+  background: #f1f1ef !important;
+}
+
+html.app-dark .app-debate-progress-inactive {
+  background: #4a4946 !important;
+}
+
+html.app-dark .app-debate-card,
+html.app-dark .app-debate-modal {
+  background: #252423 !important;
+  border-color: #3a3937 !important;
+  color: #e7e7e4 !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.app-dark .app-debate-heading,
+html.app-dark .app-debate-surface-title,
+html.app-dark .app-debate-strong {
+  color: #f1f1ef !important;
+}
+
+html.app-dark .app-debate-muted,
+html.app-dark .app-debate-option-meta {
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-debate-surface {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+}
+
+html.app-dark .app-debate-option {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #ecebe8 !important;
+}
+
+html.app-dark .app-debate-option:hover {
+  background: #333230 !important;
+  border-color: #62615d !important;
+}
+
+html.app-dark .app-debate-option-selected {
+  background: #000 !important;
+  border-color: #2a2a2a !important;
+  color: #f5f5f3 !important;
+}
+
+html.app-dark .app-debate-option-selected .app-debate-option-meta {
+  color: #c6c6c2 !important;
+}
+
+html.app-dark .app-debate-info-trigger {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #d7d7d4 !important;
+}
+
+html.app-dark .app-debate-info-trigger:hover {
+  background: #333230 !important;
+  color: #f2f2f0 !important;
+}
+
+html.app-dark .app-debate-info-popover {
+  background: #000 !important;
+  border-color: #2a2a2a !important;
+  color: #f5f5f3 !important;
+}
+
+html.app-dark .app-debate-field {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #f3f3f3 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03) !important;
+}
+
+html.app-dark .app-debate-field::placeholder {
+  color: #9d9b95 !important;
+}
+
+html.app-dark .app-debate-field:focus {
+  border-color: #7a7770 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(122, 119, 112, 0.55) !important;
+}
+
+html.app-dark .app-debate-primary-btn,
+html.app-dark .app-debate-modal-confirm {
+  background: #f1f1ef !important;
+  color: #141414 !important;
+  border-color: transparent !important;
+}
+
+html.app-dark .app-debate-primary-btn:hover,
+html.app-dark .app-debate-modal-confirm:hover {
+  background: #dfdfdc !important;
+  color: #111 !important;
+}
+
+html.app-dark .app-debate-secondary-btn,
+html.app-dark .app-debate-modal-cancel {
+  background: transparent !important;
+  border-color: #67655f !important;
+  color: #ecebe8 !important;
+}
+
+html.app-dark .app-debate-secondary-btn:hover,
+html.app-dark .app-debate-modal-cancel:hover {
+  background: #333230 !important;
+  border-color: #7a7770 !important;
+  color: #ffffff !important;
+}
+
+html.app-dark .app-debate-error {
+  background: linear-gradient(180deg, #322625 0%, #2a2120 100%) !important;
+  border-color: #5b4340 !important;
+  color: #f3e6e4 !important;
+}
+
+html.app-dark .app-debate-modal-backdrop {
+  background: rgba(15, 15, 15, 0.45) !important;
+}
+
+html.app-dark .app-debate-modal-close {
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-debate-modal-close:hover {
+  background: #333230 !important;
+  color: #f2f2f0 !important;
+}
+
+html.app-dark .app-roleplay-shell {
+  background: #252423 !important;
+  border-color: #3a3937 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.app-dark .app-roleplay-heading {
+  color: #f1f1ef !important;
+}
+
+html.app-dark .app-roleplay-muted,
+html.app-dark .app-roleplay-option-meta {
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-roleplay-option {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #ecebe8 !important;
+}
+
+html.app-dark .app-roleplay-option:hover {
+  background: #333230 !important;
+  border-color: #62615d !important;
+}
+
+html.app-dark .app-roleplay-option-selected {
+  background: #000 !important;
+  border-color: #2a2a2a !important;
+  color: #f5f5f3 !important;
+}
+
+html.app-dark .app-roleplay-option-copy {
+  color: #d7d7d4 !important;
+}
+
+html.app-dark .app-roleplay-corpus,
+html.app-dark .app-roleplay-preview {
+  background: #2b2a28 !important;
+  border-color: #4a4946 !important;
+  color: #ecebe8 !important;
+}
+
+html.app-dark .app-roleplay-primary-btn {
+  background: #f1f1ef !important;
+  color: #141414 !important;
+}
+
+html.app-dark .app-roleplay-primary-btn:hover {
+  background: #dfdfdc !important;
+}
+
+html.app-dark .app-roleplay-card {
+  background: #252423 !important;
+  border-color: #3a3937 !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.26) !important;
+}
+
+html.app-dark .app-roleplay-image-wrap {
+  background: #2f2e2c !important;
+}
+
+html.app-dark .app-roleplay-secondary-btn {
+  background: transparent !important;
+  border-color: #67655f !important;
+  color: #ecebe8 !important;
+}
+
+html.app-dark .app-roleplay-secondary-btn:hover {
+  background: #333230 !important;
+  border-color: #7a7770 !important;
+  color: #ffffff !important;
+}
+
+html.app-dark .app-roleplay-thread-intro {
+  background: rgba(37, 36, 35, 0.82) !important;
+  border-color: #3a3937 !important;
+}
+
+html.app-dark .app-roleplay-thread-intro h3 {
+  color: #f1f1ef !important;
+}
+
+html.app-dark .app-roleplay-thread-intro p {
+  color: #c3c3be !important;
+}
+
+html.app-dark .app-roleplay-thread-intro .text-slate-400 {
+  color: #9d9b95 !important;
+}
+
+html.app-dark .app-roleplay-thread-intro .bg-white {
+  background: #2b2a28 !important;
+}
+
+html.app-dark .app-roleplay-thread-intro .border-slate-200 {
+  border-color: #4a4946 !important;
 }
 
 @keyframes authFadeIn {

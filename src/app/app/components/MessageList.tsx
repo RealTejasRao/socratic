@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Check,
   Copy,
@@ -32,6 +39,7 @@ interface Props {
   editingMessageId: string | null;
   editDraft: string;
   disableRevisionActions?: boolean;
+  topContent?: ReactNode;
 }
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
@@ -122,6 +130,7 @@ export default function MessageList({
   editingMessageId,
   editDraft,
   disableRevisionActions = false,
+  topContent,
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -357,6 +366,7 @@ export default function MessageList({
   return (
     <div className="flex-1">
       <div className="mx-auto flex w-full max-w-[680px] flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
+        {topContent}
         {messages.map((message, index) => {
           const isLastUser = index === actualLastUserIndex;
           const isLastAssistant = index === actualLastAssistantIndex;

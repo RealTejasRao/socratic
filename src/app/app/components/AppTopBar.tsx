@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -21,14 +20,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { formatDebateCountdown, getDebateDurationMeta } from "src/lib/debate";
-import type { DebateSessionState } from "src/types/chat";
+import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import AppUserButton from "./AppUserButton";
 
 interface Session {
   id: string;
   title: string | null;
-  mode: "SOCRATIC" | "DEBATE";
+  mode: "SOCRATIC" | "DEBATE" | "ROLEPLAY";
   debate: DebateSessionState | null;
+  roleplay: RoleplaySessionState | null;
   firstMessagePreview: string | null;
 }
 
@@ -69,7 +69,7 @@ export default function AppTopBar({ sessions }: Props) {
     id: number;
     dark: boolean;
   } | null>(null);
-  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState<number | null>(null);
   const finalizeRequestedRef = useRef(false);
 
   const activeSession = useMemo(() => {
@@ -92,7 +92,8 @@ export default function AppTopBar({ sessions }: Props) {
   const remainingSeconds =
     activeDebate?.hasTimer &&
     activeDebate.startedAt &&
-    debateDurationMeta?.minutes
+    debateDurationMeta?.minutes &&
+    nowMs !== null
       ? Math.max(
           0,
           Math.ceil(
@@ -193,11 +194,16 @@ export default function AppTopBar({ sessions }: Props) {
       return;
     }
 
+    const syncTimeoutId = window.setTimeout(() => {
+      setNowMs(Date.now());
+    }, 0);
+
     const intervalId = window.setInterval(() => {
       setNowMs(Date.now());
     }, 1000);
 
     return () => {
+      window.clearTimeout(syncTimeoutId);
       window.clearInterval(intervalId);
     };
   }, [
@@ -504,19 +510,6 @@ export default function AppTopBar({ sessions }: Props) {
         <div className="flex w-[188px] shrink-0 items-center">
           {activeSession && (
             <div className="flex items-center gap-2">
-              {activeSession.mode === "DEBATE" &&
-                activeSession.debate?.status === "COMPLETED" && (
-                  <Link
-                    href={`/app/${activeSession.id}/summary`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-700 transition hover:bg-slate-50"
-                  >
-                    <ScrollText size={12} />
-                    Show Summary
-                  </Link>
-                )}
-
               <div className="relative" data-topbar-interactive="">
                 <button
                   type="button"
@@ -645,10 +638,14 @@ export default function AppTopBar({ sessions }: Props) {
               )}
               data-tooltip={activeSession ? "Chat menu" : "No active chat"}
             >
-              {activeSession?.mode === "DEBATE" && (
+              {activeSession && activeSession.mode !== "SOCRATIC" && (
                 <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-0.5 text-[9px] uppercase tracking-[0.12em] text-slate-600">
-                  <Swords size={9} />
-                  Debate
+                  {activeSession.mode === "DEBATE" ? (
+                    <Swords size={9} />
+                  ) : (
+                    <ScrollText size={9} />
+                  )}
+                  {activeSession.mode === "DEBATE" ? "Debate" : "Roleplay"}
                 </span>
               )}
               <span className="truncate">{title}</span>
@@ -684,8 +681,10 @@ export default function AppTopBar({ sessions }: Props) {
           {activeDebate?.hasTimer && remainingSeconds !== null && (
             <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-2.5 py-1 text-[12px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
               <Clock3 size={12} className="text-slate-500" />
-              <span className="font-medium tabular-nums">
-                {formatDebateCountdown(remainingSeconds)}
+              <span className="font-medium tabular-nums" suppressHydrationWarning>
+                {remainingSeconds === null
+                  ? "--:--"
+                  : formatDebateCountdown(remainingSeconds)}
               </span>
             </div>
           )}

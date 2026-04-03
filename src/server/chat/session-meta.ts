@@ -1,9 +1,17 @@
-import type { ChatSessionMeta, DebateSessionState } from "src/types/chat";
+import {
+  getRoleplayPhilosopherConfig,
+  type RoleplayPhilosopherId,
+} from "src/lib/roleplay";
+import type {
+  ChatSessionMeta,
+  DebateSessionState,
+  RoleplaySessionState,
+} from "src/types/chat";
 
 type SessionShape = {
   id: string;
   title: string | null;
-  mode: "SOCRATIC" | "DEBATE";
+  mode: "SOCRATIC" | "DEBATE" | "ROLEPLAY";
   status: "ACTIVE" | "CLOSED" | "ARCHIVED";
   debateTone: "RUTHLESS_RESPECTFUL" | "BLUNT_AGGRESSIVE" | "TOUGH_POLISHED" | null;
   debateDurationPreset:
@@ -24,6 +32,7 @@ type SessionShape = {
   debateWinner: "USER" | "ASSISTANT" | "DRAW" | null;
   debateVerdictSummary: string | null;
   debateSummary: string | null;
+  roleplayMeta?: unknown;
 };
 
 export function serializeDebateState(session: SessionShape): DebateSessionState | null {
@@ -67,5 +76,46 @@ export function serializeSessionMeta(session: SessionShape): ChatSessionMeta {
     mode: session.mode,
     status: session.status,
     debate: serializeDebateState(session),
+    roleplay: serializeRoleplayState(session),
+  };
+}
+
+function serializeRoleplayState(session: SessionShape): RoleplaySessionState | null {
+  if (session.mode !== "ROLEPLAY") {
+    return null;
+  }
+
+  if (
+    !session.roleplayMeta ||
+    typeof session.roleplayMeta !== "object" ||
+    Array.isArray(session.roleplayMeta)
+  ) {
+    return null;
+  }
+
+  const record = session.roleplayMeta as Record<string, unknown>;
+  const philosopherId = record["philosopherId"];
+
+  if (typeof philosopherId !== "string") {
+    return null;
+  }
+
+  const philosopher = getRoleplayPhilosopherConfig(
+    philosopherId as RoleplayPhilosopherId,
+  );
+
+  if (!philosopher) {
+    return null;
+  }
+
+  return {
+    philosopherId: philosopher.id,
+    philosopherName: philosopher.name,
+    imagePath: philosopher.imagePath,
+    tradition: philosopher.tradition,
+    schoolLabel: philosopher.schoolLabel,
+    description: philosopher.description,
+    introBlurb: philosopher.introBlurb,
+    retrievalAuthors: [...philosopher.retrievalAuthors],
   };
 }

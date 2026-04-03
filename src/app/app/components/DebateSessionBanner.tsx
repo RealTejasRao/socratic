@@ -26,7 +26,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
   const debate = sessionMeta.debate;
   const [showSummary, setShowSummary] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
-  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState<number | null>(null);
   const finalizeRequestedRef = useRef(false);
 
   const durationMeta = debate
@@ -34,7 +34,12 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
     : null;
   const toneMeta = debate ? getDebateToneMeta(debate.tone) : null;
   const remainingSeconds = (() => {
-    if (!debate?.hasTimer || !debate.startedAt || !durationMeta?.minutes) {
+    if (
+      !debate?.hasTimer ||
+      !debate.startedAt ||
+      !durationMeta?.minutes ||
+      nowMs === null
+    ) {
       return null;
     }
 
@@ -65,6 +70,10 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
       return;
     }
 
+    const syncTimeoutId = window.setTimeout(() => {
+      setNowMs(Date.now());
+    }, 0);
+
     const updateCountdown = () => {
       setNowMs(Date.now());
     };
@@ -72,6 +81,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
     const intervalId = window.setInterval(updateCountdown, 1000);
 
     return () => {
+      window.clearTimeout(syncTimeoutId);
       window.clearInterval(intervalId);
     };
   }, [debate?.hasTimer, debate?.startedAt, durationMeta?.minutes]);

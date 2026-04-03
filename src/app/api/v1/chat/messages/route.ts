@@ -5,6 +5,10 @@ import { generateAssistantReply } from "src/server/chat/generate";
 import { generateSessionTitle } from "src/server/chat/generate-session-title";
 import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
 import type { ChatImageAttachment } from "src/types/chat";
+import {
+  getRoleplayPhilosopherConfig,
+  isRoleplayPhilosopherId,
+} from "src/lib/roleplay";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 const MAX_ATTACHMENTS = 3;
@@ -39,6 +43,8 @@ export async function POST(req: Request) {
     content?: string;
     attachments?: unknown;
     webSearch?: unknown;
+    mode?: unknown;
+    roleplayPhilosopherId?: unknown;
   };
   const attachments = Array.isArray(body?.attachments)
     ? body.attachments.filter(isValidAttachment).slice(0, MAX_ATTACHMENTS)
@@ -67,6 +73,13 @@ export async function POST(req: Request) {
       return new NextResponse("User not found in DB", { status: 404 });
     }
 
+    const requestedMode = body?.mode;
+    const roleplayPhilosopherId = body?.roleplayPhilosopherId;
+    const roleplayPhilosopher =
+      requestedMode === "ROLEPLAY" &&
+      isRoleplayPhilosopherId(roleplayPhilosopherId)
+        ? getRoleplayPhilosopherConfig(roleplayPhilosopherId)
+        : null;
     const derivedTitle =
       (await generateSessionTitle(content)) ??
       (attachments.length > 0 ? "Image upload" : null);
@@ -74,7 +87,17 @@ export async function POST(req: Request) {
     const newSession = await prisma.chatSession.create({
       data: {
         userId: dbUser.id,
-        title: derivedTitle,
+        title: roleplayPhilosopher
+          ? `Talk with ${roleplayPhilosopher.name}`
+          : derivedTitle,
+        ...(roleplayPhilosopher
+          ? {
+              mode: "ROLEPLAY" as const,
+              roleplayMeta: {
+                philosopherId: roleplayPhilosopher.id,
+              },
+            }
+          : {}),
         expiresAt,
         lastActivityAt: now,
       },

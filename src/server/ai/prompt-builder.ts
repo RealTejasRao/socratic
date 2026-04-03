@@ -10,6 +10,8 @@ import type { ChatImageAttachment } from "src/types/chat";
 import {
   DEBATE_PROMPT_SECTIONS,
   DEBATE_PROMPT_VERSION,
+  ROLEPLAY_PROMPT_SECTIONS,
+  ROLEPLAY_PROMPT_VERSION,
   SOCRATIC_PROMPT_SECTIONS,
   SOCRATIC_PROMPT_VERSION,
 } from "src/server/ai/prompt-config";
@@ -55,6 +57,15 @@ type DebatePromptParams = {
   userSide: string;
   aiSide: string;
   hasTimer: boolean;
+};
+
+type RoleplayPromptParams = {
+  philosopherName: string;
+  tradition: string;
+  schoolLabel: string;
+  voiceGuide: string;
+  openingPrompt: string;
+  retrievalAuthors: string[];
 };
 
 function estimateTokensFromText(text: string) {
@@ -210,6 +221,44 @@ function buildDebateCorePolicyMessage(params: DebatePromptParams) {
     "",
     "OUTPUT",
     DEBATE_PROMPT_SECTIONS.output,
+  ].join("\n");
+
+  return { content, sectionOrder };
+}
+
+function buildRoleplayCorePolicyMessage(params: RoleplayPromptParams) {
+  const sectionOrder = [
+    "SYSTEM_ROLE",
+    "OBJECTIVE",
+    "RULES",
+    "STYLE",
+    "ROLEPLAY_CONFIG",
+    "OUTPUT",
+  ];
+
+  const content = [
+    "SYSTEM_ROLE",
+    ROLEPLAY_PROMPT_SECTIONS.role,
+    "",
+    "OBJECTIVE",
+    ROLEPLAY_PROMPT_SECTIONS.objective,
+    "",
+    "RULES",
+    ROLEPLAY_PROMPT_SECTIONS.rules,
+    "",
+    "STYLE",
+    ROLEPLAY_PROMPT_SECTIONS.style,
+    "",
+    "ROLEPLAY_CONFIG",
+    `Philosopher: ${params.philosopherName}`,
+    `Tradition: ${params.tradition}`,
+    `Corpus focus: ${params.schoolLabel}`,
+    `Voice guide: ${params.voiceGuide}`,
+    `Opening discipline: ${params.openingPrompt}`,
+    `Relevant authors: ${params.retrievalAuthors.join(", ")}`,
+    "",
+    "OUTPUT",
+    ROLEPLAY_PROMPT_SECTIONS.output,
   ].join("\n");
 
   return { content, sectionOrder };
@@ -497,6 +546,103 @@ export function buildDebatePrompt(params: {
     messages,
     metadata: {
       promptVersion: DEBATE_PROMPT_VERSION,
+      estimatedInputTokens: promptText,
+      sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
+    },
+  };
+}
+
+export function buildRoleplayPrompt(params: {
+  conversationHistory: ConversationMessage[];
+  beliefContext?: BeliefContextItem[];
+  retrievedContext?: RetrievedContextItem[];
+  webSearchSummary?: string;
+  webSearchSources?: WebSource[];
+  conversationMemorySummary?: string;
+  userContent?: string;
+  userAttachments?: ChatImageAttachment[];
+  appendUserMessageToPrompt?: boolean;
+  knowledgeRoute?: KnowledgeRoute;
+  roleplay: RoleplayPromptParams;
+  includeVisionContent?: boolean;
+}): BuiltPrompt {
+  const {
+    conversationHistory,
+    beliefContext = [],
+    retrievedContext = [],
+    webSearchSummary,
+    webSearchSources,
+    conversationMemorySummary,
+    userContent,
+    userAttachments,
+    appendUserMessageToPrompt = true,
+    knowledgeRoute = "rag",
+    roleplay,
+    includeVisionContent = true,
+  } = params;
+
+  const corePolicy = buildRoleplayCorePolicyMessage(roleplay);
+  const dynamicContext = buildDynamicContextMessage({
+    beliefContext,
+    conversationMemorySummary,
+    retrievedContext,
+    webSearchSummary,
+    webSearchSources,
+    knowledgeRoute,
+  });
+  const includesImages =
+    includeVisionContent &&
+    hasImageAttachments(conversationHistory, userAttachments);
+
+  const messages: PromptMessage[] = [
+    { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
+    { role: "system", content: dynamicContext.content } satisfies ChatCompletionSystemMessageParam,
+    ...(includesImages
+      ? ([{
+          role: "system",
+          content: [
+            "VISION_MODE",
+            "This roleplay conversation includes attached images.",
+            "Use the visible content directly when the philosopher would reasonably comment on it.",
+          ].join("\n"),
+        } satisfies ChatCompletionSystemMessageParam])
+      : []),
+    ...conversationHistory.map((message) =>
+      message.role === "user"
+        ? ({
+            role: "user",
+            content: buildUserPromptContent(
+              message.content,
+              message.attachments,
+              includeVisionContent,
+            ),
+          } satisfies ChatCompletionUserMessageParam)
+        : ({
+            role: "assistant",
+            content: message.content,
+          } satisfies ChatCompletionAssistantMessageParam),
+    ),
+  ];
+
+  if (appendUserMessageToPrompt && (userContent || userAttachments?.length)) {
+    messages.push({
+      role: "user",
+      content: buildUserPromptContent(
+        userContent ?? "",
+        userAttachments,
+        includeVisionContent,
+      ),
+    } satisfies ChatCompletionUserMessageParam);
+  }
+
+  const promptText = messages
+    .map((message) => estimateMessageTokens(message))
+    .reduce((total, count) => total + count, 0);
+
+  return {
+    messages,
+    metadata: {
+      promptVersion: ROLEPLAY_PROMPT_VERSION,
       estimatedInputTokens: promptText,
       sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
     },

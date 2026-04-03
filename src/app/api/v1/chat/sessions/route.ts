@@ -40,6 +40,7 @@ export async function GET() {
       debateWinner: true,
       debateVerdictSummary: true,
       debateSummary: true,
+      roleplayMeta: true,
       lastActivityAt: true,
       createdAt: true
     }

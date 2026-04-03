@@ -1,11 +1,25 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import confetti from "canvas-confetti";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
-import { Swords } from "lucide-react";
+import {
+  ChevronDown,
+  Crown,
+  ScrollText,
+  Swords,
+  X,
+} from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { getDebateDurationMeta } from "src/lib/debate";
+import {
+  getRoleplayPhilosopherConfig,
+  type RoleplayPhilosopherId,
+} from "src/lib/roleplay";
 import type {
   ChatImageAttachment,
   ChatMessage,
@@ -13,9 +27,11 @@ import type {
 } from "src/types/chat";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
 import { SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
+import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import DebateModeSetup from "./DebateModeSetup";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
+import RoleplayModeSetup from "./RoleplayModeSetup";
 
 interface Props {
   initialMessages: ChatMessage[];
@@ -56,7 +72,6 @@ const FALLBACK_STARTER_CHIPS = [
 ];
 
 const STARTER_CHIP_COUNT = 2;
-
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 
 let greetingSeedStore = 0;
@@ -166,20 +181,75 @@ export default function ChatContainer({
     null,
   );
   const [editDraft, setEditDraft] = useState("");
-  const [modeSelection, setModeSelection] = useState<"SOCRATIC" | "DEBATE">(
-    sessionMeta.mode,
-  );
-  const [activeSessionMeta] = useState<ChatSessionMeta>(sessionMeta);
+  const [modeSelection, setModeSelection] = useState(sessionMeta.mode);
+  const [activeSessionMeta, setActiveSessionMeta] =
+    useState<ChatSessionMeta>(sessionMeta);
+  const [pendingRoleplayId, setPendingRoleplayId] =
+    useState<RoleplayPhilosopherId | null>(null);
+  const [showWinnerReveal, setShowWinnerReveal] = useState(false);
+  const [debateNowMs, setDebateNowMs] = useState<number | null>(null);
   const tempIdRef = useRef(0);
+  const finalizeRequestedRef = useRef(false);
   const router = useRouter();
   const hasMessages = messages.length > 0;
   const isDebateSession = activeSessionMeta.mode === "DEBATE";
+  const isRoleplaySession = activeSessionMeta.mode === "ROLEPLAY";
   const isDebateCompleted = activeSessionMeta.debate?.status === "COMPLETED";
+  const completedDebate = isDebateCompleted ? activeSessionMeta.debate : null;
   const rawName = user?.firstName?.trim() || user?.username?.trim() || "friend";
   const name = rawName.length > 0 ? rawName : "friend";
   const userLabel = name === "friend" ? "You" : name;
+  const winnerLabel =
+    completedDebate?.winner === "USER"
+      ? userLabel
+      : completedDebate?.winner === "ASSISTANT"
+        ? "Socratic AI"
+        : completedDebate?.winner === "DRAW"
+          ? "Draw"
+          : "Pending";
+  const debateDurationMeta = activeSessionMeta.debate
+    ? getDebateDurationMeta(activeSessionMeta.debate.durationPreset)
+    : null;
+  const pendingRoleplayPhilosopher = pendingRoleplayId
+    ? getRoleplayPhilosopherConfig(pendingRoleplayId)
+    : null;
+  const activeRoleplayPhilosopher = activeSessionMeta.roleplay ?? null;
+  const visibleRoleplayPhilosopher = activeRoleplayPhilosopher
+    ? {
+        philosopherId: activeRoleplayPhilosopher.philosopherId,
+        philosopherName: activeRoleplayPhilosopher.philosopherName,
+        imagePath: activeRoleplayPhilosopher.imagePath,
+        tradition: activeRoleplayPhilosopher.tradition,
+        introBlurb: activeRoleplayPhilosopher.introBlurb,
+      }
+    : pendingRoleplayPhilosopher
+      ? {
+          philosopherId: pendingRoleplayPhilosopher.id,
+          philosopherName: pendingRoleplayPhilosopher.name,
+          imagePath: pendingRoleplayPhilosopher.imagePath,
+          tradition: pendingRoleplayPhilosopher.tradition,
+          introBlurb: pendingRoleplayPhilosopher.introBlurb,
+        }
+      : null;
+  const remainingDebateSeconds =
+    activeSessionMeta.debate?.hasTimer &&
+    activeSessionMeta.debate.startedAt &&
+    debateDurationMeta?.minutes &&
+    debateNowMs !== null
+      ? Math.max(
+          0,
+          Math.ceil(
+            (new Date(activeSessionMeta.debate.startedAt).getTime() +
+              debateDurationMeta.minutes * 60 * 1000 -
+              debateNowMs) /
+              1000,
+          ),
+        )
+      : null;
   const inputPlaceholder = isDebateSession
     ? "Defend your side."
+    : visibleRoleplayPhilosopher
+      ? "Write a message to start the conversation."
     : name === "friend"
       ? "What's on your mind?"
       : `What's on your mind, ${name}?`;
@@ -195,6 +265,188 @@ export default function ChatContainer({
 
     return template.replace("{name}", name);
   })();
+
+  useEffect(() => {
+    setActiveSessionMeta(sessionMeta);
+  }, [sessionMeta]);
+
+  useEffect(() => {
+    if (sessionMeta.mode === "ROLEPLAY" && sessionMeta.roleplay) {
+      setPendingRoleplayId(null);
+      setModeSelection("ROLEPLAY");
+    }
+  }, [sessionMeta.mode, sessionMeta.roleplay]);
+
+  useEffect(() => {
+    setShowWinnerReveal(false);
+    finalizeRequestedRef.current = false;
+  }, [sessionId, isDebateCompleted]);
+
+  useEffect(() => {
+    const debate = activeSessionMeta.debate;
+
+    if (
+      !debate ||
+      !debate.hasTimer ||
+      !debate.startedAt ||
+      debate.status === "COMPLETED" ||
+      !debateDurationMeta?.minutes
+    ) {
+      return;
+    }
+
+    const syncTimeoutId = window.setTimeout(() => {
+      setDebateNowMs(Date.now());
+    }, 0);
+
+    const intervalId = window.setInterval(() => {
+      setDebateNowMs(Date.now());
+    }, 1000);
+
+    return () => {
+      window.clearTimeout(syncTimeoutId);
+      window.clearInterval(intervalId);
+    };
+  }, [
+    activeSessionMeta.debate,
+    activeSessionMeta.debate?.hasTimer,
+    activeSessionMeta.debate?.startedAt,
+    activeSessionMeta.debate?.status,
+    debateDurationMeta?.minutes,
+  ]);
+
+  useEffect(() => {
+    const debate = activeSessionMeta.debate;
+
+    if (
+      !sessionId ||
+      !debate ||
+      debate.status === "COMPLETED" ||
+      !debate.hasTimer ||
+      remainingDebateSeconds === null ||
+      remainingDebateSeconds > 0 ||
+      finalizeRequestedRef.current
+    ) {
+      return;
+    }
+
+    finalizeRequestedRef.current = true;
+
+    fetch("/api/v1/chat/debates/finalize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return null;
+        }
+
+        const payload = (await response.json()) as {
+          debateStatus: "COMPLETED";
+          debateEndedAt: string;
+          debateWinner: "USER" | "ASSISTANT" | "DRAW" | null;
+          debateVerdictSummary: string | null;
+          debateSummary: string | null;
+        };
+
+        setActiveSessionMeta((current) => ({
+          ...current,
+          status: "CLOSED",
+          debate: current.debate
+            ? {
+                ...current.debate,
+                status: payload.debateStatus,
+                endedAt: payload.debateEndedAt,
+                winner: payload.debateWinner,
+                verdictSummary: payload.debateVerdictSummary,
+                summary: payload.debateSummary,
+              }
+            : null,
+        }));
+      })
+      .finally(() => {
+        router.refresh();
+      });
+  }, [activeSessionMeta.debate, remainingDebateSeconds, router, sessionId]);
+
+  useEffect(() => {
+    if (!showWinnerReveal) {
+      return;
+    }
+
+    const colors = [
+      "#f59e0b",
+      "#ef4444",
+      "#3b82f6",
+      "#22c55e",
+      "#a855f7",
+      "#ec4899",
+      "#14b8a6",
+      "#f97316",
+      "#eab308",
+    ];
+    const endAt = Date.now() + 2200;
+
+    confetti({
+      particleCount: 220,
+      spread: 120,
+      startVelocity: 46,
+      ticks: 280,
+      scalar: 1.05,
+      origin: { y: 0.58 },
+      colors,
+      zIndex: 70,
+    });
+
+    let confettiTimeoutId = 0;
+    const launchSideBursts = () => {
+      const timeLeft = endAt - Date.now();
+      if (timeLeft <= 0) {
+        return;
+      }
+
+      confetti({
+        particleCount: 14,
+        angle: 60,
+        spread: 78,
+        startVelocity: 36,
+        ticks: 240,
+        origin: { x: 0, y: 0.62 },
+        colors,
+        zIndex: 70,
+      });
+
+      confetti({
+        particleCount: 14,
+        angle: 120,
+        spread: 78,
+        startVelocity: 36,
+        ticks: 240,
+        origin: { x: 1, y: 0.62 },
+        colors,
+        zIndex: 70,
+      });
+
+      confettiTimeoutId = window.setTimeout(launchSideBursts, 180);
+    };
+
+    const kickoffTimeoutId = window.setTimeout(launchSideBursts, 120);
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setShowWinnerReveal(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.clearTimeout(kickoffTimeoutId);
+      window.clearTimeout(confettiTimeoutId);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showWinnerReveal]);
 
   function createTempId(prefix: string) {
     tempIdRef.current += 1;
@@ -238,7 +490,22 @@ export default function ChatContainer({
       const res = await fetch("/api/v1/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, content, attachments, webSearch }),
+        body: JSON.stringify({
+          sessionId,
+          content,
+          attachments,
+          webSearch,
+          ...(sessionId
+            ? {}
+            : pendingRoleplayPhilosopher
+              ? {
+                  mode: "ROLEPLAY",
+                  roleplayPhilosopherId: pendingRoleplayPhilosopher.id,
+                }
+              : modeSelection === "SOCRATIC"
+                ? { mode: "SOCRATIC" }
+                : {}),
+        }),
       });
 
       if (!res.ok || !res.body) {
@@ -291,6 +558,33 @@ export default function ChatContainer({
       setIsStreaming(false);
     }
   }
+
+  const roleplayIntro =
+    visibleRoleplayPhilosopher ? (
+      <div className="app-roleplay-thread-intro mb-8 flex flex-col items-center text-center">
+        <div className="relative h-20 w-20 overflow-hidden rounded-full border border-slate-200 bg-[#f5f3ee] shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
+          <Image
+            src={resolveOptimizedCloudinaryPublicAsset(
+              visibleRoleplayPhilosopher.imagePath,
+              { width: 240, height: 240, crop: "fill", quality: "auto" },
+            )}
+            alt={visibleRoleplayPhilosopher.philosopherName}
+            fill
+            sizes="80px"
+            className="object-cover"
+          />
+        </div>
+        <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 [font-family:Georgia,serif]">
+          {visibleRoleplayPhilosopher.philosopherName}
+        </h3>
+        <div className="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
+          {visibleRoleplayPhilosopher.tradition}
+        </div>
+        <p className="mt-4 max-w-[620px] text-[14px] leading-7 text-slate-600">
+          {visibleRoleplayPhilosopher.introBlurb}
+        </p>
+      </div>
+    ) : null;
 
   async function handleRegenerate() {
     if (!sessionId || isStreaming || isDebateCompleted) return;
@@ -475,6 +769,19 @@ export default function ChatContainer({
                 <Swords size={13} />
                 Debate
               </button>
+              <button
+                type="button"
+                onClick={() => setModeSelection("ROLEPLAY")}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-[11px] transition",
+                  modeSelection === "ROLEPLAY"
+                    ? "bg-black text-white"
+                    : "text-zinc-600 hover:text-black",
+                )}
+              >
+                <ScrollText size={13} />
+                Roleplay
+              </button>
             </div>
           </div>
 
@@ -538,7 +845,7 @@ export default function ChatContainer({
                   </div>
                 </div>
               </motion.div>
-            ) : (
+            ) : modeSelection === "DEBATE" ? (
               <motion.div
                 key="debate"
                 initial={{ opacity: 0, y: 16 }}
@@ -548,6 +855,46 @@ export default function ChatContainer({
                 className="flex w-full justify-center"
               >
                 <DebateModeSetup />
+              </motion.div>
+            ) : pendingRoleplayPhilosopher ? (
+              <motion.div
+                key={`roleplay-ready-${pendingRoleplayPhilosopher.id}`}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mx-auto max-w-[680px]">
+                  {roleplayIntro}
+                  <MessageInput
+                    key={`roleplay-${pendingRoleplayPhilosopher.id}`}
+                    onSend={handleSend}
+                    isStreaming={isStreaming}
+                    initialValue={undefined}
+                    variant="hero"
+                    placeholder={inputPlaceholder}
+                  />
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setPendingRoleplayId(null)}
+                      className="rounded-full border border-slate-300 px-3 py-1.5 text-[11px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                    >
+                      Change philosopher
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="roleplay"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                className="flex w-full justify-center"
+              >
+                <RoleplayModeSetup onChatNow={setPendingRoleplayId} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -570,9 +917,10 @@ export default function ChatContainer({
         editingMessageId={editingMessage?.id ?? null}
         editDraft={editDraft}
         disableRevisionActions={isDebateSession}
+        topContent={isRoleplaySession ? roleplayIntro : undefined}
       />
 
-      {!isDebateCompleted && (
+      {!isDebateCompleted ? (
         <div className="app-composer-dock sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-4 pb-2">
           <MessageInput
             key={sessionId ?? "new-chat"}
@@ -583,7 +931,111 @@ export default function ChatContainer({
             showWebSearch={!isDebateSession}
           />
         </div>
+      ) : (
+        <div className="px-3 pb-10 md:px-4 md:pb-14">
+          <div className="mx-auto max-w-[680px]">
+            <div className="app-card app-debate-ended-card rounded-[24px] border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_16px_42px_rgba(15,23,42,0.08)]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                <Swords size={12} />
+                Debate Closed
+              </div>
+
+              <h3 className="app-debate-ended-title mt-4 text-[24px] leading-[1.08] tracking-[-0.04em] text-slate-950 [font-family:Georgia,serif] md:text-[30px]">
+                Time up! Debate has ended.
+              </h3>
+
+              <p className="app-debate-ended-copy mt-3 text-[12px] leading-6 text-slate-500">
+                The clock has run out. Review the full summary or reveal the verdict here.
+              </p>
+
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+                {sessionId && (
+                  <Link
+                    href={`/app/${sessionId}/summary`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                  >
+                    <ScrollText size={14} />
+                    Show summary
+                  </Link>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setShowWinnerReveal((current) => !current)}
+                  className="app-debate-ended-secondary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                >
+                  <Crown size={14} />
+                  Reveal Winner
+                  <ChevronDown size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
+
+      <AnimatePresence>
+        {showWinnerReveal && completedDebate && (
+          <motion.div
+            className="app-debate-winner-backdrop fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowWinnerReveal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 18, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.97 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              className="app-card app-debate-winner-modal relative w-full max-w-[440px] rounded-[28px] border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_22px_70px_rgba(15,23,42,0.16)]"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Debate winner"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setShowWinnerReveal(false)}
+                className="app-debate-winner-close absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                aria-label="Close winner reveal"
+              >
+                <X size={14} />
+              </button>
+
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-amber-700">
+                <Crown size={12} />
+                Winner Revealed
+              </div>
+
+              <h3 className="app-debate-winner-title mt-4 text-[28px] leading-[1.04] tracking-[-0.05em] text-slate-950 [font-family:Georgia,serif]">
+                {winnerLabel}
+              </h3>
+
+              <p className="app-debate-winner-copy mt-3 text-[13px] leading-6 text-slate-600">
+                {completedDebate.verdictSummary ||
+                  "The verdict is available in the full summary."}
+              </p>
+
+              <div className="mt-5 flex justify-center">
+                {sessionId && (
+                  <Link
+                    href={`/app/${sessionId}/summary`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                  >
+                    <ScrollText size={14} />
+                    Open full summary
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -51,6 +51,7 @@ export default async function SessionPage({ params }: Props) {
       debateWinner: true,
       debateVerdictSummary: true,
       debateSummary: true,
+      roleplayMeta: true,
     },
   });
 

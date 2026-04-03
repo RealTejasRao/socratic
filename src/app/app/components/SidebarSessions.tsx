@@ -14,18 +14,20 @@ import {
   LoaderCircle,
   MoreHorizontal,
   Pencil,
+  ScrollText,
   Swords,
   Trash2,
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import type { DebateSessionState } from "src/types/chat";
+import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 
 interface Session {
   id: string;
   title: string | null;
-  mode: "SOCRATIC" | "DEBATE";
+  mode: "SOCRATIC" | "DEBATE" | "ROLEPLAY";
   debate: DebateSessionState | null;
+  roleplay: RoleplaySessionState | null;
   firstMessagePreview: string | null;
 }
 
@@ -273,14 +275,14 @@ export default function SidebarSessions({ sessions }: Props) {
         <div className="pointer-events-none fixed right-4 top-4 z-[70]">
           <div
             className={cn(
-              "flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/96 px-3 py-2 text-[11px] text-emerald-800 shadow-[0_14px_34px_rgba(16,185,129,0.14)] backdrop-blur-sm",
+              "app-session-success-toast flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/96 px-3 py-2 text-[11px] text-emerald-800 shadow-[0_14px_34px_rgba(16,185,129,0.14)] backdrop-blur-sm",
               successToast.isLeaving
                 ? "animate-[toastSlideOut_240ms_cubic-bezier(0.4,0,0.2,1)_both]"
                 : "animate-[toastSlideIn_220ms_cubic-bezier(0.22,1,0.36,1)_both]",
             )}
           >
-            <CircleCheck size={14} className="text-emerald-600" />
-            <span>{successToast.message}</span>
+            <CircleCheck size={14} className="app-session-success-toast-icon text-emerald-600" />
+            <span className="app-session-success-toast-text">{successToast.message}</span>
           </div>
         </div>
       )}
@@ -336,24 +338,28 @@ export default function SidebarSessions({ sessions }: Props) {
                 onClick={(event) => handleSessionOpen(event, session.id)}
               >
                 <div className="flex min-w-0 items-center gap-2">
-                  {session.mode === "DEBATE" && (
+                  {session.mode !== "SOCRATIC" && (
                     <span
                       className={cn(
-                        "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500",
+                        "app-session-mode-icon inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500",
                         isActive
                           ? "border-slate-300 bg-slate-50"
                           : "border-slate-200 bg-white",
                       )}
                     >
-                      <Swords size={11} />
+                      {session.mode === "DEBATE" ? (
+                        <Swords size={11} />
+                      ) : (
+                        <ScrollText size={11} />
+                      )}
                     </span>
                   )}
                   <p className="truncate text-[11px]">
                     {session.title || "Untitled Session"}
                   </p>
-                  {session.mode === "DEBATE" && !isActive && (
+                  {session.mode !== "SOCRATIC" && !isActive && (
                     <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500">
-                      Debate
+                      {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
                     </span>
                   )}
                 </div>

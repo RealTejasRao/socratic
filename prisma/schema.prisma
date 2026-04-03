@@ -44,6 +44,7 @@ model ChatSession {
   debateVerdictSummary String?  @db.Text
   debateSummary   String?       @db.Text
   debateMeta      Json?
+  roleplayMeta    Json?
 
   startedAt       DateTime      @default(now())
   endedAt         DateTime?
@@ -68,6 +69,7 @@ model ChatSession {
 enum SessionMode {
   SOCRATIC
   DEBATE
+  ROLEPLAY
 }
 
 enum DebateTone {
