@@ -607,13 +607,13 @@ export default function ChatContainer({
           className="object-cover"
         />
       </div>
-      <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 [font-family:Georgia,serif]">
+      <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 font-[Georgia,serif]">
         {visibleRoleplayPhilosopher.philosopherName}
       </h3>
       <div className="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
         {visibleRoleplayPhilosopher.tradition}
       </div>
-      <p className="mt-4 max-w-[620px] text-[14px] leading-7 text-slate-600">
+      <p className="mt-4 max-w-155 text-[14px] leading-7 text-slate-600">
         {visibleRoleplayPhilosopher.introBlurb}
       </p>
     </div>
@@ -939,7 +939,7 @@ export default function ChatContainer({
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="mx-auto max-w-[680px]">
+                <div className="mx-auto max-w-170">
                   {roleplayIntro}
                   <MessageInput
                     key={`roleplay-${pendingRoleplayPhilosopher.id}`}
@@ -1009,14 +1009,14 @@ export default function ChatContainer({
         </div>
       ) : (
         <div className="px-3 pb-10 md:px-4 md:pb-14">
-          <div className="mx-auto max-w-[680px]">
-            <div className="app-card app-debate-ended-card rounded-[24px] border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_16px_42px_rgba(15,23,42,0.08)]">
+          <div className="mx-auto max-w-170">
+            <div className="app-card app-debate-ended-card rounded-3xl border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_16px_42px_rgba(15,23,42,0.08)]">
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-500">
                 <Swords size={12} />
                 Debate Closed
               </div>
 
-              <h3 className="app-debate-ended-title mt-4 text-[24px] leading-[1.08] tracking-[-0.04em] text-slate-950 [font-family:Georgia,serif] md:text-[30px]">
+              <h3 className="app-debate-ended-title mt-4 text-[24px] leading-[1.08] tracking-[-0.04em] text-slate-950 font-[Georgia,serif] md:text-[30px]">
                 Time up! Debate has ended.
               </h3>
 
@@ -1067,7 +1067,7 @@ export default function ChatContainer({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.97 }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-              className="app-card app-debate-winner-modal relative w-full max-w-[440px] rounded-[28px] border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_22px_70px_rgba(15,23,42,0.16)]"
+              className="app-card app-debate-winner-modal relative w-full max-w-110 rounded-[28px] border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_22px_70px_rgba(15,23,42,0.16)]"
               role="dialog"
               aria-modal="true"
               aria-label="Debate winner"
@@ -1087,7 +1087,7 @@ export default function ChatContainer({
                 Winner Revealed
               </div>
 
-              <h3 className="app-debate-winner-title mt-4 text-[28px] leading-[1.04] tracking-[-0.05em] text-slate-950 [font-family:Georgia,serif]">
+              <h3 className="app-debate-winner-title mt-4 text-[28px] leading-[1.04] tracking-[-0.05em] text-slate-950 font-[Georgia,serif]">
                 {winnerLabel}
               </h3>
 

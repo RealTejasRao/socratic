@@ -279,7 +279,7 @@ export default function DebateModeSetup() {
   }
 
   return (
-    <div className="app-debate-setup mx-auto w-full max-w-[460px] px-0 pb-4 [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
+    <div className="app-debate-setup mx-auto w-full max-w-115 px-0 pb-4 [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
       <p
         className={cn(
           "mb-2 text-[10px] uppercase tracking-[0.28em]",
@@ -320,7 +320,7 @@ export default function DebateModeSetup() {
             <div>
               <h2
                 className={cn(
-                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] font-[Georgia,serif] md:text-[24px]",
                   headingClass,
                 )}
               >
@@ -328,7 +328,7 @@ export default function DebateModeSetup() {
               </h2>
               <p
                 className={cn(
-                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  "mt-1.5 max-w-85 text-[10px] leading-5",
                   mutedClass,
                 )}
               >
@@ -398,7 +398,7 @@ export default function DebateModeSetup() {
               </div>
               <h2
                 className={cn(
-                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] font-[Georgia,serif] md:text-[24px]",
                   headingClass,
                 )}
               >
@@ -406,7 +406,7 @@ export default function DebateModeSetup() {
               </h2>
               <p
                 className={cn(
-                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  "mt-1.5 max-w-85 text-[10px] leading-5",
                   mutedClass,
                 )}
               >
@@ -420,7 +420,7 @@ export default function DebateModeSetup() {
                     type="button"
                     onClick={() => setDurationPreset(option.value)}
                     className={cn(
-                      "flex min-h-[74px] w-full flex-col rounded-xl border px-3 py-2 text-left transition",
+                      "flex min-h-18.5 w-full flex-col rounded-xl border px-3 py-2 text-left transition",
                       durationPreset === option.value
                         ? optionSelectedClass
                         : optionBaseClass,
@@ -450,7 +450,7 @@ export default function DebateModeSetup() {
             <div>
               <h2
                 className={cn(
-                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] font-[Georgia,serif] md:text-[24px]",
                   headingClass,
                 )}
               >
@@ -458,7 +458,7 @@ export default function DebateModeSetup() {
               </h2>
               <p
                 className={cn(
-                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  "mt-1.5 max-w-85 text-[10px] leading-5",
                   mutedClass,
                 )}
               >
@@ -536,7 +536,7 @@ export default function DebateModeSetup() {
             <div>
               <h2
                 className={cn(
-                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] font-[Georgia,serif] md:text-[24px]",
                   headingClass,
                 )}
               >
@@ -544,7 +544,7 @@ export default function DebateModeSetup() {
               </h2>
               <p
                 className={cn(
-                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  "mt-1.5 max-w-85 text-[10px] leading-5",
                   mutedClass,
                 )}
               >
@@ -567,7 +567,7 @@ export default function DebateModeSetup() {
                 </p>
                 <p
                   className={cn(
-                    "mt-2 text-[16px] leading-6 tracking-[-0.04em] [font-family:Georgia,serif]",
+                    "mt-2 text-[16px] leading-6 tracking-[-0.04em] font-[Georgia,serif]",
                     surfaceTitleClass,
                   )}
                 >
@@ -625,7 +625,7 @@ export default function DebateModeSetup() {
             <div>
               <h2
                 className={cn(
-                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] font-[Georgia,serif] md:text-[24px]",
                   headingClass,
                 )}
               >
@@ -633,7 +633,7 @@ export default function DebateModeSetup() {
               </h2>
               <p
                 className={cn(
-                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  "mt-1.5 max-w-85 text-[10px] leading-5",
                   mutedClass,
                 )}
               >
@@ -691,7 +691,7 @@ export default function DebateModeSetup() {
                   </p>
                   <p
                     className={cn(
-                      "mt-1.5 text-[14px] leading-6 tracking-[-0.03em] [font-family:Georgia,serif]",
+                      "mt-1.5 text-[14px] leading-6 tracking-[-0.03em] font-[Georgia,serif]",
                       surfaceTitleClass,
                     )}
                   >
@@ -733,7 +733,7 @@ export default function DebateModeSetup() {
       {error && (
         <div
           className={cn(
-            "mt-3 max-w-[460px] rounded-xl border px-3 py-2 text-left text-[10px] leading-5",
+            "mt-3 max-w-115 rounded-xl border px-3 py-2 text-left text-[10px] leading-5",
             errorClass,
           )}
         >
@@ -851,7 +851,7 @@ export default function DebateModeSetup() {
         >
           <div
             className={cn(
-              "w-full max-w-[360px] rounded-[9px] border px-4 py-3.5",
+              "w-full max-w-90 rounded-[9px] border px-4 py-3.5",
               modalClass,
             )}
             onClick={(event) => event.stopPropagation()}
@@ -860,7 +860,7 @@ export default function DebateModeSetup() {
               <div>
                 <p
                   className={cn(
-                    "text-[22px] leading-none tracking-[-0.05em] [font-family:Georgia,serif]",
+                    "text-[22px] leading-none tracking-[-0.05em] font-[Georgia,serif]",
                     headingClass,
                   )}
                 >

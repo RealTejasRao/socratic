@@ -549,7 +549,7 @@ export default function MessageInput({
     <div
       className={cn(
         "mx-auto w-full",
-        variant === "hero" ? "max-w-[500px]" : "max-w-[620px]",
+        variant === "hero" ? "max-w-125" : "max-w-155",
       )}
     >
       <div className="app-input-shell overflow-visible rounded-[12px] border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]">
@@ -584,7 +584,7 @@ export default function MessageInput({
                 <button
                   type="button"
                   onClick={() => removeAttachmentById(attachment.id)}
-                  className="app-input-attachment-remove-btn absolute top-1 right-1 cursor-pointer rounded-[8px] p-1 shadow-sm transition"
+                  className="app-input-attachment-remove-btn absolute top-1 right-1 cursor-pointer rounded-xl p-1 shadow-sm transition"
                   aria-label={`Remove ${attachment.name}`}
                   data-tooltip={`Remove ${attachment.name}`}
                 >
@@ -603,7 +603,7 @@ export default function MessageInput({
           placeholder={placeholder}
           maxLength={3000}
           rows={1}
-          className={`${poppinsClassName} app-input-textarea block min-h-[44px] w-full resize-none px-3.5 pt-2.5 pb-1.5 text-[12px] leading-5 text-slate-900 outline-none placeholder:text-slate-400`}
+          className={`${poppinsClassName} app-input-textarea block min-h-11 w-full resize-none px-3.5 pt-2.5 pb-1.5 text-[12px] leading-5 text-slate-900 outline-none placeholder:text-slate-400`}
           onKeyDown={(event) => {
             if (event.key === "Enter" && !event.shiftKey) {
               event.preventDefault();
@@ -632,7 +632,7 @@ export default function MessageInput({
                   <button
                     type="button"
                     onClick={() => setIsActionMenuOpen((current) => !current)}
-                    className="inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[8px] hover:bg-slate-100"
+                    className="inline-flex h-7.5 w-7.5 cursor-pointer items-center justify-center rounded-xl hover:bg-slate-100"
                     aria-label="Open actions"
                     data-tooltip="Attach files and more..."
                     aria-expanded={isActionMenuOpen}
@@ -641,7 +641,7 @@ export default function MessageInput({
                   </button>
 
                   {isActionMenuOpen && (
-                    <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-[132px] rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
+                    <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-33 rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
                       {allowImageAttachments && (
                         <button
                           type="button"
@@ -649,7 +649,7 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                             fileInputRef.current?.click();
                           }}
-                          className="flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50"
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50"
                           data-tooltip="Attach photos"
                         >
                           <Paperclip size={11} />
@@ -664,7 +664,7 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                           }}
                           className={cn(
-                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
+                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
                             webSearchEnabled
                               ? "bg-sky-50 text-sky-700"
                               : "text-slate-700",
@@ -688,7 +688,7 @@ export default function MessageInput({
               <button
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}
-                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1 rounded-[8px] border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
+                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1 rounded-xl border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
                 aria-label="Disable web search"
                 data-tooltip="Disable web search"
               >
@@ -705,7 +705,7 @@ export default function MessageInput({
                   type="button"
                   disabled
                   aria-disabled="true"
-                  className="relative inline-flex cursor-not-allowed items-center gap-1 rounded-[8px] px-1.5 py-1 text-slate-400"
+                  className="relative inline-flex cursor-not-allowed items-center gap-1 rounded-xl px-1.5 py-1 text-slate-400"
                   data-tooltip="Voice input not supported on this browser"
                 >
                   <Mic size={11} /> Voice
@@ -728,7 +728,7 @@ export default function MessageInput({
                 type="button"
                 onClick={handleVoiceToggle}
                 disabled={isStreaming}
-                className="inline-flex h-[30px] cursor-pointer items-center gap-1 rounded-[8px] px-2 hover:bg-slate-100 disabled:cursor-not-allowed"
+                className="inline-flex h-7.5 cursor-pointer items-center gap-1 rounded-xl px-2 hover:bg-slate-100 disabled:cursor-not-allowed"
                 data-tooltip={
                   isListening ? "Stop listening" : "Start voice input"
                 }
@@ -769,7 +769,7 @@ export default function MessageInput({
                 (!content.trim() && attachments.length === 0)
               }
               className={cn(
-                "app-send-button inline-flex h-[30px] w-[30px] items-center justify-center rounded-full bg-black text-white",
+                "app-send-button inline-flex h-7.5 w-7.5 items-center justify-center rounded-full bg-black text-white",
                 isStreaming ||
                   isUploadingAttachments ||
                   (!content.trim() && attachments.length === 0)

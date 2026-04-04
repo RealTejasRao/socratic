@@ -519,7 +519,7 @@ export default function AppTopBar({ sessions }: Props) {
           <motion.div
             key={themeSweep.id}
             className={cn(
-              "pointer-events-none fixed inset-0 z-[55]",
+              "pointer-events-none fixed inset-0 z-55",
               themeSweep.dark ? "bg-black" : "bg-white",
             )}
             initial={{ opacity: 0 }}
@@ -531,7 +531,7 @@ export default function AppTopBar({ sessions }: Props) {
       </AnimatePresence>
 
       <header className="app-topbar sticky top-0 z-20 flex h-10 shrink-0 items-center bg-white px-3 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:px-5">
-        <div className="flex w-[188px] shrink-0 items-center">
+        <div className="flex w-47 shrink-0 items-center">
           {activeSession && (
             <div className="flex items-center gap-2">
               <div className="relative" data-topbar-interactive="">
@@ -546,7 +546,7 @@ export default function AppTopBar({ sessions }: Props) {
                 </button>
 
                 {shareMenuOpen && (
-                  <div className="app-card absolute left-0 top-full z-40 mt-1.5 w-[214px] origin-top-left rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                  <div className="app-card absolute left-0 top-full z-40 mt-1.5 w-53.5 origin-top-left rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                     <button
                       type="button"
                       onClick={() => void handleCopyLink()}
@@ -655,7 +655,7 @@ export default function AppTopBar({ sessions }: Props) {
               }}
               disabled={!activeSession}
               className={cn(
-                "inline-flex max-w-[340px] tracking-wide items-center gap-1 rounded-[9px] px-2 py-1 text-[13px] text-slate-700",
+                "inline-flex max-w-85 tracking-wide items-center gap-1 rounded-[9px] px-2 py-1 text-[13px] text-slate-700",
                 activeSession
                   ? "cursor-pointer transition hover:bg-[#f4f4f4] hover:text-slate-900"
                   : "cursor-default",
@@ -677,7 +677,7 @@ export default function AppTopBar({ sessions }: Props) {
             </button>
 
             {menuOpen && activeSession && (
-              <div className="app-card absolute left-1/2 top-full z-40 mt-1.5 w-[124px] origin-top -translate-x-1/2 rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+              <div className="app-card absolute left-1/2 top-full z-40 mt-1.5 w-31 origin-top -translate-x-1/2 rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                 <button
                   type="button"
                   onClick={openRenameDialog}
@@ -701,7 +701,7 @@ export default function AppTopBar({ sessions }: Props) {
           </div>
         </div>
 
-        <div className="flex w-[240px] shrink-0 items-center justify-end gap-3">
+        <div className="flex w-60 shrink-0 items-center justify-end gap-3">
           {activeDebate?.hasTimer && remainingSeconds !== null && (
             <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-2.5 py-1 text-[12px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
               <Clock3 size={12} className="text-slate-500" />
@@ -770,7 +770,7 @@ export default function AppTopBar({ sessions }: Props) {
 
       {actionDialog && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/12 p-4 backdrop-blur-[2px]"
+          className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/12 p-4 backdrop-blur-[2px]"
           onClick={() => {
             if (!isDialogBusy) {
               closeDialog();

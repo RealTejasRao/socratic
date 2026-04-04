@@ -163,11 +163,11 @@ export default function SidebarSearch() {
 
   return (
     <div ref={wrapperRef} className="relative mb-2">
-      <div className="h-[24px]">
+      <div className="h-6">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="absolute inset-x-0 top-0 flex h-[24px] cursor-pointer items-center gap-1.5 rounded-lg px-2 py-[5px] text-[11px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black"
+          className="absolute inset-x-0 top-0 flex h-6 cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1.25 text-[11px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black"
         >
           <Search size={11} />
           <span>Search chats</span>
@@ -219,7 +219,7 @@ export default function SidebarSearch() {
               />
             </div>
 
-            <div className="mt-4 max-h-[460px] overflow-y-auto">
+            <div className="mt-4 max-h-115 overflow-y-auto">
               {!query.trim() ? (
                 <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
                   Start typing to search titles and message content.
@@ -251,7 +251,7 @@ export default function SidebarSearch() {
                           </span>
                         )}
                       </div>
-                      <p className="mt-1.5 line-clamp-2 text-[11px] leading-[18px] text-slate-500">
+                      <p className="mt-1.5 line-clamp-2 text-[11px] leading-4.5 text-slate-500">
                         {highlightQuery(result.snippet, query)}
                       </p>
                     </Link>

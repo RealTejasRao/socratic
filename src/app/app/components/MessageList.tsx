@@ -415,7 +415,7 @@ export default function MessageList({
 
   return (
     <div className="flex-1">
-      <div className="mx-auto flex w-full max-w-[680px] flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
+      <div className="mx-auto flex w-full max-w-170 flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
         {topContent}
         {messages.map((message, index) => {
           const isLastUser = index === actualLastUserIndex;
@@ -440,14 +440,14 @@ export default function MessageList({
               )}
 
               {isEditingThisMessage ? (
-                <div className="app-user-edit-shell w-full max-w-[560px] rounded-[14px] border border-slate-300 bg-[#f4f4f4] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+                <div className="app-user-edit-shell w-full max-w-140 rounded-[14px] border border-slate-300 bg-[#f4f4f4] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
                   <textarea
                     ref={editTextareaRef}
                     value={editDraft}
                     onChange={(event) => onEditDraftChange(event.target.value)}
                     autoFocus
                     rows={1}
-                    className={`${poppinsClassName} min-h-[32px] w-full resize-none overflow-hidden bg-transparent text-[13px] leading-6 text-slate-900 outline-none`}
+                    className={`${poppinsClassName} min-h-8 w-full resize-none overflow-hidden bg-transparent text-[13px] leading-6 text-slate-900 outline-none`}
                   />
                   <div className="mt-3 flex justify-end gap-2">
                     <button
@@ -471,10 +471,10 @@ export default function MessageList({
               ) : (
                 <div
                   className={cn(
-                    "max-w-[560px] whitespace-pre-wrap px-3 py-2",
+                    "max-w-140 whitespace-pre-wrap px-3 py-2",
                     isUser
                       ? `${poppinsClassName} app-user-bubble rounded-[9px] tracking-wider border border-slate-300 bg-[#f4f4f4] text-[13px] text-slate-900`
-                      : "app-assistant-text bg-transparent text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 font-[Georgia,serif]",
+                      : "app-assistant-text bg-transparent text-[13px] leading-6.75 tracking-[0.02em] text-slate-950 font-[Georgia,serif]",
                   )}
                 >
                   {message.attachments && message.attachments.length > 0 && (

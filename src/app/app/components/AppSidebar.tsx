@@ -96,7 +96,7 @@ export default function AppSidebar({ sessions }: Props) {
       <button
         type="button"
         onClick={() => setCollapsed((current) => !current)}
-        className="app-sidebar-toggle absolute top-[26px] -right-3 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-300 bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900"
+        className="app-sidebar-toggle absolute top-6.5 -right-3 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-300 bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         data-tooltip={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
@@ -154,7 +154,7 @@ export default function AppSidebar({ sessions }: Props) {
           <div className="mb-1 mt-1">
             <Link
               href={ROUTES.APP}
-              className="flex items-center gap-1.5 rounded-lg px-2 py-[5px] text-[11px] text-black/90 transition hover:bg-white/70 hover:text-black"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1.25 text-[11px] text-black/90 transition hover:bg-white/70 hover:text-black"
             >
               <PenSquare size={12} />
               <span>New Chat</span>
@@ -173,18 +173,18 @@ export default function AppSidebar({ sessions }: Props) {
           <div className="mt-3 space-y-0.5 border-t border-slate-200 pt-2">
             <Link
               href={ROUTES.HOME}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-[5px] text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
             >
               <House size={12} /> Home
             </Link>
-            <button className="flex w-full items-center gap-2 rounded-lg px-2 py-[5px] text-[11px] text-black/90 hover:bg-white/70 hover:text-black">
+            <button className="flex w-full items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black">
               <Settings size={12} /> Settings
             </button>
             <Link
               href={`${ROUTES.HOME}#contact`}
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-[5px] text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
             >
               <Mail size={12} /> Send Us a Message
             </Link>

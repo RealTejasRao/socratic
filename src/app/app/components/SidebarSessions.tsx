@@ -272,7 +272,7 @@ export default function SidebarSessions({ sessions }: Props) {
   return (
     <div className="space-y-0.5">
       {successToast && (
-        <div className="pointer-events-none fixed right-4 top-4 z-[70]">
+        <div className="pointer-events-none fixed right-4 top-4 z-70">
           <div
             className={cn(
               "app-session-success-toast flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/96 px-3 py-2 text-[11px] text-emerald-800 shadow-[0_14px_34px_rgba(16,185,129,0.14)] backdrop-blur-sm",
@@ -306,7 +306,7 @@ export default function SidebarSessions({ sessions }: Props) {
           <div
             key={session.id}
             className={cn(
-              "app-session-row group flex items-center justify-between rounded-[8px] px-2 py-[5px]",
+              "app-session-row group flex items-center justify-between rounded-xl px-2 py-1.25",
               isOpening && "app-session-row-loading",
               isActive
                 ? session.mode === "DEBATE"
@@ -395,7 +395,7 @@ export default function SidebarSessions({ sessions }: Props) {
                   </button>
 
                   {openMenuId === session.id && (
-                    <div className="app-card absolute top-full right-0 z-40 mt-1.5 w-[124px] origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                    <div className="app-card absolute top-full right-0 z-40 mt-1.5 w-31 origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                       <button
                         type="button"
                         onClick={() => startRename(session)}
@@ -440,9 +440,9 @@ export default function SidebarSessions({ sessions }: Props) {
           className="pointer-events-none fixed z-50 w-64 -translate-y-1/2"
           style={{ left: hoveredSession.x, top: hoveredSession.y }}
         >
-          <div className="app-card app-session-preview-card relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2 text-[11px] leading-[18px] text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
-            <div className="app-session-preview-arrow absolute top-1/2 -left-1.5 h-[10px] w-[10px] -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
-            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap break-words">
+          <div className="app-card app-session-preview-card relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2 text-[11px] leading-4.5 text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
+            <div className="app-session-preview-arrow absolute top-1/2 -left-1.5 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
+            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap wrap-break-word">
               {hoveredSession.preview}
             </p>
           </div>
