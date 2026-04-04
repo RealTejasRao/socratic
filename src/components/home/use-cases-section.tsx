@@ -198,7 +198,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
         </div>
 
         <div className="mt-12 overflow-hidden rounded-2xl border border-black/25 outline-1 -outline-offset-1 outline-black/12 bg-white md:mt-5">
-          <div className="grid grid-cols-1 lg:min-h-[24rem] lg:grid-cols-[0.95fr_1.85fr]">
+          <div className="grid grid-cols-1 lg:min-h-96 lg:grid-cols-[0.95fr_1.85fr]">
             <aside className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10">
               {useCaseItems.map((item, index) => {
                 const isActive = item.id === activeItem.id;
@@ -212,7 +212,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                     className={`group relative block w-full cursor-pointer border-b border-black/10 px-3 py-3 text-left last:border-b-0 transition-colors duration-200 lg:flex-1 ${
                       isActive
                         ? "bg-white"
-                        : "bg-[#f7f7f7] hover:bg-black/[0.02]"
+                        : "bg-[#f7f7f7] hover:bg-black/2"
                     }`}
                     aria-pressed={isActive}
                     initial={{ opacity: 0, x: -18 }}
@@ -247,7 +247,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                         }`}
                       />
                     </div>
-                    <p className="mt-1.5 max-w-[28rem] pr-3 text-[0.72rem] leading-5 text-black/58">
+                    <p className="mt-1.5 max-w-md pr-3 text-[0.72rem] leading-5 text-black/58">
                       {item.leftDescription}
                     </p>
                   </motion.button>
@@ -272,7 +272,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
               </p>
 
               <div className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1">
-                <div className="relative flex h-[9rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[10.25rem] lg:h-full lg:min-h-[12.75rem]">
+                <div className="relative flex h-36 w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-41 lg:h-full lg:min-h-51">
                   {activeImageUrl ? (
                     <Image
                       src={activeImageUrl}

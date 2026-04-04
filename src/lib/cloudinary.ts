@@ -32,7 +32,11 @@ export function buildOptimizedCloudinaryUrl(
     return url;
   }
 
-  const transformationParts = ["f_auto", `q_${options?.quality ?? "auto:best"}`, "dpr_auto"];
+  const transformationParts = [
+    "f_auto",
+    `q_${options?.quality ?? "auto:good"}`,
+    "dpr_auto",
+  ];
 
   if (options?.crop) {
     transformationParts.push(`c_${options.crop}`);

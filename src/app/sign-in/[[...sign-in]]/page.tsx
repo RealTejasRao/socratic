@@ -81,6 +81,7 @@ export default function SignInPage() {
                 width={1050}
                 height={1050}
                 priority
+                unoptimized
                 className="pointer-events-none block h-auto object-contain"
                 style={{
                   width: `${nietzscheImageScale * 100}%`,

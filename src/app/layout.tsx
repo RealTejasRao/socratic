@@ -32,13 +32,21 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+          <link
+            rel="preconnect"
+            href="https://res.cloudinary.com"
+            crossOrigin="anonymous"
+          />
+        </head>
         <body>
           <ClickPulse />
           {children}
