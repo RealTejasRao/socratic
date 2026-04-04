@@ -1,8 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ClipboardEvent,
+} from "react";
 import { usePathname } from "next/navigation";
-import { ArrowUp, Globe, Mic, Paperclip, Plus, X } from "lucide-react";
+import {
+  ArrowUp,
+  Globe,
+  LoaderCircle,
+  Mic,
+  Paperclip,
+  Plus,
+  X,
+} from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import type { ChatImageAttachment } from "src/types/chat";
 
@@ -55,6 +69,7 @@ interface Props {
   variant?: "default" | "hero";
   placeholder?: string;
   showWebSearch?: boolean;
+  allowImageAttachments?: boolean;
 }
 
 interface ComposerImageAttachment {
@@ -83,6 +98,7 @@ export default function MessageInput({
   variant = "default",
   placeholder = "What's on your mind?",
   showWebSearch = true,
+  allowImageAttachments = true,
 }: Props) {
   const pathname = usePathname();
   const storageKey = `socratic:draft:${pathname}`;
@@ -134,6 +150,7 @@ export default function MessageInput({
   const isUploadingAttachments = composerAttachments.some(
     (item) => item.status === "uploading",
   );
+  const canShowActionMenu = allowImageAttachments || showWebSearch;
 
   useEffect(() => {
     attachmentsRef.current = composerAttachments;
@@ -400,12 +417,16 @@ export default function MessageInput({
     return attachment;
   }
 
-  async function handleFilesSelected(files: FileList | null) {
-    if (!files?.length) return;
+  async function processSelectedImageFiles(filesArray: File[]) {
+    if (!allowImageAttachments) {
+      return;
+    }
+
+    if (filesArray.length === 0) return;
 
     const availableSlots = Math.max(
       0,
-      MAX_ATTACHMENTS - composerAttachments.length,
+      MAX_ATTACHMENTS - attachmentsRef.current.length,
     );
 
     if (availableSlots === 0) {
@@ -413,9 +434,9 @@ export default function MessageInput({
       return;
     }
 
-    const selectedFiles = Array.from(files).slice(0, availableSlots);
+    const selectedFiles = filesArray.slice(0, availableSlots);
 
-    if (files.length > availableSlots) {
+    if (filesArray.length > availableSlots) {
       setAttachmentError(`You can attach up to ${MAX_ATTACHMENTS} images.`);
     } else {
       setAttachmentError("");
@@ -482,6 +503,48 @@ export default function MessageInput({
     }
   }
 
+  async function handleFilesSelected(files: FileList | null) {
+    if (!files?.length) return;
+    await processSelectedImageFiles(Array.from(files));
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  function handleTextareaPaste(event: ClipboardEvent<HTMLTextAreaElement>) {
+    if (!allowImageAttachments) {
+      return;
+    }
+
+    const clipboardItems = event.clipboardData?.items;
+
+    if (!clipboardItems?.length) {
+      return;
+    }
+
+    const imageFiles: File[] = [];
+
+    for (const item of Array.from(clipboardItems)) {
+      if (item.kind !== "file") {
+        continue;
+      }
+
+      const file = item.getAsFile();
+
+      if (file && file.type.startsWith("image/")) {
+        imageFiles.push(file);
+      }
+    }
+
+    if (imageFiles.length === 0) {
+      return;
+    }
+
+    event.preventDefault();
+    void processSelectedImageFiles(imageFiles);
+  }
+
   return (
     <div
       className={cn(
@@ -504,8 +567,13 @@ export default function MessageInput({
                   className="h-12 w-12 object-cover"
                 />
                 {attachment.status === "uploading" && (
-                  <div className="absolute inset-0 grid place-items-center bg-white/70 text-[10px] font-medium text-slate-700">
-                    Uploading...
+                  <div className="absolute inset-0 grid place-items-center bg-white/60">
+                    <div className="grid h-6 w-6 place-items-center rounded-full bg-white/90 shadow-sm">
+                      <LoaderCircle
+                        size={14}
+                        className="animate-spin text-slate-600"
+                      />
+                    </div>
                   </div>
                 )}
                 {attachment.status === "error" && (
@@ -516,7 +584,7 @@ export default function MessageInput({
                 <button
                   type="button"
                   onClick={() => removeAttachmentById(attachment.id)}
-                  className="absolute top-1 right-1 cursor-pointer rounded-[8px] bg-white/90 p-1 text-slate-500 shadow-sm transition hover:text-slate-900"
+                  className="app-input-attachment-remove-btn absolute top-1 right-1 cursor-pointer rounded-[8px] p-1 shadow-sm transition"
                   aria-label={`Remove ${attachment.name}`}
                   data-tooltip={`Remove ${attachment.name}`}
                 >
@@ -531,6 +599,7 @@ export default function MessageInput({
           ref={textareaRef}
           value={content}
           onChange={(event) => setContentOverride(event.target.value)}
+          onPaste={handleTextareaPaste}
           placeholder={placeholder}
           maxLength={3000}
           rows={1}
@@ -547,66 +616,74 @@ export default function MessageInput({
           <div
             className={`${poppinsClassName} flex flex-wrap items-center gap-1 text-[10px] text-slate-600`}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(event) => void handleFilesSelected(event.target.files)}
-            />
-            <div className="relative" ref={actionMenuRef}>
-              <button
-                type="button"
-                onClick={() => setIsActionMenuOpen((current) => !current)}
-                className="inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[8px] hover:bg-slate-100"
-                aria-label="Open actions"
-                data-tooltip="Attach files and more..."
-                aria-expanded={isActionMenuOpen}
-              >
-                <Plus size={15} />
-              </button>
-
-              {isActionMenuOpen && (
-                <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-[132px] rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
+            {canShowActionMenu && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(event) =>
+                    void handleFilesSelected(event.target.files)
+                  }
+                />
+                <div className="relative" ref={actionMenuRef}>
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsActionMenuOpen(false);
-                      fileInputRef.current?.click();
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50"
-                    data-tooltip="Attach photos"
+                    onClick={() => setIsActionMenuOpen((current) => !current)}
+                    className="inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-[8px] hover:bg-slate-100"
+                    aria-label="Open actions"
+                    data-tooltip="Attach files and more..."
+                    aria-expanded={isActionMenuOpen}
                   >
-                    <Paperclip size={11} />
-                    Attach photos
+                    <Plus size={15} />
                   </button>
-                  {showWebSearch && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setWebSearchEnabled((current) => !current);
-                        setIsActionMenuOpen(false);
-                      }}
-                      className={cn(
-                        "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
-                        webSearchEnabled
-                          ? "bg-sky-50 text-sky-700"
-                          : "text-slate-700",
+
+                  {isActionMenuOpen && (
+                    <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-[132px] rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
+                      {allowImageAttachments && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsActionMenuOpen(false);
+                            fileInputRef.current?.click();
+                          }}
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50"
+                          data-tooltip="Attach photos"
+                        >
+                          <Paperclip size={11} />
+                          Attach photos
+                        </button>
                       )}
-                      data-tooltip={
-                        webSearchEnabled
-                          ? "Disable web search"
-                          : "Enable web search"
-                      }
-                    >
-                      <Globe size={11} />
-                      Web search
-                    </button>
+                      {showWebSearch && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setWebSearchEnabled((current) => !current);
+                            setIsActionMenuOpen(false);
+                          }}
+                          className={cn(
+                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[8px] px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
+                            webSearchEnabled
+                              ? "bg-sky-50 text-sky-700"
+                              : "text-slate-700",
+                          )}
+                          data-tooltip={
+                            webSearchEnabled
+                              ? "Disable web search"
+                              : "Enable web search"
+                          }
+                        >
+                          <Globe size={11} />
+                          Web search
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
             {showWebSearch && webSearchEnabled && (
               <button
                 type="button"

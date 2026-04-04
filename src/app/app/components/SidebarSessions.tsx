@@ -281,8 +281,13 @@ export default function SidebarSessions({ sessions }: Props) {
                 : "animate-[toastSlideIn_220ms_cubic-bezier(0.22,1,0.36,1)_both]",
             )}
           >
-            <CircleCheck size={14} className="app-session-success-toast-icon text-emerald-600" />
-            <span className="app-session-success-toast-text">{successToast.message}</span>
+            <CircleCheck
+              size={14}
+              className="app-session-success-toast-icon text-emerald-600"
+            />
+            <span className="app-session-success-toast-text">
+              {successToast.message}
+            </span>
           </div>
         </div>
       )}
@@ -291,9 +296,11 @@ export default function SidebarSessions({ sessions }: Props) {
         const isActive = pathname === `/app/${session.id}`;
         const isOpening = pendingSessionId === session.id && !isActive;
         const hoverPreview =
-          session.firstMessagePreview?.trim() ||
-          session.title ||
-          "Untitled Session";
+          session.mode === "SOCRATIC"
+            ? session.firstMessagePreview?.trim() ||
+              session.title ||
+              "Untitled Session"
+            : session.title || "Untitled Session";
 
         return (
           <div

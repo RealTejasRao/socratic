@@ -22,9 +22,9 @@ import type { RoleplayPhilosopherId } from "src/lib/roleplay";
 export type SessionMode = "SOCRATIC" | "DEBATE" | "ROLEPLAY";
 
 export type DebateTone =
-  | "RUTHLESS_RESPECTFUL"
-  | "BLUNT_AGGRESSIVE"
-  | "TOUGH_POLISHED";
+  | "RUTHLESS_BLUNT"
+  | "SIMPLE_CLEAR"
+  | "ELITE_INTELLECTUAL_ELEGANT";
 
 export type DebateDurationPreset =
   | "MIN_15"

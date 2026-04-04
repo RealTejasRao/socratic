@@ -13,7 +13,11 @@ type SessionShape = {
   title: string | null;
   mode: "SOCRATIC" | "DEBATE" | "ROLEPLAY";
   status: "ACTIVE" | "CLOSED" | "ARCHIVED";
-  debateTone: "RUTHLESS_RESPECTFUL" | "BLUNT_AGGRESSIVE" | "TOUGH_POLISHED" | null;
+  debateTone:
+    | "RUTHLESS_BLUNT"
+    | "SIMPLE_CLEAR"
+    | "ELITE_INTELLECTUAL_ELEGANT"
+    | null;
   debateDurationPreset:
     | "MIN_15"
     | "MIN_20"
@@ -35,7 +39,9 @@ type SessionShape = {
   roleplayMeta?: unknown;
 };
 
-export function serializeDebateState(session: SessionShape): DebateSessionState | null {
+export function serializeDebateState(
+  session: SessionShape,
+): DebateSessionState | null {
   if (session.mode !== "DEBATE") {
     return null;
   }
@@ -80,7 +86,9 @@ export function serializeSessionMeta(session: SessionShape): ChatSessionMeta {
   };
 }
 
-function serializeRoleplayState(session: SessionShape): RoleplaySessionState | null {
+function serializeRoleplayState(
+  session: SessionShape,
+): RoleplaySessionState | null {
   if (session.mode !== "ROLEPLAY") {
     return null;
   }

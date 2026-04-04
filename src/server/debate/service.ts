@@ -1,7 +1,6 @@
 import {
   Prisma,
-  type DebateDurationPreset,
-  type DebateTone,
+  type DebateTone as PrismaDebateTone,
   type DebateTopicSource,
   type DebateWinner,
 } from "@prisma/client";
@@ -12,14 +11,16 @@ import {
 } from "src/server/ai/providers";
 import { prisma } from "src/server/db/client";
 import {
+  DEBATE_TOPIC_MAX_CHARS,
   getDebateDurationMeta,
   getDebateToneMeta,
   normalizeDebateTopic,
+  type DebateDurationPreset,
+  type DebateTone,
   validatePhilosophyTopicLightweight,
 } from "src/lib/debate";
 
-const DEFAULT_MODEL =
-  getDeepSeekChatModel();
+const DEFAULT_MODEL = getDeepSeekChatModel();
 
 const AUX_MODEL = getDeepSeekAuxModel();
 
@@ -28,6 +29,7 @@ const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 type DebateSuggestionParams = {
   tone: DebateTone;
   durationPreset: DebateDurationPreset;
+  userId?: string;
 };
 
 type DebateOpeningParams = {
@@ -61,7 +63,112 @@ const FALLBACK_TOPICS = [
   "Free will is an illusion people defend for emotional reasons.",
   "Stoicism is emotionally overrated in modern life.",
   "Moral progress is mostly a comforting myth.",
+  "Authenticity is often just socially approved performance.",
+  "Compassion without hierarchy of duties produces moral chaos.",
+  "Most political tolerance masks contempt rather than respect.",
+  "Consciousness is narrative theater, not a stable self.",
+  "Justice and mercy are structurally incompatible in law.",
+  "Human dignity is rhetoric unless backed by material guarantees.",
 ];
+
+const TOPIC_DIVERSITY_LENSES = [
+  "ethics",
+  "political philosophy",
+  "philosophy of mind",
+  "epistemology",
+  "metaphysics",
+  "existentialism",
+  "aesthetics",
+  "philosophy of religion",
+] as const;
+
+function pickRandomUnique<T>(items: readonly T[], count: number) {
+  const pool = [...items];
+  const chosen: T[] = [];
+
+  while (pool.length > 0 && chosen.length < count) {
+    const index = Math.floor(Math.random() * pool.length);
+    const [item] = pool.splice(index, 1);
+    if (item !== undefined) {
+      chosen.push(item);
+    }
+  }
+
+  return chosen;
+}
+
+function topicFingerprint(topic: string) {
+  return normalizeDebateTopic(topic)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(
+      (word) =>
+        word.length > 2 &&
+        ![
+          "the",
+          "and",
+          "for",
+          "with",
+          "that",
+          "this",
+          "from",
+          "about",
+          "into",
+          "without",
+          "most",
+          "more",
+        ].includes(word),
+    )
+    .join(" ");
+}
+
+function areTopicsNearDuplicate(a: string, b: string) {
+  const fa = topicFingerprint(a);
+  const fb = topicFingerprint(b);
+
+  if (!fa || !fb) {
+    return false;
+  }
+
+  if (fa === fb || fa.includes(fb) || fb.includes(fa)) {
+    return true;
+  }
+
+  const tokensA = new Set(fa.split(" "));
+  const tokensB = new Set(fb.split(" "));
+  const overlap = [...tokensA].filter((token) => tokensB.has(token)).length;
+  const minSize = Math.max(1, Math.min(tokensA.size, tokensB.size));
+
+  return overlap / minSize >= 0.7;
+}
+
+function filterDistinctTopics(
+  candidates: string[],
+  blockedTopics: string[] = [],
+) {
+  const distinct: string[] = [];
+
+  for (const candidateRaw of candidates) {
+    const candidate = normalizeDebateTopic(candidateRaw);
+    if (!candidate) {
+      continue;
+    }
+
+    const isBlocked = blockedTopics.some((blocked) =>
+      areTopicsNearDuplicate(candidate, blocked),
+    );
+    const isDuplicate = distinct.some((existing) =>
+      areTopicsNearDuplicate(candidate, existing),
+    );
+
+    if (!isBlocked && !isDuplicate) {
+      distinct.push(candidate);
+    }
+  }
+
+  return distinct;
+}
 
 const FALLBACK_VERDICT = {
   winner: "DRAW" as DebateWinner,
@@ -72,6 +179,29 @@ const FALLBACK_VERDICT = {
 };
 
 const DEBATE_DASHBOARD_VERSION = "debate-dashboard-v1";
+
+function normalizeStoredDebateTone(
+  tone: PrismaDebateTone | DebateTone,
+): DebateTone {
+  switch (tone) {
+    case "RUTHLESS_RESPECTFUL":
+      return "RUTHLESS_BLUNT";
+    case "BLUNT_AGGRESSIVE":
+      return "SIMPLE_CLEAR";
+    case "TOUGH_POLISHED":
+      return "ELITE_INTELLECTUAL_ELEGANT";
+    case "RUTHLESS_BLUNT":
+    case "SIMPLE_CLEAR":
+    case "ELITE_INTELLECTUAL_ELEGANT":
+      return tone;
+    default:
+      return "RUTHLESS_BLUNT";
+  }
+}
+
+function toPrismaDebateTone(tone: DebateTone): PrismaDebateTone {
+  return tone as unknown as PrismaDebateTone;
+}
 
 function parseDebateDashboard(meta: Prisma.JsonValue | null | undefined) {
   if (!meta || typeof meta !== "object" || Array.isArray(meta)) {
@@ -102,7 +232,9 @@ function parseDebateDashboard(meta: Prisma.JsonValue | null | undefined) {
         (item): item is string => typeof item === "string",
       )
     : [];
-  const improvementSuggestions = Array.isArray(dashboard["improvementSuggestions"])
+  const improvementSuggestions = Array.isArray(
+    dashboard["improvementSuggestions"],
+  )
     ? dashboard["improvementSuggestions"].filter(
         (item): item is string => typeof item === "string",
       )
@@ -132,7 +264,9 @@ function buildFallbackDashboard(params: {
   transcript: Array<{ role: "USER" | "ASSISTANT"; content: string }>;
   beliefs: Array<{ type: string; belief: string }>;
 }): DebateDashboard {
-  const userMessages = params.transcript.filter((message) => message.role === "USER");
+  const userMessages = params.transcript.filter(
+    (message) => message.role === "USER",
+  );
   const assistantMessages = params.transcript.filter(
     (message) => message.role === "ASSISTANT",
   );
@@ -273,20 +407,46 @@ export async function generateDebateTopicSuggestions(
   try {
     const durationMeta = getDebateDurationMeta(params.durationPreset);
     const toneMeta = getDebateToneMeta(params.tone);
+    const diversityLenses = pickRandomUnique(TOPIC_DIVERSITY_LENSES, 3);
+
+    const recentTopics = params.userId
+      ? (
+          await prisma.chatSession.findMany({
+            where: {
+              userId: params.userId,
+              mode: "DEBATE",
+              debateTopic: { not: null },
+            },
+            orderBy: { updatedAt: "desc" },
+            take: 30,
+            select: { debateTopic: true },
+          })
+        )
+          .map((session) => session.debateTopic ?? "")
+          .map((topic) => normalizeDebateTopic(topic))
+          .filter((topic) => Boolean(topic))
+      : [];
+
+    const recentTopicsForPrompt = recentTopics.slice(0, 12);
 
     const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
-      temperature: 0.9,
-      max_tokens: 320,
+      temperature: 1.25,
+      top_p: 0.95,
+      max_tokens: 520,
+      presence_penalty: 0.7,
       response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
           content: [
             "Generate philosophy debate topics as direct theses.",
-            "Reply in strict JSON with a single key named topics whose value is an array of exactly 3 strings.",
+            "Reply in strict JSON with a single key named topics whose value is an array of exactly 10 strings.",
             "Each topic must be debatable, vivid, and strong enough for a one-on-one intellectual argument.",
-            "Avoid generic textbook wording.",
+            "Avoid generic textbook wording and avoid semantic repeats.",
+            "Do not output the same thesis with rephrased wording.",
+            "Each thesis must be one sentence.",
+            "At least one thesis should be high-risk and provocative but still philosophical.",
           ].join(" "),
         },
         {
@@ -294,7 +454,11 @@ export async function generateDebateTopicSuggestions(
           content: [
             `Tone: ${toneMeta.label}.`,
             `Duration: ${durationMeta.label}.`,
+            `Use three distinct philosophical lenses: ${diversityLenses.join(", ")}.`,
             "Give topics that work well in that format.",
+            recentTopicsForPrompt.length > 0
+              ? `Avoid these recent topics and close variants: ${recentTopicsForPrompt.join(" | ")}`
+              : "",
           ].join(" "),
         },
       ],
@@ -307,26 +471,94 @@ export async function generateDebateTopicSuggestions(
     }
 
     const parsed = JSON.parse(content) as { topics?: string[] };
-    const topics =
+    const rawTopics =
       parsed.topics?.filter(
-        (topic): topic is string => typeof topic === "string" && Boolean(topic.trim()),
+        (topic): topic is string =>
+          typeof topic === "string" && Boolean(topic.trim()),
       ) ?? [];
 
-    return topics.slice(0, 3).length === 3 ? topics.slice(0, 3) : FALLBACK_TOPICS;
+    const topics = filterDistinctTopics(rawTopics, recentTopics).slice(0, 3);
+
+    if (topics.length === 3) {
+      return topics;
+    }
+
+    const fallback = filterDistinctTopics(FALLBACK_TOPICS, [
+      ...recentTopics,
+      ...topics,
+    ]).slice(0, 3 - topics.length);
+
+    return [...topics, ...fallback].slice(0, 3);
   } catch {
-    return FALLBACK_TOPICS;
+    return pickRandomUnique(FALLBACK_TOPICS, 3);
   }
 }
 
 export async function generateDebateOpening(params: DebateOpeningParams) {
   const durationMeta = getDebateDurationMeta(params.durationPreset);
   const toneMeta = getDebateToneMeta(params.tone);
+  const isShortDebate =
+    params.durationPreset === "MIN_15" ||
+    params.durationPreset === "MIN_20" ||
+    params.durationPreset === "MIN_30";
+
+  const openingLengthInstruction = (() => {
+    switch (params.durationPreset) {
+      case "MIN_15":
+        return "Write exactly 2 short sentences.";
+      case "MIN_20":
+        return "Write 2-3 concise sentences.";
+      case "MIN_30":
+        return "Write 3 concise sentences in one compact paragraph.";
+      case "HOUR_1":
+        return "Write 4-6 sentences. You may use 1-2 short paragraphs.";
+      case "NO_TIMER":
+      default:
+        return "Write 3-5 sentences in one compact paragraph.";
+    }
+  })();
+
+  const openerMaxTokens = (() => {
+    switch (params.durationPreset) {
+      case "MIN_15":
+        return 90;
+      case "MIN_20":
+        return 110;
+      case "MIN_30":
+        return 140;
+      case "HOUR_1":
+        return 300;
+      case "NO_TIMER":
+      default:
+        return 180;
+    }
+  })();
+
+  const fallbackOpening = isShortDebate
+    ? `Your defense of ${params.userSide.toLowerCase()} sounds confident, but it leans on an unproven premise. I will defend ${params.aiSide.toLowerCase()}, and you now need to justify your core assumption directly.`
+    : `Your position on "${params.topic}" sounds stronger than it is. You are treating ${params.userSide.toLowerCase()} as if it survives scrutiny automatically, but it collapses the moment we press its hidden premise. I will defend ${params.aiSide.toLowerCase()}, and you will need more than instinct to keep your position alive.`;
+
+  const endsAsCompleteSentence = (text: string) =>
+    /[.!?]["')\]]?\s*$/.test(text);
+
+  const trimToLastCompleteSentence = (text: string) => {
+    const lastPeriod = text.lastIndexOf(".");
+    const lastExclamation = text.lastIndexOf("!");
+    const lastQuestion = text.lastIndexOf("?");
+    const cutIndex = Math.max(lastPeriod, lastExclamation, lastQuestion);
+
+    if (cutIndex > 40) {
+      return text.slice(0, cutIndex + 1).trim();
+    }
+
+    return text.trim();
+  };
 
   try {
     const completion = await deepseek.chat.completions.create({
       model: DEFAULT_MODEL,
       temperature: 0.85,
-      max_tokens: params.durationPreset === "HOUR_1" ? 240 : 170,
+      max_tokens: openerMaxTokens,
       messages: [
         {
           role: "system",
@@ -346,18 +578,63 @@ export async function generateDebateOpening(params: DebateOpeningParams) {
             `Duration mode: ${durationMeta.label}`,
             `User side: ${params.userSide}`,
             `Your side: ${params.aiSide}`,
-            "Write the opening attack. Short debates should be tighter. Long debates may be more layered.",
+            "Write the opening attack.",
+            openingLengthInstruction,
+            "Keep it complete and end on a full sentence.",
           ].join("\n"),
         },
       ],
     });
 
-    return (
-      completion.choices[0]?.message?.content?.trim() ||
-      `Your position on "${params.topic}" sounds stronger than it is. You are treating ${params.userSide.toLowerCase()} as if it survives scrutiny automatically, but it collapses the moment we press its hidden premise. I will defend ${params.aiSide.toLowerCase()}, and you will need more than instinct to keep your position alive.`
-    );
+    let opening = completion.choices[0]?.message?.content?.trim() || "";
+    const finishReason = completion.choices[0]?.finish_reason;
+
+    if (!opening) {
+      return fallbackOpening;
+    }
+
+    if (
+      (finishReason === "length" || !endsAsCompleteSentence(opening)) &&
+      !isShortDebate
+    ) {
+      try {
+        const continuation = await deepseek.chat.completions.create({
+          model: DEFAULT_MODEL,
+          temperature: 0.4,
+          max_tokens: 80,
+          messages: [
+            {
+              role: "system",
+              content:
+                "Continue this debate opening from exactly where it stops. Return only continuation text. End on a complete sentence. No bullets.",
+            },
+            {
+              role: "user",
+              content: opening,
+            },
+          ],
+        });
+
+        const continuationText =
+          continuation.choices[0]?.message?.content?.trim() || "";
+
+        if (continuationText) {
+          opening = `${opening} ${continuationText}`
+            .replace(/\s+/g, " ")
+            .trim();
+        }
+      } catch {
+        // Use best-effort original opening if continuation fails.
+      }
+    }
+
+    const finalizedOpening = endsAsCompleteSentence(opening)
+      ? opening
+      : trimToLastCompleteSentence(opening);
+
+    return finalizedOpening || fallbackOpening;
   } catch {
-    return `Your position on "${params.topic}" sounds stronger than it is. You are treating ${params.userSide.toLowerCase()} as if it survives scrutiny automatically, but it collapses the moment we press its hidden premise. I will defend ${params.aiSide.toLowerCase()}, and you will need more than instinct to keep your position alive.`;
+    return fallbackOpening;
   }
 }
 
@@ -521,15 +798,24 @@ async function generateDebateDashboard(params: {
       userWeaknesses?: string[];
       improvementSuggestions?: string[];
     };
-    const userStrengths = parsed.userStrengths?.filter(
-      (item): item is string => typeof item === "string" && Boolean(item.trim()),
-    ).slice(0, 3);
-    const userWeaknesses = parsed.userWeaknesses?.filter(
-      (item): item is string => typeof item === "string" && Boolean(item.trim()),
-    ).slice(0, 3);
-    const improvementSuggestions = parsed.improvementSuggestions?.filter(
-      (item): item is string => typeof item === "string" && Boolean(item.trim()),
-    ).slice(0, 3);
+    const userStrengths = parsed.userStrengths
+      ?.filter(
+        (item): item is string =>
+          typeof item === "string" && Boolean(item.trim()),
+      )
+      .slice(0, 3);
+    const userWeaknesses = parsed.userWeaknesses
+      ?.filter(
+        (item): item is string =>
+          typeof item === "string" && Boolean(item.trim()),
+      )
+      .slice(0, 3);
+    const improvementSuggestions = parsed.improvementSuggestions
+      ?.filter(
+        (item): item is string =>
+          typeof item === "string" && Boolean(item.trim()),
+      )
+      .slice(0, 3);
 
     return {
       version: DEBATE_DASHBOARD_VERSION,
@@ -633,7 +919,7 @@ export async function getOrCreateDebateDashboard(params: {
 
   const dashboard = await generateDebateDashboard({
     topic: session.debateTopic,
-    tone: session.debateTone,
+    tone: normalizeStoredDebateTone(session.debateTone),
     durationPreset: session.debateDurationPreset,
     userSide: session.userDebateSide,
     aiSide: session.aiDebateSide,
@@ -720,7 +1006,7 @@ export async function finalizeDebateSession(params: { sessionId: string }) {
 
   const verdict = await generateDebateVerdict({
     topic: session.debateTopic,
-    tone: session.debateTone,
+    tone: normalizeStoredDebateTone(session.debateTone),
     durationPreset: session.debateDurationPreset,
     userSide: session.userDebateSide,
     aiSide: session.aiDebateSide,
@@ -767,14 +1053,23 @@ export async function createDebateSession(params: {
   userSide: string;
   aiSide: string;
 }) {
+  const normalizedTopic = normalizeDebateTopic(params.topic);
+  const normalizedUserSide = normalizeDebateTopic(params.userSide);
+  const normalizedAiSide = normalizeDebateTopic(params.aiSide);
+
+  const safeTitle = normalizedTopic.slice(0, 140);
+  const safeTopic = normalizedTopic.slice(0, DEBATE_TOPIC_MAX_CHARS);
+  const safeUserSide = normalizedUserSide.slice(0, 160);
+  const safeAiSide = normalizedAiSide.slice(0, 160);
+
   const now = new Date();
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
   const opening = await generateDebateOpening({
-    topic: params.topic,
+    topic: safeTopic,
     tone: params.tone,
     durationPreset: params.durationPreset,
-    userSide: params.userSide,
-    aiSide: params.aiSide,
+    userSide: safeUserSide,
+    aiSide: safeAiSide,
   });
   const durationMeta = getDebateDurationMeta(params.durationPreset);
 
@@ -782,16 +1077,16 @@ export async function createDebateSession(params: {
     data: {
       userId: params.userId,
       mode: "DEBATE",
-      title: normalizeDebateTopic(params.topic),
+      title: safeTitle,
       expiresAt,
       lastActivityAt: now,
-      debateTone: params.tone,
+      debateTone: toPrismaDebateTone(params.tone),
       debateDurationPreset: params.durationPreset,
       debateHasTimer: durationMeta.hasTimer,
-      debateTopic: normalizeDebateTopic(params.topic),
+      debateTopic: safeTopic,
       debateTopicSource: params.topicSource,
-      userDebateSide: normalizeDebateTopic(params.userSide),
-      aiDebateSide: normalizeDebateTopic(params.aiSide),
+      userDebateSide: safeUserSide,
+      aiDebateSide: safeAiSide,
       debateStatus: "ACTIVE",
       debateStartedAt: now,
       messages: {

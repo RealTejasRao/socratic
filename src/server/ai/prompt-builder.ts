@@ -17,7 +17,12 @@ import {
 } from "src/server/ai/prompt-config";
 import type { KnowledgeRoute } from "src/server/ai/source-router";
 import type { WebSource } from "src/server/ai/web-search";
-import { getDebateDurationMeta, getDebateToneMeta, type DebateDurationPreset, type DebateTone } from "src/lib/debate";
+import {
+  getDebateDurationMeta,
+  getDebateToneMeta,
+  type DebateDurationPreset,
+  type DebateTone,
+} from "src/lib/debate";
 
 export type ConversationMessage = {
   role: "user" | "assistant";
@@ -94,12 +99,16 @@ function buildUserPromptContent(
   text: string,
   attachments: ChatImageAttachment[] | undefined,
   includeVisionContent = true,
-): string | Array<ChatCompletionContentPartText | ChatCompletionContentPartImage> {
+):
+  | string
+  | Array<ChatCompletionContentPartText | ChatCompletionContentPartImage> {
   if (!attachments?.length) {
     return text;
   }
 
-  const parts: Array<ChatCompletionContentPartText | ChatCompletionContentPartImage> = [];
+  const parts: Array<
+    ChatCompletionContentPartText | ChatCompletionContentPartImage
+  > = [];
   const imageCountLabel = attachments.length === 1 ? "image" : "images";
 
   parts.push({
@@ -172,6 +181,21 @@ function buildCorePolicyMessage() {
 function buildDebateCorePolicyMessage(params: DebatePromptParams) {
   const durationMeta = getDebateDurationMeta(params.durationPreset);
   const toneMeta = getDebateToneMeta(params.tone);
+  const toneInstruction = (() => {
+    switch (params.tone) {
+      case "RUTHLESS_BLUNT":
+        return "Keep a Blunt, ruthless, and unforgiving tone. Call out weak logic immediately. No softness, no padding. Be completely ruthless and Prioritize dismantling the argument over being informative.";
+
+      case "SIMPLE_CLEAR":
+        return "Keep Simple, clear, and sharp tone. Minimize the use of jargon or difficult vocabulary. Use plain language. But do not be soft, your goal is to destroy the user's arguments with your own. No jargon, no complexity.";
+
+      case "ELITE_INTELLECTUAL_ELEGANT":
+        return "Keep a elegant refined, and intellectually rigorous tone. Use advanced vocabulary and jargon. Your goal is to destroy user's arguments with intelligence. Stay controlled, never emotional.";
+
+      default:
+        return "Tone: Forceful and clear. Attack reasoning directly.";
+    }
+  })();
   const lengthInstruction = (() => {
     switch (params.durationPreset) {
       case "MIN_15":
@@ -215,6 +239,8 @@ function buildDebateCorePolicyMessage(params: DebatePromptParams) {
     `User side: ${params.userSide}`,
     `Assistant side: ${params.aiSide}`,
     `Tone: ${toneMeta.label}`,
+    toneInstruction,
+    `Tone summary: ${toneMeta.description}`,
     `Duration: ${durationMeta.label}`,
     `Timer enabled: ${params.hasTimer ? "yes" : "no"}`,
     lengthInstruction,
@@ -295,7 +321,10 @@ function buildDynamicContextMessage(params: {
   const retrievedPassages = params.retrievedContext.length
     ? params.retrievedContext
         .map((item, index) => {
-          const excerpt = item.content.replace(/\s+/g, " ").trim().slice(0, 1250);
+          const excerpt = item.content
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 1250);
           const chunkTypeLabel =
             item.chunkType === "explanation" ? "explanation" : "primary_text";
           return [
@@ -312,7 +341,8 @@ function buildDynamicContextMessage(params: {
     params.knowledgeRoute,
     "",
     "CONVERSATION_MEMORY",
-    params.conversationMemorySummary?.trim() || "No long-term session memory yet.",
+    params.conversationMemorySummary?.trim() ||
+      "No long-term session memory yet.",
     "",
     "USER_BELIEFS",
     formatBeliefContext(params.beliefContext),
@@ -326,7 +356,9 @@ function buildDynamicContextMessage(params: {
     "WEB_SOURCES",
     params.webSearchSources?.length
       ? params.webSearchSources
-          .map((source, index) => `${index + 1}. ${source.title} - ${source.url}`)
+          .map(
+            (source, index) => `${index + 1}. ${source.title} - ${source.url}`,
+          )
           .join("\n")
       : "No web sources for this turn.",
   ].join("\n");
@@ -334,8 +366,14 @@ function buildDynamicContextMessage(params: {
   return { content, sectionOrder };
 }
 
-function hasImageAttachments(messages: ConversationMessage[], userAttachments?: ChatImageAttachment[]) {
-  return messages.some((message) => message.attachments?.length) || Boolean(userAttachments?.length);
+function hasImageAttachments(
+  messages: ConversationMessage[],
+  userAttachments?: ChatImageAttachment[],
+) {
+  return (
+    messages.some((message) => message.attachments?.length) ||
+    Boolean(userAttachments?.length)
+  );
 }
 
 export function buildSocraticPrompt(params: {
@@ -379,10 +417,16 @@ export function buildSocraticPrompt(params: {
     hasImageAttachments(conversationHistory, userAttachments);
 
   const messages: PromptMessage[] = [
-    { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
-    { role: "system", content: dynamicContext.content } satisfies ChatCompletionSystemMessageParam,
+    {
+      role: "system",
+      content: corePolicy.content,
+    } satisfies ChatCompletionSystemMessageParam,
+    {
+      role: "system",
+      content: dynamicContext.content,
+    } satisfies ChatCompletionSystemMessageParam,
     ...(includesImages
-      ? ([
+      ? [
           {
             role: "system",
             content: [
@@ -394,10 +438,10 @@ export function buildSocraticPrompt(params: {
               "Instead, explain that you cannot verify identity from the image and describe visible details or context.",
             ].join("\n"),
           } satisfies ChatCompletionSystemMessageParam,
-        ])
+        ]
       : []),
     ...(webSearchSummary
-      ? ([
+      ? [
           {
             role: "system",
             content: [
@@ -409,7 +453,7 @@ export function buildSocraticPrompt(params: {
               "Use the provided web findings directly in the answer, not as optional background.",
             ].join("\n"),
           } satisfies ChatCompletionSystemMessageParam,
-        ])
+        ]
       : []),
     ...conversationHistory.map((message) =>
       message.role === "user"
@@ -448,7 +492,10 @@ export function buildSocraticPrompt(params: {
     metadata: {
       promptVersion: SOCRATIC_PROMPT_VERSION,
       estimatedInputTokens: promptText,
-      sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
+      sectionOrder: [
+        ...corePolicy.sectionOrder,
+        ...dynamicContext.sectionOrder,
+      ],
     },
   };
 }
@@ -496,10 +543,16 @@ export function buildDebatePrompt(params: {
     hasImageAttachments(conversationHistory, userAttachments);
 
   const messages: PromptMessage[] = [
-    { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
-    { role: "system", content: dynamicContext.content } satisfies ChatCompletionSystemMessageParam,
+    {
+      role: "system",
+      content: corePolicy.content,
+    } satisfies ChatCompletionSystemMessageParam,
+    {
+      role: "system",
+      content: dynamicContext.content,
+    } satisfies ChatCompletionSystemMessageParam,
     ...(includesImages
-      ? ([
+      ? [
           {
             role: "system",
             content: [
@@ -508,7 +561,7 @@ export function buildDebatePrompt(params: {
               "If the user uses an image as evidence, inspect it directly before responding.",
             ].join("\n"),
           } satisfies ChatCompletionSystemMessageParam,
-        ])
+        ]
       : []),
     ...conversationHistory.map((message) =>
       message.role === "user"
@@ -547,7 +600,10 @@ export function buildDebatePrompt(params: {
     metadata: {
       promptVersion: DEBATE_PROMPT_VERSION,
       estimatedInputTokens: promptText,
-      sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
+      sectionOrder: [
+        ...corePolicy.sectionOrder,
+        ...dynamicContext.sectionOrder,
+      ],
     },
   };
 }
@@ -595,17 +651,25 @@ export function buildRoleplayPrompt(params: {
     hasImageAttachments(conversationHistory, userAttachments);
 
   const messages: PromptMessage[] = [
-    { role: "system", content: corePolicy.content } satisfies ChatCompletionSystemMessageParam,
-    { role: "system", content: dynamicContext.content } satisfies ChatCompletionSystemMessageParam,
+    {
+      role: "system",
+      content: corePolicy.content,
+    } satisfies ChatCompletionSystemMessageParam,
+    {
+      role: "system",
+      content: dynamicContext.content,
+    } satisfies ChatCompletionSystemMessageParam,
     ...(includesImages
-      ? ([{
-          role: "system",
-          content: [
-            "VISION_MODE",
-            "This roleplay conversation includes attached images.",
-            "Use the visible content directly when the philosopher would reasonably comment on it.",
-          ].join("\n"),
-        } satisfies ChatCompletionSystemMessageParam])
+      ? [
+          {
+            role: "system",
+            content: [
+              "VISION_MODE",
+              "This roleplay conversation includes attached images.",
+              "Use the visible content directly when the philosopher would reasonably comment on it.",
+            ].join("\n"),
+          } satisfies ChatCompletionSystemMessageParam,
+        ]
       : []),
     ...conversationHistory.map((message) =>
       message.role === "user"
@@ -644,7 +708,10 @@ export function buildRoleplayPrompt(params: {
     metadata: {
       promptVersion: ROLEPLAY_PROMPT_VERSION,
       estimatedInputTokens: promptText,
-      sectionOrder: [...corePolicy.sectionOrder, ...dynamicContext.sectionOrder],
+      sectionOrder: [
+        ...corePolicy.sectionOrder,
+        ...dynamicContext.sectionOrder,
+      ],
     },
   };
 }

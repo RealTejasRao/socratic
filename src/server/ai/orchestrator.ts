@@ -16,7 +16,10 @@ import {
   buildSocraticPrompt,
 } from "src/server/ai/prompt-builder";
 import type { ChatImageAttachment } from "src/types/chat";
-import { extractInsightsFromMessage, INSIGHT_EXTRACTOR_VERSION } from "src/server/ai/insight-extractor";
+import {
+  extractInsightsFromMessage,
+  INSIGHT_EXTRACTOR_VERSION,
+} from "src/server/ai/insight-extractor";
 import {
   buildBeliefPromptContext,
   deleteBeliefsForSourceMessage,
@@ -34,13 +37,55 @@ import {
 import { storeRetrievalTrace } from "src/server/ai/retrieval-trace-store";
 import { decideKnowledgeRoute } from "src/server/ai/source-router";
 import { performWebSearch } from "src/server/ai/web-search";
-import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
+import {
+  finalizeDebateSession,
+  getDebateTimeRemainingSeconds,
+} from "src/server/debate/service";
 import {
   getRoleplayPhilosopherConfig,
   isRoleplayPhilosopherId,
 } from "src/lib/roleplay";
 
 const WINDOW_SIZE = 30; // 15 turns
+
+const PHILOSOPHY_ONLY_REFUSAL =
+  "I can only help with philosophy here. Btw, here is an interesting clip for you 😌: https://youtu.be/QDia3e12czc?si=4PzE4MEobSaPcz0Q";
+
+function isPhilosophyRelated(text: string) {
+  const normalized = text.toLowerCase().trim();
+
+  if (!normalized) {
+    return false;
+  }
+
+  const directPhilosophySignals =
+    /\b(philosophy|philosophical|ethics|moral|morality|free will|determinism|consciousness|meaning|truth|knowledge|justice|virtue|nihilism|existential|metaphysics|epistemology|logic|aesthetics|political philosophy|stoicism|utilitarianism|deontology|absurdism|identity|duty|purpose|socrates|plato|aristotle|kant|nietzsche|camus|descartes|spinoza|hume)\b/i;
+
+  if (directPhilosophySignals.test(normalized)) {
+    return true;
+  }
+
+  const abstractQuestionSignals =
+    /\b(should|ought|must|can|is|are|why|does)\b/i;
+  const conceptualSignals =
+    /\b(right|wrong|good|evil|self|mind|freedom|value|reason|existence|beauty|meaning|purpose|responsibility|truth|knowledge|justice)\b/i;
+
+  if (
+    abstractQuestionSignals.test(normalized) &&
+    conceptualSignals.test(normalized)
+  ) {
+    return true;
+  }
+
+  const shortFollowUpSignals =
+    /^(why|how so|go on|continue|elaborate|explain more|what do you mean|can you expand)/i;
+
+  if (normalized.length <= 30 && shortFollowUpSignals.test(normalized)) {
+    return true;
+  }
+
+  return false;
+}
 
 function getDebateGenerationModel(params: {
   durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER";
@@ -60,7 +105,9 @@ function getDebateGenerationModel(params: {
   return longModel;
 }
 
-function getDebateMaxTokens(durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER") {
+function getDebateMaxTokens(
+  durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER",
+) {
   switch (durationPreset) {
     case "MIN_15":
       return 140;
@@ -77,7 +124,9 @@ function getDebateMaxTokens(durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HO
   }
 }
 
-function normalizeImageAttachments(value: Prisma.JsonValue | null | undefined): ChatImageAttachment[] {
+function normalizeImageAttachments(
+  value: Prisma.JsonValue | null | undefined,
+): ChatImageAttachment[] {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -157,7 +206,8 @@ export async function generateReply(params: {
     };
 
     if (userAttachments.length > 0) {
-      createUserMessageData.attachments = userAttachments as unknown as Prisma.InputJsonValue;
+      createUserMessageData.attachments =
+        userAttachments as unknown as Prisma.InputJsonValue;
     }
 
     const createdUserMessage = await prisma.message.create({
@@ -226,7 +276,10 @@ export async function generateReply(params: {
               sourceMessageId: effectiveSourceMessageId,
               inputText: userContent,
               extractorVersion: INSIGHT_EXTRACTOR_VERSION,
-              error: error instanceof Error ? error.message : "Unknown insight extraction error",
+              error:
+                error instanceof Error
+                  ? error.message
+                  : "Unknown insight extraction error",
             };
 
             if (auxModel !== undefined) {
@@ -319,6 +372,57 @@ export async function generateReply(params: {
       throw new Error("Debate session is already completed.");
     }
   }
+
+  if (!isPhilosophyRelated(userContent)) {
+    contextMs = Date.now() - contextStartedAtMs;
+
+    const assistantText = PHILOSOPHY_ONLY_REFUSAL;
+    const readable = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode(assistantText));
+        controller.close();
+      },
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.message.create({
+        data: {
+          sessionId,
+          role: "ASSISTANT",
+          content: assistantText,
+          model: "scope-guard-v2",
+          tokenIn: null,
+          tokenOut: null,
+          latencyMs: 0,
+          validationVersion: "scope-guard-v2",
+          validationScore: 100,
+          validationFlags: ["non_philosophy_refusal"] as Prisma.InputJsonValue,
+          validationSummary:
+            "Rejected non-philosophy request before model generation.",
+        },
+      });
+
+      await tx.chatSession.update({
+        where: { id: sessionId },
+        data: {
+          lastActivityAt: now,
+          expiresAt,
+        },
+      });
+    });
+
+    return {
+      readable,
+      debug: {
+        contextMs,
+        retrievalMs: null,
+        webSearchMs: null,
+        preStreamTotalMs: Date.now() - pipelineStartedAtMs,
+        streamSetupMs: 0,
+      },
+    };
+  }
+
   const beliefContext = buildBeliefPromptContext(rawBeliefs, 5);
   contextMs = Date.now() - contextStartedAtMs;
   const roleplayMetaRecord =
@@ -327,10 +431,11 @@ export async function generateReply(params: {
     !Array.isArray(session.roleplayMeta)
       ? (session.roleplayMeta as Record<string, unknown>)
       : null;
-  const roleplayPhilosopherId =
-    isRoleplayPhilosopherId(roleplayMetaRecord?.["philosopherId"])
-      ? roleplayMetaRecord["philosopherId"]
-      : null;
+  const roleplayPhilosopherId = isRoleplayPhilosopherId(
+    roleplayMetaRecord?.["philosopherId"],
+  )
+    ? roleplayMetaRecord["philosopherId"]
+    : null;
   const roleplayPhilosopher =
     session.mode === "ROLEPLAY" && roleplayPhilosopherId
       ? getRoleplayPhilosopherConfig(roleplayPhilosopherId)
@@ -380,7 +485,7 @@ export async function generateReply(params: {
     >["fusedCandidates"];
     rerankedCandidates: RerankedPassage[];
     selectedPassages: RerankedPassage[];
-      retrievalLatencyMs: number;
+    retrievalLatencyMs: number;
   } | null = null;
   let webSearchSummary: string | undefined;
   let webSearchSources:
@@ -458,7 +563,9 @@ export async function generateReply(params: {
   }
 
   const shouldAppendLatestUserMessage =
-    appendUserMessageToPrompt && !persistUserMessage && !effectiveSourceMessageId;
+    appendUserMessageToPrompt &&
+    !persistUserMessage &&
+    !effectiveSourceMessageId;
   const useVisionModel = shouldUseVisionModel(userAttachments);
 
   const sharedPromptBuilderParams = {
@@ -509,122 +616,124 @@ export async function generateReply(params: {
               retrievalAuthors: [...roleplayPhilosopher.retrievalAuthors],
             },
           })
-      : buildSocraticPrompt(sharedPromptBuilderParams);
+        : buildSocraticPrompt(sharedPromptBuilderParams);
   preStreamTotalMs = Date.now() - pipelineStartedAtMs;
 
   const generationStartedAtMs = Date.now();
-  
-const shouldLogPromptPayload =
-  process.env["AI_DEBUG_PROMPT"] === "true" ||
-  process.env["AI_DEBUG_PROMPT_MESSAGES"] === "true";
 
-if (shouldLogPromptPayload) {
-  console.log(
-    "PROMPT_CONTEXT",
-    JSON.stringify(
-      {
-        conversationMemorySummary: latestConversationMemory?.summary ?? null,
-        beliefContext,
-        knowledgeRoute,
-        originalQuery,
-        rewrittenQuery,
-        retrievalQuery,
-        retrievedPassages,
-        webSearchSummary,
-        webSearchSources,
-      },
-      null,
-      2,
-    ),
-  );
-  console.log(
-    "RAW_PROMPT_MESSAGES",
-    JSON.stringify(builtPrompt.messages, null, 2),
-  );
-}
-if (process.env["AI_DEBUG_PROMPT"] === "true") {
-  const finalDocumentDistribution = rerankedCandidates.reduce<
-    Record<string, { documentId: string; count: number }>
-  >((accumulator, candidate) => {
-    const existing = accumulator[candidate.title];
-    if (existing) {
-      existing.count += 1;
+  const shouldLogPromptPayload =
+    process.env["AI_DEBUG_PROMPT"] === "true" ||
+    process.env["AI_DEBUG_PROMPT_MESSAGES"] === "true";
+
+  if (shouldLogPromptPayload) {
+    console.log(
+      "PROMPT_CONTEXT",
+      JSON.stringify(
+        {
+          conversationMemorySummary: latestConversationMemory?.summary ?? null,
+          beliefContext,
+          knowledgeRoute,
+          originalQuery,
+          rewrittenQuery,
+          retrievalQuery,
+          retrievedPassages,
+          webSearchSummary,
+          webSearchSources,
+        },
+        null,
+        2,
+      ),
+    );
+    console.log(
+      "RAW_PROMPT_MESSAGES",
+      JSON.stringify(builtPrompt.messages, null, 2),
+    );
+  }
+  if (process.env["AI_DEBUG_PROMPT"] === "true") {
+    const finalDocumentDistribution = rerankedCandidates.reduce<
+      Record<string, { documentId: string; count: number }>
+    >((accumulator, candidate) => {
+      const existing = accumulator[candidate.title];
+      if (existing) {
+        existing.count += 1;
+        return accumulator;
+      }
+
+      accumulator[candidate.title] = {
+        documentId: candidate.documentId,
+        count: 1,
+      };
       return accumulator;
-    }
-
-    accumulator[candidate.title] = {
-      documentId: candidate.documentId,
-      count: 1,
-    };
-    return accumulator;
-  }, {});
-  console.log("RETRIEVAL_QUERY_FLOW", {
-    originalQuery,
-    rewrittenQuery,
-    retrievalQuery,
-  });
-  console.log(
-    "TOP_RETRIEVED_CHUNKS",
-    tracePayload
-      ? tracePayload.fusedCandidates.slice(0, 10).map((candidate) => ({
-          author: candidate.author,
-          title: candidate.title,
-          chunkType: candidate.chunkType,
-          chunkIndex: candidate.chunkIndex,
-          fusedScore: Number(candidate.fusedScore.toFixed(3)),
-          lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
-          semanticScore: Number(candidate.semanticScore.toFixed(3)),
-        }))
-      : [],
-  );
-  console.log(
-    "RETRIEVAL_CANDIDATE_SCORES",
-    tracePayload
-      ? tracePayload.fusedCandidates.map((candidate) => ({
-          author: candidate.author,
-          title: candidate.title,
-          chunkType: candidate.chunkType,
-          chunkIndex: candidate.chunkIndex,
-          fusedScore: Number(candidate.fusedScore.toFixed(3)),
-          lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
-          semanticScore: Number(candidate.semanticScore.toFixed(3)),
-          embeddingSimilarity: Number(candidate.embeddingSimilarity.toFixed(3)),
-          semanticRelevance: Number(candidate.semanticRelevance.toFixed(3)),
-          queryTypeFit: Number(candidate.queryTypeFit.toFixed(3)),
-          chunkTypeBoost: Number(candidate.chunkTypeBoost.toFixed(3)),
-        }))
-      : [],
-  );
-  console.log(
-    "RERANKED_SELECTION",
-    rerankedCandidates.map((candidate) => ({
-      author: candidate.author,
-      title: candidate.title,
-      chunkType: candidate.chunkType,
-      chunkIndex: candidate.chunkIndex,
-      rerankScore: Number(candidate.rerankScore.toFixed(3)),
-      fusedScore: Number(candidate.fusedScore.toFixed(3)),
-      lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
-      semanticScore: Number(candidate.semanticScore.toFixed(3)),
-      embeddingSimilarity: Number(candidate.embeddingSimilarity.toFixed(3)),
-      semanticRelevance: Number(candidate.semanticRelevance.toFixed(3)),
-      queryTypeFit: Number(candidate.queryTypeFit.toFixed(3)),
-      chunkTypeBoost: Number(candidate.chunkTypeBoost.toFixed(3)),
-    })),
-  );
-  console.log("RETRIEVAL_QUERY", retrievalQuery);
-  console.log("RETRIEVAL_COUNTS", {
-    reranked: rerankedCandidates.length,
-    selected: retrievedPassages.length,
-  });
-  console.log("FINAL_DOCUMENT_DISTRIBUTION", finalDocumentDistribution);
-  console.log("PIPELINE_TIMING", {
-    contextMs,
-    retrievalMs: tracePayload?.retrievalLatencyMs ?? null,
-    webSearchMs,
-    preStreamTotalMs,
-  });
-}
+    }, {});
+    console.log("RETRIEVAL_QUERY_FLOW", {
+      originalQuery,
+      rewrittenQuery,
+      retrievalQuery,
+    });
+    console.log(
+      "TOP_RETRIEVED_CHUNKS",
+      tracePayload
+        ? tracePayload.fusedCandidates.slice(0, 10).map((candidate) => ({
+            author: candidate.author,
+            title: candidate.title,
+            chunkType: candidate.chunkType,
+            chunkIndex: candidate.chunkIndex,
+            fusedScore: Number(candidate.fusedScore.toFixed(3)),
+            lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
+            semanticScore: Number(candidate.semanticScore.toFixed(3)),
+          }))
+        : [],
+    );
+    console.log(
+      "RETRIEVAL_CANDIDATE_SCORES",
+      tracePayload
+        ? tracePayload.fusedCandidates.map((candidate) => ({
+            author: candidate.author,
+            title: candidate.title,
+            chunkType: candidate.chunkType,
+            chunkIndex: candidate.chunkIndex,
+            fusedScore: Number(candidate.fusedScore.toFixed(3)),
+            lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
+            semanticScore: Number(candidate.semanticScore.toFixed(3)),
+            embeddingSimilarity: Number(
+              candidate.embeddingSimilarity.toFixed(3),
+            ),
+            semanticRelevance: Number(candidate.semanticRelevance.toFixed(3)),
+            queryTypeFit: Number(candidate.queryTypeFit.toFixed(3)),
+            chunkTypeBoost: Number(candidate.chunkTypeBoost.toFixed(3)),
+          }))
+        : [],
+    );
+    console.log(
+      "RERANKED_SELECTION",
+      rerankedCandidates.map((candidate) => ({
+        author: candidate.author,
+        title: candidate.title,
+        chunkType: candidate.chunkType,
+        chunkIndex: candidate.chunkIndex,
+        rerankScore: Number(candidate.rerankScore.toFixed(3)),
+        fusedScore: Number(candidate.fusedScore.toFixed(3)),
+        lexicalScore: Number(candidate.lexicalScore.toFixed(3)),
+        semanticScore: Number(candidate.semanticScore.toFixed(3)),
+        embeddingSimilarity: Number(candidate.embeddingSimilarity.toFixed(3)),
+        semanticRelevance: Number(candidate.semanticRelevance.toFixed(3)),
+        queryTypeFit: Number(candidate.queryTypeFit.toFixed(3)),
+        chunkTypeBoost: Number(candidate.chunkTypeBoost.toFixed(3)),
+      })),
+    );
+    console.log("RETRIEVAL_QUERY", retrievalQuery);
+    console.log("RETRIEVAL_COUNTS", {
+      reranked: rerankedCandidates.length,
+      selected: retrievedPassages.length,
+    });
+    console.log("FINAL_DOCUMENT_DISTRIBUTION", finalDocumentDistribution);
+    console.log("PIPELINE_TIMING", {
+      contextMs,
+      retrievalMs: tracePayload?.retrievalLatencyMs ?? null,
+      webSearchMs,
+      preStreamTotalMs,
+    });
+  }
   const streamSetupStartedAtMs = Date.now();
   const effectiveModel = useVisionModel
     ? getOpenAIVisionModel()
@@ -691,9 +800,12 @@ if (process.env["AI_DEBUG_PROMPT"] === "true") {
               beliefStatements: beliefContext.map((item) => item.belief),
               conversationMemorySummary: latestConversationMemory?.summary,
               retrievedSources: retrievedPassages.map(
-                (item) => `${item.author} - ${item.title} | chunk ${item.chunkIndex}`,
+                (item) =>
+                  `${item.author} - ${item.title} | chunk ${item.chunkIndex}`,
               ),
-              retrievedPassageTexts: retrievedPassages.map((item) => item.content),
+              retrievedPassageTexts: retrievedPassages.map(
+                (item) => item.content,
+              ),
             });
 
       await prisma.$transaction(async (tx) => {

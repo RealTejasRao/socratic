@@ -1,18 +1,18 @@
 export const DEBATE_TONE_OPTIONS = [
   {
-    value: "RUTHLESS_RESPECTFUL",
-    label: "Ruthless, Respectful",
-    description: "Hard pressure, disciplined language, zero cheap shots.",
+    value: "RUTHLESS_BLUNT",
+    label: "Ruthless and Blunt",
+    description: "Hard pressure, sharp, confrontational, zero-cheap shots.",
   },
   {
-    value: "BLUNT_AGGRESSIVE",
-    label: "Blunt, Aggressive",
-    description: "Fast, sharp, confrontational, but still reason-focused.",
+    value: "SIMPLE_CLEAR",
+    label: "Simple and Clear",
+    description: "Clear thinker, brutally simple, impossible to misunderstand",
   },
   {
-    value: "TOUGH_POLISHED",
-    label: "Tough, Polished",
-    description: "Elegant, cutting, and more intellectual in phrasing.",
+    value: "ELITE_INTELLECTUAL_ELEGANT",
+    label: "Elite Intellectual and Elegant",
+    description: "Heavy vocabulary, Calm and controlled",
   },
 ] as const;
 
@@ -20,14 +20,14 @@ export const DEBATE_DURATION_OPTIONS = [
   {
     value: "MIN_15",
     label: "15 min",
-    description: "Rapid-fire pressure on the core claim.",
+    description: "Fast, high-pressure exchanges targeting the core claim.",
     minutes: 15,
     hasTimer: true,
   },
   {
     value: "MIN_20",
     label: "20 min",
-    description: "Tight exchanges with room for one or two counterexamples.",
+    description: "Tight back-and-forth with quick counters and escalation.",
     minutes: 20,
     hasTimer: true,
   },
@@ -48,11 +48,13 @@ export const DEBATE_DURATION_OPTIONS = [
   {
     value: "NO_TIMER",
     label: "No timer",
-    description: "Open-ended debate without countdown pressure.",
+    description: "No constraints. Debate until one position breaks.",
     minutes: null,
     hasTimer: false,
   },
 ] as const;
+
+export const DEBATE_TOPIC_MAX_CHARS = 350;
 
 export const PHILOSOPHY_TOPIC_HINTS = [
   "ethics",
@@ -138,6 +140,15 @@ export function validatePhilosophyTopicLightweight(
         "Does morality require God?",
         "Is stoicism emotionally dishonest?",
       ],
+    };
+  }
+
+  if (normalizedTopic.length > DEBATE_TOPIC_MAX_CHARS) {
+    return {
+      isValid: false,
+      normalizedTopic,
+      reason: `Keep the topic under ${DEBATE_TOPIC_MAX_CHARS} characters.`,
+      reframingSuggestions: [],
     };
   }
 

@@ -25,7 +25,7 @@ function highlightQuery(text: string, query: string) {
       return (
         <mark
           key={`${segment}-${index}`}
-          className="rounded-sm bg-amber-100 px-[1px] text-slate-900"
+          className="app-search-highlight rounded-sm bg-emerald-100 px-px text-emerald-900"
         >
           {segment}
         </mark>
@@ -242,7 +242,7 @@ export default function SidebarSearch() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <p className="line-clamp-1 text-[12px] font-medium text-slate-900">
-                          {result.title}
+                          {highlightQuery(result.title, query)}
                         </p>
                         {result.matchType === "message" && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-1.5 py-0.5 text-[9px] text-sky-700">

@@ -16,6 +16,7 @@ import {
 import { cn } from "@/src/lib/utils";
 import {
   DEBATE_DURATION_OPTIONS,
+  DEBATE_TOPIC_MAX_CHARS,
   DEBATE_TONE_OPTIONS,
   type DebateDurationPreset,
   type DebateTone,
@@ -24,19 +25,13 @@ import type { DebateTopicSource } from "src/types/chat";
 
 type Step = "tone" | "duration" | "topic" | "side" | "ready";
 
-const stepOrder: Step[] = [
-  "tone",
-  "duration",
-  "topic",
-  "side",
-  "ready",
-];
+const stepOrder: Step[] = ["tone", "duration", "topic", "side", "ready"];
 
 export default function DebateModeSetup() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("tone");
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [tone, setTone] = useState<DebateTone>("RUTHLESS_RESPECTFUL");
+  const [tone, setTone] = useState<DebateTone>("RUTHLESS_BLUNT");
   const [durationPreset, setDurationPreset] =
     useState<DebateDurationPreset>("MIN_30");
   const [topicInput, setTopicInput] = useState("");
@@ -78,7 +73,9 @@ export default function DebateModeSetup() {
     ? "border-[#2a2a2a] bg-black text-[#f5f5f3]"
     : "border-black bg-black text-white";
   const optionMetaClass = isDarkMode ? "text-[#b7b7b3]" : "text-zinc-500";
-  const optionMetaSelectedClass = isDarkMode ? "text-[#c6c6c2]" : "text-zinc-300";
+  const optionMetaSelectedClass = isDarkMode
+    ? "text-[#c6c6c2]"
+    : "text-zinc-300";
   const fieldClass = isDarkMode
     ? "border-[#4a4a46] bg-[#2f2e2c] text-[#f3f3f3] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] focus:border-[#7a7770] focus:ring-1 focus:ring-[#7a7770]/55 placeholder:text-[#9d9b95]"
     : "border-zinc-300 bg-white text-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.55)] focus:border-zinc-500 focus:ring-1 focus:ring-zinc-300 placeholder:text-zinc-400";
@@ -263,9 +260,9 @@ export default function DebateModeSetup() {
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as
-          | { reason?: string }
-          | null;
+        const payload = (await response.json().catch(() => null)) as {
+          reason?: string;
+        } | null;
         setError(payload?.reason || "Could not start the debate.");
         setIsBusy(false);
         return;
@@ -283,7 +280,12 @@ export default function DebateModeSetup() {
 
   return (
     <div className="app-debate-setup mx-auto w-full max-w-[460px] px-0 pb-4 [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed">
-      <p className={cn("mb-2 text-[10px] uppercase tracking-[0.28em]", stepTextClass)}>
+      <p
+        className={cn(
+          "mb-2 text-[10px] uppercase tracking-[0.28em]",
+          stepTextClass,
+        )}
+      >
         {stepLabel}
       </p>
 
@@ -312,17 +314,24 @@ export default function DebateModeSetup() {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          className={cn(
-            "w-full rounded-2xl border p-4 text-left",
-            cardClass,
-          )}
+          className={cn("w-full rounded-2xl border p-4 text-left", cardClass)}
         >
           {step === "tone" && (
             <div>
-              <h2 className={cn("mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]", headingClass)}>
-                Pick the pressure.
+              <h2
+                className={cn(
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  headingClass,
+                )}
+              >
+                Choose your opponent.
               </h2>
-              <p className={cn("mt-1.5 max-w-[340px] text-[10px] leading-5", mutedClass)}>
+              <p
+                className={cn(
+                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  mutedClass,
+                )}
+              >
                 Choose how hard Socratic AI should come at your argument.
               </p>
 
@@ -367,22 +376,40 @@ export default function DebateModeSetup() {
                 <button
                   type="button"
                   onClick={() => setShowTimingInfo((current) => !current)}
-                  className={cn("relative inline-flex h-5 w-5 items-center justify-center rounded-full border transition", infoButtonClass)}
+                  className={cn(
+                    "relative inline-flex h-5 w-5 items-center justify-center rounded-full border transition",
+                    infoButtonClass,
+                  )}
                   aria-label="Explain timing options"
                 >
                   <Info size={11} />
                   {showTimingInfo && (
-                    <div className={cn("absolute top-full left-0 z-10 mt-2 w-56 rounded-xl border px-3 py-2.5 text-left text-[10px] leading-5 shadow-xl", infoPopoverClass)}>
+                    <div
+                      className={cn(
+                        "absolute top-full left-0 z-10 mt-2 w-56 rounded-xl border px-3 py-2.5 text-left text-[10px] leading-5 shadow-xl",
+                        infoPopoverClass,
+                      )}
+                    >
                       Short formats are faster and sharper. Longer formats go
                       deeper and become more layered.
                     </div>
                   )}
                 </button>
               </div>
-              <h2 className={cn("mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]", headingClass)}>
+              <h2
+                className={cn(
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  headingClass,
+                )}
+              >
                 Choose the clock.
               </h2>
-              <p className={cn("mt-1.5 max-w-[340px] text-[10px] leading-5", mutedClass)}>
+              <p
+                className={cn(
+                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  mutedClass,
+                )}
+              >
                 Duration changes both the timer and the style of the debate.
               </p>
 
@@ -421,15 +448,30 @@ export default function DebateModeSetup() {
 
           {step === "topic" && (
             <div>
-              <h2 className={cn("mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]", headingClass)}>
+              <h2
+                className={cn(
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  headingClass,
+                )}
+              >
                 Set the topic.
               </h2>
-              <p className={cn("mt-1.5 max-w-[340px] text-[10px] leading-5", mutedClass)}>
+              <p
+                className={cn(
+                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  mutedClass,
+                )}
+              >
                 Enter your own philosophy thesis or generate one.
               </p>
 
               <div className="mt-4">
-                <label className={cn("text-[10px] uppercase tracking-[0.2em]", labelClass)}>
+                <label
+                  className={cn(
+                    "text-[10px] uppercase tracking-[0.2em]",
+                    labelClass,
+                  )}
+                >
                   Debate topic
                 </label>
                 <textarea
@@ -439,10 +481,22 @@ export default function DebateModeSetup() {
                     setSelectedTopic("");
                     setError("");
                   }}
+                  maxLength={DEBATE_TOPIC_MAX_CHARS}
                   rows={4}
                   placeholder="Example: Moral progress is mostly a myth societies tell themselves."
-                  className={cn("mt-2 block w-full rounded-xl border px-3 py-2 text-[11px] leading-5 outline-none transition", fieldClass)}
+                  className={cn(
+                    "mt-2 block w-full resize-none rounded-xl border px-3 py-2 text-[11px] leading-5 outline-none transition",
+                    fieldClass,
+                  )}
                 />
+                <p
+                  className={cn(
+                    "mt-1.5 text-right text-[10px] leading-none",
+                    mutedClass,
+                  )}
+                >
+                  {topicInput.length}/{DEBATE_TOPIC_MAX_CHARS}
+                </p>
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -450,7 +504,10 @@ export default function DebateModeSetup() {
                   type="button"
                   onClick={() => void handleValidateCustomTopic()}
                   disabled={isBusy}
-                  className={cn("inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition disabled:opacity-60", primaryButtonClass)}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition disabled:opacity-60",
+                    primaryButtonClass,
+                  )}
                 >
                   {isBusy ? (
                     <LoaderCircle size={13} className="animate-spin" />
@@ -463,30 +520,57 @@ export default function DebateModeSetup() {
                   type="button"
                   onClick={() => void handleGenerateTopics()}
                   disabled={isBusy}
-                  className={cn("inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] transition disabled:opacity-60", secondaryButtonClass)}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] transition disabled:opacity-60",
+                    secondaryButtonClass,
+                  )}
                 >
                   <Sparkles size={13} />
                   Generate topics
                 </button>
               </div>
-
             </div>
           )}
 
           {step === "side" && (
             <div>
-              <h2 className={cn("mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]", headingClass)}>
+              <h2
+                className={cn(
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  headingClass,
+                )}
+              >
                 Choose your side.
               </h2>
-              <p className={cn("mt-1.5 max-w-[340px] text-[10px] leading-5", mutedClass)}>
+              <p
+                className={cn(
+                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  mutedClass,
+                )}
+              >
                 Pick whether you defend the thesis or attack it.
               </p>
 
-              <div className={cn("mt-4 rounded-xl border px-3.5 py-2.5", surfaceClass)}>
-                <p className={cn("text-[10px] uppercase tracking-[0.2em]", labelClass)}>
+              <div
+                className={cn(
+                  "mt-4 rounded-xl border px-3.5 py-2.5",
+                  surfaceClass,
+                )}
+              >
+                <p
+                  className={cn(
+                    "text-[10px] uppercase tracking-[0.2em]",
+                    labelClass,
+                  )}
+                >
                   Confirmed thesis
                 </p>
-                <p className={cn("mt-2 text-[16px] leading-6 tracking-[-0.04em] [font-family:Georgia,serif]", surfaceTitleClass)}>
+                <p
+                  className={cn(
+                    "mt-2 text-[16px] leading-6 tracking-[-0.04em] [font-family:Georgia,serif]",
+                    surfaceTitleClass,
+                  )}
+                >
                   {topic}
                 </p>
               </div>
@@ -539,30 +623,53 @@ export default function DebateModeSetup() {
 
           {step === "ready" && (
             <div>
-              <p className={cn("text-[10px] uppercase tracking-[0.28em]", stepTextClass)}>
-                Ready
-              </p>
-              <h2 className={cn("mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]", headingClass)}>
+              <h2
+                className={cn(
+                  "mt-1.5 text-[20px] leading-none tracking-[-0.05em] [font-family:Georgia,serif] md:text-[24px]",
+                  headingClass,
+                )}
+              >
                 Ready to begin?
               </h2>
-              <p className={cn("mt-1.5 max-w-[340px] text-[10px] leading-5", mutedClass)}>
+              <p
+                className={cn(
+                  "mt-1.5 max-w-[340px] text-[10px] leading-5",
+                  mutedClass,
+                )}
+              >
                 Timed debates end permanently when the clock runs out.
               </p>
 
-              <div className={cn("mt-4 grid gap-2.5 rounded-2xl border p-3.5 md:grid-cols-2", surfaceClass)}>
+              <div
+                className={cn(
+                  "mt-4 grid gap-2.5 rounded-2xl border p-3.5 md:grid-cols-2",
+                  surfaceClass,
+                )}
+              >
                 <div>
-                  <p className={cn("text-[10px] uppercase tracking-[0.18em]", labelClass)}>
+                  <p
+                    className={cn(
+                      "text-[10px] uppercase tracking-[0.18em]",
+                      labelClass,
+                    )}
+                  >
                     Tone
                   </p>
                   <p className={cn("mt-1.5 text-[12px]", surfaceTitleClass)}>
                     {
-                      DEBATE_TONE_OPTIONS.find((option) => option.value === tone)
-                        ?.label
+                      DEBATE_TONE_OPTIONS.find(
+                        (option) => option.value === tone,
+                      )?.label
                     }
                   </p>
                 </div>
                 <div>
-                  <p className={cn("text-[10px] uppercase tracking-[0.18em]", labelClass)}>
+                  <p
+                    className={cn(
+                      "text-[10px] uppercase tracking-[0.18em]",
+                      labelClass,
+                    )}
+                  >
                     Timing
                   </p>
                   <p className={cn("mt-1.5 text-[12px]", surfaceTitleClass)}>
@@ -574,15 +681,30 @@ export default function DebateModeSetup() {
                   </p>
                 </div>
                 <div className="md:col-span-2">
-                  <p className={cn("text-[10px] uppercase tracking-[0.18em]", labelClass)}>
+                  <p
+                    className={cn(
+                      "text-[10px] uppercase tracking-[0.18em]",
+                      labelClass,
+                    )}
+                  >
                     Thesis
                   </p>
-                  <p className={cn("mt-1.5 text-[14px] leading-6 tracking-[-0.03em] [font-family:Georgia,serif]", surfaceTitleClass)}>
+                  <p
+                    className={cn(
+                      "mt-1.5 text-[14px] leading-6 tracking-[-0.03em] [font-family:Georgia,serif]",
+                      surfaceTitleClass,
+                    )}
+                  >
                     {topic}
                   </p>
                 </div>
                 <div>
-                  <p className={cn("text-[10px] uppercase tracking-[0.18em]", labelClass)}>
+                  <p
+                    className={cn(
+                      "text-[10px] uppercase tracking-[0.18em]",
+                      labelClass,
+                    )}
+                  >
                     Your side
                   </p>
                   <p className={cn("mt-1.5 text-[12px]", surfaceTitleClass)}>
@@ -590,10 +712,17 @@ export default function DebateModeSetup() {
                   </p>
                 </div>
                 <div>
-                  <p className={cn("text-[10px] uppercase tracking-[0.18em]", labelClass)}>
+                  <p
+                    className={cn(
+                      "text-[10px] uppercase tracking-[0.18em]",
+                      labelClass,
+                    )}
+                  >
                     AI side
                   </p>
-                  <p className={cn("mt-1.5 text-[12px]", surfaceTitleClass)}>{aiSide}</p>
+                  <p className={cn("mt-1.5 text-[12px]", surfaceTitleClass)}>
+                    {aiSide}
+                  </p>
                 </div>
               </div>
             </div>
@@ -602,7 +731,12 @@ export default function DebateModeSetup() {
       </AnimatePresence>
 
       {error && (
-        <div className={cn("mt-3 max-w-[460px] rounded-xl border px-3 py-2 text-left text-[10px] leading-5", errorClass)}>
+        <div
+          className={cn(
+            "mt-3 max-w-[460px] rounded-xl border px-3 py-2 text-left text-[10px] leading-5",
+            errorClass,
+          )}
+        >
           {error}
         </div>
       )}
@@ -613,7 +747,11 @@ export default function DebateModeSetup() {
             type="button"
             onClick={goToPreviousStep}
             disabled={isBusy}
-            className={cn("rounded-lg border px-3 py-2 text-[10px] transition disabled:opacity-60", secondaryButtonClass)}
+            className={cn(
+              "rounded-lg border px-3 py-2 text-[10px] transition disabled:opacity-60",
+              secondaryButtonClass,
+              !isDarkMode && "border-black!",
+            )}
           >
             Back
           </button>
@@ -623,7 +761,10 @@ export default function DebateModeSetup() {
           <button
             type="button"
             onClick={() => goToNextStep()}
-            className={cn("inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition", primaryButtonClass)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition",
+              primaryButtonClass,
+            )}
           >
             Continue
             <ArrowRight size={13} />
@@ -634,7 +775,10 @@ export default function DebateModeSetup() {
           <button
             type="button"
             onClick={() => goToNextStep()}
-            className={cn("inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition", primaryButtonClass)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition",
+              primaryButtonClass,
+            )}
           >
             Continue
             <ArrowRight size={13} />
@@ -646,7 +790,10 @@ export default function DebateModeSetup() {
             type="button"
             onClick={() => goToNextStep("side")}
             disabled={isBusy}
-            className={cn("inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition disabled:opacity-60", primaryButtonClass)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition disabled:opacity-60",
+              primaryButtonClass,
+            )}
           >
             Continue
             <ArrowRight size={13} />
@@ -657,7 +804,10 @@ export default function DebateModeSetup() {
           <button
             type="button"
             onClick={() => goToNextStep("ready")}
-            className={cn("inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition", primaryButtonClass)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[10px] transition",
+              primaryButtonClass,
+            )}
           >
             Continue
             <ArrowRight size={13} />
@@ -669,7 +819,10 @@ export default function DebateModeSetup() {
             type="button"
             onClick={() => void handleStartDebate()}
             disabled={isBusy}
-            className={cn("inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[10px] uppercase tracking-[0.16em] transition disabled:opacity-60", primaryButtonClass)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[10px] uppercase tracking-[0.16em] transition disabled:opacity-60",
+              primaryButtonClass,
+            )}
           >
             {isBusy ? (
               <LoaderCircle size={13} className="animate-spin" />
@@ -683,7 +836,10 @@ export default function DebateModeSetup() {
 
       {showTopicSuggestionsDialog && topicSuggestions.length > 0 && (
         <div
-          className={cn("fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]", modalBackdropClass)}
+          className={cn(
+            "fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[2px]",
+            modalBackdropClass,
+          )}
           role="dialog"
           aria-modal="true"
           aria-label="Suggested debate topics"
@@ -694,12 +850,20 @@ export default function DebateModeSetup() {
           }}
         >
           <div
-            className={cn("w-full max-w-[360px] rounded-[9px] border px-4 py-3.5", modalClass)}
+            className={cn(
+              "w-full max-w-[360px] rounded-[9px] border px-4 py-3.5",
+              modalClass,
+            )}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
-                <p className={cn("text-[22px] leading-none tracking-[-0.05em] [font-family:Georgia,serif]", headingClass)}>
+                <p
+                  className={cn(
+                    "text-[22px] leading-none tracking-[-0.05em] [font-family:Georgia,serif]",
+                    headingClass,
+                  )}
+                >
                   Suggested topics
                 </p>
                 <p className={cn("mt-1 text-[10px] leading-4", mutedClass)}>
@@ -710,7 +874,10 @@ export default function DebateModeSetup() {
                 type="button"
                 onClick={() => setShowTopicSuggestionsDialog(false)}
                 disabled={isBusy}
-                className={cn("cursor-pointer rounded-full p-1 transition disabled:cursor-not-allowed disabled:opacity-40", modalCloseClass)}
+                className={cn(
+                  "cursor-pointer rounded-full p-1 transition disabled:cursor-not-allowed disabled:opacity-40",
+                  modalCloseClass,
+                )}
                 aria-label="Close dialog"
               >
                 <X size={12} />
@@ -764,7 +931,10 @@ export default function DebateModeSetup() {
                   setPendingSuggestedTopic("");
                   setShowTopicSuggestionsDialog(false);
                 }}
-                className={cn("cursor-pointer rounded-full border px-3 py-1.5 text-[10px] transition", secondaryButtonClass)}
+                className={cn(
+                  "cursor-pointer rounded-full border px-3 py-1.5 text-[10px] transition",
+                  secondaryButtonClass,
+                )}
               >
                 Cancel
               </button>
@@ -782,7 +952,10 @@ export default function DebateModeSetup() {
                   setShowTopicSuggestionsDialog(false);
                 }}
                 disabled={!pendingSuggestedTopic}
-                className={cn("inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] transition disabled:cursor-not-allowed disabled:opacity-50", primaryButtonClass)}
+                className={cn(
+                  "inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] transition disabled:cursor-not-allowed disabled:opacity-50",
+                  primaryButtonClass,
+                )}
               >
                 <Check size={11} />
                 Confirm

@@ -43,6 +43,56 @@ interface Props {
 }
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
+const URL_PATTERN = /(https?:\/\/[^\s]+)/gi;
+const EMPHASIS_PATTERN = /(\*\*[^*\n]+\*\*|\*[^*\n]+\*)/g;
+
+function renderInlineFormatting(text: string, keyPrefix: string) {
+  const parts = text.split(EMPHASIS_PATTERN);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return (
+        <strong key={`${keyPrefix}-b-${index}`}>{part.slice(2, -2)}</strong>
+      );
+    }
+
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+      return <em key={`${keyPrefix}-i-${index}`}>{part.slice(1, -1)}</em>;
+    }
+
+    return <span key={`${keyPrefix}-t-${index}`}>{part}</span>;
+  });
+}
+
+function renderMessageContentWithLinks(content: string) {
+  if (!content) {
+    return content;
+  }
+
+  const parts = content.split(URL_PATTERN);
+
+  return parts.map((part, index) => {
+    if (part.match(URL_PATTERN)) {
+      return (
+        <a
+          key={`${part}-${index}`}
+          href={part}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="text-sky-700 underline underline-offset-2 transition hover:text-sky-900"
+        >
+          {part}
+        </a>
+      );
+    }
+
+    return (
+      <span key={`${part}-${index}`}>
+        {renderInlineFormatting(part, `msg-${index}`)}
+      </span>
+    );
+  });
+}
 
 function pickPreferredVoice(voices: SpeechSynthesisVoice[]) {
   if (!voices.length) {
@@ -461,7 +511,7 @@ export default function MessageList({
                   {isAssistant && !message.content ? (
                     <ThinkingBubble />
                   ) : (
-                    message.content
+                    renderMessageContentWithLinks(message.content)
                   )}
                 </div>
               )}
@@ -530,22 +580,24 @@ export default function MessageList({
                     </>
                   )}
 
-                  {isAssistant && isLastAssistant && !disableRevisionActions && (
-                    <button
-                      onClick={onRegenerate}
-                      disabled={isStreaming}
-                      className={cn(
-                        "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
-                        isStreaming
-                          ? "cursor-not-allowed opacity-40"
-                          : "text-slate-400 transition hover:text-slate-700",
-                      )}
-                      aria-label="Regenerate response"
-                      data-tooltip="Regenerate response"
-                    >
-                      <RotateCcw size={12} />
-                    </button>
-                  )}
+                  {isAssistant &&
+                    isLastAssistant &&
+                    !disableRevisionActions && (
+                      <button
+                        onClick={onRegenerate}
+                        disabled={isStreaming}
+                        className={cn(
+                          "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
+                          isStreaming
+                            ? "cursor-not-allowed opacity-40"
+                            : "text-slate-400 transition hover:text-slate-700",
+                        )}
+                        aria-label="Regenerate response"
+                        data-tooltip="Regenerate response"
+                      >
+                        <RotateCcw size={12} />
+                      </button>
+                    )}
 
                   {isUser && isLastUser && !disableRevisionActions && (
                     <>

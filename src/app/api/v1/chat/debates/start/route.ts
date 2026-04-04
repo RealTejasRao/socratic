@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import type {
-  DebateDurationPreset,
-  DebateTone,
-  DebateTopicSource,
-} from "@prisma/client";
+import type { DebateTopicSource } from "@prisma/client";
+import {
+  DEBATE_TOPIC_MAX_CHARS,
+  type DebateDurationPreset,
+  type DebateTone,
+} from "src/lib/debate";
 import { prisma } from "src/server/db/client";
-import { createDebateSession, validateDebateTopic } from "src/server/debate/service";
+import {
+  createDebateSession,
+  validateDebateTopic,
+} from "src/server/debate/service";
 
 export async function POST(req: Request) {
   const { userId: clerkUserId } = await auth();
@@ -29,7 +33,8 @@ export async function POST(req: Request) {
   const durationPreset = body?.durationPreset;
   const topic = typeof body?.topic === "string" ? body.topic : "";
   const topicSource = body?.topicSource;
-  const userSide = typeof body?.userSide === "string" ? body.userSide.trim() : "";
+  const userSide =
+    typeof body?.userSide === "string" ? body.userSide.trim() : "";
   const aiSide = typeof body?.aiSide === "string" ? body.aiSide.trim() : "";
 
   if (
@@ -40,6 +45,15 @@ export async function POST(req: Request) {
     !aiSide
   ) {
     return new NextResponse("Invalid debate setup", { status: 400 });
+  }
+
+  if (topic.trim().length > DEBATE_TOPIC_MAX_CHARS) {
+    return NextResponse.json(
+      {
+        reason: `Keep the topic under ${DEBATE_TOPIC_MAX_CHARS} characters.`,
+      },
+      { status: 400 },
+    );
   }
 
   const topicValidation = await validateDebateTopic(topic);

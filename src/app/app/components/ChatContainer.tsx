@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   Crown,
+  MessageCircle,
   ScrollText,
   Swords,
   X,
@@ -188,8 +189,10 @@ export default function ChatContainer({
     useState<RoleplayPhilosopherId | null>(null);
   const [showWinnerReveal, setShowWinnerReveal] = useState(false);
   const [debateNowMs, setDebateNowMs] = useState<number | null>(null);
+  const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
   const tempIdRef = useRef(0);
   const finalizeRequestedRef = useRef(false);
+  const modeMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const hasMessages = messages.length > 0;
   const isDebateSession = activeSessionMeta.mode === "DEBATE";
@@ -250,9 +253,9 @@ export default function ChatContainer({
     ? "Defend your side."
     : visibleRoleplayPhilosopher
       ? "Write a message to start the conversation."
-    : name === "friend"
-      ? "What's on your mind?"
-      : `What's on your mind, ${name}?`;
+      : name === "friend"
+        ? "What's on your mind?"
+        : `What's on your mind, ${name}?`;
   const greetingLine = (() => {
     if (greetingSeed === 0) {
       return "";
@@ -314,6 +317,36 @@ export default function ChatContainer({
     activeSessionMeta.debate?.status,
     debateDurationMeta?.minutes,
   ]);
+
+  useEffect(() => {
+    if (!isModeMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!(event.target instanceof Node)) {
+        return;
+      }
+
+      if (!modeMenuRef.current?.contains(event.target)) {
+        setIsModeMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsModeMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isModeMenuOpen]);
 
   useEffect(() => {
     const debate = activeSessionMeta.debate;
@@ -512,7 +545,8 @@ export default function ChatContainer({
         setMessages((prev) =>
           prev.filter(
             (message) =>
-              message.id !== assistantMessageId && message.id !== optimisticMessage.id,
+              message.id !== assistantMessageId &&
+              message.id !== optimisticMessage.id,
           ),
         );
         setIsStreaming(false);
@@ -559,32 +593,31 @@ export default function ChatContainer({
     }
   }
 
-  const roleplayIntro =
-    visibleRoleplayPhilosopher ? (
-      <div className="app-roleplay-thread-intro mb-8 flex flex-col items-center text-center">
-        <div className="relative h-20 w-20 overflow-hidden rounded-full border border-slate-200 bg-[#f5f3ee] shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-          <Image
-            src={resolveOptimizedCloudinaryPublicAsset(
-              visibleRoleplayPhilosopher.imagePath,
-              { width: 240, height: 240, crop: "fill", quality: "auto" },
-            )}
-            alt={visibleRoleplayPhilosopher.philosopherName}
-            fill
-            sizes="80px"
-            className="object-cover"
-          />
-        </div>
-        <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 [font-family:Georgia,serif]">
-          {visibleRoleplayPhilosopher.philosopherName}
-        </h3>
-        <div className="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
-          {visibleRoleplayPhilosopher.tradition}
-        </div>
-        <p className="mt-4 max-w-[620px] text-[14px] leading-7 text-slate-600">
-          {visibleRoleplayPhilosopher.introBlurb}
-        </p>
+  const roleplayIntro = visibleRoleplayPhilosopher ? (
+    <div className="app-roleplay-thread-intro mb-8 flex flex-col items-center text-center">
+      <div className="relative h-20 w-20 overflow-hidden rounded-full border border-slate-200 bg-[#f5f3ee] shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
+        <Image
+          src={resolveOptimizedCloudinaryPublicAsset(
+            visibleRoleplayPhilosopher.imagePath,
+            { width: 240, height: 240, crop: "fill", quality: "auto" },
+          )}
+          alt={visibleRoleplayPhilosopher.philosopherName}
+          fill
+          sizes="80px"
+          className="object-cover"
+        />
       </div>
-    ) : null;
+      <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 [font-family:Georgia,serif]">
+        {visibleRoleplayPhilosopher.philosopherName}
+      </h3>
+      <div className="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
+        {visibleRoleplayPhilosopher.tradition}
+      </div>
+      <p className="mt-4 max-w-[620px] text-[14px] leading-7 text-slate-600">
+        {visibleRoleplayPhilosopher.introBlurb}
+      </p>
+    </div>
+  ) : null;
 
   async function handleRegenerate() {
     if (!sessionId || isStreaming || isDebateCompleted) return;
@@ -743,45 +776,87 @@ export default function ChatContainer({
       <div className="relative flex h-full min-h-0 items-center justify-center px-4 md:px-6">
         <div className="w-full">
           <div className="absolute -top-2.5 left-4 z-10 md:left-6 md:-top-3">
-            <div className="inline-flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
+            <div ref={modeMenuRef} className="relative">
               <button
                 type="button"
-                onClick={() => setModeSelection("SOCRATIC")}
+                onClick={() => setIsModeMenuOpen((prev) => !prev)}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-[11px] transition",
-                  modeSelection === "SOCRATIC"
-                    ? "bg-black text-white"
-                    : "text-zinc-600 hover:text-black",
+                  "app-mode-switch-trigger inline-flex cursor-pointer items-center gap-2 rounded-[12px] border px-3 py-1.5 text-[11px] transition",
+                  isModeMenuOpen && "app-mode-switch-trigger-open",
                 )}
               >
-                Socratic
+                {modeSelection === "SOCRATIC" ? (
+                  <MessageCircle size={13} />
+                ) : null}
+                {modeSelection === "DEBATE" ? <Swords size={13} /> : null}
+                {modeSelection === "ROLEPLAY" ? <ScrollText size={13} /> : null}
+                {modeSelection === "SOCRATIC"
+                  ? "Socratic"
+                  : modeSelection === "DEBATE"
+                    ? "Debate"
+                    : "Roleplay"}
+                <ChevronDown
+                  size={13}
+                  className={cn(
+                    "app-mode-switch-chevron transition-transform duration-200",
+                    isModeMenuOpen ? "rotate-180" : "rotate-0",
+                  )}
+                />
               </button>
-              <button
-                type="button"
-                onClick={() => setModeSelection("DEBATE")}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-[11px] transition",
-                  modeSelection === "DEBATE"
-                    ? "bg-black text-white"
-                    : "text-zinc-600 hover:text-black",
-                )}
-              >
-                <Swords size={13} />
-                Debate
-              </button>
-              <button
-                type="button"
-                onClick={() => setModeSelection("ROLEPLAY")}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-[11px] transition",
-                  modeSelection === "ROLEPLAY"
-                    ? "bg-black text-white"
-                    : "text-zinc-600 hover:text-black",
-                )}
-              >
-                <ScrollText size={13} />
-                Roleplay
-              </button>
+
+              <AnimatePresence>
+                {isModeMenuOpen ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                    className="app-mode-switch-menu absolute left-0 top-full mt-1.5 min-w-36 origin-top rounded-[14px] border p-1.5"
+                  >
+                    {modeSelection !== "SOCRATIC" ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModeSelection("SOCRATIC");
+                          setIsModeMenuOpen(false);
+                        }}
+                        className="app-mode-switch-option inline-flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2 text-[11px] transition"
+                      >
+                        <MessageCircle size={13} />
+                        Socratic
+                      </button>
+                    ) : null}
+
+                    {modeSelection !== "DEBATE" ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModeSelection("DEBATE");
+                          setIsModeMenuOpen(false);
+                        }}
+                        className="app-mode-switch-option inline-flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2 text-[11px] transition"
+                      >
+                        <Swords size={13} />
+                        Debate
+                      </button>
+                    ) : null}
+
+                    {modeSelection !== "ROLEPLAY" ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModeSelection("ROLEPLAY");
+                          setIsModeMenuOpen(false);
+                        }}
+                        className="app-mode-switch-option inline-flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2 text-[11px] transition"
+                      >
+                        <ScrollText size={13} />
+                        Roleplay
+                      </button>
+                    ) : null}
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </div>
           </div>
 
@@ -878,7 +953,7 @@ export default function ChatContainer({
                     <button
                       type="button"
                       onClick={() => setPendingRoleplayId(null)}
-                      className="rounded-full border border-slate-300 px-3 py-1.5 text-[11px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                      className="app-change-philosopher-btn app-roleplay-secondary-btn rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
                     >
                       Change philosopher
                     </button>
@@ -929,6 +1004,7 @@ export default function ChatContainer({
             initialValue={undefined}
             placeholder={inputPlaceholder}
             showWebSearch={!isDebateSession}
+            allowImageAttachments={!isDebateSession}
           />
         </div>
       ) : (
@@ -945,7 +1021,8 @@ export default function ChatContainer({
               </h3>
 
               <p className="app-debate-ended-copy mt-3 text-[12px] leading-6 text-slate-500">
-                The clock has run out. Review the full summary or reveal the verdict here.
+                The clock has run out. Review the full summary or reveal the
+                verdict here.
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
@@ -1039,7 +1116,3 @@ export default function ChatContainer({
     </div>
   );
 }
-
-
-
-

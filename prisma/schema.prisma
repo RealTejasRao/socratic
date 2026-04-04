@@ -33,7 +33,7 @@ model ChatSession {
   debateTone      DebateTone?
   debateDurationPreset DebateDurationPreset?
   debateHasTimer  Boolean       @default(false)
-  debateTopic     String?       @db.VarChar(240)
+  debateTopic     String?       @db.VarChar(220)
   debateTopicSource DebateTopicSource?
   userDebateSide  String?       @db.VarChar(160)
   aiDebateSide    String?       @db.VarChar(160)
@@ -64,6 +64,8 @@ model ChatSession {
 
   @@index([userId, createdAt(sort: Desc)])
   @@index([expiresAt])
+  @@index([debateStatus, debateStartedAt(sort: Desc)])
+  @@index([mode, createdAt(sort: Desc)])
 }
 
 enum SessionMode {
@@ -73,9 +75,9 @@ enum SessionMode {
 }
 
 enum DebateTone {
-  RUTHLESS_RESPECTFUL
-  BLUNT_AGGRESSIVE
-  TOUGH_POLISHED
+  RUTHLESS_BLUNT
+  SIMPLE_CLEAR
+  ELITE_INTELLECTUAL_ELEGANT
 }
 
 enum DebateDurationPreset {
@@ -174,6 +176,11 @@ enum BeliefStatus {
   DISMISSED
 }
 
+enum DebateSide {
+  AFFIRM
+  NEGATE
+}
+
 model InsightExtractionLog {
   id              String   @id @default(cuid())
   userId          String
@@ -231,7 +238,7 @@ model KnowledgeChunk {
   chunkType  String            @default("primary_text") @db.VarChar(32)
   content    String            @db.Text
   tokenCount Int
-  embedding  Unsupported("vector(3072)")?
+  embedding  Unsupported("vector")?
   createdAt  DateTime          @default(now())
   document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
 

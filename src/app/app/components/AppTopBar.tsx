@@ -65,6 +65,7 @@ export default function AppTopBar({ sessions }: Props) {
   const [copied, setCopied] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isThemeReady, setIsThemeReady] = useState(false);
+  const [isEndingDebate, setIsEndingDebate] = useState(false);
   const [themeSweep, setThemeSweep] = useState<{
     id: number;
     dark: boolean;
@@ -240,6 +241,29 @@ export default function AppTopBar({ sessions }: Props) {
   useEffect(() => {
     finalizeRequestedRef.current = false;
   }, [activeSession?.id]);
+
+  async function handleEndDebate() {
+    if (
+      !activeSession ||
+      !activeDebate ||
+      activeDebate.status === "COMPLETED"
+    ) {
+      return;
+    }
+
+    setIsEndingDebate(true);
+
+    try {
+      await fetch("/api/v1/chat/debates/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: activeSession.id }),
+      });
+      router.refresh();
+    } finally {
+      setIsEndingDebate(false);
+    }
+  }
 
   async function ensureShareLink() {
     if (!activeSession) {
@@ -681,13 +705,39 @@ export default function AppTopBar({ sessions }: Props) {
           {activeDebate?.hasTimer && remainingSeconds !== null && (
             <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-2.5 py-1 text-[12px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
               <Clock3 size={12} className="text-slate-500" />
-              <span className="font-medium tabular-nums" suppressHydrationWarning>
+              <span
+                className="font-medium tabular-nums"
+                suppressHydrationWarning
+              >
                 {remainingSeconds === null
                   ? "--:--"
                   : formatDebateCountdown(remainingSeconds)}
               </span>
             </div>
           )}
+
+          {activeDebate &&
+            !activeDebate.hasTimer &&
+            activeDebate.status !== "COMPLETED" && (
+              <button
+                type="button"
+                onClick={handleEndDebate}
+                disabled={isEndingDebate}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-[9px] border px-2.5 py-1 text-[12px] shadow-[0_1px_0_rgba(0,0,0,0.03)] transition disabled:cursor-not-allowed disabled:opacity-70",
+                  isDarkMode
+                    ? "cursor-pointer border-[#6a3a3a] bg-[#382424] text-[#f2c2c2] hover:border-[#805050] hover:bg-[#452a2a]"
+                    : "cursor-pointer border-[#f2c7c7] bg-[#fff1f1] text-[#b54747] hover:border-[#eab4b4] hover:bg-[#ffe8e8]",
+                )}
+              >
+                {isEndingDebate ? (
+                  <LoaderCircle size={12} className="animate-spin" />
+                ) : (
+                  <X size={12} />
+                )}
+                End Debate
+              </button>
+            )}
 
           <button
             type="button"
