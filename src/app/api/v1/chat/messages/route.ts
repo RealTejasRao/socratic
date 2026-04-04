@@ -3,7 +3,15 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
 import { generateSessionTitle } from "src/server/chat/generate-session-title";
-import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
+import {
+  finalizeDebateSession,
+  getDebateTimeRemainingSeconds,
+} from "src/server/debate/service";
+import {
+  consumeUserRateLimit,
+  createRateLimitHeaders,
+  getRequestIp,
+} from "src/server/security/rate-limit";
 import type { ChatImageAttachment } from "src/types/chat";
 import {
   getRoleplayPhilosopherConfig,
@@ -12,19 +20,31 @@ import {
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 const MAX_ATTACHMENTS = 3;
+const MAX_CONTENT_CHARS = 3000;
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 function isValidAttachment(value: unknown): value is ChatImageAttachment {
   return Boolean(
     value &&
-      typeof value === "object" &&
-      "type" in value &&
-      "dataUrl" in value &&
-      "mimeType" in value &&
-      "name" in value &&
-      value.type === "image" &&
-      typeof value.dataUrl === "string" &&
-      typeof value.mimeType === "string" &&
-      typeof value.name === "string",
+    typeof value === "object" &&
+    "type" in value &&
+    "dataUrl" in value &&
+    "mimeType" in value &&
+    "name" in value &&
+    value.type === "image" &&
+    typeof value.dataUrl === "string" &&
+    value.dataUrl.length > 0 &&
+    value.dataUrl.length <= 4096 &&
+    typeof value.mimeType === "string" &&
+    value.mimeType.startsWith("image/") &&
+    typeof value.name === "string" &&
+    value.name.length > 0 &&
+    value.name.length <= 260 &&
+    (!("bytes" in value) ||
+      typeof value.bytes !== "number" ||
+      (Number.isFinite(value.bytes) &&
+        value.bytes > 0 &&
+        value.bytes <= MAX_IMAGE_BYTES)),
   );
 }
 
@@ -34,6 +54,24 @@ export async function POST(req: Request) {
 
   if (!clerkUserId) {
     return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const rateLimit = await consumeUserRateLimit({
+    scope: "chat:messages",
+    userId: clerkUserId,
+    ip: getRequestIp(req),
+    limit: 180,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return new NextResponse(
+      "Too many requests. Please wait a moment and try again.",
+      {
+        status: 429,
+        headers: createRateLimitHeaders(rateLimit),
+      },
+    );
   }
 
   const body = await req.json();
@@ -54,8 +92,18 @@ export async function POST(req: Request) {
   if (typeof content !== "string") {
     return new NextResponse("Invalid content", { status: 400 });
   }
+  if (content.length > MAX_CONTENT_CHARS) {
+    return new NextResponse(
+      `Message is too long. Max ${MAX_CONTENT_CHARS} characters.`,
+      {
+        status: 400,
+      },
+    );
+  }
   if (!content.trim() && attachments.length === 0) {
-    return new NextResponse("Message must include text or image", { status: 400 });
+    return new NextResponse("Message must include text or image", {
+      status: 400,
+    });
   }
   const now = new Date();
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);

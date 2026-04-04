@@ -2,7 +2,15 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
-import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
+import {
+  finalizeDebateSession,
+  getDebateTimeRemainingSeconds,
+} from "src/server/debate/service";
+import {
+  consumeUserRateLimit,
+  createRateLimitHeaders,
+  getRequestIp,
+} from "src/server/security/rate-limit";
 import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
@@ -43,7 +51,29 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
+  const rateLimit = await consumeUserRateLimit({
+    scope: "chat:regenerate",
+    userId,
+    ip: getRequestIp(req),
+    limit: 90,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return new NextResponse(
+      "Too many requests. Please wait a moment and try again.",
+      {
+        status: 429,
+        headers: createRateLimitHeaders(rateLimit),
+      },
+    );
+  }
+
   const { sessionId } = await req.json();
+
+  if (typeof sessionId !== "string" || !sessionId.trim()) {
+    return new NextResponse("Invalid sessionId", { status: 400 });
+  }
 
   const session = await prisma.chatSession.findFirst({
     where: {
@@ -66,7 +96,9 @@ export async function POST(req: Request) {
 
   if (session.mode === "DEBATE") {
     if (session.debateStatus === "COMPLETED") {
-      return new NextResponse("This debate has already ended.", { status: 409 });
+      return new NextResponse("This debate has already ended.", {
+        status: 409,
+      });
     }
 
     const remainingSeconds = getDebateTimeRemainingSeconds({
@@ -76,7 +108,9 @@ export async function POST(req: Request) {
 
     if (remainingSeconds !== null && remainingSeconds <= 0) {
       await finalizeDebateSession({ sessionId: session.id });
-      return new NextResponse("This debate has already ended.", { status: 409 });
+      return new NextResponse("This debate has already ended.", {
+        status: 409,
+      });
     }
   }
 

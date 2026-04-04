@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertCircle,
   ArrowLeft,
   ChevronDown,
   Crown,
@@ -75,6 +76,11 @@ const FALLBACK_STARTER_CHIPS = [
 
 const STARTER_CHIP_COUNT = 2;
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
+
+type ErrorToastState = {
+  message: string;
+  isLeaving: boolean;
+} | null;
 
 let greetingSeedStore = 0;
 const greetingSeedListeners = new Set<() => void>();
@@ -191,6 +197,7 @@ export default function ChatContainer({
   const [showWinnerReveal, setShowWinnerReveal] = useState(false);
   const [debateNowMs, setDebateNowMs] = useState<number | null>(null);
   const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
+  const [errorToast, setErrorToast] = useState<ErrorToastState>(null);
   const tempIdRef = useRef(0);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
@@ -482,6 +489,64 @@ export default function ChatContainer({
     };
   }, [showWinnerReveal]);
 
+  useEffect(() => {
+    if (!errorToast) {
+      return;
+    }
+
+    if (errorToast.isLeaving) {
+      const timeoutId = window.setTimeout(() => {
+        setErrorToast(null);
+      }, 240);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setErrorToast((current) =>
+        current
+          ? {
+              ...current,
+              isLeaving: true,
+            }
+          : null,
+      );
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [errorToast]);
+
+  function showErrorToast(message: string) {
+    setErrorToast({
+      message,
+      isLeaving: false,
+    });
+  }
+
+  async function readRateLimitMessage(response: Response) {
+    if (response.status !== 429) {
+      return null;
+    }
+
+    const retryAfterRaw = response.headers.get("Retry-After");
+    const retryAfter = retryAfterRaw ? Number.parseInt(retryAfterRaw, 10) : NaN;
+    const resetRaw = response.headers.get("X-RateLimit-Reset");
+    const resetAfter = resetRaw ? Number.parseInt(resetRaw, 10) : NaN;
+
+    const waitSeconds =
+      Number.isFinite(retryAfter) && retryAfter > 0
+        ? retryAfter
+        : Number.isFinite(resetAfter) && resetAfter > 0
+          ? resetAfter
+          : 5;
+
+    return `Whoa, slow down! Give it ${waitSeconds} seconds, then try again.`;
+  }
+
   function createTempId(prefix: string) {
     tempIdRef.current += 1;
     return `${prefix}-${tempIdRef.current}`;
@@ -543,6 +608,11 @@ export default function ChatContainer({
       });
 
       if (!res.ok || !res.body) {
+        const rateLimitMessage = await readRateLimitMessage(res);
+        if (rateLimitMessage) {
+          showErrorToast(rateLimitMessage);
+        }
+
         setMessages((prev) =>
           prev.filter(
             (message) =>
@@ -551,7 +621,10 @@ export default function ChatContainer({
           ),
         );
         setIsStreaming(false);
-        router.refresh();
+
+        if (!rateLimitMessage) {
+          router.refresh();
+        }
         return;
       }
 
@@ -644,8 +717,16 @@ export default function ChatContainer({
     });
 
     if (!res.ok || !res.body) {
+      const rateLimitMessage = await readRateLimitMessage(res);
+      if (rateLimitMessage) {
+        showErrorToast(rateLimitMessage);
+      }
+
       setIsStreaming(false);
-      router.refresh();
+
+      if (!rateLimitMessage) {
+        router.refresh();
+      }
       return;
     }
 
@@ -743,8 +824,16 @@ export default function ChatContainer({
     });
 
     if (!res.ok || !res.body) {
+      const rateLimitMessage = await readRateLimitMessage(res);
+      if (rateLimitMessage) {
+        showErrorToast(rateLimitMessage);
+      }
+
       setIsStreaming(false);
-      router.refresh();
+
+      if (!rateLimitMessage) {
+        router.refresh();
+      }
       return;
     }
 
@@ -982,6 +1071,22 @@ export default function ChatContainer({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
+      {errorToast && (
+        <div className="pointer-events-none fixed right-4 top-4 z-70">
+          <div
+            className={cn(
+              "flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50/96 px-3 py-2 text-[11px] text-amber-900 shadow-[0_14px_34px_rgba(245,158,11,0.2)] backdrop-blur-sm",
+              errorToast.isLeaving
+                ? "animate-[toastSlideOut_240ms_cubic-bezier(0.4,0,0.2,1)_both]"
+                : "animate-[toastSlideIn_220ms_cubic-bezier(0.22,1,0.36,1)_both]",
+            )}
+          >
+            <AlertCircle size={14} className="text-amber-700" />
+            <span>{errorToast.message}</span>
+          </div>
+        </div>
+      )}
+
       <MessageList
         messages={messages}
         onRegenerate={handleRegenerate}

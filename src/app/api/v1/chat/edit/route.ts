@@ -3,10 +3,19 @@ import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { generateAssistantReply } from "src/server/chat/generate";
 import { invalidateConversationMemory } from "src/server/ai/memory-store";
-import { finalizeDebateSession, getDebateTimeRemainingSeconds } from "src/server/debate/service";
+import {
+  finalizeDebateSession,
+  getDebateTimeRemainingSeconds,
+} from "src/server/debate/service";
+import {
+  consumeUserRateLimit,
+  createRateLimitHeaders,
+  getRequestIp,
+} from "src/server/security/rate-limit";
 import type { ChatImageAttachment } from "src/types/chat";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
+const MAX_CONTENT_CHARS = 3000;
 
 function normalizeImageAttachments(value: unknown): ChatImageAttachment[] {
   if (!Array.isArray(value)) {
@@ -47,6 +56,24 @@ export async function POST(req: Request) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
+  const rateLimit = await consumeUserRateLimit({
+    scope: "chat:edit",
+    userId: clerkUserId,
+    ip: getRequestIp(req),
+    limit: 90,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return new NextResponse(
+      "Too many requests. Please wait a moment and try again.",
+      {
+        status: 429,
+        headers: createRateLimitHeaders(rateLimit),
+      },
+    );
+  }
+
   const body = await req.json();
   const { sessionId, messageId, newContent } = body as {
     sessionId?: string;
@@ -64,6 +91,15 @@ export async function POST(req: Request) {
 
   if (!newContent || typeof newContent !== "string" || !newContent.trim()) {
     return new NextResponse("Invalid newContent", { status: 400 });
+  }
+
+  if (newContent.length > MAX_CONTENT_CHARS) {
+    return new NextResponse(
+      `Message is too long. Max ${MAX_CONTENT_CHARS} characters.`,
+      {
+        status: 400,
+      },
+    );
   }
 
   const session = await prisma.chatSession.findFirst({
@@ -89,9 +125,12 @@ export async function POST(req: Request) {
 
   if (session.mode === "DEBATE") {
     if (session.debateStatus === "COMPLETED") {
-      return new NextResponse("Debate messages cannot be edited after the debate ends.", {
-        status: 409,
-      });
+      return new NextResponse(
+        "Debate messages cannot be edited after the debate ends.",
+        {
+          status: 409,
+        },
+      );
     }
 
     const remainingSeconds = getDebateTimeRemainingSeconds({

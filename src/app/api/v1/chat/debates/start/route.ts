@@ -11,12 +11,38 @@ import {
   createDebateSession,
   validateDebateTopic,
 } from "src/server/debate/service";
+import {
+  consumeUserRateLimit,
+  createRateLimitHeaders,
+  getRequestIp,
+} from "src/server/security/rate-limit";
 
 export async function POST(req: Request) {
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
     return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const rateLimit = await consumeUserRateLimit({
+    scope: "debate:start",
+    userId: clerkUserId,
+    ip: getRequestIp(req),
+    limit: 30,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        reason:
+          "Too many debate start requests. Please wait a moment and try again.",
+      },
+      {
+        status: 429,
+        headers: createRateLimitHeaders(rateLimit),
+      },
+    );
   }
 
   const dbUser = await prisma.user.findUnique({

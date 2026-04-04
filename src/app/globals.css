@@ -396,6 +396,14 @@ html.app-dark .app-input-toolbar span {
   color: #e2e2e0;
 }
 
+html.app-dark .app-input-toolbar span.app-input-attachment-error {
+  color: #f87171 !important;
+}
+
+html.app-dark .app-input-toolbar span.app-input-max-limit-error {
+  color: #f87171 !important;
+}
+
 html.app-dark .app-input-attachment-remove-btn {
   background: rgba(17, 17, 17, 0.72) !important;
   color: #e5e7eb !important;
@@ -467,6 +475,81 @@ html.app-dark .app-mode-switch-option:hover {
 html.app-dark .app-search-highlight {
   background: rgba(16, 185, 129, 0.28) !important;
   color: #d1fae5 !important;
+}
+
+html.app-dark .app-sidebar-search-backdrop {
+  background: rgba(2, 6, 23, 0.5) !important;
+}
+
+html.app-dark .app-sidebar-search-modal {
+  background: #252423 !important;
+  border-color: #4a4946 !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.app-dark .app-sidebar-search-title {
+  color: #f2f2ef !important;
+}
+
+html.app-dark .app-sidebar-search-subtitle {
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-sidebar-search-close {
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-sidebar-search-close:hover {
+  background: #333230 !important;
+  color: #f6f6f4 !important;
+}
+
+html.app-dark .app-sidebar-search-input {
+  background: #2f2e2c !important;
+  border-color: #57554f !important;
+  color: #f4f4f2 !important;
+}
+
+html.app-dark .app-sidebar-search-input::placeholder {
+  color: #a2a29d !important;
+}
+
+html.app-dark .app-sidebar-search-input:focus {
+  background: #32312f !important;
+  border-color: #77746d !important;
+}
+
+html.app-dark .app-sidebar-search-input-icon {
+  color: #9f9f9a !important;
+}
+
+html.app-dark .app-sidebar-search-state {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #bcbcb8 !important;
+}
+
+html.app-dark .app-sidebar-search-result {
+  background: #2b2a28 !important;
+  border-color: #4a4946 !important;
+}
+
+html.app-dark .app-sidebar-search-result:hover {
+  background: #333230 !important;
+  border-color: #66645f !important;
+}
+
+html.app-dark .app-sidebar-search-result-title {
+  color: #f0f0ed !important;
+}
+
+html.app-dark .app-sidebar-search-result-snippet {
+  color: #b8b8b3 !important;
+}
+
+html.app-dark .app-sidebar-search-result-badge {
+  background: rgba(56, 139, 253, 0.2) !important;
+  color: #a8d1ff !important;
 }
 
 html.app-dark .app-suggestion-pill {

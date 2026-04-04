@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { buildChatAttachmentPreviewUrl } from "@/src/lib/cloudinary";
 import type { ChatImageAttachment } from "src/types/chat";
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
@@ -119,6 +120,10 @@ export default function MessageInput({
   >([]);
   const [attachmentError, setAttachmentError] = useState("");
   const [voiceError, setVoiceError] = useState("");
+  const [previewImage, setPreviewImage] = useState<{
+    name: string;
+    dataUrl: string;
+  } | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -202,6 +207,24 @@ export default function MessageInput({
       document.removeEventListener("mousedown", handlePointerDown);
     };
   }, []);
+
+  useEffect(() => {
+    if (!previewImage) {
+      return;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setPreviewImage(null);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [previewImage]);
 
   function mergeVoiceTranscript(baseContent: string, transcript: string) {
     const normalizedBase = baseContent.trimEnd();
@@ -333,6 +356,7 @@ export default function MessageInput({
     setComposerAttachments([]);
     setAttachmentError("");
     setVoiceError("");
+    setPreviewImage(null);
     setWebSearchEnabled(false);
     sessionStorage.removeItem(storageKey);
   }
@@ -560,12 +584,37 @@ export default function MessageInput({
                 key={attachment.id}
                 className="app-card relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={attachment.previewUrl}
-                  alt={attachment.name}
-                  className="h-12 w-12 object-cover"
-                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      attachment.status !== "ready" ||
+                      !attachment.attachment
+                    ) {
+                      return;
+                    }
+
+                    setPreviewImage({
+                      name: attachment.name,
+                      dataUrl: attachment.attachment.dataUrl,
+                    });
+                  }}
+                  disabled={attachment.status !== "ready"}
+                  className={cn(
+                    "block overflow-hidden",
+                    attachment.status === "ready"
+                      ? "cursor-zoom-in"
+                      : "cursor-default",
+                  )}
+                  aria-label={`Open ${attachment.name} preview`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={attachment.previewUrl}
+                    alt={attachment.name}
+                    className="h-12 w-12 object-cover"
+                  />
+                </button>
                 {attachment.status === "uploading" && (
                   <div className="absolute inset-0 grid place-items-center bg-white/60">
                     <div className="grid h-6 w-6 place-items-center rounded-full bg-white/90 shadow-sm">
@@ -583,7 +632,10 @@ export default function MessageInput({
                 )}
                 <button
                   type="button"
-                  onClick={() => removeAttachmentById(attachment.id)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    removeAttachmentById(attachment.id);
+                  }}
                   className="app-input-attachment-remove-btn absolute top-1 right-1 cursor-pointer rounded-xl p-1 shadow-sm transition"
                   aria-label={`Remove ${attachment.name}`}
                   data-tooltip={`Remove ${attachment.name}`}
@@ -741,7 +793,7 @@ export default function MessageInput({
 
           <div className="flex items-center gap-2">
             {content.length >= 3000 && (
-              <span className="text-[10px] text-amber-700">
+              <span className="app-input-max-limit-error text-[10px] text-amber-700">
                 Max limit reached
               </span>
             )}
@@ -753,7 +805,7 @@ export default function MessageInput({
             {attachmentError &&
               !isUploadingAttachments &&
               content.length < 3000 && (
-                <span className="text-[10px] text-amber-700">
+                <span className="app-input-attachment-error text-[10px] text-amber-700">
                   {attachmentError}
                 </span>
               )}
@@ -784,6 +836,39 @@ export default function MessageInput({
           </div>
         </div>
       </div>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Preview of ${previewImage.name}`}
+          onClick={() => setPreviewImage(null)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
+            onClick={() => setPreviewImage(null)}
+            aria-label="Close image preview"
+            data-tooltip="Close image preview"
+          >
+            <X size={18} />
+          </button>
+          <div
+            className="max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={buildChatAttachmentPreviewUrl(previewImage.dataUrl)}
+              alt={previewImage.name}
+              className="max-h-[90vh] max-w-[90vw] object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

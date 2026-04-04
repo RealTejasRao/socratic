@@ -3,12 +3,39 @@ import { auth } from "@clerk/nextjs/server";
 import type { DebateDurationPreset, DebateTone } from "src/lib/debate";
 import { generateDebateTopicSuggestions } from "src/server/debate/service";
 import { prisma } from "src/server/db/client";
+import {
+  consumeUserRateLimit,
+  createRateLimitHeaders,
+  getRequestIp,
+} from "src/server/security/rate-limit";
 
 export async function POST(req: Request) {
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
     return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const rateLimit = await consumeUserRateLimit({
+    scope: "debate:topic:suggest",
+    userId: clerkUserId,
+    ip: getRequestIp(req),
+    limit: 60,
+    windowMs: 60_000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        topics: [],
+        reason:
+          "Too many topic suggestion requests. Please wait a moment and try again.",
+      },
+      {
+        status: 429,
+        headers: createRateLimitHeaders(rateLimit),
+      },
+    );
   }
 
   const dbUser = await prisma.user.findUnique({

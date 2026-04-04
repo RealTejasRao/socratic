@@ -48,45 +48,6 @@ import {
 
 const WINDOW_SIZE = 30; // 15 turns
 
-const PHILOSOPHY_ONLY_REFUSAL =
-  "I can only help with philosophy here. Btw, here is an interesting clip for you 😌: https://youtu.be/QDia3e12czc?si=4PzE4MEobSaPcz0Q";
-
-function isPhilosophyRelated(text: string) {
-  const normalized = text.toLowerCase().trim();
-
-  if (!normalized) {
-    return false;
-  }
-
-  const directPhilosophySignals =
-    /\b(philosophy|philosophical|ethics|moral|morality|free will|determinism|consciousness|meaning|truth|knowledge|justice|virtue|nihilism|existential|metaphysics|epistemology|logic|aesthetics|political philosophy|stoicism|utilitarianism|deontology|absurdism|identity|duty|purpose|socrates|plato|aristotle|kant|nietzsche|camus|descartes|spinoza|hume)\b/i;
-
-  if (directPhilosophySignals.test(normalized)) {
-    return true;
-  }
-
-  const abstractQuestionSignals =
-    /\b(should|ought|must|can|is|are|why|does)\b/i;
-  const conceptualSignals =
-    /\b(right|wrong|good|evil|self|mind|freedom|value|reason|existence|beauty|meaning|purpose|responsibility|truth|knowledge|justice)\b/i;
-
-  if (
-    abstractQuestionSignals.test(normalized) &&
-    conceptualSignals.test(normalized)
-  ) {
-    return true;
-  }
-
-  const shortFollowUpSignals =
-    /^(why|how so|go on|continue|elaborate|explain more|what do you mean|can you expand)/i;
-
-  if (normalized.length <= 30 && shortFollowUpSignals.test(normalized)) {
-    return true;
-  }
-
-  return false;
-}
-
 function getDebateGenerationModel(params: {
   durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER";
   defaultModel: string;
@@ -371,56 +332,6 @@ export async function generateReply(params: {
       await finalizeDebateSession({ sessionId });
       throw new Error("Debate session is already completed.");
     }
-  }
-
-  if (!isPhilosophyRelated(userContent)) {
-    contextMs = Date.now() - contextStartedAtMs;
-
-    const assistantText = PHILOSOPHY_ONLY_REFUSAL;
-    const readable = new ReadableStream({
-      start(controller) {
-        controller.enqueue(new TextEncoder().encode(assistantText));
-        controller.close();
-      },
-    });
-
-    await prisma.$transaction(async (tx) => {
-      await tx.message.create({
-        data: {
-          sessionId,
-          role: "ASSISTANT",
-          content: assistantText,
-          model: "scope-guard-v2",
-          tokenIn: null,
-          tokenOut: null,
-          latencyMs: 0,
-          validationVersion: "scope-guard-v2",
-          validationScore: 100,
-          validationFlags: ["non_philosophy_refusal"] as Prisma.InputJsonValue,
-          validationSummary:
-            "Rejected non-philosophy request before model generation.",
-        },
-      });
-
-      await tx.chatSession.update({
-        where: { id: sessionId },
-        data: {
-          lastActivityAt: now,
-          expiresAt,
-        },
-      });
-    });
-
-    return {
-      readable,
-      debug: {
-        contextMs,
-        retrievalMs: null,
-        webSearchMs: null,
-        preStreamTotalMs: Date.now() - pipelineStartedAtMs,
-        streamSetupMs: 0,
-      },
-    };
   }
 
   const beliefContext = buildBeliefPromptContext(rawBeliefs, 5);

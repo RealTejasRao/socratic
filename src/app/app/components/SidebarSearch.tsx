@@ -176,27 +176,27 @@ export default function SidebarSearch() {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/12 backdrop-blur-[3px]"
+          className="app-sidebar-search-backdrop fixed inset-0 z-50 bg-slate-950/12 backdrop-blur-[3px]"
           onClick={() => setOpen(false)}
         >
           <div
             ref={panelRef}
             onClick={(event) => event.stopPropagation()}
-            className="app-card absolute left-1/2 top-1/2 w-[min(620px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 rounded-[9px] border border-slate-200 bg-white px-4 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.16)]"
+            className="app-card app-sidebar-search-modal absolute left-1/2 top-1/2 w-[min(620px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 rounded-[9px] border border-slate-200 bg-white px-4 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.16)]"
           >
             <div className="mb-3 flex items-center justify-between gap-3 px-1">
               <div>
-                <p className="text-[13px] font-medium text-slate-900">
+                <p className="app-sidebar-search-title text-[13px] font-medium text-slate-900">
                   Search chats
                 </p>
-                <p className="mt-0.5 text-[10px] text-slate-500">
+                <p className="app-sidebar-search-subtitle mt-0.5 text-[10px] text-slate-500">
                   Search titles and message content.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                className="app-sidebar-search-close inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                 aria-label="Close search"
               >
                 <X size={14} />
@@ -206,7 +206,7 @@ export default function SidebarSearch() {
             <div className="relative">
               <Search
                 size={14}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                className="app-sidebar-search-input-icon pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <input
                 ref={inputRef}
@@ -215,21 +215,21 @@ export default function SidebarSearch() {
                 placeholder="Search through your chats"
                 autoComplete="off"
                 spellCheck={false}
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-[13px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-300 focus:bg-white"
+                className="app-sidebar-search-input h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-[13px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-300 focus:bg-white"
               />
             </div>
 
             <div className="mt-4 max-h-115 overflow-y-auto">
               {!query.trim() ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
+                <div className="app-sidebar-search-state rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
                   Start typing to search titles and message content.
                 </div>
               ) : isLoading ? (
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] text-slate-500">
+                <div className="app-sidebar-search-state rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] text-slate-500">
                   Searching...
                 </div>
               ) : results.length === 0 ? (
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
+                <div className="app-sidebar-search-state rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
                   No matching chats found.
                 </div>
               ) : (
@@ -238,20 +238,20 @@ export default function SidebarSearch() {
                     <Link
                       key={result.id}
                       href={`/app/${result.id}`}
-                      className="app-card block rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50/60"
+                      className="app-card app-sidebar-search-result block rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50/60"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <p className="line-clamp-1 text-[12px] font-medium text-slate-900">
+                        <p className="app-sidebar-search-result-title line-clamp-1 text-[12px] font-medium text-slate-900">
                           {highlightQuery(result.title, query)}
                         </p>
                         {result.matchType === "message" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-1.5 py-0.5 text-[9px] text-sky-700">
+                          <span className="app-sidebar-search-result-badge inline-flex items-center gap-1 rounded-full bg-sky-50 px-1.5 py-0.5 text-[9px] text-sky-700">
                             <Globe size={9} />
                             In chat
                           </span>
                         )}
                       </div>
-                      <p className="mt-1.5 line-clamp-2 text-[11px] leading-4.5 text-slate-500">
+                      <p className="app-sidebar-search-result-snippet mt-1.5 line-clamp-2 text-[11px] leading-4.5 text-slate-500">
                         {highlightQuery(result.snippet, query)}
                       </p>
                     </Link>
