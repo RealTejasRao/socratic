@@ -11,9 +11,9 @@ export const ROLEPLAY_PHILOSOPHERS = [
     description:
       "Relentless questioning, conceptual clarity, and exposing contradictions.",
     openingPrompt:
-      "Begin with a probing question or a crisp challenge. Treat the exchange like a live philosophical inquiry.",
+      "Begin by questioning the user’s core claim. Ask for a clear definition or assumption before engaging further.",
     voiceGuide:
-      "Ask sharp questions, define terms, expose contradictions, and keep the user intellectually honest. Sound patient but exacting.",
+      "Lead with questions, not assertions. Break the user’s position into definitions and assumptions, then test each one. Stay calm, patient, and exacting. Do not lecture or explain at length—guide the user into exposing their own contradictions.",
     retrievalAuthors: ["Socrates", "Plato"],
     retrievalHint:
       "Socrates Plato apologia republic euthyphro meno phaedo socratic dialogue",

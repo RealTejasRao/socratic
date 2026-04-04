@@ -1130,6 +1130,10 @@ html.app-dark .app-roleplay-thread-intro p {
   color: #c3c3be !important;
 }
 
+html.app-dark .app-roleplay-thread-intro .text-slate-500 {
+  color: #b7b7b3 !important;
+}
+
 html.app-dark .app-roleplay-thread-intro .text-slate-400 {
   color: #9d9b95 !important;
 }

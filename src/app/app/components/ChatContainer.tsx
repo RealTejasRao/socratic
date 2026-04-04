@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowLeft,
   ChevronDown,
   Crown,
   MessageCircle,
@@ -610,7 +611,7 @@ export default function ChatContainer({
       <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 font-[Georgia,serif]">
         {visibleRoleplayPhilosopher.philosopherName}
       </h3>
-      <div className="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
+      <div className="mt-3 inline-flex items-center rounded-full bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
         {visibleRoleplayPhilosopher.tradition}
       </div>
       <p className="mt-4 max-w-155 text-[14px] leading-7 text-slate-600">
@@ -940,6 +941,16 @@ export default function ChatContainer({
                 transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="mx-auto max-w-170">
+                  <div className="mb-3 flex justify-start -ml-30">
+                    <button
+                      type="button"
+                      onClick={() => setPendingRoleplayId(null)}
+                      className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
+                    >
+                      <ArrowLeft size={13} />
+                      Back
+                    </button>
+                  </div>
                   {roleplayIntro}
                   <MessageInput
                     key={`roleplay-${pendingRoleplayPhilosopher.id}`}
@@ -949,15 +960,6 @@ export default function ChatContainer({
                     variant="hero"
                     placeholder={inputPlaceholder}
                   />
-                  <div className="mt-4 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => setPendingRoleplayId(null)}
-                      className="app-change-philosopher-btn app-roleplay-secondary-btn rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
-                    >
-                      Change philosopher
-                    </button>
-                  </div>
                 </div>
               </motion.div>
             ) : (
