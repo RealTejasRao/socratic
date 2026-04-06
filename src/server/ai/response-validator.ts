@@ -50,7 +50,7 @@ function overlapScore(a: string, b: string) {
 }
 
 function hasCitation(text: string) {
-  return /\[[^\]]+\|\s*chunk\s+\d+\]/i.test(text);
+  return /\[[^\]\n]+\s-\s[^\]\n]+\]/i.test(text);
 }
 
 function maxOverlapWithPassages(answer: string, passages: string[]) {
@@ -64,7 +64,9 @@ function maxOverlapWithPassages(answer: string, passages: string[]) {
   return max;
 }
 
-export function validateSocraticResponse(input: ValidatorInput): ValidationResult {
+export function validateSocraticResponse(
+  input: ValidatorInput,
+): ValidationResult {
   const flags: string[] = [];
   let score = 100;
 
@@ -118,7 +120,10 @@ export function validateSocraticResponse(input: ValidatorInput): ValidationResul
   }
 
   if (input.conversationMemorySummary?.trim()) {
-    const memoryOverlap = overlapScore(input.conversationMemorySummary, assistant);
+    const memoryOverlap = overlapScore(
+      input.conversationMemorySummary,
+      assistant,
+    );
     if (memoryOverlap < 0.05) {
       flags.push("low_memory_grounding");
       score -= 5;

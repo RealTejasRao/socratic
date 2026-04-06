@@ -237,6 +237,7 @@ model KnowledgeChunk {
   chunkIndex Int
   chunkType  String            @default("primary_text") @db.VarChar(32)
   content    String            @db.Text
+  contentTsv Unsupported("tsvector")? @default(dbgenerated()) @map("content_tsv")
   tokenCount Int
   embedding  Unsupported("vector")?
   createdAt  DateTime          @default(now())

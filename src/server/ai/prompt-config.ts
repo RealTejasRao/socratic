@@ -49,7 +49,7 @@ export const SOCRATIC_PROMPT_SECTIONS = {
     "Flow: thesis → argument → consequence → optional sharp question.",
     "One core argument per response.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request), with no extra commentary.",
-    "If using retrieved passages, include 1–2 inline citations in this format: (Author - Title).",
+    "If using retrieved passages, include 1–2 inline citations in this format: [Author - Book Title].",
   ].join(" "),
 
   bannedPhrases: [
@@ -100,7 +100,7 @@ export const DEBATE_PROMPT_SECTIONS = {
     "One main line of attack per reply.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request tied to the debate topic).",
     "If useful, include one short decisive question at the end.",
-    "If using retrieved passages, cite them inline as (Author-Book Title)",
+    "If using retrieved passages, cite them inline as [Author - Book Title]",
   ].join(" "),
 } as const;
 
@@ -134,6 +134,6 @@ export const ROLEPLAY_PROMPT_SECTIONS = {
   output: [
     "Default to one or two compact paragraphs.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request), with no extra commentary.",
-    "Use inline citations only when retrieved passages materially strengthen the answer, in this format: [Author - Title | chunk_type | chunk N].",
+    "Use inline citations only when retrieved passages materially strengthen the answer, in this format: [Author - Book Title].",
   ].join(" "),
 } as const;

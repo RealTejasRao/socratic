@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { createHash, randomUUID } from "node:crypto";
 import { config as loadEnv } from "dotenv";
 import OpenAI from "openai";
+import { decode, encode } from "gpt-tokenizer";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
@@ -12,12 +13,13 @@ const { Pool } = pg;
 
 loadEnv({ path: ".env.local" });
 
-const CHUNK_WORDS = 320;
-const CHUNK_OVERLAP_WORDS = 100;
+const CHUNK_TOKENS = 400;
+const CHUNK_OVERLAP_TOKENS = 100;
 const EMBEDDING_BATCH_SIZE = 32;
-const EMBEDDING_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-large";
-const PRIMARY_TEXT_CHUNK_TYPE = "primary_text";
-const EXPLANATION_CHUNK_TYPE = "explanation";
+const EMBEDDING_MODEL =
+  process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-large";
+const EMBEDDING_DIMENSIONS = 1536;
+const CHUNK_TYPE_TEXT = "text";
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY is not set");
@@ -37,33 +39,8 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-function tokenizeForChunking(text) {
-  return text
-    .replace(/\s+/g, " ")
-    .trim()
-    .split(" ")
-    .filter(Boolean);
-}
-
-function chunkTextByWords(text, chunkWords = CHUNK_WORDS, overlapWords = CHUNK_OVERLAP_WORDS) {
-  const words = tokenizeForChunking(text);
-  if (!words.length) return [];
-
-  const chunks = [];
-  const step = Math.max(1, chunkWords - overlapWords);
-
-  for (let start = 0; start < words.length; start += step) {
-    const end = Math.min(words.length, start + chunkWords);
-    const slice = words.slice(start, end);
-    if (!slice.length) continue;
-    chunks.push({
-      text: slice.join(" "),
-      tokenCount: slice.length,
-    });
-    if (end >= words.length) break;
-  }
-
-  return chunks;
+function cleanChunkText(text) {
+  return text.replace(/\s+/g, " ").trim();
 }
 
 function parseAuthorTitleFromFilename(filename) {
@@ -84,17 +61,34 @@ function parseAuthorTitleFromFilename(filename) {
   return { author, title };
 }
 
-function parseExplanationMetadataFromFilename(filename) {
-  const withoutExt = filename.replace(/\.txt$/i, "");
-  const title = withoutExt
-    .replace(/_/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+function chunkDocumentByTokens(params) {
+  const allTokens = encode(params.text);
+  if (!allTokens.length) return [];
 
-  return {
-    author: "Socratic Explanation",
-    title,
-  };
+  const step = Math.max(1, CHUNK_TOKENS - CHUNK_OVERLAP_TOKENS);
+  const chunks = [];
+
+  for (let start = 0; start < allTokens.length; start += step) {
+    const end = Math.min(allTokens.length, start + CHUNK_TOKENS);
+    const tokenSlice = allTokens.slice(start, end);
+    if (!tokenSlice.length) continue;
+
+    const content = cleanChunkText(decode(tokenSlice));
+    if (content) {
+      chunks.push({
+        content,
+        chunkIndex: chunks.length,
+        author: params.author,
+        title: params.title,
+        tokenCount: tokenSlice.length,
+        chunkType: CHUNK_TYPE_TEXT,
+      });
+    }
+
+    if (end >= allTokens.length) break;
+  }
+
+  return chunks;
 }
 
 function computeContentHash(text) {
@@ -110,6 +104,7 @@ async function embedTexts(texts) {
   const response = await openai.embeddings.create({
     model: EMBEDDING_MODEL,
     input: texts,
+    dimensions: EMBEDDING_DIMENSIONS,
   });
   return response.data.map((item) => item.embedding);
 }
@@ -167,9 +162,13 @@ async function replaceDocumentChunks(params) {
     where: { documentId: params.documentId },
   });
 
-  for (let start = 0; start < params.chunks.length; start += EMBEDDING_BATCH_SIZE) {
+  for (
+    let start = 0;
+    start < params.chunks.length;
+    start += EMBEDDING_BATCH_SIZE
+  ) {
     const batch = params.chunks.slice(start, start + EMBEDDING_BATCH_SIZE);
-    const embeddings = await embedTexts(batch.map((item) => item.text));
+    const embeddings = await embedTexts(batch.map((item) => item.content));
 
     const values = [];
     const valueRows = batch.map((chunk, idx) => {
@@ -184,12 +183,12 @@ async function replaceDocumentChunks(params) {
         randomUUID(),
         params.documentId,
         chunk.chunkIndex,
-        params.chunkType,
-        chunk.text,
+        chunk.chunkType,
+        chunk.content,
         chunk.tokenCount,
         vectorLiteral,
       );
-      return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}::vector)`;
+      return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}::halfvec)`;
     });
 
     if (valueRows.length) {
@@ -206,45 +205,19 @@ async function replaceDocumentChunks(params) {
 }
 
 async function collectCorpusFiles(rootDir) {
-  const corpusDirs = [
-    {
+  const booksDirPath = path.join(rootDir, "books");
+  const entries = await fs.readdir(booksDirPath, { withFileTypes: true });
+
+  return entries
+    .filter(
+      (entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".txt"),
+    )
+    .map((entry) => ({
       dirName: "books",
-      chunkType: PRIMARY_TEXT_CHUNK_TYPE,
-      parseMetadata: parseAuthorTitleFromFilename,
-    },
-    {
-      dirName: "explanations",
-      chunkType: EXPLANATION_CHUNK_TYPE,
-      parseMetadata: parseExplanationMetadataFromFilename,
-    },
-  ];
-
-  const corpusFiles = [];
-
-  for (const corpus of corpusDirs) {
-    const dirPath = path.join(rootDir, corpus.dirName);
-    let entries = [];
-    try {
-      entries = await fs.readdir(dirPath, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-
-    const files = entries
-      .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".txt"))
-      .map((entry) => ({
-        dirName: corpus.dirName,
-        fullPath: path.join(dirPath, entry.name),
-        filename: entry.name,
-        chunkType: corpus.chunkType,
-        parseMetadata: corpus.parseMetadata,
-      }))
-      .sort((a, b) => a.filename.localeCompare(b.filename));
-
-    corpusFiles.push(...files);
-  }
-
-  return corpusFiles;
+      fullPath: path.join(booksDirPath, entry.name),
+      filename: entry.name,
+    }))
+    .sort((a, b) => a.filename.localeCompare(b.filename));
 }
 
 async function ingestBooks() {
@@ -254,30 +227,29 @@ async function ingestBooks() {
   const files = await collectCorpusFiles(repoRoot);
 
   if (!files.length) {
-    console.log("No .txt files found in /books or /explanations.");
+    console.log("No .txt files found in /books.");
     return;
   }
 
   console.log(`Found ${files.length} corpus files.`);
-  console.log(`Chunking: ${CHUNK_WORDS} words, overlap: ${CHUNK_OVERLAP_WORDS}`);
+  console.log(
+    `Chunking: ${CHUNK_TOKENS} tokens, overlap: ${CHUNK_OVERLAP_TOKENS}`,
+  );
   console.log(`Embedding model: ${EMBEDDING_MODEL}`);
+  console.log(`Embedding dimensions: ${EMBEDDING_DIMENSIONS}`);
 
   let skippedCount = 0;
   let reindexedCount = 0;
 
   for (const file of files) {
     const content = await fs.readFile(file.fullPath, "utf8");
-    const { author, title } = file.parseMetadata(file.filename);
+    const { author, title } = parseAuthorTitleFromFilename(file.filename);
     const sourcePath = `${file.dirName}/${file.filename}`;
     const contentHash = computeContentHash(content);
-    const chunks = chunkTextByWords(content).map((item, index) => ({
-      chunkIndex: index,
-      text: item.text,
-      tokenCount: item.tokenCount,
-    }));
+    const chunks = chunkDocumentByTokens({ text: content, author, title });
 
     console.log(`\nIngesting: ${author} - ${title}`);
-    console.log(`  type: ${file.chunkType}`);
+    console.log(`  type: ${CHUNK_TYPE_TEXT}`);
     console.log(`  chunks: ${chunks.length}`);
 
     if (!chunks.length) {
@@ -312,7 +284,9 @@ async function ingestBooks() {
         data: { contentHash },
       });
       skippedCount += 1;
-      console.log("  skipped (backfilled missing hash, no re-embedding needed)");
+      console.log(
+        "  skipped (backfilled missing hash, no re-embedding needed)",
+      );
       continue;
     }
 
@@ -325,7 +299,6 @@ async function ingestBooks() {
 
     await replaceDocumentChunks({
       documentId: doc.id,
-      chunkType: file.chunkType,
       chunks,
     });
     reindexedCount += 1;

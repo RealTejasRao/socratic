@@ -1,9 +1,12 @@
-import { deepseek, getDeepSeekQueryRewriteModel } from "src/server/ai/providers";
+import {
+  deepseek,
+  getDeepSeekQueryRewriteModel,
+} from "src/server/ai/providers";
 
 const MAX_QUERY_CHARS = 400;
 const QUERY_GEN_TIMEOUT_MS = 3500;
 const MIN_REWRITE_WORDS = 8;
-const MAX_REWRITE_WORDS = 60;
+const MAX_REWRITE_WORDS = 20;
 
 function normalizeQuery(text: string) {
   return text.replace(/\s+/g, " ").trim().slice(0, MAX_QUERY_CHARS);
@@ -27,9 +30,10 @@ function looksKeywordLike(text: string) {
 
   const commaCount = (trimmed.match(/,/g) ?? []).length;
   const hasSentencePunctuation = /[.?!:;]/.test(trimmed);
-  const hasFunctionWords = /\b(of|and|that|which|including|because|through|against|between|into|with)\b/i.test(
-    trimmed,
-  );
+  const hasFunctionWords =
+    /\b(of|and|that|which|including|because|through|against|between|into|with)\b/i.test(
+      trimmed,
+    );
 
   return commaCount >= 2 && !hasSentencePunctuation && !hasFunctionWords;
 }
@@ -37,6 +41,10 @@ function looksKeywordLike(text: string) {
 export async function generateRetrievalQuery(userMessage: string) {
   const fallback = normalizeQuery(userMessage);
   if (!fallback) {
+    return fallback;
+  }
+
+  if (countWords(fallback) < MIN_REWRITE_WORDS) {
     return fallback;
   }
 
@@ -53,8 +61,8 @@ export async function generateRetrievalQuery(userMessage: string) {
       completion = await deepseek.chat.completions.create(
         {
           model,
-          temperature: 0.3,
-          max_tokens: 80,
+          temperature: 0.1,
+          max_tokens: 40,
           messages: [
             {
               role: "system",
@@ -65,7 +73,7 @@ export async function generateRetrievalQuery(userMessage: string) {
                 "Do NOT output keywords or comma-separated lists.",
                 "Output a natural-language search sentence or phrase.",
                 `The rewrite must be between ${MIN_REWRITE_WORDS} and ${MAX_REWRITE_WORDS} words.`,
-                "Keep it under roughly 80 tokens.",
+                "Keep it under roughly 40 tokens.",
                 "Do not answer the question, explain the answer, or add commentary.",
                 "Only output the rewritten query text.",
                 "Example input: Why did Nietzsche criticize Stoicism?",
@@ -76,10 +84,7 @@ export async function generateRetrievalQuery(userMessage: string) {
             },
             {
               role: "user",
-              content: [
-                `Input: ${userMessage}`,
-                "Output:",
-              ].join("\n"),
+              content: [`Input: ${userMessage}`, "Output:"].join("\n"),
             },
           ],
         },

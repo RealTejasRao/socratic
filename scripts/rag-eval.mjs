@@ -12,8 +12,13 @@ const { Pool } = pg;
 loadEnv({ path: ".env.local" });
 
 const EMBED_MODEL = process.env.OPENAI_EMBED_MODEL ?? "text-embedding-3-large";
+const EMBEDDING_DIMENSIONS = 1536;
 const AUX_MODEL =
-  process.env.OPENAI_AUX_MODEL ?? process.env.OPENAI_CHAT_MODEL;
+  process.env.DEEPSEEK_QUERY_REWRITE_MODEL ??
+  process.env.DEEPSEEK_AUX_MODEL ??
+  process.env.OPENAI_AUX_MODEL ??
+  process.env.OPENAI_CHAT_MODEL ??
+  "deepseek-chat";
 const VECTOR_LIMIT = 20;
 const LEXICAL_LIMIT = 20;
 const CANDIDATE_LIMIT = 12;
@@ -25,7 +30,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 if (!AUX_MODEL) {
-  throw new Error("OPENAI_AUX_MODEL is not set");
+  throw new Error("No rewrite model is configured");
 }
 
 if (!process.env.DATABASE_URL) {
@@ -35,6 +40,13 @@ if (!process.env.DATABASE_URL) {
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const deepseek = process.env.DEEPSEEK_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.DEEPSEEK_API_KEY,
+      baseURL: process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com",
+    })
+  : null;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -83,7 +95,8 @@ function embeddingToVectorLiteral(embedding) {
 
 async function generateRetrievalQuery(userMessage) {
   const started = Date.now();
-  const completion = await openai.chat.completions.create({
+  const rewriteClient = deepseek ?? openai;
+  const completion = await rewriteClient.chat.completions.create({
     model: AUX_MODEL,
     temperature: 0.1,
     max_tokens: 120,
@@ -113,6 +126,7 @@ async function runHybridRetrieval(query) {
   const emb = await openai.embeddings.create({
     model: EMBED_MODEL,
     input: query,
+    dimensions: EMBEDDING_DIMENSIONS,
   });
   const embedding = emb.data[0]?.embedding ?? [];
   if (!embedding.length) {
@@ -131,12 +145,13 @@ async function runHybridRetrieval(query) {
       kc.content AS "content",
       kd.title AS "title",
       kd.author AS "author",
-      (1 - (kc.embedding <=> ${vectorLiteral}::vector)) AS "vectorScore"
+      (1 - (kc.embedding <=> ${vectorLiteral}::halfvec)) AS "vectorScore"
     FROM "KnowledgeChunk" kc
     JOIN "KnowledgeDocument" kd ON kd.id = kc."documentId"
     WHERE kd."isActive" = true
       AND kc.embedding IS NOT NULL
-    ORDER BY kc.embedding <=> ${vectorLiteral}::vector
+      AND vector_dims(kc.embedding) = ${EMBEDDING_DIMENSIONS}
+    ORDER BY kc.embedding <=> ${vectorLiteral}::halfvec
     LIMIT ${VECTOR_LIMIT}
   `;
 
@@ -279,13 +294,16 @@ async function main() {
   }
 
   const avgRecall =
-    rows.reduce((sum, row) => sum + row.recallAt5, 0) / Math.max(1, rows.length);
+    rows.reduce((sum, row) => sum + row.recallAt5, 0) /
+    Math.max(1, rows.length);
   const avgMrr =
     rows.reduce((sum, row) => sum + row.mrrAt5, 0) / Math.max(1, rows.length);
   const avgQueryLatency =
-    rows.reduce((sum, row) => sum + row.queryGenLatencyMs, 0) / Math.max(1, rows.length);
+    rows.reduce((sum, row) => sum + row.queryGenLatencyMs, 0) /
+    Math.max(1, rows.length);
   const avgRetrievalLatency =
-    rows.reduce((sum, row) => sum + row.retrievalLatencyMs, 0) / Math.max(1, rows.length);
+    rows.reduce((sum, row) => sum + row.retrievalLatencyMs, 0) /
+    Math.max(1, rows.length);
 
   console.log("RAG Retrieval Evaluation");
   console.log("------------------------");

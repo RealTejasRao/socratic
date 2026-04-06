@@ -2,11 +2,12 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "src/server/db/client";
 import { openai } from "src/server/ai/providers";
 
-const DEFAULT_VECTOR_LIMIT = 50;
-const DEFAULT_LEXICAL_LIMIT = 50;
+const DEFAULT_VECTOR_LIMIT = 20;
+const DEFAULT_LEXICAL_LIMIT = 30;
 const DEFAULT_OUTPUT_LIMIT = 18;
 const RRF_K = 60;
 const EMBEDDING_TIMEOUT_MS = 1600;
+const EMBEDDING_DIMENSIONS = 1536;
 const MIN_LEXICAL_ROWS_TO_SKIP_VECTOR = 20;
 const MAX_LOOSE_LEXICAL_TERMS = 6;
 const LOOSE_LEXICAL_STOPWORDS = new Set([
@@ -411,6 +412,7 @@ async function embedQuery(query: string) {
       {
         model,
         input: query,
+        dimensions: EMBEDDING_DIMENSIONS,
       },
       { signal: controller.signal },
     );
@@ -440,24 +442,37 @@ async function runVectorSearch(params: {
 
   const vectorLiteral = embeddingToVectorLiteral(params.embedding);
   const authorFilterSql = buildAuthorFilterSql(params.authors ?? []);
-  return prisma.$queryRaw<VectorCandidate[]>`
-    SELECT
-      kc.id AS "chunkId",
-      kc."documentId" AS "documentId",
-      kc."chunkIndex" AS "chunkIndex",
-      kc."chunkType" AS "chunkType",
-      kc.content AS "content",
-      kd.title AS "title",
-      kd.author AS "author",
-      (1 - (kc.embedding <=> ${vectorLiteral}::vector)) AS "vectorScore"
-    FROM "KnowledgeChunk" kc
-    JOIN "KnowledgeDocument" kd ON kd.id = kc."documentId"
-    WHERE kd."isActive" = true
-      AND kc.embedding IS NOT NULL
-      ${authorFilterSql}
-    ORDER BY kc.embedding <=> ${vectorLiteral}::vector
-    LIMIT ${params.limit}
-  `;
+  try {
+    return await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SET LOCAL hnsw.ef_search = 40`;
+      return tx.$queryRaw<VectorCandidate[]>`
+        SELECT
+          kc.id AS "chunkId",
+          kc."documentId" AS "documentId",
+          kc."chunkIndex" AS "chunkIndex",
+          kc."chunkType" AS "chunkType",
+          kc.content AS "content",
+          kd.title AS "title",
+          kd.author AS "author",
+          (1 - (kc.embedding <=> ${vectorLiteral}::halfvec)) AS "vectorScore"
+        FROM "KnowledgeChunk" kc
+        JOIN "KnowledgeDocument" kd ON kd.id = kc."documentId"
+        WHERE kd."isActive" = true
+          AND kc.embedding IS NOT NULL
+          ${authorFilterSql}
+        ORDER BY kc.embedding <=> ${vectorLiteral}::halfvec
+        LIMIT ${params.limit}
+      `;
+    });
+  } catch (error) {
+    console.error("Vector search failed:", {
+      error,
+      limit: params.limit,
+      embeddingDimensions: params.embedding.length,
+      authorFilterCount: params.authors?.length ?? 0,
+    });
+    throw error;
+  }
 }
 
 type SemanticScoreRow = {
@@ -477,7 +492,7 @@ async function getSemanticSimilarityScores(params: {
   const rows = await prisma.$queryRaw<SemanticScoreRow[]>`
     SELECT
       kc.id AS "chunkId",
-      (1 - (kc.embedding <=> ${vectorLiteral}::vector)) AS "embeddingSimilarity"
+      (1 - (kc.embedding <=> ${vectorLiteral}::halfvec)) AS "embeddingSimilarity"
     FROM "KnowledgeChunk" kc
     WHERE kc.id IN (${Prisma.join(params.candidateIds)})
       AND kc.embedding IS NOT NULL
@@ -504,13 +519,13 @@ async function runLexicalSearch(params: {
       kd.title AS "title",
       kd.author AS "author",
       ts_rank_cd(
-        to_tsvector('english', kc.content),
+        kc."content_tsv",
         websearch_to_tsquery('english', ${params.query})
       ) AS "lexicalScore"
     FROM "KnowledgeChunk" kc
     JOIN "KnowledgeDocument" kd ON kd.id = kc."documentId"
     WHERE kd."isActive" = true
-      AND websearch_to_tsquery('english', ${params.query}) @@ to_tsvector('english', kc.content)
+      AND kc."content_tsv" @@ websearch_to_tsquery('english', ${params.query})
       ${authorFilterSql}
     ORDER BY "lexicalScore" DESC
     LIMIT ${params.limit}
@@ -533,13 +548,13 @@ async function runLooseLexicalSearch(params: {
       kd.title AS "title",
       kd.author AS "author",
       ts_rank_cd(
-        to_tsvector('english', kc.content),
+        kc."content_tsv",
         to_tsquery('english', ${params.query})
       ) AS "lexicalScore"
     FROM "KnowledgeChunk" kc
     JOIN "KnowledgeDocument" kd ON kd.id = kc."documentId"
     WHERE kd."isActive" = true
-      AND to_tsquery('english', ${params.query}) @@ to_tsvector('english', kc.content)
+      AND kc."content_tsv" @@ to_tsquery('english', ${params.query})
       ${authorFilterSql}
     ORDER BY "lexicalScore" DESC
     LIMIT ${params.limit}
@@ -618,7 +633,15 @@ export async function retrieveHybridPassagesWithDetails(params: {
         limit: vectorLimit,
         authors: authorFilters,
       });
-    } catch {
+    } catch (error) {
+      console.error(
+        "Hybrid retrieval vector branch failed; continuing without vector results",
+        {
+          error,
+          query: retrievalQuery,
+          vectorLimit,
+        },
+      );
       vectorRows = [];
       queryEmbedding = [];
     }
@@ -676,18 +699,20 @@ export async function retrieveHybridPassagesWithDetails(params: {
     existing.fusedScore += fused;
   });
 
-const sorted = [...merged.values()].sort((a, b) => b.fusedScore - a.fusedScore);
+  const sorted = [...merged.values()].sort(
+    (a, b) => b.fusedScore - a.fusedScore,
+  );
 
-const perDocCap = 3;
-const docCount = new Map<string, number>();
-const fusedCandidates = sorted
-  .filter((candidate) => {
-    const count = docCount.get(candidate.documentId) ?? 0;
-    if (count >= perDocCap) return false;
-    docCount.set(candidate.documentId, count + 1);
-    return true;
-  })
-  .slice(0, limit);
+  const perDocCap = 3;
+  const docCount = new Map<string, number>();
+  const fusedCandidates = sorted
+    .filter((candidate) => {
+      const count = docCount.get(candidate.documentId) ?? 0;
+      if (count >= perDocCap) return false;
+      docCount.set(candidate.documentId, count + 1);
+      return true;
+    })
+    .slice(0, limit);
 
   if (!queryEmbedding.length && fusedCandidates.length) {
     try {

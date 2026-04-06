@@ -156,6 +156,16 @@ export async function generateReply(params: {
   } = params;
 
   let effectiveSourceMessageId = sourceUserMessageId;
+  const retrievalRewriteStartedAtMs = Date.now();
+  let retrievalRewriteFinishedAtMs: number | null = null;
+  let retrievalRewriteMs: number | null = null;
+  const retrievalRewritePromise = generateRetrievalQuery(userContent)
+    .catch(() => userContent)
+    .finally(() => {
+      retrievalRewriteFinishedAtMs = Date.now();
+      retrievalRewriteMs =
+        retrievalRewriteFinishedAtMs - retrievalRewriteStartedAtMs;
+    });
 
   if (persistUserMessage) {
     const createUserMessageData: Prisma.MessageCreateInput = {
@@ -254,7 +264,7 @@ export async function generateReply(params: {
 
   const contextStartedAtMs = Date.now();
   const [session, previousMessagesRaw, rawBeliefs, latestConversationMemory] =
-    await prisma.$transaction([
+    await Promise.all([
       prisma.chatSession.findUnique({
         where: { id: sessionId },
         select: {
@@ -302,6 +312,7 @@ export async function generateReply(params: {
         },
       }),
     ]);
+  const contextFinishedAtMs = Date.now();
 
   if (!session) {
     throw new Error("Session not found for generation.");
@@ -335,7 +346,11 @@ export async function generateReply(params: {
   }
 
   const beliefContext = buildBeliefPromptContext(rawBeliefs, 5);
-  contextMs = Date.now() - contextStartedAtMs;
+  contextMs = contextFinishedAtMs - contextStartedAtMs;
+  const rewriteOverlappedWithContext =
+    retrievalRewriteStartedAtMs <= contextFinishedAtMs &&
+    (retrievalRewriteFinishedAtMs === null ||
+      retrievalRewriteFinishedAtMs >= contextStartedAtMs);
   const roleplayMetaRecord =
     session.roleplayMeta &&
     typeof session.roleplayMeta === "object" &&
@@ -418,7 +433,7 @@ export async function generateReply(params: {
   } else {
     try {
       const retrievalStartedAtMs = Date.now();
-      rewrittenQuery = await generateRetrievalQuery(originalQuery);
+      rewrittenQuery = await retrievalRewritePromise;
       retrievalQuery = rewrittenQuery || originalQuery;
 
       if (session.mode === "ROLEPLAY" && roleplayPhilosopher) {
@@ -427,7 +442,7 @@ export async function generateReply(params: {
 
       const retrievalDetails = await retrieveHybridPassagesWithDetails({
         query: retrievalQuery,
-        limit: 12,
+        limit: 10,
       });
       rerankedCandidates = rerankRetrievedPassages({
         query: retrievalQuery,
@@ -640,6 +655,8 @@ export async function generateReply(params: {
     console.log("FINAL_DOCUMENT_DISTRIBUTION", finalDocumentDistribution);
     console.log("PIPELINE_TIMING", {
       contextMs,
+      retrievalRewriteMs,
+      rewriteOverlappedWithContext,
       retrievalMs: tracePayload?.retrievalLatencyMs ?? null,
       webSearchMs,
       preStreamTotalMs,

@@ -14,6 +14,7 @@ export type RerankedPassage = RetrievedPassage & {
 
 const MAX_CHUNKS_PER_DOC = 1;
 const SEMANTIC_CUTOFF = 0.32;
+const LEXICAL_CUTOFF = 0.5;
 
 function tokenize(text: string) {
   return text
@@ -49,35 +50,44 @@ export function rerankRetrievedPassages(input: RerankInput) {
   const maxPassages = input.maxPassages ?? 5;
   if (!input.candidates.length) return [];
 
-  const lexicalScores = input.candidates.map((candidate) => candidate.lexicalScore);
+  const lexicalScores = input.candidates.map(
+    (candidate) => candidate.lexicalScore,
+  );
   const fusedScores = input.candidates.map((candidate) => candidate.fusedScore);
   const normalizedLexical = normalizeScores(lexicalScores);
   const normalizedFused = normalizeScores(fusedScores);
 
-  const rescored: RerankedPassage[] = input.candidates.map((candidate, index) => {
-    const lexicalScore = normalizedLexical[index] ?? 0;
-    const fusedScore = normalizedFused[index] ?? 0;
-    const semanticScore = candidate.semanticScore ?? candidate.embeddingSimilarity ?? 0;
-    const relevance =
-      semanticScore * 0.75 +
-      lexicalScore * 0.1 +
-      fusedScore * 0.15;
+  const rescored: RerankedPassage[] = input.candidates.map(
+    (candidate, index) => {
+      const lexicalScore = normalizedLexical[index] ?? 0;
+      const fusedScore = normalizedFused[index] ?? 0;
+      const semanticScore =
+        candidate.semanticScore ?? candidate.embeddingSimilarity ?? 0;
+      const relevance =
+        semanticScore * 0.75 + lexicalScore * 0.1 + fusedScore * 0.15;
 
-    return {
-      ...candidate,
-      rerankScore: relevance,
-    };
-  });
-
-  const filtered = rescored.filter(
-    (candidate) => candidate.semanticScore >= SEMANTIC_CUTOFF,
+      return {
+        ...candidate,
+        rerankScore: relevance,
+      };
+    },
   );
+
+  const filtered = rescored.filter((candidate, index) => {
+    const semanticScore =
+      candidate.semanticScore ?? candidate.embeddingSimilarity ?? 0;
+    const lexicalScore = normalizedLexical[index] ?? 0;
+    return !(semanticScore < SEMANTIC_CUTOFF && lexicalScore < LEXICAL_CUTOFF);
+  });
   if (!filtered.length) {
     return [];
   }
 
   filtered.sort((a, b) => b.rerankScore - a.rerankScore);
-  const desiredLimit = Math.max(minPassages, Math.min(maxPassages, filtered.length));
+  const desiredLimit = Math.max(
+    minPassages,
+    Math.min(maxPassages, filtered.length),
+  );
   const sourceFocusedQuery = filtered.some(
     (passage) =>
       containsMetadataMention(input.query, passage.author, passage.title) &&
