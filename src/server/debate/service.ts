@@ -1,9 +1,5 @@
-import {
-  Prisma,
-  type DebateTone as PrismaDebateTone,
-  type DebateTopicSource,
-  type DebateWinner,
-} from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { DebateTopicSource, DebateWinner } from "src/types/chat";
 import {
   deepseek,
   getDeepSeekAuxModel,
@@ -180,9 +176,7 @@ const FALLBACK_VERDICT = {
 
 const DEBATE_DASHBOARD_VERSION = "debate-dashboard-v1";
 
-function normalizeStoredDebateTone(
-  tone: PrismaDebateTone | DebateTone,
-): DebateTone {
+function normalizeStoredDebateTone(tone: string | DebateTone): DebateTone {
   switch (tone as string) {
     case "RUTHLESS_RESPECTFUL":
       return "RUTHLESS_BLUNT";
@@ -193,14 +187,14 @@ function normalizeStoredDebateTone(
     case "RUTHLESS_BLUNT":
     case "SIMPLE_CLEAR":
     case "ELITE_INTELLECTUAL_ELEGANT":
-      return tone;
+      return tone as DebateTone;
     default:
       return "RUTHLESS_BLUNT";
   }
 }
 
-function toPrismaDebateTone(tone: DebateTone): PrismaDebateTone {
-  return tone as unknown as PrismaDebateTone;
+function toPrismaDebateTone(tone: DebateTone): DebateTone {
+  return tone;
 }
 
 function parseDebateDashboard(meta: Prisma.JsonValue | null | undefined) {

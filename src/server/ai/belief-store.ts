@@ -1,7 +1,9 @@
 import { prisma } from "src/server/db/client";
-import type { BeliefType } from "@prisma/client";
 import { Prisma } from "@prisma/client";
-import type { ExtractedInsight } from "src/server/ai/insight-extractor";
+import type {
+  ExtractedInsight,
+  ExtractedInsightType,
+} from "src/server/ai/insight-extractor";
 
 const MIN_CONFIDENCE_TO_STORE = 0.65;
 const MAX_INSIGHTS_PER_MESSAGE = 8;
@@ -107,7 +109,7 @@ export async function storeInsightsAsBeliefs(params: {
         userId_sessionId_type_beliefKey: {
           userId: params.userId,
           sessionId: params.sessionId,
-          type: insight.type as BeliefType,
+          type: insight.type as ExtractedInsightType,
           beliefKey,
         },
       },
@@ -121,7 +123,7 @@ export async function storeInsightsAsBeliefs(params: {
         sessionId: params.sessionId,
         belief: insight.statement,
         beliefKey,
-        type: insight.type as BeliefType,
+        type: insight.type as ExtractedInsightType,
         confidence: insight.confidence,
         sourceMessageId: params.sourceMessageId ?? null,
       },

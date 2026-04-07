@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import type { DebateTopicSource } from "@prisma/client";
 import {
   DEBATE_TOPIC_MAX_CHARS,
   type DebateDurationPreset,
   type DebateTone,
 } from "src/lib/debate";
+import type { DebateTopicSource } from "src/types/chat";
 import { prisma } from "src/server/db/client";
 import {
   createDebateSession,
