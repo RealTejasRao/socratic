@@ -95,10 +95,12 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const results = sessions.map((session) => {
+  const results = sessions.map((session: (typeof sessions)[number]) => {
     const normalizedTitle = session.title?.trim() || "Untitled Session";
     const matchedMessage = session.messages[0]?.content?.trim() ?? null;
-    const titleMatches = normalizedTitle.toLowerCase().includes(query.toLowerCase());
+    const titleMatches = normalizedTitle
+      .toLowerCase()
+      .includes(query.toLowerCase());
     const snippetSource = matchedMessage ?? normalizedTitle;
 
     return {
