@@ -19,6 +19,14 @@ model User {
   retrievalTraces RetrievalTrace[]
 }
 
+model EarlyAccess {
+  id        String   @id @default(cuid())
+  email     String   @unique @db.VarChar(320)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+}
+
 enum UserRole {
   USER
   ADMIN

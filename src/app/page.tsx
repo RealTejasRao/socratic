@@ -1,182 +1,126 @@
 import Image from "next/image";
-import Link from "next/link";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { GLSLHills } from "@/src/components/ui/glsl-hills";
-import { LoadGate } from "@/src/components/ui/load-gate";
-import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
-import { FeaturesSection } from "@/src/components/home/features-section";
-import { HomeHashScroll } from "@/src/components/home/home-hash-scroll";
-import { SecuritySeparator } from "@/src/components/home/security-separator";
-import { UseCasesSection } from "@/src/components/home/use-cases-section";
-import { ContactSection } from "@/src/components/home/contact-section";
-import { Footer } from "@/src/components/home/footer";
-import { StaggeredMenu } from "@/src/components/home/staggered-menu";
-import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
-import { ROUTES } from "@/src/lib/routes";
+import { GradientBackground } from "@/src/components/ui/paper-design-shader-background";
+import { Instrument_Serif } from "next/font/google";
+import CurvedLoop from "@/src/components/ui/curved-loop";
+import EarlyAccessForm from "@/src/components/home/early-access-form";
 
-const poppinsClassName = "[font-family:Poppins,sans-serif]";
-const interClassName = "[font-family:Inter,sans-serif]";
-
-const navLinks = [
-  { label: "Home", href: "#" },
-  { label: "Features", href: "#features" },
-  { label: "Use Cases", href: "#use-cases" },
-  { label: "About", href: ROUTES.ABOUT },
-  { label: "Contact", href: "#contact" },
-];
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export default function HomePage() {
   return (
-    <LoadGate
-      fallbackClassName={`min-h-screen w-full bg-white ${poppinsClassName}`}
-    >
-      <main
-        className={`relative min-h-screen overflow-hidden bg-white ${poppinsClassName}`}
-      >
-        <HomeHashScroll />
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-6 pt-3 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-8 sm:pt-4">
-          <nav className="relative mx-auto flex w-full max-w-365 items-center justify-between">
-            <a
-              href="#"
-              className="group relative flex h-9.5 w-fit cursor-pointer items-center"
+    <main className="relative flex h-full min-h-screen w-full items-center justify-center overflow-hidden">
+      <GradientBackground />
+      <div className="hero-fade absolute inset-0 -z-10 bg-white/10" />
+
+      <div className="ui-chip-anim absolute left-4 top-4 z-20 sm:left-6 sm:top-6">
+        <div className="group relative">
+          <div className="flex items-center gap-2.5 rounded-full border border-white/55 bg-white/45 px-4 py-2 backdrop-blur-md">
+            <Image
+              src="/brand/Logo_Dark_SVG.svg"
+              alt="Socratic AI logo"
+              width={26}
+              height={26}
+              className="h-6.5 w-6.5 object-contain"
+            />
+            <span
+              className={`${instrumentSerif.className} text-lg tracking-wide leading-none text-[#1e2430]`}
             >
-              <div className="shrink-0 overflow-hidden">
-                <Image
-                  src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
-                  alt="Socratic AI logo"
-                  width={50}
-                  height={50}
-                  className="h-11.25 w-11.25 cursor-pointer object-contain transition duration-500 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.02]"
-                  priority
-                />
-              </div>
-
-              <div className="pointer-events-none absolute left-13 top-1/2 flex -translate-y-1/2 items-center overflow-hidden">
-                <span className="mr-3 h-4 w-px shrink-0 origin-center scale-y-0 bg-black/22 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-y-100 group-hover:opacity-100" />
-                <span className="-translate-x-4.5 whitespace-nowrap text-[0.82rem] font-normal tracking-[0.01em] text-black/78 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:opacity-100">
-                  Socratic AI
-                </span>
-              </div>
-            </a>
-
-            <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
-              <div className="pointer-events-auto flex items-center justify-center gap-10">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="cursor-pointer text-[0.88rem] font-normal text-black/60 transition-colors duration-200 hover:text-black"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2">
-              <SignedOut>
-                <Link
-                  href={ROUTES.SIGN_IN}
-                  className="cursor-pointer border border-black/12 px-4 py-2 text-[0.88rem] font-medium text-black transition-colors duration-200 hover:bg-black/3 sm:px-5"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href={ROUTES.SIGN_UP}
-                  className="cursor-pointer border border-black/12 bg-black px-4 py-2 text-[0.88rem] font-medium text-white transition-colors duration-200 hover:bg-black/90 sm:px-5"
-                >
-                  Sign up
-                </Link>
-              </SignedOut>
-
-              <SignedIn>
-                <div className="flex items-center gap-3">
-                  <Link
-                    href={ROUTES.APP}
-                    className="cursor-pointer border border-black/12 bg-black px-4 py-2 text-[0.88rem] font-medium text-white transition-colors duration-200 hover:bg-black/90 sm:px-5"
-                  >
-                    Open app
-                  </Link>
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        userButtonTrigger: "!h-[35px] !w-[35px]",
-                        userButtonAvatarBox: "!h-[35px] !w-[35px]",
-                      },
-                    }}
-                  />
-                </div>
-              </SignedIn>
-
-              <StaggeredMenu
-                items={navLinks.map((link) => ({
-                  label: link.label,
-                  link: link.href,
-                  ariaLabel: `Go to ${link.label}`,
-                }))}
-              />
-            </div>
-          </nav>
-
-          <div className="mx-auto mt-2 w-full max-w-365">
-            <div className="h-px w-full bg-[radial-gradient(circle,rgba(120,120,120,0.45)_1px,transparent_1.2px)] bg-position-[left_center] bg-size-[10px_1px] bg-repeat-x" />
+              Socratic AI
+            </span>
           </div>
-        </header>
-
-        <section className="relative h-screen w-full">
-          <GLSLHills className="hero-bg-fade" />
-          <div className="hero-content-fade absolute inset-0 flex items-center justify-center px-6">
-            <div className="mt-4 flex max-w-190 flex-col items-center text-center">
-              <p className="mb-4 inline-flex items-center gap-2 text-[0.78rem] font-light tracking-[0.02em] text-black/60 sm:text-[0.8rem]">
-                <span
-                  className="relative inline-flex h-2.5 w-2.5 items-center justify-center"
-                  aria-hidden="true"
-                >
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/55" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                </span>
-                <span>Your personal AI for Philosophy.</span>
-              </p>
-              <h1 className="mt-3">
-                <TypewriterHeading
-                  text="Philosophy Reimagined"
-                  className={`${interClassName} inline-flex items-center whitespace-nowrap text-[clamp(1rem,2.5vw,2.2rem)] font-medium leading-[1.08] text-black`}
-                />
-              </h1>
-              <p className="mt-5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
-                Engage. Debate. Learn
-              </p>
-              <p className="mt-0.5 text-[clamp(0.75rem,1vw,0.95rem)] text-black/70">
-                From ethics to existentialism, from logic to metaphysics.
-              </p>
-              <SignedOut>
-                <Link
-                  href={ROUTES.SIGN_UP}
-                  className="mt-6 inline-flex cursor-pointer items-center gap-2 border border-black/12 bg-black px-5 py-2 text-[0.84rem] font-medium text-white transition-colors duration-200 hover:bg-black/90"
-                >
-                  <span>Try Socratic AI</span>
-                  <span aria-hidden="true">&gt;</span>
-                </Link>
-              </SignedOut>
-              <SignedIn>
-                <Link
-                  href={ROUTES.APP}
-                  className="mt-6 inline-flex cursor-pointer items-center gap-2 border border-black/12 bg-black px-5 py-2 text-[0.84rem] font-medium text-white transition-colors duration-200 hover:bg-black/90"
-                >
-                  <span>Try Socratic AI</span>
-                  <span aria-hidden="true">&gt;</span>
-                </Link>
-              </SignedIn>
-            </div>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-6 top-full z-10 mt-1 h-1.5 w-1.5 rotate-45 rounded-[2px] border-l border-t border-white/45 bg-[#1e2430]/90 opacity-0 transition duration-200 group-hover:opacity-100 sm:left-1/2 sm:-translate-x-1/2"
+          />
+          <div className="pointer-events-none absolute left-0 top-full z-10 mt-2 max-w-40 rounded-lg border border-white/20 bg-[#1e2430]/90 px-2.5 py-1 text-[10px] leading-tight text-white opacity-0 shadow-[0_10px_24px_rgba(15,23,42,0.35)] backdrop-blur-sm transition duration-200 group-hover:opacity-100 sm:left-1/2 sm:max-w-none sm:-translate-x-1/2 sm:text-[11px] sm:whitespace-nowrap">
+            Your Personal AI for Philosophy
           </div>
-        </section>
+        </div>
+      </div>
 
-        <FeaturesSection interClassName={interClassName} />
-        <SecuritySeparator interClassName={interClassName} />
-        <UseCasesSection interClassName={interClassName} />
-        <ContactSection interClassName={interClassName} />
-        <Footer interClassName={interClassName} />
-      </main>
-    </LoadGate>
+      <div className="ui-chip-anim absolute right-4 top-4 z-20 [animation-delay:120ms] sm:right-6 sm:top-6">
+        <div className="flex items-center gap-2">
+          <a
+            href="https://x.com/useSocraticAI"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="X"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/55 bg-white/45 text-[#1e2430] backdrop-blur-md transition hover:bg-white/65"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4 fill-current"
+              aria-hidden="true"
+            >
+              <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.847h-7.406l-5.8-7.584-6.639 7.584H.474l8.599-9.83L0 1.154h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" />
+            </svg>
+          </a>
+          <a
+            href="https://www.linkedin.com/company/usesocratic/"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="LinkedIn"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/55 bg-white/45 text-[#1e2430] backdrop-blur-md transition hover:bg-white/65"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4 fill-current"
+              aria-hidden="true"
+            >
+              <path d="M20.447 20.452H16.89v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.94v5.666H9.35V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.369-1.85 3.601 0 4.266 2.37 4.266 5.455zM5.337 7.433a2.063 2.063 0 11.004-4.126 2.063 2.063 0 01-.004 4.126zM7.119 20.452H3.555V9h3.564z" />
+            </svg>
+          </a>
+          <a
+            href="https://www.instagram.com/usesocratic/"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Instagram"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/55 bg-white/45 text-[#1e2430] backdrop-blur-md transition hover:bg-white/65"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4 fill-current"
+              aria-hidden="true"
+            >
+              <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.8A3.95 3.95 0 003.8 7.75v8.5a3.95 3.95 0 003.95 3.95h8.5a3.95 3.95 0 003.95-3.95v-8.5a3.95 3.95 0 00-3.95-3.95zm8.925 1.35a1.125 1.125 0 110 2.25 1.125 1.125 0 010-2.25zM12 7a5 5 0 110 10 5 5 0 010-10zm0 1.8a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <section className="px-6">
+        <div className="hero-card-anim relative mx-auto w-full max-w-sm translate-y-15 overflow-hidden rounded-[1.7rem] border border-white/45 bg-linear-to-br from-white/35 via-white/16 to-white/8 p-6 text-[#1e2430] shadow-[0_18px_50px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-3xl sm:translate-y-16 sm:p-7">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/30 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-12 -left-10 h-32 w-32 rounded-full bg-sky-100/25 blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b from-white/45 to-transparent" />
+
+          <h2
+            className={`${instrumentSerif.className} relative text-center text-[2.35rem] tracking-tight text-[#1e2430] sm:text-[2.55rem]`}
+          >
+            Limited Early Access
+          </h2>
+          <p className="relative mt-2.5 text-center text-sm leading-relaxed text-[#2d3443]/82">
+            Socratic AI is launching soon. We are planning to give early access
+            to a limited number of people. Reserve your spot now!
+          </p>
+
+          <EarlyAccessForm />
+        </div>
+
+        <div className="hero-loop-anim relative left-1/2 mb-4 w-screen max-w-none -translate-x-1/2 overflow-hidden sm:mb-4">
+          <CurvedLoop
+            marqueeText="Philosophy ✦ Meets ✦ AI ✦ Meets ✦"
+            speed={0.5}
+            curveAmount={200}
+            direction="left"
+            interactive={false}
+            className={`${instrumentSerif.className} fill-[#1e2430] tracking-[0.04em] text-xl`}
+          />
+        </div>
+      </section>
+    </main>
   );
 }
