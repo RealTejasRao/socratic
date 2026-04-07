@@ -56,10 +56,12 @@ export async function GET(req: Request) {
   });
 
   const fromMessages = messages.filter(
-    (message) => extractPromptVersion(message.model) === fromVersion,
+    (message: (typeof messages)[number]) =>
+      extractPromptVersion(message.model) === fromVersion,
   );
   const toMessages = messages.filter(
-    (message) => extractPromptVersion(message.model) === toVersion,
+    (message: (typeof messages)[number]) =>
+      extractPromptVersion(message.model) === toVersion,
   );
 
   const fromSnapshot = buildAnalyticsSnapshot(fromMessages);
@@ -77,10 +79,13 @@ export async function GET(req: Request) {
     },
     delta: {
       avgValidationScore:
-        (toSnapshot.avgValidationScore ?? 0) - (fromSnapshot.avgValidationScore ?? 0),
-      avgLatencyMs: (toSnapshot.avgLatencyMs ?? 0) - (fromSnapshot.avgLatencyMs ?? 0),
+        (toSnapshot.avgValidationScore ?? 0) -
+        (fromSnapshot.avgValidationScore ?? 0),
+      avgLatencyMs:
+        (toSnapshot.avgLatencyMs ?? 0) - (fromSnapshot.avgLatencyMs ?? 0),
       avgTokenIn: (toSnapshot.avgTokenIn ?? 0) - (fromSnapshot.avgTokenIn ?? 0),
-      avgTokenOut: (toSnapshot.avgTokenOut ?? 0) - (fromSnapshot.avgTokenOut ?? 0),
+      avgTokenOut:
+        (toSnapshot.avgTokenOut ?? 0) - (fromSnapshot.avgTokenOut ?? 0),
       sampleSize: {
         from: fromSnapshot.totalResponses,
         to: toSnapshot.totalResponses,
