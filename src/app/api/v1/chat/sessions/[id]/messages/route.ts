@@ -5,7 +5,7 @@ import type { ChatImageAttachment } from "src/types/chat";
 
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id: sessionId } = await context.params;
 
@@ -19,7 +19,7 @@ export async function GET(
 
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId },
-    select: { id: true }
+    select: { id: true },
   });
 
   if (!dbUser) {
@@ -29,9 +29,9 @@ export async function GET(
   const session = await prisma.chatSession.findFirst({
     where: {
       id: sessionId,
-      userId: dbUser.id
+      userId: dbUser.id,
     },
-    select: { id: true }
+    select: { id: true },
   });
 
   if (!session) {
@@ -46,15 +46,15 @@ export async function GET(
       role: true,
       content: true,
       attachments: true,
-      createdAt: true
-    }
+      createdAt: true,
+    },
   });
   return NextResponse.json(
     messages.map((message: (typeof messages)[number]) => ({
       ...message,
-      attachments: (Array.isArray(message.attachments)
+      attachments: Array.isArray(message.attachments)
         ? (message.attachments as unknown as ChatImageAttachment[])
-        : []),
+        : [],
     })),
   );
 }
