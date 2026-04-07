@@ -50,7 +50,7 @@ export async function GET(
     }
   });
   return NextResponse.json(
-    messages.map((message) => ({
+    messages.map((message: (typeof messages)[number]) => ({
       ...message,
       attachments: (Array.isArray(message.attachments)
         ? (message.attachments as unknown as ChatImageAttachment[])
