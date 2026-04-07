@@ -13,20 +13,20 @@ export default function HomePage() {
   return (
     <main className="relative flex h-full min-h-screen w-full items-center justify-center overflow-hidden">
       <GradientBackground />
-      <div className="hero-fade absolute inset-0 -z-10 bg-white/10" />
+      <div className="hero-fade absolute inset-0 -z-10 bg-black/25" />
 
       <div className="ui-chip-anim absolute left-4 top-4 z-20 sm:left-6 sm:top-6">
         <div className="group relative">
-          <div className="flex items-center gap-2.5 rounded-full border border-white/55 bg-white/45 px-4 py-2 backdrop-blur-md">
+          <div className="flex items-center gap-2.5 rounded-full border border-white/30 bg-black/35 px-4 py-2 backdrop-blur-md">
             <Image
               src="/brand/Logo_Dark_SVG.svg"
               alt="Socratic AI logo"
               width={26}
               height={26}
-              className="h-6.5 w-6.5 object-contain"
+              className="h-6.5 w-6.5 object-contain invert"
             />
             <span
-              className={`${instrumentSerif.className} text-lg tracking-wide leading-none text-[#1e2430]`}
+              className={`${instrumentSerif.className} text-lg leading-none tracking-wide text-white/92`}
             >
               Socratic AI
             </span>
@@ -48,7 +48,7 @@ export default function HomePage() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label="X"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/55 bg-white/45 text-[#1e2430] backdrop-blur-md transition hover:bg-white/65"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/90 backdrop-blur-md transition hover:bg-black/55"
           >
             <svg
               viewBox="0 0 24 24"
@@ -63,7 +63,7 @@ export default function HomePage() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label="LinkedIn"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/55 bg-white/45 text-[#1e2430] backdrop-blur-md transition hover:bg-white/65"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/90 backdrop-blur-md transition hover:bg-black/55"
           >
             <svg
               viewBox="0 0 24 24"
@@ -78,7 +78,7 @@ export default function HomePage() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label="Instagram"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/55 bg-white/45 text-[#1e2430] backdrop-blur-md transition hover:bg-white/65"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/90 backdrop-blur-md transition hover:bg-black/55"
           >
             <svg
               viewBox="0 0 24 24"
@@ -92,17 +92,17 @@ export default function HomePage() {
       </div>
 
       <section className="px-6">
-        <div className="hero-card-anim relative mx-auto w-full max-w-sm translate-y-15 overflow-hidden rounded-[1.7rem] border border-white/45 bg-linear-to-br from-white/35 via-white/16 to-white/8 p-6 text-[#1e2430] shadow-[0_18px_50px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-3xl sm:translate-y-16 sm:p-7">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/30 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-12 -left-10 h-32 w-32 rounded-full bg-sky-100/25 blur-2xl" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b from-white/45 to-transparent" />
+        <div className="hero-card-anim relative mx-auto w-full max-w-sm translate-y-15 overflow-hidden rounded-[1.7rem] border border-white/25 bg-linear-to-br from-black/55 via-black/40 to-black/30 p-6 text-white shadow-[0_20px_60px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-3xl sm:translate-y-16 sm:p-7">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-400/22 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-12 -left-10 h-32 w-32 rounded-full bg-fuchsia-400/18 blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b from-white/16 to-transparent" />
 
           <h2
-            className={`${instrumentSerif.className} relative text-center text-[2.35rem] tracking-tight text-[#1e2430] sm:text-[2.55rem]`}
+            className={`${instrumentSerif.className} relative text-center text-[2.35rem] tracking-tight text-white sm:text-[2.55rem]`}
           >
             Limited Early Access
           </h2>
-          <p className="relative mt-2.5 text-center text-sm leading-relaxed text-[#2d3443]/82">
+          <p className="relative mt-2.5 text-center text-sm leading-relaxed text-slate-200/88">
             Socratic AI is launching soon. We are planning to give early access
             to a limited number of people. Reserve your spot now!
           </p>
@@ -117,7 +117,7 @@ export default function HomePage() {
             curveAmount={200}
             direction="left"
             interactive={false}
-            className={`${instrumentSerif.className} fill-[#1e2430] tracking-[0.04em] text-xl`}
+            className={`${instrumentSerif.className} fill-white/90 tracking-[0.04em] text-xl`}
           />
         </div>
       </section>
