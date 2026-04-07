@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
 import "./globals.css";
 
@@ -37,21 +36,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <head>
-          <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-          <link
-            rel="preconnect"
-            href="https://res.cloudinary.com"
-            crossOrigin="anonymous"
-          />
-        </head>
-        <body>
-          <ClickPulse />
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <head>
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link
+          rel="preconnect"
+          href="https://res.cloudinary.com"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body>
+        <ClickPulse />
+        {children}
+      </body>
+    </html>
   );
 }
