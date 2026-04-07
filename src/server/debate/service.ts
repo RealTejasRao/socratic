@@ -183,7 +183,7 @@ const DEBATE_DASHBOARD_VERSION = "debate-dashboard-v1";
 function normalizeStoredDebateTone(
   tone: PrismaDebateTone | DebateTone,
 ): DebateTone {
-  switch (tone) {
+  switch (tone as string) {
     case "RUTHLESS_RESPECTFUL":
       return "RUTHLESS_BLUNT";
     case "BLUNT_AGGRESSIVE":

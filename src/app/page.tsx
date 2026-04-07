@@ -91,18 +91,18 @@ export default function HomePage() {
         </div>
       </div>
 
-      <section className="px-6">
-        <div className="hero-card-anim relative mx-auto w-full max-w-sm translate-y-15 overflow-hidden rounded-[1.7rem] border border-white/25 bg-linear-to-br from-black/55 via-black/40 to-black/30 p-6 text-white shadow-[0_20px_60px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-3xl sm:translate-y-16 sm:p-7">
+      <section className="px-4 sm:px-6">
+        <div className="hero-card-anim relative mx-auto w-full max-w-[20rem] translate-y-15 overflow-hidden rounded-[1.55rem] border border-white/25 bg-linear-to-br from-black/55 via-black/40 to-black/30 p-5 text-white shadow-[0_20px_60px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-3xl sm:max-w-sm sm:translate-y-16 sm:rounded-[1.7rem] sm:p-7">
           <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-400/22 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-12 -left-10 h-32 w-32 rounded-full bg-fuchsia-400/18 blur-2xl" />
           <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-linear-to-b from-white/16 to-transparent" />
 
           <h2
-            className={`${instrumentSerif.className} relative text-center text-[2.35rem] tracking-tight text-white sm:text-[2.55rem]`}
+            className={`${instrumentSerif.className} relative text-center text-[2rem] tracking-tight text-white sm:text-[2.55rem]`}
           >
             Limited Early Access
           </h2>
-          <p className="relative mt-2.5 text-center text-sm leading-relaxed text-slate-200/88">
+          <p className="relative mt-2 text-center text-[0.92rem] leading-relaxed text-slate-200/88 sm:mt-2.5 sm:text-sm">
             Socratic AI is launching soon. We are planning to give early access
             to a limited number of people. Reserve your spot now!
           </p>
@@ -110,14 +110,14 @@ export default function HomePage() {
           <EarlyAccessForm />
         </div>
 
-        <div className="hero-loop-anim relative left-1/2 mb-4 w-screen max-w-none -translate-x-1/2 overflow-hidden sm:mb-4">
+        <div className="hero-loop-anim relative left-1/2 mt-10 mb-4 w-screen max-w-none -translate-x-1/2 overflow-hidden sm:mt-0 sm:mb-4">
           <CurvedLoop
             marqueeText="Philosophy ✦ Meets ✦ AI ✦ Meets ✦"
             speed={0.5}
             curveAmount={200}
             direction="left"
             interactive={false}
-            className={`${instrumentSerif.className} fill-white/90 tracking-[0.04em] text-xl`}
+            className={`${instrumentSerif.className} fill-white/90 tracking-[0.04em] text-[3rem] sm:text-xl`}
           />
         </div>
       </section>
