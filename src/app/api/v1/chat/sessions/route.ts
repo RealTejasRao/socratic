@@ -12,7 +12,7 @@ export async function GET() {
 
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId },
-    select: { id: true }
+    select: { id: true },
   });
 
   if (!dbUser) {
@@ -42,12 +42,14 @@ export async function GET() {
       debateSummary: true,
       roleplayMeta: true,
       lastActivityAt: true,
-      createdAt: true
-    }
+      createdAt: true,
+    },
   });
 
-  return NextResponse.json(sessions.map((session) => ({
-    ...session,
-    meta: serializeSessionMeta(session),
-  })));
+  return NextResponse.json(
+    sessions.map((session: (typeof sessions)[number]) => ({
+      ...session,
+      meta: serializeSessionMeta(session),
+    })),
+  );
 }
