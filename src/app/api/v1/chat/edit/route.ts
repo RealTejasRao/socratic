@@ -166,13 +166,12 @@ export async function POST(req: Request) {
   const now = new Date();
   const expiresAt = new Date(now.getTime() + THIRTY_DAYS_MS);
 
-  await prisma.$transaction(async (tx) => {
-    await tx.message.update({
+  await prisma.$transaction([
+    prisma.message.update({
       where: { id: targetMessage.id },
       data: { content: newContent.trim() },
-    });
-
-    await tx.message.deleteMany({
+    }),
+    prisma.message.deleteMany({
       where: {
         sessionId: session.id,
         OR: [
@@ -183,8 +182,8 @@ export async function POST(req: Request) {
           },
         ],
       },
-    });
-  });
+    }),
+  ]);
 
   await invalidateConversationMemory(session.id);
 
