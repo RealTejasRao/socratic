@@ -41,7 +41,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="ui-chip-anim absolute right-4 top-4 z-20 [animation-delay:120ms] sm:right-6 sm:top-6">
+      <div className="ui-chip-anim absolute right-4 top-4 z-20 [animation-delay:80ms] sm:right-6 sm:top-6">
         <div className="flex items-center gap-2">
           <a
             href="https://x.com/useSocraticAI"
