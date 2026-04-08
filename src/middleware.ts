@@ -1,10 +1,11 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const PUBLIC_FILE_REGEX =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|json|map|png|svg|txt|webm|webp|woff|woff2|xml)$/i;
 
-export default function middleware(req: NextRequest) {
+export default clerkMiddleware((_: unknown, req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const env = process.env["VERCEL_TARGET_ENV"] ?? process.env["VERCEL_ENV"];
   const isProduction = env === "production";
@@ -33,7 +34,7 @@ export default function middleware(req: NextRequest) {
   redirectUrl.pathname = "/";
   redirectUrl.search = "";
   return NextResponse.redirect(redirectUrl);
-}
+});
 
 export const config = {
   matcher: ["/:path*"],

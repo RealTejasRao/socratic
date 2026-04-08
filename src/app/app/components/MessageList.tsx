@@ -424,12 +424,14 @@ export default function MessageList({
           const isUser = message.role === "USER";
           const isEditingThisMessage = editingMessageId === message.id;
           const isSpeakingThisMessage = speakingMessageId === message.id;
+          const showAssistantSeparator =
+            isAssistant && index < messages.length - 1;
 
           return (
             <div
               key={message.id}
               className={cn(
-                "group flex flex-col",
+                "group flex w-full flex-col",
                 isUser ? "items-end" : "items-start",
               )}
             >
@@ -632,6 +634,13 @@ export default function MessageList({
                     </>
                   )}
                 </div>
+              )}
+
+              {showAssistantSeparator && (
+                <div
+                  aria-hidden="true"
+                  className="mt-4 mb-2 w-full border-t border-slate-300/80"
+                />
               )}
             </div>
           );

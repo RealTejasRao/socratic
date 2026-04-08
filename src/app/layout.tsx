@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
 import "./globals.css";
 
@@ -46,8 +47,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ClickPulse />
-        {children}
+        <ClerkProvider>
+          <ClickPulse />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

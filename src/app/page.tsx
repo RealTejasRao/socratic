@@ -100,7 +100,7 @@ export default function HomePage() {
           <h2
             className={`${instrumentSerif.className} relative text-center text-[2rem] tracking-tight text-white sm:text-[2.55rem]`}
           >
-            Limited Early Access
+            Get Priority Access
           </h2>
           <p className="relative mt-2 text-center text-[0.92rem] leading-relaxed text-slate-200/88 sm:mt-2.5 sm:text-sm">
             Socratic AI is launching soon. We are planning to give early access

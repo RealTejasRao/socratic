@@ -638,7 +638,6 @@ export default function MessageInput({
                   }}
                   className="app-input-attachment-remove-btn absolute top-1 right-1 cursor-pointer rounded-xl p-1 shadow-sm transition"
                   aria-label={`Remove ${attachment.name}`}
-                  data-tooltip={`Remove ${attachment.name}`}
                 >
                   <X size={12} />
                 </button>
