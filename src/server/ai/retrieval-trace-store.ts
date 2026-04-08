@@ -27,11 +27,16 @@ export async function storeRetrievalTrace(params: {
       sourceMessageId: params.sourceMessageId ?? null,
       rawUserQuery: params.rawUserQuery,
       retrievalQuery: params.retrievalQuery,
-      vectorCandidates: params.vectorCandidates as unknown as Prisma.InputJsonValue,
-      lexicalCandidates: params.lexicalCandidates as unknown as Prisma.InputJsonValue,
-      fusedCandidates: params.fusedCandidates as unknown as Prisma.InputJsonValue,
-      rerankedCandidates: params.rerankedCandidates as unknown as Prisma.InputJsonValue,
-      selectedPassages: params.selectedPassages as unknown as Prisma.InputJsonValue,
+      vectorCandidates:
+        params.vectorCandidates as unknown as Prisma.InputJsonValue,
+      lexicalCandidates:
+        params.lexicalCandidates as unknown as Prisma.InputJsonValue,
+      fusedCandidates:
+        params.fusedCandidates as unknown as Prisma.InputJsonValue,
+      rerankedCandidates:
+        params.rerankedCandidates as unknown as Prisma.InputJsonValue,
+      selectedPassages:
+        params.selectedPassages as unknown as Prisma.InputJsonValue,
       retrievalLatencyMs: params.retrievalLatencyMs,
     },
   });
