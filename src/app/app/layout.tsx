@@ -61,14 +61,16 @@ export default async function AppLayout({ children }: Props) {
     },
   });
 
-  const sidebarSessions = sessions.map((session) => ({
-    id: session.id,
-    title: session.title,
-    mode: session.mode,
-    debate: serializeSessionMeta(session).debate ?? null,
-    roleplay: serializeSessionMeta(session).roleplay ?? null,
-    firstMessagePreview: session.messages[0]?.content ?? null,
-  }));
+  const sidebarSessions = sessions.map(
+    (session: (typeof sessions)[number]) => ({
+      id: session.id,
+      title: session.title,
+      mode: session.mode,
+      debate: serializeSessionMeta(session).debate ?? null,
+      roleplay: serializeSessionMeta(session).roleplay ?? null,
+      firstMessagePreview: session.messages[0]?.content ?? null,
+    }),
+  );
 
   return (
     <div className="app-layout h-svh bg-white">

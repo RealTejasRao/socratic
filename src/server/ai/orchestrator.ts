@@ -92,7 +92,7 @@ function normalizeImageAttachments(
     return [];
   }
 
-  return value.flatMap((item) => {
+  return value.flatMap((item: unknown) => {
     const record = item as Record<string, unknown> | null;
 
     if (

@@ -20,7 +20,7 @@ function normalizeImageAttachments(value: unknown): ChatImageAttachment[] {
     return [];
   }
 
-  return value.flatMap((item) => {
+  return value.flatMap((item: unknown) => {
     if (
       item &&
       typeof item === "object" &&

@@ -53,57 +53,59 @@ export default async function SharedChatPage({ params }: Props) {
         </div>
 
         <div className="space-y-4">
-          {session.messages.map((message) => {
-            const isUser = message.role === "USER";
-            const attachments = Array.isArray(message.attachments)
-              ? (message.attachments as unknown as ChatImageAttachment[])
-              : [];
+          {session.messages.map(
+            (message: (typeof session.messages)[number]) => {
+              const isUser = message.role === "USER";
+              const attachments = Array.isArray(message.attachments)
+                ? (message.attachments as unknown as ChatImageAttachment[])
+                : [];
 
-            return (
-              <div
-                key={message.id}
-                className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
-              >
-                {isUser && (
-                  <div className="mb-1.5 px-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
-                    You
-                  </div>
-                )}
-
+              return (
                 <div
-                  className={
-                    isUser
-                      ? "[font-family:Poppins,sans-serif] max-w-[560px] whitespace-pre-wrap rounded-[14px] border border-slate-300 bg-[#f4f4f4] px-3.5 py-3 text-[13px] text-slate-900"
-                      : "max-w-[560px] whitespace-pre-wrap bg-transparent px-1 py-1 text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 [font-family:Georgia,serif]"
-                  }
+                  key={message.id}
+                  className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
                 >
-                  {attachments.length > 0 && (
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      {attachments.map((attachment, attachmentIndex) => (
-                        <a
-                          key={`${attachment.name}-${attachmentIndex}`}
-                          href={attachment.dataUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="block overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={attachment.dataUrl}
-                            alt={attachment.name}
-                            className="h-24 w-24 object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </a>
-                      ))}
+                  {isUser && (
+                    <div className="mb-1.5 px-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
+                      You
                     </div>
                   )}
-                  {message.content}
+
+                  <div
+                    className={
+                      isUser
+                        ? "[font-family:Poppins,sans-serif] max-w-[560px] whitespace-pre-wrap rounded-[14px] border border-slate-300 bg-[#f4f4f4] px-3.5 py-3 text-[13px] text-slate-900"
+                        : "max-w-[560px] whitespace-pre-wrap bg-transparent px-1 py-1 text-[13px] leading-[27px] tracking-[0.02em] text-slate-950 [font-family:Georgia,serif]"
+                    }
+                  >
+                    {attachments.length > 0 && (
+                      <div className="mb-3 flex flex-wrap gap-2">
+                        {attachments.map((attachment, attachmentIndex) => (
+                          <a
+                            key={`${attachment.name}-${attachmentIndex}`}
+                            href={attachment.dataUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={attachment.dataUrl}
+                              alt={attachment.name}
+                              className="h-24 w-24 object-cover"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                    {message.content}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            },
+          )}
         </div>
 
         <div className="mt-10 border-t border-black/10 pt-5 text-center">

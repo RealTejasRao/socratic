@@ -64,15 +64,17 @@ export default async function SessionPage({ params }: Props) {
     orderBy: { createdAt: "asc" },
   });
 
-  const serializedMessages: ChatMessage[] = messages.map((msg) => ({
-    id: msg.id,
-    role: msg.role,
-    content: msg.content,
-    attachments: (Array.isArray(msg.attachments)
-      ? (msg.attachments as unknown as ChatImageAttachment[])
-      : []),
-    createdAt: msg.createdAt.toISOString(),
-  }));
+  const serializedMessages: ChatMessage[] = messages.map(
+    (msg: (typeof messages)[number]) => ({
+      id: msg.id,
+      role: msg.role,
+      content: msg.content,
+      attachments: Array.isArray(msg.attachments)
+        ? (msg.attachments as unknown as ChatImageAttachment[])
+        : [],
+      createdAt: msg.createdAt.toISOString(),
+    }),
+  );
 
   return (
     <ChatContainer
