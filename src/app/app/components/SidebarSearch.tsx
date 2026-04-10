@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Search, X } from "lucide-react";
 
 type SearchResult = {
@@ -174,17 +175,28 @@ export default function SidebarSearch() {
         </button>
       </div>
 
-      {open && (
-        <div
-          className="app-sidebar-search-backdrop fixed inset-0 z-50 bg-slate-950/12 backdrop-blur-[3px]"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            ref={panelRef}
-            onClick={(event) => event.stopPropagation()}
-            className="app-card app-sidebar-search-modal absolute left-1/2 top-1/2 w-[min(620px,calc(100vw-48px))] -translate-x-1/2 -translate-y-1/2 rounded-[9px] border border-slate-200 bg-white px-4 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.16)]"
+      <AnimatePresence mode="wait" initial={false}>
+        {open && (
+          <motion.div
+            key="search-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="app-sidebar-search-backdrop fixed inset-0 z-50 bg-slate-950/16 backdrop-blur-[2px]"
+            onClick={() => setOpen(false)}
           >
-            <div className="mb-3 flex items-center justify-between gap-3 px-1">
+            <motion.div
+              key="search-panel"
+              initial={{ opacity: 0, y: 14, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 14, scale: 0.985 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              ref={panelRef}
+              onClick={(event) => event.stopPropagation()}
+              className="app-card app-sidebar-search-modal absolute left-1/2 top-1/2 flex max-h-[min(560px,82vh)] w-[min(760px,90vw)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white px-5 py-5 shadow-[0_22px_70px_rgba(15,23,42,0.24)]"
+            >
+            <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="app-sidebar-search-title text-[13px] font-medium text-slate-900">
                   Search chats
@@ -219,7 +231,7 @@ export default function SidebarSearch() {
               />
             </div>
 
-            <div className="mt-4 max-h-115 overflow-y-auto">
+            <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
               {!query.trim() ? (
                 <div className="app-sidebar-search-state rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
                   Start typing to search titles and message content.
@@ -259,9 +271,10 @@ export default function SidebarSearch() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

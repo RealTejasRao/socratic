@@ -26,6 +26,7 @@ import {
   buildChatAttachmentPreviewUrl,
   buildChatAttachmentThumbnailUrl,
 } from "@/src/lib/cloudinary";
+import { isChatFontSize, type ChatFontSize } from "src/lib/chat-display";
 
 interface Props {
   messages: ChatMessage[];
@@ -45,6 +46,7 @@ interface Props {
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const URL_PATTERN = /(https?:\/\/[^\s]+)/gi;
 const EMPHASIS_PATTERN = /(\*\*[^*\n]+\*\*|\*[^*\n]+\*)/g;
+const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
 
 function renderInlineFormatting(text: string, keyPrefix: string) {
   const parts = text.split(EMPHASIS_PATTERN);
@@ -168,6 +170,19 @@ function pickPreferredVoice(voices: SpeechSynthesisVoice[]) {
   return pool[0] ?? null;
 }
 
+function readChatFontSizeSetting(): ChatFontSize {
+  if (typeof window === "undefined") {
+    return "MEDIUM";
+  }
+
+  try {
+    const value = localStorage.getItem(CHAT_FONT_SIZE_KEY);
+    return isChatFontSize(value) ? value : "MEDIUM";
+  } catch {
+    return "MEDIUM";
+  }
+}
+
 export default function MessageList({
   messages,
   onRegenerate,
@@ -198,6 +213,7 @@ export default function MessageList({
     SpeechSynthesisVoice[]
   >([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
+  const [chatFontSize, setChatFontSize] = useState<ChatFontSize>("MEDIUM");
 
   async function handleCopy(messageId: string, content: string) {
     try {
@@ -372,6 +388,41 @@ export default function MessageList({
   }, [messages, speakingMessageId, stopSpeech]);
 
   useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setChatFontSize(readChatFontSizeSetting());
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleFontSizeChanged(event: Event) {
+      const customEvent = event as CustomEvent<{ size?: ChatFontSize }>;
+      const size = customEvent.detail?.size;
+
+      if (!isChatFontSize(size)) {
+        return;
+      }
+
+      setChatFontSize(size);
+    }
+
+    window.addEventListener(
+      "socratic:chat-font-size:changed",
+      handleFontSizeChanged,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "socratic:chat-font-size:changed",
+        handleFontSizeChanged,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
     if (!previewImage) {
       return;
     }
@@ -412,6 +463,24 @@ export default function MessageList({
 
   const actualLastAssistantIndex =
     lastAssistantIndex === -1 ? -1 : messages.length - 1 - lastAssistantIndex;
+  const userTextClass =
+    chatFontSize === "SMALL"
+      ? "text-[12px]"
+      : chatFontSize === "LARGE"
+        ? "text-[14px]"
+        : "text-[13px]";
+  const assistantTextClass =
+    chatFontSize === "SMALL"
+      ? "text-[12px] leading-6"
+      : chatFontSize === "LARGE"
+        ? "text-[14px] leading-7"
+        : "text-[13px] leading-6.75";
+  const editTextClass =
+    chatFontSize === "SMALL"
+      ? "text-[12px] leading-5.5"
+      : chatFontSize === "LARGE"
+        ? "text-[14px] leading-6.5"
+        : "text-[13px] leading-6";
 
   return (
     <div className="flex-1">
@@ -449,7 +518,7 @@ export default function MessageList({
                     onChange={(event) => onEditDraftChange(event.target.value)}
                     autoFocus
                     rows={1}
-                    className={`${poppinsClassName} min-h-8 w-full resize-none overflow-hidden bg-transparent text-[13px] leading-6 text-slate-900 outline-none`}
+                    className={`${poppinsClassName} ${editTextClass} min-h-8 w-full resize-none overflow-hidden bg-transparent text-slate-900 outline-none`}
                   />
                   <div className="mt-3 flex justify-end gap-2">
                     <button
@@ -475,8 +544,8 @@ export default function MessageList({
                   className={cn(
                     "max-w-140 whitespace-pre-wrap px-3 py-2",
                     isUser
-                      ? `${poppinsClassName} app-user-bubble rounded-[9px] tracking-wider border border-slate-300 bg-[#f4f4f4] text-[13px] text-slate-900`
-                      : "app-assistant-text bg-transparent text-[13px] leading-6.75 tracking-[0.02em] text-slate-950 font-[Georgia,serif]",
+                      ? `${poppinsClassName} ${userTextClass} app-user-bubble rounded-[9px] tracking-wider border border-slate-300 bg-[#f4f4f4] text-slate-900`
+                      : `app-assistant-text ${assistantTextClass} bg-transparent tracking-[0.02em] text-slate-950 font-[Georgia,serif]`,
                   )}
                 >
                   {message.attachments && message.attachments.length > 0 && (

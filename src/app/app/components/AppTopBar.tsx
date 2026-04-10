@@ -130,6 +130,25 @@ export default function AppTopBar({ sessions }: Props) {
   }, [isDarkMode, isThemeReady]);
 
   useEffect(() => {
+    function handleThemeChanged(event: Event) {
+      const customEvent = event as CustomEvent<{ theme?: "light" | "dark" }>;
+      const nextTheme = customEvent.detail?.theme;
+
+      if (!nextTheme) {
+        return;
+      }
+
+      setIsDarkMode(nextTheme === "dark");
+      setIsThemeReady(true);
+    }
+
+    window.addEventListener("socratic:theme:changed", handleThemeChanged);
+    return () => {
+      window.removeEventListener("socratic:theme:changed", handleThemeChanged);
+    };
+  }, []);
+
+  useEffect(() => {
     setMenuOpen(false);
     setShareMenuOpen(false);
     setActionDialog(null);
@@ -346,6 +365,11 @@ export default function AppTopBar({ sessions }: Props) {
 
     setThemeSweep({ id: Date.now(), dark: nextValue });
     setIsDarkMode(nextValue);
+    window.dispatchEvent(
+      new CustomEvent("socratic:theme:changed", {
+        detail: { theme: nextValue ? "dark" : "light" },
+      }),
+    );
   }
 
   function openShareTarget(url: string) {

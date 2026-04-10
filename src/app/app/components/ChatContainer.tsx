@@ -10,15 +10,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
   ArrowLeft,
+  Check,
   ChevronDown,
   Crown,
-  MessageCircle,
+  GraduationCap,
   ScrollText,
   Swords,
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { getDebateDurationMeta } from "src/lib/debate";
+import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
   getRoleplayPhilosopherConfig,
   type RoleplayPhilosopherId,
@@ -76,6 +78,7 @@ const FALLBACK_STARTER_CHIPS = [
 
 const STARTER_CHIP_COUNT = 2;
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
+const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 
 type ErrorToastState = {
   message: string;
@@ -167,6 +170,19 @@ function pickRandomQuestions(questions: string[], count: number) {
   return uniqueQuestions.slice(0, count);
 }
 
+function getSocraticToneSetting(): SocraticTone {
+  if (typeof window === "undefined") {
+    return "BALANCED";
+  }
+
+  try {
+    const stored = localStorage.getItem(SOCRATIC_TONE_KEY);
+    return isSocraticTone(stored) ? stored : "BALANCED";
+  } catch {
+    return "BALANCED";
+  }
+}
+
 export default function ChatContainer({
   initialMessages,
   sessionId,
@@ -198,6 +214,7 @@ export default function ChatContainer({
   const [debateNowMs, setDebateNowMs] = useState<number | null>(null);
   const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
   const [errorToast, setErrorToast] = useState<ErrorToastState>(null);
+  const [activeSessionId, setActiveSessionId] = useState(sessionId);
   const tempIdRef = useRef(0);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
@@ -282,6 +299,10 @@ export default function ChatContainer({
   }, [sessionMeta]);
 
   useEffect(() => {
+    setActiveSessionId(sessionId);
+  }, [sessionId]);
+
+  useEffect(() => {
     if (sessionMeta.mode === "ROLEPLAY" && sessionMeta.roleplay) {
       setPendingRoleplayId(null);
       setModeSelection("ROLEPLAY");
@@ -291,7 +312,30 @@ export default function ChatContainer({
   useEffect(() => {
     setShowWinnerReveal(false);
     finalizeRequestedRef.current = false;
-  }, [sessionId, isDebateCompleted]);
+  }, [activeSessionId, isDebateCompleted]);
+
+  useEffect(() => {
+    function handleNewChatRequested() {
+      setMessages([]);
+      setEditingMessage(null);
+      setEditDraft("");
+      setModeSelection("SOCRATIC");
+      setActiveSessionMeta({ mode: "SOCRATIC" });
+      setPendingRoleplayId(null);
+      setShowWinnerReveal(false);
+      finalizeRequestedRef.current = false;
+      setActiveSessionId(undefined);
+    }
+
+    window.addEventListener("socratic:new-chat:requested", handleNewChatRequested);
+
+    return () => {
+      window.removeEventListener(
+        "socratic:new-chat:requested",
+        handleNewChatRequested,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     const debate = activeSessionMeta.debate;
@@ -360,7 +404,7 @@ export default function ChatContainer({
     const debate = activeSessionMeta.debate;
 
     if (
-      !sessionId ||
+      !activeSessionId ||
       !debate ||
       debate.status === "COMPLETED" ||
       !debate.hasTimer ||
@@ -376,7 +420,7 @@ export default function ChatContainer({
     fetch("/api/v1/chat/debates/finalize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId }),
+      body: JSON.stringify({ sessionId: activeSessionId }),
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -409,7 +453,7 @@ export default function ChatContainer({
       .finally(() => {
         router.refresh();
       });
-  }, [activeSessionMeta.debate, remainingDebateSeconds, router, sessionId]);
+  }, [activeSessionMeta.debate, activeSessionId, remainingDebateSeconds, router]);
 
   useEffect(() => {
     if (!showWinnerReveal) {
@@ -590,11 +634,12 @@ export default function ChatContainer({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId,
+          sessionId: activeSessionId,
           content,
           attachments,
           webSearch,
-          ...(sessionId
+          socraticTone: getSocraticToneSetting(),
+          ...(activeSessionId
             ? {}
             : pendingRoleplayPhilosopher
               ? {
@@ -647,7 +692,10 @@ export default function ChatContainer({
         );
       }
 
-      if (!sessionId && returnedSessionId) {
+      const createdSessionFromNewChat =
+        !activeSessionId && Boolean(returnedSessionId);
+
+      if (createdSessionFromNewChat && returnedSessionId) {
         const draftFromNewChat = sessionStorage.getItem("socratic:draft:/app");
         if (draftFromNewChat !== null) {
           sessionStorage.setItem(
@@ -657,11 +705,18 @@ export default function ChatContainer({
           sessionStorage.removeItem("socratic:draft:/app");
         }
 
-        router.push(`/app/${returnedSessionId}`);
+        setActiveSessionId(returnedSessionId);
+        window.history.replaceState(
+          window.history.state,
+          "",
+          `/app/${returnedSessionId}`,
+        );
       }
 
       setIsStreaming(false);
-      router.refresh();
+      if (!createdSessionFromNewChat) {
+        router.refresh();
+      }
     } catch {
       setIsStreaming(false);
     }
@@ -694,7 +749,7 @@ export default function ChatContainer({
   ) : null;
 
   async function handleRegenerate() {
-    if (!sessionId || isStreaming || isDebateCompleted) return;
+    if (!activeSessionId || isStreaming || isDebateCompleted) return;
 
     setIsStreaming(true);
 
@@ -713,7 +768,10 @@ export default function ChatContainer({
     const res = await fetch("/api/v1/chat/regenerate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId }),
+      body: JSON.stringify({
+        sessionId: activeSessionId,
+        socraticTone: getSocraticToneSetting(),
+      }),
     });
 
     if (!res.ok || !res.body) {
@@ -765,7 +823,8 @@ export default function ChatContainer({
   }
 
   async function handleEditSubmit() {
-    if (!editingMessage || !sessionId || isStreaming || isDebateSession) return;
+    if (!editingMessage || !activeSessionId || isStreaming || isDebateSession)
+      return;
     const newContent = editDraft;
 
     setIsStreaming(true);
@@ -799,7 +858,7 @@ export default function ChatContainer({
 
     if (messageIdForEdit.startsWith("temp-")) {
       const lookupRes = await fetch(
-        `/api/v1/chat/sessions/${sessionId}/messages`,
+        `/api/v1/chat/sessions/${activeSessionId}/messages`,
       );
       if (lookupRes.ok) {
         const persistedMessages = (await lookupRes.json()) as ChatMessage[];
@@ -817,9 +876,10 @@ export default function ChatContainer({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        sessionId,
+        sessionId: activeSessionId,
         messageId: messageIdForEdit,
         newContent,
+        socraticTone: getSocraticToneSetting(),
       }),
     });
 
@@ -871,22 +931,28 @@ export default function ChatContainer({
                 type="button"
                 onClick={() => setIsModeMenuOpen((prev) => !prev)}
                 className={cn(
-                  "app-mode-switch-trigger inline-flex cursor-pointer items-center gap-2 rounded-[12px] border px-3 py-1.5 text-[11px] transition",
+                  "app-mode-switch-trigger group inline-flex cursor-pointer items-center gap-2 rounded-full border px-2.5 py-1.5 text-[11px] transition",
                   isModeMenuOpen && "app-mode-switch-trigger-open",
                 )}
               >
-                {modeSelection === "SOCRATIC" ? (
-                  <MessageCircle size={13} />
-                ) : null}
-                {modeSelection === "DEBATE" ? <Swords size={13} /> : null}
-                {modeSelection === "ROLEPLAY" ? <ScrollText size={13} /> : null}
-                {modeSelection === "SOCRATIC"
-                  ? "Socratic"
-                  : modeSelection === "DEBATE"
-                    ? "Debate"
-                    : "Roleplay"}
+                <span className="app-mode-switch-icon">
+                  {modeSelection === "SOCRATIC" ? (
+                    <GraduationCap size={12} />
+                  ) : null}
+                  {modeSelection === "DEBATE" ? <Swords size={12} /> : null}
+                  {modeSelection === "ROLEPLAY" ? (
+                    <ScrollText size={12} />
+                  ) : null}
+                </span>
+                <span className="app-mode-switch-label">
+                  {modeSelection === "SOCRATIC"
+                    ? "Socratic"
+                    : modeSelection === "DEBATE"
+                      ? "Debate"
+                      : "Roleplay"}
+                </span>
                 <ChevronDown
-                  size={13}
+                  size={12}
                   className={cn(
                     "app-mode-switch-chevron transition-transform duration-200",
                     isModeMenuOpen ? "rotate-180" : "rotate-0",
@@ -901,49 +967,55 @@ export default function ChatContainer({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.98 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                    className="app-mode-switch-menu absolute left-0 top-full mt-1.5 min-w-36 origin-top rounded-[14px] border p-1.5"
+                    className="app-mode-switch-menu absolute left-0 top-full mt-2 min-w-42 origin-top rounded-2xl border p-1.5"
                   >
-                    {modeSelection !== "SOCRATIC" ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setModeSelection("SOCRATIC");
-                          setIsModeMenuOpen(false);
-                        }}
-                        className="app-mode-switch-option inline-flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2 text-[11px] transition"
-                      >
-                        <MessageCircle size={13} />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModeSelection("SOCRATIC");
+                        setIsModeMenuOpen(false);
+                      }}
+                      data-active={modeSelection === "SOCRATIC"}
+                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-[11px] transition"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <GraduationCap size={13} />
                         Socratic
-                      </button>
-                    ) : null}
+                      </span>
+                      {modeSelection === "SOCRATIC" ? <Check size={12} /> : null}
+                    </button>
 
-                    {modeSelection !== "DEBATE" ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setModeSelection("DEBATE");
-                          setIsModeMenuOpen(false);
-                        }}
-                        className="app-mode-switch-option inline-flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2 text-[11px] transition"
-                      >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModeSelection("DEBATE");
+                        setIsModeMenuOpen(false);
+                      }}
+                      data-active={modeSelection === "DEBATE"}
+                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-[11px] transition"
+                    >
+                      <span className="inline-flex items-center gap-2">
                         <Swords size={13} />
                         Debate
-                      </button>
-                    ) : null}
+                      </span>
+                      {modeSelection === "DEBATE" ? <Check size={12} /> : null}
+                    </button>
 
-                    {modeSelection !== "ROLEPLAY" ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setModeSelection("ROLEPLAY");
-                          setIsModeMenuOpen(false);
-                        }}
-                        className="app-mode-switch-option inline-flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2 text-[11px] transition"
-                      >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModeSelection("ROLEPLAY");
+                        setIsModeMenuOpen(false);
+                      }}
+                      data-active={modeSelection === "ROLEPLAY"}
+                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-[11px] transition"
+                    >
+                      <span className="inline-flex items-center gap-2">
                         <ScrollText size={13} />
                         Roleplay
-                      </button>
-                    ) : null}
+                      </span>
+                      {modeSelection === "ROLEPLAY" ? <Check size={12} /> : null}
+                    </button>
                   </motion.div>
                 ) : null}
               </AnimatePresence>
@@ -979,7 +1051,7 @@ export default function ChatContainer({
 
                 <div className="mt-6 md:mt-7">
                   <MessageInput
-                    key={sessionId ?? "new-chat"}
+                    key={activeSessionId ?? "new-chat"}
                     onSend={handleSend}
                     isStreaming={isStreaming}
                     initialValue={undefined}
@@ -1105,7 +1177,7 @@ export default function ChatContainer({
       {!isDebateCompleted ? (
         <div className="app-composer-dock sticky bottom-0 z-10 animate-[chatComposerDock_320ms_cubic-bezier(0.22,1,0.36,1)_both] pt-4 pb-2">
           <MessageInput
-            key={sessionId ?? "new-chat"}
+            key={activeSessionId ?? "new-chat"}
             onSend={handleSend}
             isStreaming={isStreaming}
             initialValue={undefined}
@@ -1133,9 +1205,9 @@ export default function ChatContainer({
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-                {sessionId && (
+                {activeSessionId && (
                   <Link
-                    href={`/app/${sessionId}/summary`}
+                    href={`/app/${activeSessionId}/summary`}
                     target="_blank"
                     rel="noreferrer"
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
@@ -1204,9 +1276,9 @@ export default function ChatContainer({
               </p>
 
               <div className="mt-5 flex justify-center">
-                {sessionId && (
+                {activeSessionId && (
                   <Link
-                    href={`/app/${sessionId}/summary`}
+                    href={`/app/${activeSessionId}/summary`}
                     target="_blank"
                     rel="noreferrer"
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"

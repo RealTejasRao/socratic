@@ -12,6 +12,7 @@ import {
   getRequestIp,
 } from "src/server/security/rate-limit";
 import type { ChatImageAttachment } from "src/types/chat";
+import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 
@@ -69,7 +70,14 @@ export async function POST(req: Request) {
     );
   }
 
-  const { sessionId } = await req.json();
+  const body = await req.json();
+  const { sessionId } = body as {
+    sessionId?: unknown;
+    socraticTone?: unknown;
+  };
+  const requestedSocraticTone = isSocraticTone(body?.socraticTone)
+    ? (body.socraticTone as SocraticTone)
+    : "BALANCED";
 
   if (typeof sessionId !== "string" || !sessionId.trim()) {
     return new NextResponse("Invalid sessionId", { status: 400 });
@@ -158,6 +166,7 @@ export async function POST(req: Request) {
     sourceUserMessageId: lastUserMessage.id,
     appendUserMessageToPrompt: false,
     runInsightExtraction: false,
+    socraticTone: requestedSocraticTone,
   });
 
   return new Response(generationResult.readable, {

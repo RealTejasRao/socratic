@@ -33,6 +33,8 @@ interface Session {
 
 interface Props {
   sessions: Session[];
+  showHoverPreviews?: boolean;
+  showModeBadges?: boolean;
 }
 
 type SessionActionDialog =
@@ -52,7 +54,15 @@ type SuccessToastState = {
   isLeaving: boolean;
 } | null;
 
-export default function SidebarSessions({ sessions }: Props) {
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+export default function SidebarSessions({
+  sessions,
+  showHoverPreviews = true,
+  showModeBadges = true,
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -72,6 +82,11 @@ export default function SidebarSessions({ sessions }: Props) {
     "rename" | "delete" | null
   >(null);
   const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
+  const [displaySessions, setDisplaySessions] = useState(sessions);
+
+  useEffect(() => {
+    setDisplaySessions(sessions);
+  }, [sessions]);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -186,21 +201,34 @@ export default function SidebarSessions({ sessions }: Props) {
     const title = renameValue.trim();
     if (!title || pendingAction) return;
 
+    const previousSessions = displaySessions;
     setPendingAction("rename");
 
     try {
+      await wait(1000);
+      setDisplaySessions((current) =>
+        current.map((session) =>
+          session.id === id ? { ...session, title } : session,
+        ),
+      );
+      setActionDialog(null);
+      setRenameValue("");
+      showSuccessToast("Renamed successfully");
+
       const res = await fetch(`/api/v1/chat/sessions/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title }),
       });
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        setDisplaySessions(previousSessions);
+        return;
+      }
 
-      setActionDialog(null);
-      setRenameValue("");
-      showSuccessToast("Renamed successfully");
       router.refresh();
+    } catch {
+      setDisplaySessions(previousSessions);
     } finally {
       setPendingAction(null);
     }
@@ -209,18 +237,26 @@ export default function SidebarSessions({ sessions }: Props) {
   async function handleDelete(id: string) {
     if (pendingAction) return;
 
+    const previousSessions = displaySessions;
     setPendingAction("delete");
 
     try {
+      await wait(1000);
+      setDisplaySessions((current) =>
+        current.filter((session) => session.id !== id),
+      );
+      setActionDialog(null);
+      setRenameValue("");
+      showSuccessToast("Deleted successfully");
+
       const res = await fetch(`/api/v1/chat/sessions/${id}`, {
         method: "DELETE",
       });
 
-      if (!res.ok) return;
-
-      setActionDialog(null);
-      setRenameValue("");
-      showSuccessToast("Deleted successfully");
+      if (!res.ok) {
+        setDisplaySessions(previousSessions);
+        return;
+      }
 
       if (pathname === `/app/${id}`) {
         router.push("/app");
@@ -228,6 +264,8 @@ export default function SidebarSessions({ sessions }: Props) {
       } else {
         router.refresh();
       }
+    } catch {
+      setDisplaySessions(previousSessions);
     } finally {
       setPendingAction(null);
     }
@@ -292,7 +330,7 @@ export default function SidebarSessions({ sessions }: Props) {
         </div>
       )}
 
-      {sessions.map((session) => {
+      {displaySessions.map((session) => {
         const isActive = pathname === `/app/${session.id}`;
         const isOpening = pendingSessionId === session.id && !isActive;
         const hoverPreview =
@@ -317,6 +355,8 @@ export default function SidebarSessions({ sessions }: Props) {
                   : "text-slate-600 hover:bg-black hover:text-white",
             )}
             onMouseEnter={(event) => {
+              if (!showHoverPreviews) return;
+
               if (
                 isOpening ||
                 openMenuId === session.id ||
@@ -346,25 +386,27 @@ export default function SidebarSessions({ sessions }: Props) {
               >
                 <div className="flex min-w-0 items-center gap-2">
                   {session.mode !== "SOCRATIC" && (
-                    <span
-                      className={cn(
-                        "app-session-mode-icon inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500",
-                        isActive
-                          ? "border-slate-300 bg-slate-50"
-                          : "border-slate-200 bg-white",
-                      )}
-                    >
-                      {session.mode === "DEBATE" ? (
-                        <Swords size={11} />
-                      ) : (
-                        <ScrollText size={11} />
-                      )}
-                    </span>
+                    showModeBadges && (
+                      <span
+                        className={cn(
+                          "app-session-mode-icon inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500",
+                          isActive
+                            ? "border-slate-300 bg-slate-50"
+                            : "border-slate-200 bg-white",
+                        )}
+                      >
+                        {session.mode === "DEBATE" ? (
+                          <Swords size={11} />
+                        ) : (
+                          <ScrollText size={11} />
+                        )}
+                      </span>
+                    )
                   )}
                   <p className="truncate text-[11px]">
                     {session.title || "Untitled Session"}
                   </p>
-                  {session.mode !== "SOCRATIC" && !isActive && (
+                  {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (
                     <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500">
                       {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
                     </span>
@@ -429,13 +471,13 @@ export default function SidebarSessions({ sessions }: Props) {
         );
       })}
 
-      {sessions.length === 0 && (
+      {displaySessions.length === 0 && (
         <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-2.5 text-[10px] text-slate-500">
           Chats will appear here.
         </div>
       )}
 
-      {hoveredSession && (
+      {showHoverPreviews && hoveredSession && (
         <div
           className="pointer-events-none fixed z-50 w-64 -translate-y-1/2"
           style={{ left: hoveredSession.x, top: hoveredSession.y }}

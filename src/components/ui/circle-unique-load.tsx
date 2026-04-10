@@ -50,22 +50,26 @@ export function Loading({ screenHFull = true, compact = false }: loadingProps) {
 
   const textClass = isDarkMode
     ? "text-[rgba(241,241,239,0.9)]"
-    : "text-[color:rgba(35,48,52,0.92)]";
+    : "text-[color:rgba(0,0,0,0.82)]";
 
   const stateClass = isDarkMode
-    ? "text-[rgba(99,204,202,0.72)]"
-    : "text-[color:rgba(66,133,140,0.82)]";
+    ? "text-[rgba(255,255,255,0.72)]"
+    : "text-[color:rgba(0,0,0,0.66)]";
 
   const outerRingStyle = {
-    borderColor: isDarkMode ? "rgba(255, 255, 255, 0.35)" : "rgba(35, 48, 52, 0.72)",
+    borderColor: isDarkMode
+      ? "rgba(255, 255, 255, 0.35)"
+      : "rgba(0, 0, 0, 0.72)",
     backgroundColor: "transparent",
   } as const;
 
   const innerRingStyle = {
     borderColor: isDarkMode
-      ? "rgba(99, 204, 202, 0.48)"
-      : "rgba(35, 48, 52, 0.82)",
-    color: isDarkMode ? "rgba(232, 236, 236, 0.92)" : "rgba(35, 48, 52, 0.94)",
+      ? "rgba(255, 255, 255, 0.48)"
+      : "rgba(0, 0, 0, 0.82)",
+    color: isDarkMode
+      ? "rgba(255, 255, 255, 0.92)"
+      : "rgba(0, 0, 0, 0.94)",
     backgroundColor: "transparent",
   } as const;
 

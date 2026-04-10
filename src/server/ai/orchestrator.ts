@@ -45,6 +45,7 @@ import {
   getRoleplayPhilosopherConfig,
   isRoleplayPhilosopherId,
 } from "src/lib/roleplay";
+import type { SocraticTone } from "src/lib/socratic";
 
 const WINDOW_SIZE = 30; // 15 turns
 
@@ -130,6 +131,7 @@ export async function generateReply(params: {
   runInsightExtraction?: boolean;
   replaceBeliefsForSourceMessage?: boolean;
   maxTokens?: number;
+  socraticTone?: SocraticTone;
 }) {
   const pipelineStartedAtMs = Date.now();
   const auxModel = getDeepSeekAuxModel();
@@ -153,6 +155,7 @@ export async function generateReply(params: {
     runInsightExtraction = true,
     replaceBeliefsForSourceMessage = false,
     maxTokens = 500,
+    socraticTone = "BALANCED",
   } = params;
 
   let effectiveSourceMessageId = sourceUserMessageId;
@@ -542,7 +545,10 @@ export async function generateReply(params: {
               retrievalAuthors: [...roleplayPhilosopher.retrievalAuthors],
             },
           })
-        : buildSocraticPrompt(sharedPromptBuilderParams);
+        : buildSocraticPrompt({
+            ...sharedPromptBuilderParams,
+            tone: socraticTone,
+          });
   preStreamTotalMs = Date.now() - pipelineStartedAtMs;
 
   const generationStartedAtMs = Date.now();

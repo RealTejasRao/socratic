@@ -93,26 +93,30 @@ export async function maybeRefreshConversationMemory(params: {
     return;
   }
 
-  const coveredIndex = latestSnapshot?.coveredUntilMessageId
-    ? allMessages.findIndex(
-        (message) => message.id === latestSnapshot.coveredUntilMessageId,
-      )
-    : -1;
-
   const cutoffIndex = allMessages.length - SHORT_TERM_WINDOW - 1;
   if (cutoffIndex < 0) {
     return;
   }
 
+  // Only messages older than the active short-term window are eligible for memory.
+  const truncatedMessages = allMessages.slice(0, cutoffIndex + 1);
+
+  const coveredIndex = latestSnapshot?.coveredUntilMessageId
+    ? truncatedMessages.findIndex(
+        (message) => message.id === latestSnapshot.coveredUntilMessageId,
+      )
+    : -1;
+
   if (
     latestSnapshot?.coveredUntilMessageId &&
-    allMessages[cutoffIndex]?.id === latestSnapshot.coveredUntilMessageId
+    truncatedMessages[truncatedMessages.length - 1]?.id ===
+      latestSnapshot.coveredUntilMessageId
   ) {
     return;
   }
 
   const startIndex = coveredIndex >= 0 ? coveredIndex + 1 : 0;
-  const chunk = allMessages.slice(startIndex, cutoffIndex + 1);
+  const chunk = truncatedMessages.slice(startIndex);
 
   if (chunk.length < MIN_NEW_MESSAGES_FOR_REFRESH) {
     return;

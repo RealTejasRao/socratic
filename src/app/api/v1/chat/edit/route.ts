@@ -13,6 +13,7 @@ import {
   getRequestIp,
 } from "src/server/security/rate-limit";
 import type { ChatImageAttachment } from "src/types/chat";
+import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 const MAX_CONTENT_CHARS = 3000;
@@ -79,7 +80,11 @@ export async function POST(req: Request) {
     sessionId?: string;
     messageId?: string;
     newContent?: string;
+    socraticTone?: unknown;
   };
+  const requestedSocraticTone = isSocraticTone(body?.socraticTone)
+    ? (body.socraticTone as SocraticTone)
+    : "BALANCED";
 
   if (!sessionId || typeof sessionId !== "string") {
     return new NextResponse("Invalid sessionId", { status: 400 });
@@ -200,6 +205,7 @@ export async function POST(req: Request) {
     runInsightExtraction: true,
     replaceBeliefsForSourceMessage: true,
     maxTokens: 300,
+    socraticTone: requestedSocraticTone,
   });
 
   return new Response(generationResult.readable, {

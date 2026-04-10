@@ -10,9 +10,11 @@ import type { ChatImageAttachment } from "src/types/chat";
 import {
   DEBATE_PROMPT_SECTIONS,
   DEBATE_PROMPT_VERSION,
+  SOCRATIC_RUTHLESS_BLUNT_TONE,
   ROLEPLAY_PROMPT_SECTIONS,
   ROLEPLAY_PROMPT_VERSION,
-  SOCRATIC_PROMPT_SECTIONS,
+  SOCRATIC_SIMPLE_CLEAR_TONE,
+  SOCRATIC_BALANCED_TONE,
   SOCRATIC_PROMPT_VERSION,
 } from "src/server/ai/prompt-config";
 import type { KnowledgeRoute } from "src/server/ai/source-router";
@@ -23,6 +25,7 @@ import {
   type DebateDurationPreset,
   type DebateTone,
 } from "src/lib/debate";
+import { type SocraticTone } from "src/lib/socratic";
 
 export type ConversationMessage = {
   role: "user" | "assistant";
@@ -155,24 +158,30 @@ function buildUserPromptContent(
   return parts;
 }
 
-function buildCorePolicyMessage() {
+function buildCorePolicyMessage(tone: SocraticTone) {
   const sectionOrder = ["SYSTEM_ROLE", "OBJECTIVE", "RULES", "STYLE", "OUTPUT"];
+  const sections =
+    tone === "RUTHLESS_BLUNT"
+      ? SOCRATIC_RUTHLESS_BLUNT_TONE
+      : tone === "SIMPLE_CLEAR"
+        ? SOCRATIC_SIMPLE_CLEAR_TONE
+        : SOCRATIC_BALANCED_TONE;
 
   const content = [
     "SYSTEM_ROLE",
-    SOCRATIC_PROMPT_SECTIONS.role,
+    sections.role,
     "",
     "OBJECTIVE",
-    SOCRATIC_PROMPT_SECTIONS.objective,
+    sections.objective,
     "",
     "RULES",
-    SOCRATIC_PROMPT_SECTIONS.rules,
+    sections.rules,
     "",
     "STYLE",
-    SOCRATIC_PROMPT_SECTIONS.style,
+    sections.style,
     "",
     "OUTPUT",
-    SOCRATIC_PROMPT_SECTIONS.output,
+    sections.output,
   ].join("\n");
 
   return { content, sectionOrder };
@@ -325,10 +334,8 @@ function buildDynamicContextMessage(params: {
             .replace(/\s+/g, " ")
             .trim()
             .slice(0, 1250);
-          const chunkTypeLabel =
-            item.chunkType === "explanation" ? "explanation" : "primary_text";
           return [
-            `${index + 1}. [${item.author} - ${item.title} | ${chunkTypeLabel} | chunk ${item.chunkIndex}]`,
+            `${index + 1}. [${item.author}-${item.title}]`,
             `"${excerpt}"`,
           ].join("\n");
         })
@@ -348,6 +355,8 @@ function buildDynamicContextMessage(params: {
     formatBeliefContext(params.beliefContext),
     "",
     "RETRIEVED_PASSAGES",
+    "Citation format for retrieved passages: [Author-Title] only. Never mention chunk numbers or chunk types.",
+    "",
     retrievedPassages,
     "",
     "WEB_FINDINGS",
@@ -388,6 +397,7 @@ export function buildSocraticPrompt(params: {
   appendUserMessageToPrompt?: boolean;
   knowledgeRoute?: KnowledgeRoute;
   includeVisionContent?: boolean;
+  tone?: SocraticTone;
 }): BuiltPrompt {
   const {
     conversationHistory,
@@ -401,9 +411,10 @@ export function buildSocraticPrompt(params: {
     appendUserMessageToPrompt = true,
     knowledgeRoute = "conversation_only",
     includeVisionContent = true,
+    tone = "BALANCED",
   } = params;
 
-  const corePolicy = buildCorePolicyMessage();
+  const corePolicy = buildCorePolicyMessage(tone);
   const dynamicContext = buildDynamicContextMessage({
     beliefContext,
     conversationMemorySummary,

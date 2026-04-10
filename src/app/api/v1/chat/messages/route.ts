@@ -13,6 +13,7 @@ import {
   getRequestIp,
 } from "src/server/security/rate-limit";
 import type { ChatImageAttachment } from "src/types/chat";
+import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
   getRoleplayPhilosopherConfig,
   isRoleplayPhilosopherId,
@@ -83,11 +84,15 @@ export async function POST(req: Request) {
     webSearch?: unknown;
     mode?: unknown;
     roleplayPhilosopherId?: unknown;
+    socraticTone?: unknown;
   };
   const attachments = Array.isArray(body?.attachments)
     ? body.attachments.filter(isValidAttachment).slice(0, MAX_ATTACHMENTS)
     : [];
   const forceWebSearch = body?.webSearch === true;
+  const requestedSocraticTone = isSocraticTone(body?.socraticTone)
+    ? (body.socraticTone as SocraticTone)
+    : "BALANCED";
 
   if (typeof content !== "string") {
     return new NextResponse("Invalid content", { status: 400 });
@@ -218,6 +223,7 @@ export async function POST(req: Request) {
     userContent: content,
     userAttachments: attachments,
     forceWebSearch,
+    socraticTone: requestedSocraticTone,
     now,
     expiresAt,
   });

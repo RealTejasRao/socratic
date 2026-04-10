@@ -1,5 +1,6 @@
 import { generateReply } from "src/server/ai/orchestrator";
 import type { ChatImageAttachment } from "src/types/chat";
+import type { SocraticTone } from "src/lib/socratic";
 
 export async function generateAssistantReply(params: {
   userId: string;
@@ -15,6 +16,7 @@ export async function generateAssistantReply(params: {
   runInsightExtraction?: boolean;
   replaceBeliefsForSourceMessage?: boolean;
   maxTokens?: number;
+  socraticTone?: SocraticTone;
 }) {
   const orchestratorParams: {
     userId: string;
@@ -30,6 +32,7 @@ export async function generateAssistantReply(params: {
     runInsightExtraction?: boolean;
     replaceBeliefsForSourceMessage?: boolean;
     maxTokens?: number;
+    socraticTone?: SocraticTone;
   } = {
     userId: params.userId,
     sessionId: params.sessionId,
@@ -70,6 +73,10 @@ export async function generateAssistantReply(params: {
 
   if (params.maxTokens !== undefined) {
     orchestratorParams.maxTokens = params.maxTokens;
+  }
+
+  if (params.socraticTone !== undefined) {
+    orchestratorParams.socraticTone = params.socraticTone;
   }
 
   return generateReply(orchestratorParams);
