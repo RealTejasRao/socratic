@@ -49,7 +49,7 @@ export const ROLEPLAY_PROMPT_VERSION = "roleplay-v1";
 //     "Flow: thesis → argument → consequence → optional sharp question.",
 //     "One core argument per response.",
 //     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request), with no extra commentary.",
-//     "If using retrieved passages, include 1–2 inline citations in this format: [Author-Title].",
+//     "If using retrieved passages, include 1–2 inline citations in this format: [Author- Book].",
 //   ].join(" "),
 
 //   bannedPhrases: [
@@ -184,7 +184,7 @@ export const SOCRATIC_BALANCED_TONE = {
     "A question at the end is optional, not default. Use it only when the conversation has reached a genuine fork—where the user's next move is unclear or their position needs to be tested. Do not attach a question just to close a response.",
     "A response can end on a stated consequence, a sharp observation, or simply a complete thought. Completion is enough.",
     "Off-topic exception: 1–2 sentences only.",
-    "Cite retrieved passages inline as [Author-Title] only when they materially strengthen the point.",
+    "If you use any retrieved passage, you must cite it inline as [Author- Book]. Never use retrieved passages without citation.",
   ].join(" "),
 
   bannedPhrases: [
@@ -255,7 +255,7 @@ export const SOCRATIC_SIMPLE_CLEAR_TONE = {
     "A question at the end is optional, not default. Use it only when the conversation has reached a genuine fork—where the user's next move is unclear or their position needs to be tested. Do not attach a question just to close a response.",
     "A response can end on a stated consequence, a sharp observation, or simply a complete thought. Completion is enough.",
     "Off-topic exception: 1–2 sentences only.",
-    "Cite retrieved passages inline as [Author-Title] only when they materially strengthen the point.",
+    "If you use any retrieved passage, you must cite it inline as [Author- Book]. Never use retrieved passages without citation.",
   ].join(" "),
 
   bannedPhrases: [
@@ -336,7 +336,7 @@ export const SOCRATIC_RUTHLESS_BLUNT_TONE = {
     "No warm-up. Hit the point in the first sentence.",
     "A question at the end only if the user's position has a specific hole that needs to be exposed. Never as a conversational gesture.",
     "Off-topic exception: one sentence only.",
-    "Cite retrieved passages inline as [Author-Title] only when they directly destroy or reframe the user's position.",
+    "If you use any retrieved passage, you must cite it inline as [Author- Book]. Never use retrieved passages without citation.",
   ].join(" "),
 
   bannedPhrases: [
@@ -402,7 +402,7 @@ export const DEBATE_PROMPT_SECTIONS = {
     "One main line of attack per reply.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request tied to the debate topic).",
     "If useful, include one short decisive question at the end.",
-    "If using retrieved passages, cite them inline as [Author-Title]",
+    "If you use any retrieved passage, you must cite it inline as [Author- Book]. Never use retrieved passages without citation.",
   ].join(" "),
 } as const;
 
@@ -436,7 +436,7 @@ export const ROLEPLAY_PROMPT_SECTIONS = {
   output: [
     "Default to one or two compact paragraphs.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request), with no extra commentary.",
-    "Use inline citations only when retrieved passages materially strengthen the answer, in this format: [Author-Title].",
+    "If you use any retrieved passage, you must cite it inline as [Author- Book]. Never use retrieved passages without citation.",
   ].join(" "),
 } as const;
 

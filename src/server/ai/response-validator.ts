@@ -49,8 +49,8 @@ function overlapScore(a: string, b: string) {
   return overlap / Math.max(1, Math.min(setA.size, setB.size));
 }
 
-function hasCitation(text: string) {
-  return /\[[^\]\n]+\s-\s[^\]\n]+\]/i.test(text);
+function hasRetrievedCitation(text: string) {
+  return /\[[^\]\n]+\s*-\s*[^\]\n]+\]/i.test(text);
 }
 
 function maxOverlapWithPassages(answer: string, passages: string[]) {
@@ -138,7 +138,7 @@ export function validateSocraticResponse(
   if (
     relevantRetrievedContext &&
     (input.retrievedSources?.length ?? 0) > 0 &&
-    !hasCitation(assistant)
+    !hasRetrievedCitation(assistant)
   ) {
     flags.push("missing_source_citation");
     score -= 20;

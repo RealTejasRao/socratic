@@ -355,7 +355,7 @@ function buildDynamicContextMessage(params: {
     formatBeliefContext(params.beliefContext),
     "",
     "RETRIEVED_PASSAGES",
-    "Citation format for retrieved passages: [Author-Title] only. Never mention chunk numbers or chunk types.",
+    "Citation format for retrieved passages: [Author- Book] only. If you use any retrieved passage, you must cite it. Never mention chunk numbers or chunk types.",
     "",
     retrievedPassages,
     "",

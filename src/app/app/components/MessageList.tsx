@@ -518,14 +518,14 @@ export default function MessageList({
                     onChange={(event) => onEditDraftChange(event.target.value)}
                     autoFocus
                     rows={1}
-                    className={`${poppinsClassName} ${editTextClass} min-h-8 w-full resize-none overflow-hidden bg-transparent text-slate-900 outline-none`}
+                    className={`${poppinsClassName} app-user-edit-textarea ${editTextClass} min-h-8 w-full resize-none overflow-hidden bg-transparent text-slate-900 outline-none`}
                   />
                   <div className="mt-3 flex justify-end gap-2">
                     <button
                       type="button"
                       onClick={onEditCancel}
                       disabled={isStreaming}
-                      className="cursor-pointer rounded-[10px] border border-slate-300 bg-white px-3.5 py-1.5 text-[11px] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="app-user-edit-cancel cursor-pointer rounded-[10px] border border-slate-300 bg-white px-3.5 py-1.5 text-[11px] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       Cancel
                     </button>
@@ -533,7 +533,7 @@ export default function MessageList({
                       type="button"
                       onClick={onEditSubmit}
                       disabled={isStreaming || !editDraft.trim()}
-                      className="cursor-pointer rounded-[10px] bg-slate-900 px-3.5 py-1.5 text-[11px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="app-user-edit-send cursor-pointer rounded-[10px] bg-slate-900 px-3.5 py-1.5 text-[11px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       Send
                     </button>
