@@ -205,22 +205,26 @@ function buildDebateCorePolicyMessage(params: DebatePromptParams) {
         return "Tone: Forceful and clear. Attack reasoning directly.";
     }
   })();
+
+  // Separation
   const lengthInstruction = (() => {
     switch (params.durationPreset) {
       case "MIN_15":
-        return "For 15-minute debates, reply in 2-4 sentences and never more than one short paragraph.";
+        return "For 15-minute debates, use exactly 2 compact paragraphs, including the opening turn. Do not collapse into one long paragraph. Keep paragraph size consistent with Socratic-style compactness: usually 2 sentences per paragraph, 3 maximum.";
       case "MIN_20":
-        return "For 20-minute debates, reply in 3-5 sentences and keep it to one compact paragraph.";
+        return "For 20-minute debates, use exactly 2 compact paragraphs, including the opening turn. Do not collapse into one long paragraph. Keep paragraph size consistent with Socratic-style compactness: usually 2 sentences per paragraph, 3 maximum.";
       case "MIN_30":
-        return "For 30-minute debates, reply in 4-6 sentences and avoid sprawling multi-paragraph answers unless the user forces it.";
+        return "For 30-minute debates, use 2-3 compact paragraphs, including the opening turn. Keep paragraph size consistent with Socratic-style compactness: usually 2 sentences per paragraph, 3 maximum.";
       case "HOUR_1":
-        return "For 1-hour debates, you may use 1-2 paragraphs, but each paragraph must carry a distinct argumentative purpose.";
+        return "For 1-hour debates, use 3-4 compact paragraphs, including the opening turn. Keep paragraph size consistent with Socratic-style compactness: usually 2 sentences per paragraph, 3 maximum.";
       case "NO_TIMER":
-        return "For untimed debates, stay disciplined and concise unless depth is genuinely needed.";
+        return "For untimed debates, use 3-4 compact paragraphs, including the opening turn. Keep paragraph size consistent with Socratic-style compactness: usually 2 sentences per paragraph, 3 maximum.";
       default:
         return "Keep replies concise and argument-dense.";
     }
   })();
+
+// ____________________
   const sectionOrder = [
     "SYSTEM_ROLE",
     "OBJECTIVE",

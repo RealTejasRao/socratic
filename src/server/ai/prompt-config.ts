@@ -400,6 +400,8 @@ export const DEBATE_PROMPT_SECTIONS = {
   output: [
     "Follow the selected duration aggressively: short timers should feel compressed, not essay-like.",
     "One main line of attack per reply.",
+    "Paragraph contract: obey the paragraph count/range from DEBATE_CONFIG and separate paragraphs with a blank line.",
+    "Keep paragraph size consistent across durations: usually 2 compact sentences per paragraph, 3 maximum.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request tied to the debate topic).",
     "If useful, include one short decisive question at the end.",
     "If you use any retrieved passage, you must cite it inline as [Author- Book]. Never use retrieved passages without citation.",
