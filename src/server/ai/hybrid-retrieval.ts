@@ -6,7 +6,7 @@ const DEFAULT_VECTOR_LIMIT = 20;
 const DEFAULT_LEXICAL_LIMIT = 30;
 const DEFAULT_OUTPUT_LIMIT = 18;
 const RRF_K = 60;
-const EMBEDDING_TIMEOUT_MS = 1600;
+const EMBEDDING_TIMEOUT_MS = 2500;
 const EMBEDDING_DIMENSIONS = 1536;
 const MIN_LEXICAL_ROWS_TO_SKIP_VECTOR = 20;
 const MAX_LOOSE_LEXICAL_TERMS = 6;
@@ -406,9 +406,8 @@ async function embedQuery(query: string) {
   );
   const controller = new AbortController();
   const timeoutHandle = setTimeout(() => controller.abort(), timeoutMs);
-  let embeddingResponse;
   try {
-    embeddingResponse = await openai.embeddings.create(
+    const embeddingResponse = await openai.embeddings.create(
       {
         model,
         input: query,
@@ -416,11 +415,10 @@ async function embedQuery(query: string) {
       },
       { signal: controller.signal },
     );
+    return embeddingResponse.data[0]?.embedding ?? [];
   } finally {
     clearTimeout(timeoutHandle);
   }
-
-  return embeddingResponse.data[0]?.embedding ?? [];
 }
 
 function buildAuthorFilterSql(authors: string[]) {
