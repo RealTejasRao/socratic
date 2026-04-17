@@ -46,18 +46,8 @@ export default async function AppLayout({ children }: Props) {
       debateStartedAt: true,
       debateEndedAt: true,
       debateWinner: true,
-      debateVerdictSummary: true,
-      debateSummary: true,
       roleplayMeta: true,
       lastActivityAt: true,
-      messages: {
-        where: { role: "USER" },
-        orderBy: { createdAt: "asc" },
-        take: 1,
-        select: {
-          content: true,
-        },
-      },
     },
   });
 
@@ -68,7 +58,7 @@ export default async function AppLayout({ children }: Props) {
       mode: session.mode,
       debate: serializeSessionMeta(session).debate ?? null,
       roleplay: serializeSessionMeta(session).roleplay ?? null,
-      firstMessagePreview: session.messages[0]?.content ?? null,
+      firstMessagePreview: null,
     }),
   );
 

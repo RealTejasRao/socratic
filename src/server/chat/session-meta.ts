@@ -34,8 +34,8 @@ type SessionShape = {
   debateStartedAt: Date | null;
   debateEndedAt: Date | null;
   debateWinner: "USER" | "ASSISTANT" | "DRAW" | null;
-  debateVerdictSummary: string | null;
-  debateSummary: string | null;
+  debateVerdictSummary?: string | null;
+  debateSummary?: string | null;
   roleplayMeta?: unknown;
 };
 
@@ -70,8 +70,8 @@ export function serializeDebateState(
     startedAt: session.debateStartedAt?.toISOString() ?? null,
     endedAt: session.debateEndedAt?.toISOString() ?? null,
     winner: session.debateWinner,
-    verdictSummary: session.debateVerdictSummary,
-    summary: session.debateSummary,
+    verdictSummary: session.debateVerdictSummary ?? null,
+    summary: session.debateSummary ?? null,
   };
 }
 

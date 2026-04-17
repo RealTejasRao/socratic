@@ -3,6 +3,14 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
 import "./globals.css";
 
+const THEME_INIT_SCRIPT = `(() => {
+  try {
+    const savedTheme = localStorage.getItem("socratic:theme");
+    const useDark = savedTheme ? savedTheme === "dark" : true;
+    document.documentElement.classList.toggle("app-dark", useDark);
+  } catch {}
+})();`;
+
 export const metadata: Metadata = {
   title: "Socratic AI- Your Personal AI for Philosophy",
   description: "Question-first Socratic dialogue system",
@@ -37,8 +45,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: THEME_INIT_SCRIPT,
+          }}
+        />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link
           rel="preconnect"

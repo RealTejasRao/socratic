@@ -1103,6 +1103,18 @@ html.app-dark .app-sidebar img {
   filter: none;
 }
 
+.app-brand-logo-light {
+  display: none;
+}
+
+html.app-dark .app-sidebar .app-brand-logo-dark {
+  display: none;
+}
+
+html.app-dark .app-sidebar .app-brand-logo-light {
+  display: block;
+}
+
 html.app-dark .msg-action-btn {
   background: transparent !important;
   border-color: transparent !important;

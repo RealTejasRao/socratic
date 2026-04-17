@@ -344,7 +344,7 @@ export default function SidebarSessions({
           <div
             key={session.id}
             className={cn(
-              "app-session-row group flex items-center justify-between rounded-xl px-2 py-1.25",
+              "app-session-row group flex items-center justify-between rounded-xl px-2 py-1.25 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
               isOpening && "app-session-row-loading",
               isActive
                 ? session.mode === "DEBATE"
@@ -352,7 +352,7 @@ export default function SidebarSessions({
                   : "bg-white text-slate-900"
                 : isOpening
                   ? "text-slate-600"
-                  : "text-slate-600 hover:bg-black hover:text-white",
+                  : "text-slate-600 hover:translate-x-[1px] hover:bg-black hover:text-white",
             )}
             onMouseEnter={(event) => {
               if (!showHoverPreviews) return;
@@ -389,7 +389,7 @@ export default function SidebarSessions({
                     showModeBadges && (
                       <span
                         className={cn(
-                          "app-session-mode-icon inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500",
+                          "app-session-mode-icon inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           isActive
                             ? "border-slate-300 bg-slate-50"
                             : "border-slate-200 bg-white",
@@ -407,7 +407,7 @@ export default function SidebarSessions({
                     {session.title || "Untitled Session"}
                   </p>
                   {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (
-                    <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500">
+                    <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]">
                       {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
                     </span>
                   )}
@@ -430,7 +430,7 @@ export default function SidebarSessions({
                         current === session.id ? null : session.id,
                       )
                     }
-                    className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-600"
+                    className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 hover:scale-[1.02] hover:bg-slate-100 hover:text-slate-600"
                     aria-label="Open chat actions"
                   >
                     <MoreHorizontal size={13} />

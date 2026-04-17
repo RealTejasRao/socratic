@@ -17,7 +17,6 @@ import {
   X,
 } from "lucide-react";
 import { ROUTES } from "src/lib/routes";
-import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { Switch } from "@/src/components/ui/switch";
 import {
   SOCRATIC_TONE_OPTIONS,
@@ -47,6 +46,8 @@ interface Props {
 }
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
+const smoothUiClass =
+  "transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]";
 const COLLAPSE_BY_DEFAULT_KEY = "socratic:sidebar:collapseByDefault";
 const SHOW_HOVER_PREVIEWS_KEY = "socratic:sidebar:showHoverPreviews";
 const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
@@ -301,18 +302,24 @@ export default function AppSidebar({ sessions }: Props) {
                 : "flex items-center gap-2.5 px-1"
             }
           >
-            <Image
-              src={resolveCloudinaryPublicAsset(
-                isDarkMode
-                  ? "/brand/Logo_Light.png"
-                  : "/brand/Logo_Dark_SVG.svg",
-              )}
-              alt="Socratic AI logo"
-              width={30}
-              height={30}
-              className="h-7 w-7 shrink-0 object-contain"
-              priority
-            />
+            <span className="relative h-7 w-7 shrink-0">
+              <Image
+                src="/brand/Logo_Dark_SVG.svg"
+                alt="Socratic AI logo"
+                width={30}
+                height={30}
+                className="app-brand-logo-dark h-7 w-7 object-contain"
+                priority
+              />
+              <Image
+                src="/brand/Logo_Light.png"
+                alt="Socratic AI logo"
+                width={30}
+                height={30}
+                className="app-brand-logo-light absolute inset-0 h-7 w-7 object-contain"
+                priority
+              />
+            </span>
             {!collapsed && (
               <span className="text-[20px] tracking-wide font-normal text-slate-900 font-[Georgia,serif]">
                 Socratic AI
@@ -367,7 +374,7 @@ export default function AppSidebar({ sessions }: Props) {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="mx-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
+                className={`mx-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-black hover:bg-white/70 hover:text-black ${smoothUiClass}`}
                 aria-label="Settings"
               >
                 <Settings size={13} />
@@ -421,7 +428,7 @@ export default function AppSidebar({ sessions }: Props) {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
+                className={`flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black ${smoothUiClass}`}
               >
                 <Settings size={12} /> Settings
               </button>
@@ -460,6 +467,7 @@ export default function AppSidebar({ sessions }: Props) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 14, scale: 0.985 }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              style={{ willChange: "transform, opacity" }}
               className={`app-card relative z-[121] flex h-[min(520px,82vh)] w-[min(760px,90vw)] overflow-hidden rounded-2xl border shadow-[0_22px_70px_rgba(15,23,42,0.24)] ${
                 isDarkMode
                   ? "border-[#3d3d42] bg-[#262624]"
@@ -488,7 +496,7 @@ export default function AppSidebar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => setActiveSettingsTab("GENERAL")}
-                  className={`w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] transition ${
+                  className={`w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] ${smoothUiClass} ${
                     activeSettingsTab === "GENERAL"
                       ? isDarkMode
                         ? "bg-[#35363a] text-slate-100"
@@ -503,7 +511,7 @@ export default function AppSidebar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => setActiveSettingsTab("SOCRATIC")}
-                  className={`w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] transition ${
+                  className={`w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] ${smoothUiClass} ${
                     activeSettingsTab === "SOCRATIC"
                       ? isDarkMode
                         ? "bg-[#35363a] text-slate-100"
@@ -544,7 +552,7 @@ export default function AppSidebar({ sessions }: Props) {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(false)}
-                className={`absolute right-5 top-4 cursor-pointer rounded-full p-1 transition ${
+                className={`absolute right-5 top-4 cursor-pointer rounded-full p-1 ${smoothUiClass} ${
                   isDarkMode
                     ? "text-slate-400 hover:bg-[#36373b] hover:text-slate-200"
                     : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
@@ -595,24 +603,56 @@ export default function AppSidebar({ sessions }: Props) {
                         <button
                           type="button"
                           onClick={() => handleThemePreference("light")}
-                          className={`cursor-pointer rounded-md px-3 py-1 text-[11px] transition ${
+                          className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] ${smoothUiClass} ${
                             !isDarkMode
-                              ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                              ? "text-slate-900"
                               : "text-slate-400 hover:text-slate-200"
                           }`}
                         >
-                          Light
+                          {!isDarkMode && (
+                            <motion.span
+                              layoutId="settings-theme-active-pill"
+                              className={`absolute inset-0 rounded-md ${
+                                isDarkMode
+                                  ? "bg-[#3a3b40] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
+                                  : "bg-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                              }`}
+                              transition={{
+                                type: "spring",
+                                stiffness: 320,
+                                damping: 28,
+                                mass: 0.7,
+                              }}
+                            />
+                          )}
+                          <span className="relative z-10">Light</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => handleThemePreference("dark")}
-                          className={`cursor-pointer rounded-md px-3 py-1 text-[11px] transition ${
+                          className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] ${smoothUiClass} ${
                             isDarkMode
-                              ? "bg-[#3a3b40] text-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
+                              ? "text-slate-100"
                               : "text-slate-500 hover:text-slate-700"
                           }`}
                         >
-                          Dark
+                          {isDarkMode && (
+                            <motion.span
+                              layoutId="settings-theme-active-pill"
+                              className={`absolute inset-0 rounded-md ${
+                                isDarkMode
+                                  ? "bg-[#3a3b40] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
+                                  : "bg-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                              }`}
+                              transition={{
+                                type: "spring",
+                                stiffness: 320,
+                                damping: 28,
+                                mass: 0.7,
+                              }}
+                            />
+                          )}
+                          <span className="relative z-10">Dark</span>
                         </button>
                       </div>
                     </div>
@@ -712,7 +752,7 @@ export default function AppSidebar({ sessions }: Props) {
                               onClick={() =>
                                 handleChatFontSizeChange(option.value)
                               }
-                              className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] transition-colors duration-200 ${
+                              className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] ${smoothUiClass} ${
                                 isActive
                                   ? isDarkMode
                                     ? "text-slate-100"
@@ -732,9 +772,9 @@ export default function AppSidebar({ sessions }: Props) {
                                   }`}
                                   transition={{
                                     type: "spring",
-                                    stiffness: 420,
-                                    damping: 34,
-                                    mass: 0.6,
+                                    stiffness: 320,
+                                    damping: 28,
+                                    mass: 0.7,
                                   }}
                                 />
                               )}
@@ -786,7 +826,7 @@ export default function AppSidebar({ sessions }: Props) {
                           onClick={() =>
                             setIsToneDropdownOpen((current) => !current)
                           }
-                          className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-left text-[11px] transition ${
+                          className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-left text-[11px] ${smoothUiClass} ${
                             isDarkMode
                               ? "border-[#4a4b50] bg-[#25262a] text-slate-100 hover:border-[#5b5c62] hover:bg-[#2d2e33]"
                               : "border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-300 hover:bg-slate-100"
@@ -830,7 +870,7 @@ export default function AppSidebar({ sessions }: Props) {
                                   onClick={() =>
                                     handleSocraticToneChange(option.value)
                                   }
-                                  className={`w-full cursor-pointer rounded-md px-2.5 py-2 text-left transition ${
+                                  className={`w-full cursor-pointer rounded-md px-2.5 py-2 text-left ${smoothUiClass} ${
                                     socraticTone === option.value
                                       ? isDarkMode
                                         ? "bg-[#3a3b40] text-slate-100"
@@ -884,7 +924,7 @@ export default function AppSidebar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsResetDefaultsConfirmOpen(true)}
-                  className={`cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] transition ${
+                  className={`cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] ${smoothUiClass} ${
                     isDarkMode
                       ? "border-[#4a4b50] text-slate-300 hover:bg-[#121212] hover:text-slate-100"
                       : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -895,7 +935,7 @@ export default function AppSidebar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsSettingsOpen(false)}
-                  className={`cursor-pointer rounded-lg px-3 py-1.5 text-[10px] text-white transition ${
+                  className={`cursor-pointer rounded-lg px-3 py-1.5 text-[10px] text-white ${smoothUiClass} ${
                     isDarkMode
                       ? "bg-emerald-600 hover:bg-emerald-700"
                       : "bg-emerald-600 hover:bg-emerald-700"
@@ -944,7 +984,7 @@ export default function AppSidebar({ sessions }: Props) {
                         <button
                           type="button"
                           onClick={() => setIsResetDefaultsConfirmOpen(false)}
-                          className={`cursor-pointer rounded-lg border px-3 py-1.5 text-[11px] transition ${
+                          className={`cursor-pointer rounded-lg border px-3 py-1.5 text-[11px] ${smoothUiClass} ${
                             isDarkMode
                               ? "border-[#4a4946] text-slate-300 hover:bg-[#333230] hover:text-slate-100"
                               : "border-slate-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -959,7 +999,7 @@ export default function AppSidebar({ sessions }: Props) {
                             setIsResetDefaultsConfirmOpen(false);
                             showResetToast();
                           }}
-                          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-[11px] text-white transition hover:bg-rose-700"
+                          className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-[11px] text-white hover:bg-rose-700 ${smoothUiClass}`}
                         >
                           Reset
                         </button>
