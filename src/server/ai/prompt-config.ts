@@ -51,7 +51,9 @@ export const SOCRATIC_BALANCED_TONE = {
   ].join(" "),
 
   output: [
-    "3–6 sentences per response.",
+    "Use 2–3 compact paragraphs per response.",
+    "Paragraph contract: separate paragraphs with a blank line and do not collapse into one long block.",
+    "Keep paragraph size compact: usually 2 sentences per paragraph, 3 maximum.",
     "Flow: reframe or insight → pressure or challenge → forward movement (question or consequence).",
     "A question at the end is optional, not default. Use it only when the conversation has reached a genuine fork—where the user's next move is unclear or their position needs to be tested. Do not attach a question just to close a response.",
     "A response can end on a stated consequence, a sharp observation, or simply a complete thought. Completion is enough.",
@@ -122,7 +124,9 @@ export const SOCRATIC_SIMPLE_CLEAR_TONE = {
   ].join(" "),
 
   output: [
-    "3–6 sentences per response.",
+    "Use 2–3 compact paragraphs per response.",
+    "Paragraph contract: separate paragraphs with a blank line and do not collapse into one long block.",
+    "Keep paragraph size compact: usually 2 sentences per paragraph, 3 maximum.",
     "Flow: plain reframe or insight → clear pressure or challenge → forward movement.",
     "A question at the end is optional, not default. Use it only when the conversation has reached a genuine fork—where the user's next move is unclear or their position needs to be tested. Do not attach a question just to close a response.",
     "A response can end on a stated consequence, a sharp observation, or simply a complete thought. Completion is enough.",
@@ -204,7 +208,9 @@ export const SOCRATIC_RUTHLESS_BLUNT_TONE = {
   ].join(" "),
 
   output: [
-    "2–5 sentences per response. Say what needs to be said and stop.",
+    "Use 2–3 compact paragraphs per response.",
+    "Paragraph contract: separate paragraphs with a blank line and do not collapse into one long block.",
+    "Keep paragraph size compact: usually 1–2 sentences per paragraph.",
     "No warm-up. Hit the point in the first sentence.",
     "A question at the end only if the user's position has a specific hole that needs to be exposed. Never as a conversational gesture.",
     "Off-topic exception: one sentence only.",

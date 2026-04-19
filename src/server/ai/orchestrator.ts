@@ -832,7 +832,7 @@ export async function generateReply(params: {
   const stream = await generationClient.chat.completions.stream({
     model: effectiveModel,
     messages: builtPrompt.messages,
-    temperature: 1.1,
+    temperature: 1.5,
     max_tokens: effectiveMaxTokens,
   });
   streamSetupMs = Date.now() - streamSetupStartedAtMs;
