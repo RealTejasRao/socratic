@@ -70,14 +70,14 @@ function readBooleanSetting(key: string, fallback: boolean): boolean {
 
 function readSocraticToneSetting(): SocraticTone {
   if (typeof window === "undefined") {
-    return "BALANCED";
+    return "RUTHLESS_BLUNT";
   }
 
   try {
     const value = localStorage.getItem(SOCRATIC_TONE_KEY);
-    return isSocraticTone(value) ? value : "BALANCED";
+    return isSocraticTone(value) ? value : "RUTHLESS_BLUNT";
   } catch {
-    return "BALANCED";
+    return "RUTHLESS_BLUNT";
   }
 }
 
@@ -243,7 +243,7 @@ export default function AppSidebar({ sessions }: Props) {
     handleCollapseDefaultChange(false);
     handleHoverPreviewsChange(true);
     handleModeBadgesChange(true);
-    handleSocraticToneChange("BALANCED");
+    handleSocraticToneChange("RUTHLESS_BLUNT");
     handleChatFontSizeChange("MEDIUM");
   }
 

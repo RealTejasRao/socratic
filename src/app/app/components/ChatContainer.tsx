@@ -172,14 +172,14 @@ function pickRandomQuestions(questions: string[], count: number) {
 
 function getSocraticToneSetting(): SocraticTone {
   if (typeof window === "undefined") {
-    return "BALANCED";
+    return "RUTHLESS_BLUNT";
   }
 
   try {
     const stored = localStorage.getItem(SOCRATIC_TONE_KEY);
-    return isSocraticTone(stored) ? stored : "BALANCED";
+    return isSocraticTone(stored) ? stored : "RUTHLESS_BLUNT";
   } catch {
-    return "BALANCED";
+    return "RUTHLESS_BLUNT";
   }
 }
 
@@ -216,6 +216,7 @@ export default function ChatContainer({
   const [errorToast, setErrorToast] = useState<ErrorToastState>(null);
   const [activeSessionId, setActiveSessionId] = useState(sessionId);
   const tempIdRef = useRef(0);
+  const activeStreamControllerRef = useRef<AbortController | null>(null);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -596,6 +597,49 @@ export default function ChatContainer({
     return `${prefix}-${tempIdRef.current}`;
   }
 
+  function isAbortError(error: unknown) {
+    return error instanceof Error && error.name === "AbortError";
+  }
+
+  function handleStopStreaming() {
+    const activeController = activeStreamControllerRef.current;
+    if (!activeController) {
+      return;
+    }
+
+    activeController.abort();
+    activeStreamControllerRef.current = null;
+    setMessages((prev) => {
+      const targetIndex = [...prev]
+        .reverse()
+        .findIndex(
+          (message) =>
+            message.role === "ASSISTANT" &&
+            message.id.startsWith("assistant-temp-") &&
+            !message.content.trim(),
+        );
+
+      if (targetIndex === -1) {
+        return prev;
+      }
+
+      const absoluteIndex = prev.length - 1 - targetIndex;
+      const next = [...prev];
+      const target = next[absoluteIndex];
+
+      if (!target) {
+        return prev;
+      }
+
+      next[absoluteIndex] = {
+        ...target,
+        content: "Generation stopped.",
+      };
+      return next;
+    });
+    setIsStreaming(false);
+  }
+
   async function handleSend(payload: {
     content: string;
     attachments: ChatImageAttachment[];
@@ -603,6 +647,7 @@ export default function ChatContainer({
   }) {
     if (isStreaming || isDebateCompleted) return;
     const tempId = createTempId("temp");
+    let assistantMessageId: string | null = null;
     const { content, attachments, webSearch } = payload;
 
     const optimisticMessage: ChatMessage = {
@@ -617,8 +662,10 @@ export default function ChatContainer({
 
     try {
       setIsStreaming(true);
+      const streamController = new AbortController();
+      activeStreamControllerRef.current = streamController;
 
-      const assistantMessageId = createTempId("assistant-temp");
+      assistantMessageId = createTempId("assistant-temp");
 
       setMessages((prev) => [
         ...prev,
@@ -633,6 +680,7 @@ export default function ChatContainer({
       const res = await fetch("/api/v1/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: streamController.signal,
         body: JSON.stringify({
           sessionId: activeSessionId,
           content,
@@ -665,8 +713,6 @@ export default function ChatContainer({
               message.id !== optimisticMessage.id,
           ),
         );
-        setIsStreaming(false);
-
         if (!rateLimitMessage) {
           router.refresh();
         }
@@ -713,11 +759,17 @@ export default function ChatContainer({
         );
       }
 
-      setIsStreaming(false);
       if (!createdSessionFromNewChat) {
         router.refresh();
       }
-    } catch {
+    } catch (error) {
+      if (!isAbortError(error)) {
+        setMessages((prev) =>
+          prev.filter((message) => message.id !== assistantMessageId),
+        );
+      }
+    } finally {
+      activeStreamControllerRef.current = null;
       setIsStreaming(false);
     }
   }
@@ -751,63 +803,72 @@ export default function ChatContainer({
   async function handleRegenerate() {
     if (!activeSessionId || isStreaming || isDebateCompleted) return;
 
-    setIsStreaming(true);
+    try {
+      setIsStreaming(true);
+      const streamController = new AbortController();
+      activeStreamControllerRef.current = streamController;
 
-    const assistantMessageId = createTempId("assistant-temp");
+      const assistantMessageId = createTempId("assistant-temp");
 
-    setMessages((prev) => [
-      ...prev.slice(0, -1),
-      {
-        id: assistantMessageId,
-        role: "ASSISTANT",
-        content: "",
-        createdAt: new Date().toISOString(),
-      },
-    ]);
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        {
+          id: assistantMessageId,
+          role: "ASSISTANT",
+          content: "",
+          createdAt: new Date().toISOString(),
+        },
+      ]);
 
-    const res = await fetch("/api/v1/chat/regenerate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: activeSessionId,
-        socraticTone: getSocraticToneSetting(),
-      }),
-    });
+      const res = await fetch("/api/v1/chat/regenerate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: streamController.signal,
+        body: JSON.stringify({
+          sessionId: activeSessionId,
+          socraticTone: getSocraticToneSetting(),
+        }),
+      });
 
-    if (!res.ok || !res.body) {
-      const rateLimitMessage = await readRateLimitMessage(res);
-      if (rateLimitMessage) {
-        showErrorToast(rateLimitMessage);
+      if (!res.ok || !res.body) {
+        const rateLimitMessage = await readRateLimitMessage(res);
+        if (rateLimitMessage) {
+          showErrorToast(rateLimitMessage);
+        }
+
+        if (!rateLimitMessage) {
+          router.refresh();
+        }
+        return;
       }
 
-      setIsStreaming(false);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
 
-      if (!rateLimitMessage) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === assistantMessageId
+              ? { ...message, content: `${message.content}${chunk}` }
+              : message,
+          ),
+        );
+      }
+
+      router.refresh();
+    } catch (error) {
+      if (!isAbortError(error)) {
         router.refresh();
       }
-      return;
+    } finally {
+      activeStreamControllerRef.current = null;
+      setIsStreaming(false);
     }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value);
-
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === assistantMessageId
-            ? { ...message, content: `${message.content}${chunk}` }
-            : message,
-        ),
-      );
-    }
-
-    setIsStreaming(false);
-    router.refresh();
   }
 
   function handleEdit(message: ChatMessage) {
@@ -827,98 +888,107 @@ export default function ChatContainer({
       return;
     const newContent = editDraft;
 
-    setIsStreaming(true);
+    try {
+      setIsStreaming(true);
+      const streamController = new AbortController();
+      activeStreamControllerRef.current = streamController;
 
-    const index = messages.findIndex(
-      (message) => message.id === editingMessage.id,
-    );
-    const assistantMessageId = createTempId("assistant-temp");
-
-    setMessages((prev) => [
-      ...prev.slice(0, index),
-      editingMessage.attachments
-        ? {
-            ...editingMessage,
-            content: newContent.trim(),
-            attachments: editingMessage.attachments,
-          }
-        : {
-            ...editingMessage,
-            content: newContent.trim(),
-          },
-      {
-        id: assistantMessageId,
-        role: "ASSISTANT",
-        content: "",
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-
-    let messageIdForEdit = editingMessage.id;
-
-    if (messageIdForEdit.startsWith("temp-")) {
-      const lookupRes = await fetch(
-        `/api/v1/chat/sessions/${activeSessionId}/messages`,
+      const index = messages.findIndex(
+        (message) => message.id === editingMessage.id,
       );
-      if (lookupRes.ok) {
-        const persistedMessages = (await lookupRes.json()) as ChatMessage[];
-        const latestUserMessage = [...persistedMessages]
-          .reverse()
-          .find((message) => message.role === "USER");
+      const assistantMessageId = createTempId("assistant-temp");
 
-        if (latestUserMessage) {
-          messageIdForEdit = latestUserMessage.id;
+      setMessages((prev) => [
+        ...prev.slice(0, index),
+        editingMessage.attachments
+          ? {
+              ...editingMessage,
+              content: newContent.trim(),
+              attachments: editingMessage.attachments,
+            }
+          : {
+              ...editingMessage,
+              content: newContent.trim(),
+            },
+        {
+          id: assistantMessageId,
+          role: "ASSISTANT",
+          content: "",
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+
+      let messageIdForEdit = editingMessage.id;
+
+      if (messageIdForEdit.startsWith("temp-")) {
+        const lookupRes = await fetch(
+          `/api/v1/chat/sessions/${activeSessionId}/messages`,
+        );
+        if (lookupRes.ok) {
+          const persistedMessages = (await lookupRes.json()) as ChatMessage[];
+          const latestUserMessage = [...persistedMessages]
+            .reverse()
+            .find((message) => message.role === "USER");
+
+          if (latestUserMessage) {
+            messageIdForEdit = latestUserMessage.id;
+          }
         }
       }
-    }
 
-    const res = await fetch("/api/v1/chat/edit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: activeSessionId,
-        messageId: messageIdForEdit,
-        newContent,
-        socraticTone: getSocraticToneSetting(),
-      }),
-    });
+      const res = await fetch("/api/v1/chat/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: streamController.signal,
+        body: JSON.stringify({
+          sessionId: activeSessionId,
+          messageId: messageIdForEdit,
+          newContent,
+          socraticTone: getSocraticToneSetting(),
+        }),
+      });
 
-    if (!res.ok || !res.body) {
-      const rateLimitMessage = await readRateLimitMessage(res);
-      if (rateLimitMessage) {
-        showErrorToast(rateLimitMessage);
+      if (!res.ok || !res.body) {
+        const rateLimitMessage = await readRateLimitMessage(res);
+        if (rateLimitMessage) {
+          showErrorToast(rateLimitMessage);
+        }
+
+        if (!rateLimitMessage) {
+          router.refresh();
+        }
+        return;
       }
 
-      setIsStreaming(false);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
 
-      if (!rateLimitMessage) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === assistantMessageId
+              ? { ...message, content: `${message.content}${chunk}` }
+              : message,
+          ),
+        );
+      }
+
+      setEditingMessage(null);
+      setEditDraft("");
+      router.refresh();
+    } catch (error) {
+      if (!isAbortError(error)) {
         router.refresh();
       }
-      return;
+    } finally {
+      activeStreamControllerRef.current = null;
+      setIsStreaming(false);
     }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const chunk = decoder.decode(value);
-
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === assistantMessageId
-            ? { ...message, content: `${message.content}${chunk}` }
-            : message,
-        ),
-      );
-    }
-
-    setEditingMessage(null);
-    setEditDraft("");
-    setIsStreaming(false);
-    router.refresh();
   }
 
   if (!hasMessages) {
@@ -1053,6 +1123,7 @@ export default function ChatContainer({
                   <MessageInput
                     key={activeSessionId ?? "new-chat"}
                     onSend={handleSend}
+                    onStop={handleStopStreaming}
                     isStreaming={isStreaming}
                     initialValue={undefined}
                     variant="hero"
@@ -1116,6 +1187,7 @@ export default function ChatContainer({
                   <MessageInput
                     key={`roleplay-${pendingRoleplayPhilosopher.id}`}
                     onSend={handleSend}
+                    onStop={handleStopStreaming}
                     isStreaming={isStreaming}
                     initialValue={undefined}
                     variant="hero"
@@ -1179,6 +1251,7 @@ export default function ChatContainer({
           <MessageInput
             key={activeSessionId ?? "new-chat"}
             onSend={handleSend}
+            onStop={handleStopStreaming}
             isStreaming={isStreaming}
             initialValue={undefined}
             placeholder={inputPlaceholder}

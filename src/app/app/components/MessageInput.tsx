@@ -15,6 +15,7 @@ import {
   Mic,
   Paperclip,
   Plus,
+  Square,
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
@@ -65,6 +66,7 @@ interface Props {
     attachments: ChatImageAttachment[];
     webSearch: boolean;
   }) => void;
+  onStop?: () => void;
   isStreaming: boolean;
   initialValue: string | undefined;
   variant?: "default" | "hero";
@@ -94,6 +96,7 @@ const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 export default function MessageInput({
   onSend,
+  onStop,
   isStreaming,
   initialValue,
   variant = "default",
@@ -813,24 +816,28 @@ export default function MessageInput({
             )}
             <button
               type="button"
-              onClick={handleSend}
+              onClick={isStreaming ? () => onStop?.() : handleSend}
               disabled={
-                isStreaming ||
                 isUploadingAttachments ||
-                (!content.trim() && attachments.length === 0)
+                (!isStreaming && !content.trim() && attachments.length === 0)
               }
               className={cn(
                 "app-send-button inline-flex h-7.5 w-7.5 items-center justify-center rounded-full bg-black text-white",
-                isStreaming ||
-                  isUploadingAttachments ||
-                  (!content.trim() && attachments.length === 0)
+                isUploadingAttachments ||
+                  (!isStreaming && !content.trim() && attachments.length === 0)
                   ? "cursor-not-allowed opacity-45"
-                  : "cursor-pointer transition hover:bg-slate-800",
+                  : isStreaming
+                    ? "cursor-pointer transition hover:bg-rose-700"
+                    : "cursor-pointer transition hover:bg-slate-800",
               )}
-              aria-label="Send"
-              data-tooltip="Send message"
+              aria-label={isStreaming ? "Stop generating" : "Send"}
+              data-tooltip={isStreaming ? "Stop generating" : "Send message"}
             >
-              <ArrowUp size={13} strokeWidth={2.4} />
+              {isStreaming ? (
+                <Square size={10} fill="currentColor" />
+              ) : (
+                <ArrowUp size={13} strokeWidth={2.4} />
+              )}
             </button>
           </div>
         </div>

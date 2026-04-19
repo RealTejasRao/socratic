@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   };
   const requestedSocraticTone = isSocraticTone(body?.socraticTone)
     ? (body.socraticTone as SocraticTone)
-    : "BALANCED";
+    : "RUTHLESS_BLUNT";
 
   if (typeof sessionId !== "string" || !sessionId.trim()) {
     return new NextResponse("Invalid sessionId", { status: 400 });

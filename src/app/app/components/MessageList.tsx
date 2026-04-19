@@ -579,7 +579,10 @@ export default function MessageList({
                       )}
                     </div>
                   )}
-                  {isAssistant && !message.content ? (
+                  {isAssistant &&
+                  isStreaming &&
+                  isLastAssistant &&
+                  !message.content.trim() ? (
                     <ThinkingBubble />
                   ) : (
                     renderMessageContentWithLinks(message.content)
