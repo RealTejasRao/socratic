@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     scope: "chat:messages",
     userId: clerkUserId,
     ip: getRequestIp(req),
-    limit: 180,
+    limit: 60,
     windowMs: 60_000,
   });
 
@@ -71,6 +71,24 @@ export async function POST(req: Request) {
       {
         status: 429,
         headers: createRateLimitHeaders(rateLimit),
+      },
+    );
+  }
+
+  const generationRateLimit = await consumeUserRateLimit({
+    scope: "chat:generation",
+    userId: clerkUserId,
+    ip: getRequestIp(req),
+    limit: 24,
+    windowMs: 60_000,
+  });
+
+  if (!generationRateLimit.allowed) {
+    return new NextResponse(
+      "Generation rate limit reached. Please slow down and try again shortly.",
+      {
+        status: 429,
+        headers: createRateLimitHeaders(generationRateLimit),
       },
     );
   }

@@ -341,8 +341,15 @@ export function getDebateTimeRemainingSeconds(params: {
 
 export async function validateDebateTopic(topic: string) {
   const lightweight = validatePhilosophyTopicLightweight(topic);
+  const topicWordCount = lightweight.normalizedTopic
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 
-  if (lightweight.isValid || !lightweight.normalizedTopic) {
+  if (
+    lightweight.isValid ||
+    !lightweight.normalizedTopic ||
+    topicWordCount < 3
+  ) {
     return lightweight;
   }
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertCircle,
   ArrowRight,
   Check,
   Clock3,
@@ -92,8 +93,8 @@ export default function DebateModeSetup() {
     ? "border-[#2a2a2a] bg-black text-[#f5f5f3]"
     : "border-zinc-200 bg-black text-white";
   const errorClass = isDarkMode
-    ? "border-[#5b4340] bg-[linear-gradient(180deg,#322625_0%,#2a2120_100%)] text-[#f3e6e4]"
-    : "border-zinc-300 bg-zinc-50 text-zinc-700";
+    ? "border-[#7a3431] bg-[linear-gradient(180deg,#3b1f1d_0%,#2f1918_100%)] text-[#ffd9d6]"
+    : "border-rose-300 bg-[linear-gradient(180deg,#fff6f6_0%,#ffecec_100%)] text-rose-800";
   const modalBackdropClass = isDarkMode
     ? "bg-[rgba(15,15,15,0.45)]"
     : "bg-slate-950/16";
@@ -189,15 +190,17 @@ export default function DebateModeSetup() {
       };
 
       if (!response.ok || !payload.isValid) {
+        const suggestions = (payload.reframingSuggestions ?? []).filter(
+          (suggestion) => typeof suggestion === "string" && suggestion.trim(),
+        );
+
         setError(
           payload.reason ||
             "That topic does not fit debate mode yet. Reframe it philosophically.",
         );
-        setTopicSuggestions(payload.reframingSuggestions ?? []);
+        setTopicSuggestions(suggestions);
         setPendingSuggestedTopic("");
-        setShowTopicSuggestionsDialog(
-          (payload.reframingSuggestions?.length ?? 0) > 0,
-        );
+        setShowTopicSuggestionsDialog(suggestions.length > 0);
         return;
       }
 
@@ -733,11 +736,12 @@ export default function DebateModeSetup() {
       {error && (
         <div
           className={cn(
-            "mt-3 max-w-115 rounded-xl border px-3 py-2 text-left text-[10px] leading-5",
+            "mt-3 flex max-w-115 items-start gap-2 rounded-xl border px-3 py-2 text-left text-[11px] leading-5",
             errorClass,
           )}
         >
-          {error}
+          <AlertCircle size={14} className="mt-0.5 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 

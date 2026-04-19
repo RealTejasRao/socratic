@@ -9,6 +9,8 @@ import type { DebateTopicSource } from "src/types/chat";
 import { prisma } from "src/server/db/client";
 import {
   createDebateSession,
+  finalizeDebateSession,
+  getDebateTimeRemainingSeconds,
   validateDebateTopic,
 } from "src/server/debate/service";
 import {
@@ -52,6 +54,46 @@ export async function POST(req: Request) {
 
   if (!dbUser) {
     return new NextResponse("User not found", { status: 404 });
+  }
+
+  const activeDebates = await prisma.chatSession.findMany({
+    where: {
+      userId: dbUser.id,
+      mode: "DEBATE",
+      debateStatus: "ACTIVE",
+    },
+    select: {
+      id: true,
+      debateStartedAt: true,
+      debateDurationPreset: true,
+    },
+  });
+
+  let hasActiveDebate = false;
+
+  for (const debate of activeDebates) {
+    const remainingSeconds = getDebateTimeRemainingSeconds({
+      startedAt: debate.debateStartedAt,
+      durationPreset: debate.debateDurationPreset,
+    });
+
+    if (remainingSeconds !== null && remainingSeconds <= 0) {
+      await finalizeDebateSession({ sessionId: debate.id });
+      continue;
+    }
+
+    hasActiveDebate = true;
+    break;
+  }
+
+  if (hasActiveDebate) {
+    return NextResponse.json(
+      {
+        reason:
+          "You already have an active debate. Finish it before starting a new one.",
+      },
+      { status: 409 },
+    );
   }
 
   const body = await req.json();

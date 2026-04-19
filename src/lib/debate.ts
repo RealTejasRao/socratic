@@ -129,6 +129,9 @@ export function validatePhilosophyTopicLightweight(
   topic: string,
 ): DebateTopicValidationResult {
   const normalizedTopic = normalizeDebateTopic(topic);
+  const wordCount = normalizedTopic
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 
   if (!normalizedTopic) {
     return {
@@ -148,6 +151,16 @@ export function validatePhilosophyTopicLightweight(
       isValid: false,
       normalizedTopic,
       reason: `Keep the topic under ${DEBATE_TOPIC_MAX_CHARS} characters.`,
+      reframingSuggestions: [],
+    };
+  }
+
+  if (wordCount < 3) {
+    return {
+      isValid: false,
+      normalizedTopic,
+      reason:
+        "Make the topic a full debatable claim or question (at least 3 words), not a single keyword.",
       reframingSuggestions: [],
     };
   }
