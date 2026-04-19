@@ -86,152 +86,6 @@ function getDebateMaxTokens(
   }
 }
 
-function getDebateParagraphBounds(
-  durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER",
-) {
-  switch (durationPreset) {
-    case "MIN_15":
-    case "MIN_20":
-      return { min: 2, max: 2 };
-    case "MIN_30":
-      return { min: 2, max: 3 };
-    case "HOUR_1":
-    case "NO_TIMER":
-      return { min: 3, max: 4 };
-    default:
-      return { min: 2, max: 3 };
-  }
-}
-
-function normalizeSentenceUnit(unit: string) {
-  const trimmed = unit.replace(/\s+/g, " ").trim();
-  if (!trimmed) return "";
-  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
-}
-
-function splitUnitByClauses(unit: string) {
-  const pieces = unit
-    .split(/[,;:]\s+/)
-    .map((piece) => piece.trim())
-    .filter(Boolean)
-    .map((piece) => piece.replace(/[,:;]+$/g, "").trim())
-    .filter(Boolean);
-
-  if (pieces.length < 2) {
-    return [];
-  }
-
-  return pieces.map(normalizeSentenceUnit).filter(Boolean);
-}
-
-function splitLongestUnitByWords(unit: string) {
-  const words = unit.split(/\s+/).filter(Boolean);
-  if (words.length < 12) {
-    return [];
-  }
-
-  const midpoint = Math.floor(words.length / 2);
-  const left = normalizeSentenceUnit(words.slice(0, midpoint).join(" "));
-  const right = normalizeSentenceUnit(words.slice(midpoint).join(" "));
-  return [left, right].filter(Boolean);
-}
-
-function sentenceUnitsFromText(text: string) {
-  const base = text.replace(/\r\n/g, "\n").replace(/\n+/g, " ").trim();
-  if (!base) return [];
-
-  const raw = base
-    .split(/(?<=[.!?])\s+/)
-    .map((unit) => normalizeSentenceUnit(unit))
-    .filter(Boolean);
-
-  const expanded = raw.flatMap((unit) => {
-    const wordCount = unit.split(/\s+/).filter(Boolean).length;
-    if (wordCount <= 32) {
-      return [unit];
-    }
-
-    const clauseSplit = splitUnitByClauses(unit);
-    return clauseSplit.length >= 2 ? clauseSplit : [unit];
-  });
-
-  return expanded.length ? expanded : [normalizeSentenceUnit(base)];
-}
-
-function normalizeDebateParagraphs(
-  text: string,
-  durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER",
-) {
-  const trimmed = text.trim();
-  if (!trimmed) return trimmed;
-
-  const bounds = getDebateParagraphBounds(durationPreset);
-  const units = sentenceUnitsFromText(trimmed);
-  const workingUnits = [...units];
-
-  while (workingUnits.length < bounds.min) {
-    const longestIndex = workingUnits.reduce(
-      (bestIndex, current, index, array) => {
-        const currentWords = current.split(/\s+/).filter(Boolean).length;
-        const bestWords =
-          array[bestIndex]?.split(/\s+/).filter(Boolean).length ?? 0;
-        return currentWords > bestWords ? index : bestIndex;
-      },
-      0,
-    );
-
-    const longest = workingUnits[longestIndex];
-    if (!longest) {
-      break;
-    }
-    const byClause = splitUnitByClauses(longest);
-    const split =
-      byClause.length >= 2 ? byClause : splitLongestUnitByWords(longest);
-
-    if (split.length < 2) {
-      break;
-    }
-
-    const [firstSplit, secondSplit] = split;
-    if (!firstSplit || !secondSplit) {
-      break;
-    }
-
-    workingUnits.splice(longestIndex, 1, firstSplit, secondSplit);
-  }
-
-  const desiredParagraphs = Math.max(
-    bounds.min,
-    Math.min(bounds.max, Math.round(workingUnits.length / 2)),
-  );
-  const paragraphCount = Math.min(desiredParagraphs, workingUnits.length);
-
-  if (paragraphCount <= 0) {
-    return trimmed;
-  }
-
-  const counts = Array.from(
-    { length: paragraphCount },
-    () => Math.floor(workingUnits.length / paragraphCount),
-  );
-  for (let i = 0; i < workingUnits.length % paragraphCount; i += 1) {
-    const currentCount = counts[i];
-    if (currentCount !== undefined) {
-      counts[i] = currentCount + 1;
-    }
-  }
-
-  const paragraphs: string[] = [];
-  let cursor = 0;
-  for (const count of counts) {
-    const slice = workingUnits.slice(cursor, cursor + count);
-    cursor += count;
-    paragraphs.push(slice.join(" ").trim());
-  }
-
-  return paragraphs.filter(Boolean).join("\n\n");
-}
-
 function normalizeImageAttachments(
   value: Prisma.JsonValue | null | undefined,
 ): ChatImageAttachment[] {
@@ -847,23 +701,11 @@ export async function generateReply(params: {
         const token = chunk.choices[0]?.delta?.content;
         if (token) {
           generatedText += token;
-          if (session.mode !== "DEBATE") {
-            controller.enqueue(new TextEncoder().encode(token));
-          }
+          controller.enqueue(new TextEncoder().encode(token));
         }
       }
 
-      assistantText =
-        session.mode === "DEBATE" && session.debateDurationPreset
-          ? normalizeDebateParagraphs(
-              generatedText,
-              session.debateDurationPreset,
-            )
-          : generatedText;
-
-      if (session.mode === "DEBATE" && assistantText) {
-        controller.enqueue(new TextEncoder().encode(assistantText));
-      }
+      assistantText = generatedText;
 
       controller.close();
 

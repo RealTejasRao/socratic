@@ -506,16 +506,16 @@ export async function generateDebateOpening(params: DebateOpeningParams) {
   const openingLengthInstruction = (() => {
     switch (params.durationPreset) {
       case "MIN_15":
-        return "Write exactly 2 short sentences.";
+        return "Write exactly 2 compact paragraphs with a blank line between them. Keep each paragraph short and argument-dense.";
       case "MIN_20":
-        return "Write 2-3 concise sentences.";
+        return "Write exactly 2 compact paragraphs with a blank line between them. Keep each paragraph short and argument-dense.";
       case "MIN_30":
-        return "Write 3 concise sentences in one compact paragraph.";
+        return "Write 2-3 compact paragraphs with blank lines between them. Keep each paragraph short and argument-dense.";
       case "HOUR_1":
-        return "Write 4-6 sentences. You may use 1-2 short paragraphs.";
+        return "Write 3-4 compact paragraphs with blank lines between them. Keep each paragraph short and argument-dense.";
       case "NO_TIMER":
       default:
-        return "Write 3-5 sentences in one compact paragraph.";
+        return "Write 3-4 compact paragraphs with blank lines between them. Keep each paragraph short and argument-dense.";
     }
   })();
 
