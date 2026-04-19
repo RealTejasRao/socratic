@@ -1,9 +1,17 @@
 import Image from "next/image";
-import { SignIn } from "@clerk/nextjs";
+import { SignIn, SignOutButton } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const { userId } = await auth();
+  const user = userId ? await currentUser() : null;
+  const email =
+    user?.emailAddresses?.find(
+      (address) => address.id === user.primaryEmailAddressId,
+    )?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
+
   const nietzscheImageScale = 0.8; // 1 = 100% of right panel width
   const nietzscheImageMaxWidthPx = 1960;
   const nietzscheImageOffsetXPx = -80;
@@ -59,9 +67,34 @@ export default function SignInPage() {
         <div className="signin-stars-layer-d absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.78)_0.78px,transparent_1.04px)] bg-size-[112px_112px] bg-position-[49px_26px]" />
         <div className="relative z-10 grid min-h-svh grid-cols-1 lg:h-svh lg:grid-cols-2">
           <section className="flex items-center justify-center px-4 py-6 lg:px-10 lg:py-8">
-            <div className="auth-sign-up-zoom w-full max-w-md">
-              <SignIn appearance={clerkGlassAppearance} />
-            </div>
+            {userId ? (
+              <div className="auth-sign-up-zoom w-full max-w-110 rounded-3xl border border-white/22 bg-[#04070d]/92 p-6 text-white shadow-[0_28px_90px_rgba(0,0,0,0.56)] backdrop-blur-[28px] backdrop-saturate-140">
+                <p className="text-xl leading-tight text-white">
+                  Already signed in
+                </p>
+                <p className="mt-2 text-sm text-white/70">
+                  {email
+                    ? `Signed in as ${email}.`
+                    : "You are already signed in."}
+                </p>
+                <p className="mt-1 text-xs text-white/55">
+                  To use a different account, sign out first.
+                </p>
+
+                <SignOutButton>
+                  <button
+                    type="button"
+                    className="mt-5 w-full cursor-pointer rounded-xl border border-white/20 bg-white px-4 py-2 text-sm font-medium text-[#08111a] transition hover:bg-[#d4f2ff]"
+                  >
+                    Sign out and switch account
+                  </button>
+                </SignOutButton>
+              </div>
+            ) : (
+              <div className="auth-sign-up-zoom w-full max-w-md">
+                <SignIn appearance={clerkGlassAppearance} />
+              </div>
+            )}
           </section>
 
           <section className="relative hidden overflow-hidden bg-transparent lg:block">
