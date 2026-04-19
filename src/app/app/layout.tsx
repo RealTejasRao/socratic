@@ -13,12 +13,18 @@ interface Props {
 
 export default async function AppLayout({ children }: Props) {
   const { userId: clerkUserId } = await auth();
+
+  console.log("CLERK USER ID:", clerkUserId);
+
   const allowedEmails = (process.env["APP_ALLOWED_EMAILS"] ?? "")
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
 
+    console.log("ALLOWED EMAILS:", allowedEmails);
+
   if (!clerkUserId) {
+    console.log("❌ No clerk user ID — redirecting");
     redirect(ROUTES.SIGN_IN);
   }
 
@@ -28,19 +34,25 @@ export default async function AppLayout({ children }: Props) {
   });
 
   if (!dbUser) {
+    console.log("❌ No DB user found — redirecting");
     redirect(ROUTES.HOME);
   }
 
   const normalizedDbEmail = dbUser.email?.trim().toLowerCase() ?? "";
+
+  console.log("DB EMAIL:", normalizedDbEmail);
 
   if (
     allowedEmails.length === 0 ||
     !normalizedDbEmail ||
     !allowedEmails.includes(normalizedDbEmail)
   ) {
+    console.log("❌ Email not allowed — redirecting");
     redirect(ROUTES.HOME);
   }
 
+  console.log("✅ Access granted");
+  
   const sessions = await prisma.chatSession.findMany({
     where: { userId: dbUser.id },
     orderBy: { lastActivityAt: "desc" },
