@@ -13,6 +13,10 @@ interface Props {
 
 export default async function AppLayout({ children }: Props) {
   const { userId: clerkUserId } = await auth();
+  const allowedEmails = (process.env["APP_ALLOWED_EMAILS"] ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
 
   if (!clerkUserId) {
     redirect(ROUTES.SIGN_IN);
@@ -20,11 +24,21 @@ export default async function AppLayout({ children }: Props) {
 
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId },
-    select: { id: true },
+    select: { id: true, email: true },
   });
 
   if (!dbUser) {
-    redirect(ROUTES.SIGN_IN);
+    redirect(ROUTES.HOME);
+  }
+
+  const normalizedDbEmail = dbUser.email?.trim().toLowerCase() ?? "";
+
+  if (
+    allowedEmails.length === 0 ||
+    !normalizedDbEmail ||
+    !allowedEmails.includes(normalizedDbEmail)
+  ) {
+    redirect(ROUTES.HOME);
   }
 
   const sessions = await prisma.chatSession.findMany({

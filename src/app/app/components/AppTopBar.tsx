@@ -10,6 +10,7 @@ import {
   Copy,
   LoaderCircle,
   Moon,
+  PanelLeftOpen,
   Pencil,
   ScrollText,
   Send,
@@ -372,6 +373,10 @@ export default function AppTopBar({ sessions }: Props) {
     );
   }
 
+  function handleMobileSidebarToggle() {
+    window.dispatchEvent(new CustomEvent("socratic:mobile-sidebar:toggle"));
+  }
+
   function openShareTarget(url: string) {
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -555,9 +560,21 @@ export default function AppTopBar({ sessions }: Props) {
       </AnimatePresence>
 
       <header className="app-topbar sticky top-0 z-20 flex h-10 shrink-0 items-center bg-white px-3 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:px-5">
-        <div className="flex w-47 shrink-0 items-center">
+        <div className="flex min-w-0 flex-1 items-center lg:w-47 lg:flex-none">
+          <div className="flex items-center gap-2 lg:hidden">
+            <button
+              type="button"
+              onClick={handleMobileSidebarToggle}
+              className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
+              aria-label="Open sidebar"
+              data-tooltip="Open sidebar"
+            >
+              <PanelLeftOpen size={14} />
+            </button>
+          </div>
+
           {activeSession && (
-            <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 lg:flex">
               <div className="relative" data-topbar-interactive="">
                 <button
                   type="button"
@@ -665,7 +682,7 @@ export default function AppTopBar({ sessions }: Props) {
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 justify-center">
+        <div className="hidden min-w-0 flex-1 justify-center lg:flex">
           <div className="relative" data-topbar-interactive="">
             <button
               type="button"
@@ -725,7 +742,7 @@ export default function AppTopBar({ sessions }: Props) {
           </div>
         </div>
 
-        <div className="flex w-60 shrink-0 items-center justify-end gap-3">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:w-60 lg:flex-none lg:gap-3">
           {activeDebate?.hasTimer && remainingSeconds !== null && (
             <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-2.5 py-1 text-[12px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
               <Clock3 size={12} className="text-slate-500" />
@@ -766,7 +783,7 @@ export default function AppTopBar({ sessions }: Props) {
           <button
             type="button"
             onClick={() => handleThemeChange(!isDarkMode)}
-            className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
+            className="hidden h-7 w-7 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:inline-flex"
             aria-label={
               isDarkMode ? "Switch to light mode" : "Switch to dark mode"
             }
@@ -788,7 +805,13 @@ export default function AppTopBar({ sessions }: Props) {
             </AnimatePresence>
           </button>
 
-          <AppUserButton size="sm" />
+          <div className="hidden lg:block">
+            <AppUserButton size="sm" />
+          </div>
+
+          <div className="lg:hidden">
+            <AppUserButton size="sm" />
+          </div>
         </div>
       </header>
 

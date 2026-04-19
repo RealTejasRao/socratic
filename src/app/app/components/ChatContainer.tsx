@@ -328,7 +328,10 @@ export default function ChatContainer({
       setActiveSessionId(undefined);
     }
 
-    window.addEventListener("socratic:new-chat:requested", handleNewChatRequested);
+    window.addEventListener(
+      "socratic:new-chat:requested",
+      handleNewChatRequested,
+    );
 
     return () => {
       window.removeEventListener(
@@ -454,7 +457,12 @@ export default function ChatContainer({
       .finally(() => {
         router.refresh();
       });
-  }, [activeSessionMeta.debate, activeSessionId, remainingDebateSeconds, router]);
+  }, [
+    activeSessionMeta.debate,
+    activeSessionId,
+    remainingDebateSeconds,
+    router,
+  ]);
 
   useEffect(() => {
     if (!showWinnerReveal) {
@@ -996,7 +1004,7 @@ export default function ChatContainer({
     return (
       <div className="relative flex h-full min-h-0 items-center justify-center px-4 md:px-6">
         <div className="w-full">
-          <div className="absolute -top-2.5 left-4 z-10 md:left-6 md:-top-3">
+          <div className="fixed top-1.5 left-1/2 z-30 -translate-x-1/2 md:absolute md:-top-1 md:left-6 md:z-10 md:translate-x-0 lg:-top-3 lg:left-4">
             <div ref={modeMenuRef} className="relative">
               <button
                 type="button"
@@ -1053,7 +1061,9 @@ export default function ChatContainer({
                         <GraduationCap size={13} />
                         Socratic
                       </span>
-                      {modeSelection === "SOCRATIC" ? <Check size={12} /> : null}
+                      {modeSelection === "SOCRATIC" ? (
+                        <Check size={12} />
+                      ) : null}
                     </button>
 
                     <button
@@ -1085,7 +1095,9 @@ export default function ChatContainer({
                         <ScrollText size={13} />
                         Roleplay
                       </span>
-                      {modeSelection === "ROLEPLAY" ? <Check size={12} /> : null}
+                      {modeSelection === "ROLEPLAY" ? (
+                        <Check size={12} />
+                      ) : null}
                     </button>
                   </motion.div>
                 ) : null}
@@ -1133,7 +1145,7 @@ export default function ChatContainer({
                 </div>
 
                 <div className="mt-4 flex justify-center">
-                  <div className="flex w-max items-center justify-center gap-2 whitespace-nowrap">
+                  <div className="flex flex-col items-center justify-center gap-2 md:w-max md:flex-row md:gap-2 md:whitespace-nowrap">
                     {starterChips.map((chip) => (
                       <button
                         key={chip}
@@ -1146,7 +1158,7 @@ export default function ChatContainer({
                           })
                         }
                         disabled={isStreaming}
-                        className={`${poppinsClassName} app-suggestion-pill shrink-0 cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
+                        className={`${poppinsClassName} app-suggestion-pill cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
                       >
                         {chip}
                       </button>
