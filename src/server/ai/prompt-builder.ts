@@ -224,7 +224,6 @@ function buildDebateCorePolicyMessage(params: DebatePromptParams) {
     }
   })();
 
-// ____________________
   const sectionOrder = [
     "SYSTEM_ROLE",
     "OBJECTIVE",
@@ -449,6 +448,7 @@ export function buildSocraticPrompt(params: {
               "This conversation includes attached images.",
               "Use the image content directly when answering questions about what is visible.",
               "Never say you cannot inspect the image when image content is present in the prompt.",
+              "If the attached image is off-topic for philosophy or applied thinking, first identify what is visible in one brief sentence, Then immediately ask the user to connect or reframe the image into a philosophical question",
               "If the user asks who a real person is from an image, do not identify them by name from the image alone.",
               "Instead, explain that you cannot verify identity from the image and describe visible details or context.",
             ].join("\n"),
