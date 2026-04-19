@@ -95,24 +95,14 @@ function readChatFontSizeSetting(): ChatFontSize {
 }
 
 export default function AppSidebar({ sessions }: Props) {
-  const [collapsed, setCollapsed] = useState(() =>
-    readBooleanSetting(COLLAPSE_BY_DEFAULT_KEY, false),
-  );
+  const [collapsed, setCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [collapseByDefault, setCollapseByDefault] = useState(() =>
-    readBooleanSetting(COLLAPSE_BY_DEFAULT_KEY, false),
-  );
-  const [showHoverPreviews, setShowHoverPreviews] = useState(() =>
-    readBooleanSetting(SHOW_HOVER_PREVIEWS_KEY, true),
-  );
-  const [showModeBadges, setShowModeBadges] = useState(() =>
-    readBooleanSetting(SHOW_MODE_BADGES_KEY, true),
-  );
-  const [socraticTone, setSocraticTone] =
-    useState<SocraticTone>(readSocraticToneSetting);
-  const [chatFontSize, setChatFontSize] =
-    useState<ChatFontSize>(readChatFontSizeSetting);
+  const [collapseByDefault, setCollapseByDefault] = useState(false);
+  const [showHoverPreviews, setShowHoverPreviews] = useState(true);
+  const [showModeBadges, setShowModeBadges] = useState(true);
+  const [socraticTone, setSocraticTone] = useState<SocraticTone>("RUTHLESS_BLUNT");
+  const [chatFontSize, setChatFontSize] = useState<ChatFontSize>("MEDIUM");
   const [activeSettingsTab, setActiveSettingsTab] = useState<
     "GENERAL" | "SOCRATIC"
   >("GENERAL");
@@ -122,6 +112,24 @@ export default function AppSidebar({ sessions }: Props) {
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const rafId = window.requestAnimationFrame(() => {
+      const persistedCollapseByDefault = readBooleanSetting(
+        COLLAPSE_BY_DEFAULT_KEY,
+        false,
+      );
+      setCollapseByDefault(persistedCollapseByDefault);
+      setCollapsed(persistedCollapseByDefault);
+      setShowHoverPreviews(readBooleanSetting(SHOW_HOVER_PREVIEWS_KEY, true));
+      setShowModeBadges(readBooleanSetting(SHOW_MODE_BADGES_KEY, true));
+      setSocraticTone(readSocraticToneSetting());
+      setChatFontSize(readChatFontSizeSetting());
+    });
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
