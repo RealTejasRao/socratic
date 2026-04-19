@@ -18,7 +18,19 @@ export default clerkMiddleware((_: unknown, req: NextRequest) => {
     return NextResponse.next();
   }
 
-  if (pathname === "/api/early-access") {
+  if (pathname.startsWith("/sign-in")) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/app")) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/share/")) {
     return NextResponse.next();
   }
 
