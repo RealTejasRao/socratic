@@ -665,12 +665,13 @@ export default function ChatContainer({
       const streamController = new AbortController();
       activeStreamControllerRef.current = streamController;
 
-      assistantMessageId = createTempId("assistant-temp");
+      const nextAssistantMessageId = createTempId("assistant-temp");
+      assistantMessageId = nextAssistantMessageId;
 
       setMessages((prev) => [
         ...prev,
         {
-          id: assistantMessageId,
+          id: nextAssistantMessageId,
           role: "ASSISTANT",
           content: "",
           createdAt: new Date().toISOString(),
