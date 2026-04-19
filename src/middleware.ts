@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 const PUBLIC_FILE_REGEX =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|json|map|png|svg|txt|webm|webp|woff|woff2|xml)$/i;
 
-export default clerkMiddleware((_: unknown, req: NextRequest) => {
+export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const env = process.env["VERCEL_TARGET_ENV"] ?? process.env["VERCEL_ENV"];
   const isProduction = env === "production";
@@ -22,15 +22,7 @@ export default clerkMiddleware((_: unknown, req: NextRequest) => {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/app")) {
-    return NextResponse.next();
-  }
-
-  if (pathname.startsWith("/api/")) {
-    return NextResponse.next();
-  }
-
-  if (pathname.startsWith("/share/")) {
+  if (pathname.startsWith("/api/webhooks/clerk")) {
     return NextResponse.next();
   }
 
@@ -39,6 +31,12 @@ export default clerkMiddleware((_: unknown, req: NextRequest) => {
   }
 
   if (PUBLIC_FILE_REGEX.test(pathname)) {
+    return NextResponse.next();
+  }
+
+  const { userId } = await auth();
+
+  if (userId) {
     return NextResponse.next();
   }
 
