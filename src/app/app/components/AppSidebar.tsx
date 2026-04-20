@@ -307,7 +307,7 @@ export default function AppSidebar({ sessions }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-none fixed right-4 top-4 z-[140]"
+            className="pointer-events-none fixed right-4 top-4 z-140"
           >
             <div className="app-session-success-toast flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/96 px-3 py-2 text-[11px] text-emerald-800 shadow-[0_14px_34px_rgba(16,185,129,0.14)] backdrop-blur-sm">
               <CircleCheck
@@ -609,7 +609,7 @@ export default function AppSidebar({ sessions }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className={`fixed inset-0 z-[120] flex items-center justify-center p-2 backdrop-blur-[2px] md:p-4 ${
+            className={`fixed inset-0 z-120 flex items-center justify-center p-2 backdrop-blur-[2px] md:p-4 ${
               isDarkMode ? "bg-black/45" : "bg-slate-950/16"
             }`}
             onClick={() => {
@@ -624,7 +624,7 @@ export default function AppSidebar({ sessions }: Props) {
               exit={{ opacity: 0, y: 14, scale: 0.985 }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
               style={{ willChange: "transform, opacity" }}
-              className={`app-card relative z-[121] flex h-[min(82svh,640px)] w-[min(88vw,420px)] flex-col overflow-hidden rounded-2xl border shadow-[0_22px_70px_rgba(15,23,42,0.24)] md:h-[min(520px,82vh)] md:w-[min(760px,90vw)] md:flex-row ${
+              className={`app-card relative z-121 flex h-[min(82svh,640px)] w-[min(88vw,420px)] flex-col overflow-hidden rounded-2xl border shadow-[0_22px_70px_rgba(15,23,42,0.24)] md:h-[min(520px,82vh)] md:w-[min(760px,90vw)] md:flex-row ${
                 isDarkMode
                   ? "border-[#3d3d42] bg-[#262624]"
                   : "border-slate-200 bg-white"
@@ -1015,7 +1015,7 @@ export default function AppSidebar({ sessions }: Props) {
                               <span>
                                 {SOCRATIC_TONE_OPTIONS.find(
                                   (option) => option.value === socraticTone,
-                                )?.label ?? "Balanced"}
+                                )?.label ?? "Encouraging and Supportive"}
                               </span>
                               <ChevronDown
                                 size={13}
@@ -1130,7 +1130,7 @@ export default function AppSidebar({ sessions }: Props) {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                      className={`absolute inset-0 z-[130] flex items-center justify-center p-4 ${
+                      className={`absolute inset-0 z-130 flex items-center justify-center p-4 ${
                         isDarkMode ? "bg-black/45" : "bg-slate-950/16"
                       }`}
                       onClick={() => setIsResetDefaultsConfirmOpen(false)}
@@ -1143,7 +1143,7 @@ export default function AppSidebar({ sessions }: Props) {
                           duration: 0.18,
                           ease: [0.22, 1, 0.36, 1],
                         }}
-                        className={`app-card w-full max-w-[340px] rounded-xl border p-4 ${
+                        className={`app-card w-full max-w-85 rounded-xl border p-4 ${
                           isDarkMode
                             ? "border-[#4a4946] bg-[#2b2a28]"
                             : "border-slate-200 bg-white"
