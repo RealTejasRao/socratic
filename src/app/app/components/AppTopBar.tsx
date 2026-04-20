@@ -565,11 +565,11 @@ export default function AppTopBar({ sessions }: Props) {
             <button
               type="button"
               onClick={handleMobileSidebarToggle}
-              className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-slate-800 transition hover:bg-slate-100/70 active:bg-slate-100"
               aria-label="Open sidebar"
               data-tooltip="Open sidebar"
             >
-              <PanelLeftOpen size={14} />
+              <PanelLeftOpen size={20} />
             </button>
           </div>
 

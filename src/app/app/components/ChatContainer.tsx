@@ -1154,7 +1154,7 @@ export default function ChatContainer({
                           });
                         }}
                         disabled={isStreaming || !starterChips[0]}
-                        className={`${poppinsClassName} app-suggestion-pill w-full cursor-pointer truncate whitespace-nowrap rounded-[12px] border border-slate-300 bg-[#262624] px-3 py-2 text-[11px] text-slate-200 transition hover:border-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 md:hidden`}
+                        className={`${poppinsClassName} app-suggestion-pill w-full cursor-pointer whitespace-normal rounded-[12px] border border-slate-300 bg-[#262624] px-3 py-2 text-[11px] leading-5 text-slate-200 transition hover:border-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 md:hidden`}
                       >
                         {starterChips[0] ?? ""}
                       </button>
