@@ -164,13 +164,13 @@ export default function SidebarSearch() {
 
   return (
     <div ref={wrapperRef} className="relative mb-2">
-      <div className="h-6">
+      <div className="h-9 lg:h-6">
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="absolute inset-x-0 top-0 flex h-6 cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1.25 text-[11px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black"
+          className="absolute inset-x-0 top-0 flex h-9 cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-[15px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black lg:h-6 lg:gap-1.5 lg:rounded-lg lg:px-2 lg:py-1.25 lg:text-[11px]"
         >
-          <Search size={11} />
+          <Search size={16} className="lg:h-[11px] lg:w-[11px]" />
           <span>Search chats</span>
         </button>
       </div>

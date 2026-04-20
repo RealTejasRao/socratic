@@ -308,7 +308,7 @@ export default function SidebarSessions({
   }
 
   return (
-    <div className="space-y-0.5">
+    <div className="space-y-1 lg:space-y-0.5">
       {successToast && (
         <div className="pointer-events-none fixed right-4 top-4 z-70">
           <div
@@ -344,15 +344,15 @@ export default function SidebarSessions({
           <div
             key={session.id}
             className={cn(
-              "app-session-row group flex items-center justify-between rounded-xl px-2 py-1.25 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              "app-session-row group flex items-center justify-between rounded-xl px-2.5 py-2 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-2 lg:py-1.25",
               isOpening && "app-session-row-loading",
               isActive
                 ? session.mode === "DEBATE"
-                  ? "bg-white text-slate-900"
-                  : "bg-white text-slate-900"
+                  ? "bg-slate-100 text-slate-900 lg:bg-white"
+                  : "bg-slate-100 text-slate-900 lg:bg-white"
                 : isOpening
                   ? "text-slate-600"
-                  : "text-slate-600 hover:translate-x-[1px] hover:bg-black hover:text-white",
+                  : "text-slate-600 lg:hover:translate-x-[1px] lg:hover:bg-black lg:hover:text-white",
             )}
             onMouseEnter={(event) => {
               if (!showHoverPreviews) return;
@@ -384,12 +384,12 @@ export default function SidebarSessions({
                 className="block min-w-0 flex-1"
                 onClick={(event) => handleSessionOpen(event, session.id)}
               >
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2.5 lg:gap-2">
                   {session.mode !== "SOCRATIC" && (
                     showModeBadges && (
                       <span
                         className={cn(
-                          "app-session-mode-icon inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex",
                           isActive
                             ? "border-slate-300 bg-slate-50"
                             : "border-slate-200 bg-white",
@@ -403,11 +403,11 @@ export default function SidebarSessions({
                       </span>
                     )
                   )}
-                  <p className="truncate text-[11px]">
+                  <p className="truncate text-[15px] leading-5.5 lg:text-[11px] lg:leading-normal">
                     {session.title || "Untitled Session"}
                   </p>
                   {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (
-                    <span className="rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]">
+                    <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex">
                       {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
                     </span>
                   )}
@@ -430,10 +430,10 @@ export default function SidebarSessions({
                         current === session.id ? null : session.id,
                       )
                     }
-                    className="cursor-pointer rounded-md p-1 text-slate-400 opacity-0 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 hover:scale-[1.02] hover:bg-slate-100 hover:text-slate-600"
+                    className="cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] hover:bg-slate-100 hover:text-slate-600 lg:p-1 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="Open chat actions"
                   >
-                    <MoreHorizontal size={13} />
+                    <MoreHorizontal size={16} className="lg:h-[13px] lg:w-[13px]" />
                   </button>
 
                   {openMenuId === session.id && (
@@ -472,7 +472,7 @@ export default function SidebarSessions({
       })}
 
       {displaySessions.length === 0 && (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-2.5 text-[10px] text-slate-500">
+        <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-3 text-[12px] text-slate-500 lg:py-2.5 lg:text-[10px]">
           Chats will appear here.
         </div>
       )}
