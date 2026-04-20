@@ -1110,7 +1110,7 @@ export default function ChatContainer({
               >
                 <div className="mx-auto max-w-190 text-center">
                   <h2
-                    className="app-greeting-heading mx-auto max-w-100 text-center text-[24px] font-normal leading-[1.12] tracking-[-0.03em] text-slate-900 font-[Georgia,serif] md:text-[30px]"
+                    className="app-greeting-heading mx-auto max-w-110 text-center text-[32px] font-normal leading-[1.1] tracking-[-0.035em] text-slate-900 font-[Georgia,serif] md:max-w-100 md:text-[30px] md:leading-[1.12] md:tracking-[-0.03em]"
                     style={{ visibility: greetingLine ? "visible" : "hidden" }}
                   >
                     {greetingLine ? (
@@ -1139,24 +1139,44 @@ export default function ChatContainer({
                 </div>
 
                 <div className="mt-4 flex justify-center">
-                  <div className="flex flex-col items-center justify-center gap-2 md:w-max md:flex-row md:gap-2 md:whitespace-nowrap">
-                    {starterChips.map((chip) => (
+                  <div className="w-full max-w-110 px-3 md:w-max md:max-w-none md:px-0">
+                    <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-2 md:whitespace-nowrap">
                       <button
-                        key={chip}
+                        key={starterChips[0] ?? "starter-suggestion"}
                         type="button"
-                        onClick={() =>
+                        onClick={() => {
+                          const chip = starterChips[0];
+                          if (!chip) return;
                           handleSend({
                             content: chip,
                             attachments: [],
                             webSearch: false,
-                          })
-                        }
-                        disabled={isStreaming}
-                        className={`${poppinsClassName} app-suggestion-pill cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50`}
+                          });
+                        }}
+                        disabled={isStreaming || !starterChips[0]}
+                        className={`${poppinsClassName} app-suggestion-pill w-full cursor-pointer truncate whitespace-nowrap rounded-[12px] border border-slate-300 bg-[#262624] px-3 py-2 text-[11px] text-slate-200 transition hover:border-slate-200 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 md:hidden`}
                       >
-                        {chip}
+                        {starterChips[0] ?? ""}
                       </button>
-                    ))}
+
+                      {starterChips.map((chip) => (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() =>
+                            handleSend({
+                              content: chip,
+                              attachments: [],
+                              webSearch: false,
+                            })
+                          }
+                          disabled={isStreaming}
+                          className={`${poppinsClassName} app-suggestion-pill hidden cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 md:inline-flex md:w-auto`}
+                        >
+                          {chip}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </motion.div>

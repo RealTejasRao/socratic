@@ -657,7 +657,7 @@ export default function MessageInput({
           placeholder={placeholder}
           maxLength={3000}
           rows={1}
-          className={`${poppinsClassName} app-input-textarea block min-h-11 w-full resize-none px-3.5 pt-2.5 pb-1.5 text-[12px] leading-5 text-slate-900 outline-none placeholder:text-slate-400`}
+          className={`${poppinsClassName} app-input-textarea block min-h-[52px] w-full resize-none px-4 pt-3 pb-2 text-[14px] leading-6 text-slate-900 outline-none placeholder:text-slate-400 md:min-h-11 md:px-3.5 md:pt-2.5 md:pb-1.5 md:text-[12px] md:leading-5`}
           onKeyDown={(event) => {
             if (event.key === "Enter" && !event.shiftKey) {
               event.preventDefault();
@@ -666,9 +666,9 @@ export default function MessageInput({
           }}
         />
 
-        <div className="app-input-toolbar -mt-px flex flex-wrap items-center justify-between gap-2 px-3 py-1.5">
+        <div className="app-input-toolbar -mt-px flex flex-wrap items-center justify-between gap-2 px-3.5 py-2">
           <div
-            className={`${poppinsClassName} flex flex-wrap items-center gap-1 text-[10px] text-slate-600`}
+            className={`${poppinsClassName} flex flex-wrap items-center gap-1 text-[12px] text-slate-600 md:text-[10px]`}
           >
             {canShowActionMenu && (
               <>
@@ -686,12 +686,13 @@ export default function MessageInput({
                   <button
                     type="button"
                     onClick={() => setIsActionMenuOpen((current) => !current)}
-                    className="inline-flex h-7.5 w-7.5 cursor-pointer items-center justify-center rounded-xl hover:bg-slate-100"
+                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl hover:bg-slate-100 md:h-7.5 md:w-7.5"
                     aria-label="Open actions"
                     data-tooltip="Attach files and more..."
                     aria-expanded={isActionMenuOpen}
                   >
-                    <Plus size={15} />
+                    <Plus size={18} className="md:hidden" />
+                    <Plus size={15} className="hidden md:block" />
                   </button>
 
                   {isActionMenuOpen && (
@@ -703,10 +704,11 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                             fileInputRef.current?.click();
                           }}
-                          className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 text-left text-[10px] text-slate-700 transition hover:bg-slate-50"
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] text-slate-700 transition hover:bg-slate-50 md:py-1.5 md:text-[10px]"
                           data-tooltip="Attach photos"
                         >
-                          <Paperclip size={11} />
+                          <Paperclip size={13} className="md:hidden" />
+                          <Paperclip size={11} className="hidden md:block" />
                           Attach photos
                         </button>
                       )}
@@ -718,7 +720,7 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                           }}
                           className={cn(
-                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 text-left text-[10px] transition hover:bg-slate-50",
+                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] transition hover:bg-slate-50 md:py-1.5 md:text-[10px]",
                             webSearchEnabled
                               ? "bg-sky-50 text-sky-700"
                               : "text-slate-700",
@@ -729,7 +731,8 @@ export default function MessageInput({
                               : "Enable web search"
                           }
                         >
-                          <Globe size={11} />
+                          <Globe size={13} className="md:hidden" />
+                          <Globe size={11} className="hidden md:block" />
                           Web search
                         </button>
                       )}
@@ -742,13 +745,24 @@ export default function MessageInput({
               <button
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}
-                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1 rounded-xl border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
+                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1 rounded-xl border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[12px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 md:px-2 md:py-1 md:text-[10px]"
                 aria-label="Disable web search"
                 data-tooltip="Disable web search"
               >
                 <span className="grid place-items-center">
-                  <Globe size={11} className="group-hover:hidden" />
-                  <X size={11} className="hidden group-hover:block" />
+                  <Globe
+                    size={13}
+                    className="group-hover:hidden md:hidden"
+                  />
+                  <X size={13} className="hidden group-hover:block md:hidden" />
+                  <Globe
+                    size={11}
+                    className="hidden group-hover:hidden md:block"
+                  />
+                  <X
+                    size={11}
+                    className="hidden group-hover:block md:block"
+                  />
                 </span>
                 <span>Web search</span>
               </button>
@@ -782,12 +796,12 @@ export default function MessageInput({
                 type="button"
                 onClick={handleVoiceToggle}
                 disabled={isStreaming}
-                className="inline-flex h-7.5 cursor-pointer items-center gap-1 rounded-xl px-2 hover:bg-slate-100 disabled:cursor-not-allowed"
+                className="inline-flex h-9 cursor-pointer items-center gap-1 rounded-xl px-2.5 hover:bg-slate-100 disabled:cursor-not-allowed md:h-7.5 md:px-2"
                 data-tooltip={
                   isListening ? "Stop listening" : "Start voice input"
                 }
               >
-                <Mic size={14} className={cn(isListening && "text-sky-600")} />{" "}
+                <Mic size={16} className={cn(isListening && "text-sky-600")} />{" "}
                 {isListening ? "Listening..." : "Voice"}
               </button>
             )}
@@ -822,7 +836,7 @@ export default function MessageInput({
                 (!isStreaming && !content.trim() && attachments.length === 0)
               }
               className={cn(
-                "app-send-button inline-flex h-7.5 w-7.5 items-center justify-center rounded-full bg-black text-white",
+                "app-send-button inline-flex h-9 w-9 items-center justify-center rounded-full bg-black text-white md:h-7.5 md:w-7.5",
                 isUploadingAttachments ||
                   (!isStreaming && !content.trim() && attachments.length === 0)
                   ? "cursor-not-allowed opacity-45"
@@ -834,9 +848,16 @@ export default function MessageInput({
               data-tooltip={isStreaming ? "Stop generating" : "Send message"}
             >
               {isStreaming ? (
-                <Square size={10} fill="currentColor" />
+                <Square size={12} fill="currentColor" />
               ) : (
-                <ArrowUp size={13} strokeWidth={2.4} />
+                <>
+                  <ArrowUp size={16} strokeWidth={2.4} className="md:hidden" />
+                  <ArrowUp
+                    size={13}
+                    strokeWidth={2.4}
+                    className="hidden md:block"
+                  />
+                </>
               )}
             </button>
           </div>
