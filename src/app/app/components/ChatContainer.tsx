@@ -761,16 +761,10 @@ export default function ChatContainer({
         }
 
         setActiveSessionId(returnedSessionId);
-        window.history.replaceState(
-          window.history.state,
-          "",
-          `/app/${returnedSessionId}`,
-        );
+        router.replace(`/app/${returnedSessionId}`);
       }
 
-      if (!createdSessionFromNewChat) {
-        router.refresh();
-      }
+      router.refresh();
     } catch (error) {
       if (!isAbortError(error)) {
         setMessages((prev) =>
