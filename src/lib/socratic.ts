@@ -1,8 +1,9 @@
 export const SOCRATIC_TONE_OPTIONS = [
   {
     value: "BALANCED",
-    label: "Balanced",
-    description: "Insight plus pressure with measured intensity.",
+    label: "Encouraging and Supportive",
+    description:
+      "Thinks with you, not at you. Honest about the gaps, but never harsh about them.",
   },
   {
     value: "RUTHLESS_BLUNT",
