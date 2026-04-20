@@ -559,7 +559,7 @@ export default function AppTopBar({ sessions }: Props) {
         )}
       </AnimatePresence>
 
-      <header className="app-topbar sticky top-0 z-20 flex h-10 shrink-0 items-center bg-white px-3 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:px-5">
+      <header className="app-topbar sticky top-0 z-20 flex h-12 shrink-0 items-center bg-white px-3 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:h-10 md:px-5">
         <div className="flex min-w-0 flex-1 items-center lg:w-47 lg:flex-none">
           <div className="flex items-center gap-2 lg:hidden">
             <button
