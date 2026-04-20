@@ -707,8 +707,6 @@ export async function generateReply(params: {
 
       assistantText = generatedText;
 
-      controller.close();
-
       let completionModel: string | undefined = effectiveModel;
       let promptTokens: number | undefined =
         builtPrompt.metadata.estimatedInputTokens;
@@ -746,33 +744,38 @@ export async function generateReply(params: {
               ),
             });
 
-      await prisma.$transaction(async (tx) => {
-        await tx.message.create({
-          data: {
-            sessionId,
-            role: "ASSISTANT",
-            content: assistantText,
-            model: completionModel
-              ? `${completionModel} (${builtPrompt.metadata.promptVersion})`
-              : builtPrompt.metadata.promptVersion,
-            tokenIn: promptTokens ?? null,
-            tokenOut: completionTokens ?? null,
-            latencyMs,
-            validationVersion: validation.version,
-            validationScore: validation.score,
-            validationFlags: validation.flags as Prisma.InputJsonValue,
-            validationSummary: validation.summary,
-          },
-        });
+      try {
+        await prisma.$transaction(async (tx) => {
+          await tx.message.create({
+            data: {
+              sessionId,
+              role: "ASSISTANT",
+              content: assistantText,
+              model: completionModel
+                ? `${completionModel} (${builtPrompt.metadata.promptVersion})`
+                : builtPrompt.metadata.promptVersion,
+              tokenIn: promptTokens ?? null,
+              tokenOut: completionTokens ?? null,
+              latencyMs,
+              validationVersion: validation.version,
+              validationScore: validation.score,
+              validationFlags: validation.flags as Prisma.InputJsonValue,
+              validationSummary: validation.summary,
+            },
+          });
 
-        await tx.chatSession.update({
-          where: { id: sessionId },
-          data: {
-            lastActivityAt: now,
-            expiresAt,
-          },
+          await tx.chatSession.update({
+            where: { id: sessionId },
+            data: {
+              lastActivityAt: now,
+              expiresAt,
+            },
+          });
         });
-      });
+      } finally {
+
+        controller.close();
+      }
 
       if (tracePayload) {
         try {
