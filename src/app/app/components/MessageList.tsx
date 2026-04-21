@@ -501,22 +501,22 @@ export default function MessageList({
     lastAssistantIndex === -1 ? -1 : messages.length - 1 - lastAssistantIndex;
   const userTextClass =
     chatFontSize === "SMALL"
-      ? "text-[12px]"
+      ? "text-[14px] md:text-[12px]"
       : chatFontSize === "LARGE"
-        ? "text-[14px]"
-        : "text-[13px]";
+        ? "text-[18px] md:text-[14px]"
+        : "text-[16px] md:text-[13px]";
   const assistantTextClass =
     chatFontSize === "SMALL"
-      ? "text-[12px] leading-6"
+      ? "text-[14px] leading-6.5 md:text-[12px] md:leading-6"
       : chatFontSize === "LARGE"
-        ? "text-[14px] leading-7"
-        : "text-[13px] leading-6.75";
+        ? "text-[18px] leading-8 md:text-[14px] md:leading-7"
+        : "text-[16px] leading-7 md:text-[13px] md:leading-6.75";
   const editTextClass =
     chatFontSize === "SMALL"
-      ? "text-[12px] leading-5.5"
+      ? "text-[14px] leading-6 md:text-[12px] md:leading-5.5"
       : chatFontSize === "LARGE"
-        ? "text-[14px] leading-6.5"
-        : "text-[13px] leading-6";
+        ? "text-[18px] leading-8 md:text-[14px] md:leading-6.5"
+        : "text-[16px] leading-7 md:text-[13px] md:leading-6";
 
   return (
     <div className="flex-1">
