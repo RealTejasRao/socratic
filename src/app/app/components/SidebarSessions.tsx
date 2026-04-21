@@ -345,6 +345,7 @@ export default function SidebarSessions({
             key={session.id}
             className={cn(
               "app-session-row group flex items-center justify-between rounded-xl px-2.5 py-2 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-2 lg:py-1.25",
+              isActive && "app-session-row-active",
               isOpening && "app-session-row-loading",
               isActive
                 ? session.mode === "DEBATE"

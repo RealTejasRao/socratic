@@ -198,6 +198,7 @@ export default function MessageList({
   topContent,
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const shouldAutoScrollRef = useRef(true);
   const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
@@ -328,7 +329,42 @@ export default function MessageList({
   }
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const bottomEl = bottomRef.current;
+    if (!bottomEl) {
+      return;
+    }
+
+    const scrollContainer = bottomEl.closest(".app-chat-main") as
+      | HTMLElement
+      | null;
+    if (!scrollContainer) {
+      return;
+    }
+
+    const updateAutoScrollState = () => {
+      const distanceFromBottom =
+        scrollContainer.scrollHeight -
+        scrollContainer.scrollTop -
+        scrollContainer.clientHeight;
+      shouldAutoScrollRef.current = distanceFromBottom <= 96;
+    };
+
+    updateAutoScrollState();
+    scrollContainer.addEventListener("scroll", updateAutoScrollState, {
+      passive: true,
+    });
+
+    return () => {
+      scrollContainer.removeEventListener("scroll", updateAutoScrollState);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldAutoScrollRef.current) {
+      return;
+    }
+
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
   useEffect(() => {

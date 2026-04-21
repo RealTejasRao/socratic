@@ -160,6 +160,22 @@ export default function MessageInput({
   );
   const canShowActionMenu = allowImageAttachments || showWebSearch;
 
+  function isPhoneViewport() {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const phoneWidth = window.matchMedia("(max-width: 767px)").matches;
+    const userAgent = navigator.userAgent || "";
+    const mobileUa =
+      /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        userAgent,
+      );
+
+    return (coarsePointer && phoneWidth) || (mobileUa && phoneWidth);
+  }
+
   useEffect(() => {
     attachmentsRef.current = composerAttachments;
   }, [composerAttachments]);
@@ -659,7 +675,11 @@ export default function MessageInput({
           rows={1}
           className={`${poppinsClassName} app-input-textarea block min-h-[52px] w-full resize-none px-4 pt-3 pb-2 text-[14px] leading-6 text-slate-900 outline-none placeholder:text-slate-400 md:min-h-11 md:px-3.5 md:pt-2.5 md:pb-1.5 md:text-[12px] md:leading-5`}
           onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              !isPhoneViewport()
+            ) {
               event.preventDefault();
               handleSend();
             }
@@ -750,19 +770,14 @@ export default function MessageInput({
                 data-tooltip="Disable web search"
               >
                 <span className="grid place-items-center">
-                  <Globe
-                    size={13}
-                    className="group-hover:hidden md:hidden"
-                  />
-                  <X size={13} className="hidden group-hover:block md:hidden" />
-                  <Globe
-                    size={11}
-                    className="hidden group-hover:hidden md:block"
-                  />
-                  <X
-                    size={11}
-                    className="hidden group-hover:block md:block"
-                  />
+                  <span className="grid place-items-center md:hidden">
+                    <Globe size={13} className="group-hover:hidden" />
+                    <X size={13} className="hidden group-hover:block" />
+                  </span>
+                  <span className="hidden place-items-center md:grid">
+                    <Globe size={11} className="group-hover:hidden" />
+                    <X size={11} className="hidden group-hover:block" />
+                  </span>
                 </span>
                 <span>Web search</span>
               </button>
