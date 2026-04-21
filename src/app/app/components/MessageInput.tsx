@@ -673,7 +673,7 @@ export default function MessageInput({
           placeholder={placeholder}
           maxLength={3000}
           rows={1}
-          className={`${poppinsClassName} app-input-textarea block min-h-[52px] w-full resize-none px-4 pt-3 pb-2 text-[14px] leading-6 text-slate-900 outline-none placeholder:text-slate-400 md:min-h-11 md:px-3.5 md:pt-2.5 md:pb-1.5 md:text-[12px] md:leading-5`}
+          className={`${poppinsClassName} app-input-textarea block min-h-[60px] w-full resize-none px-4 pt-3.5 pb-2.5 text-[16px] leading-7 text-slate-900 outline-none placeholder:text-slate-400 md:min-h-11 md:px-3.5 md:pt-2.5 md:pb-1.5 md:text-[12px] md:leading-5`}
           onKeyDown={(event) => {
             if (
               event.key === "Enter" &&
@@ -688,7 +688,7 @@ export default function MessageInput({
 
         <div className="app-input-toolbar -mt-px flex flex-wrap items-center justify-between gap-2 px-3.5 py-2">
           <div
-            className={`${poppinsClassName} flex flex-wrap items-center gap-1 text-[12px] text-slate-600 md:text-[10px]`}
+            className={`${poppinsClassName} flex flex-wrap items-center gap-1.5 text-[14px] text-slate-600 md:gap-1 md:text-[10px]`}
           >
             {canShowActionMenu && (
               <>
@@ -706,12 +706,12 @@ export default function MessageInput({
                   <button
                     type="button"
                     onClick={() => setIsActionMenuOpen((current) => !current)}
-                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl hover:bg-slate-100 md:h-7.5 md:w-7.5"
+                    className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:bg-slate-100 md:h-7.5 md:w-7.5"
                     aria-label="Open actions"
                     data-tooltip="Attach files and more..."
                     aria-expanded={isActionMenuOpen}
                   >
-                    <Plus size={18} className="md:hidden" />
+                    <Plus size={21} className="md:hidden" />
                     <Plus size={15} className="hidden md:block" />
                   </button>
 
@@ -724,10 +724,10 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                             fileInputRef.current?.click();
                           }}
-                          className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] text-slate-700 transition hover:bg-slate-50 md:py-1.5 md:text-[10px]"
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[14px] text-slate-700 transition hover:bg-slate-50 md:py-1.5 md:text-[10px]"
                           data-tooltip="Attach photos"
                         >
-                          <Paperclip size={13} className="md:hidden" />
+                          <Paperclip size={16} className="md:hidden" />
                           <Paperclip size={11} className="hidden md:block" />
                           Attach photos
                         </button>
@@ -740,7 +740,7 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                           }}
                           className={cn(
-                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] transition hover:bg-slate-50 md:py-1.5 md:text-[10px]",
+                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[14px] transition hover:bg-slate-50 md:py-1.5 md:text-[10px]",
                             webSearchEnabled
                               ? "bg-sky-50 text-sky-700"
                               : "text-slate-700",
@@ -751,7 +751,7 @@ export default function MessageInput({
                               : "Enable web search"
                           }
                         >
-                          <Globe size={13} className="md:hidden" />
+                          <Globe size={16} className="md:hidden" />
                           <Globe size={11} className="hidden md:block" />
                           Web search
                         </button>
@@ -765,14 +765,14 @@ export default function MessageInput({
               <button
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}
-                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1 rounded-xl border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[12px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 md:px-2 md:py-1 md:text-[10px]"
+                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-[14px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 md:gap-1 md:px-2 md:py-1 md:text-[10px]"
                 aria-label="Disable web search"
                 data-tooltip="Disable web search"
               >
                 <span className="grid place-items-center">
                   <span className="grid place-items-center md:hidden">
-                    <Globe size={13} className="group-hover:hidden" />
-                    <X size={13} className="hidden group-hover:block" />
+                    <Globe size={16} className="group-hover:hidden" />
+                    <X size={16} className="hidden group-hover:block" />
                   </span>
                   <span className="hidden place-items-center md:grid">
                     <Globe size={11} className="group-hover:hidden" />
@@ -788,10 +788,10 @@ export default function MessageInput({
                   type="button"
                   disabled
                   aria-disabled="true"
-                  className="relative inline-flex cursor-not-allowed items-center gap-1 rounded-xl px-1.5 py-1 text-slate-400"
+                  className="relative inline-flex cursor-not-allowed items-center gap-1.5 rounded-xl px-1.5 py-1 text-[14px] text-slate-400 md:text-[10px]"
                   data-tooltip="Voice input not supported on this browser"
                 >
-                  <Mic size={11} /> Voice
+                  <Mic size={16} className="md:h-[11px] md:w-[11px]" /> Voice
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute top-1/2 left-1/2 h-5 w-px -translate-x-1/2 -translate-y-1/2 rotate-[-36deg] bg-red-500"
@@ -811,12 +811,15 @@ export default function MessageInput({
                 type="button"
                 onClick={handleVoiceToggle}
                 disabled={isStreaming}
-                className="inline-flex h-9 cursor-pointer items-center gap-1 rounded-xl px-2.5 hover:bg-slate-100 disabled:cursor-not-allowed md:h-7.5 md:px-2"
+                className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-xl px-2.5 hover:bg-slate-100 disabled:cursor-not-allowed md:h-7.5 md:gap-1 md:px-2"
                 data-tooltip={
                   isListening ? "Stop listening" : "Start voice input"
                 }
               >
-                <Mic size={16} className={cn(isListening && "text-sky-600")} />{" "}
+                <Mic
+                  size={19}
+                  className={cn("md:h-4 md:w-4", isListening && "text-sky-600")}
+                />{" "}
                 {isListening ? "Listening..." : "Voice"}
               </button>
             )}
@@ -851,7 +854,7 @@ export default function MessageInput({
                 (!isStreaming && !content.trim() && attachments.length === 0)
               }
               className={cn(
-                "app-send-button inline-flex h-9 w-9 items-center justify-center rounded-full bg-black text-white md:h-7.5 md:w-7.5",
+                "app-send-button inline-flex h-10 w-10 items-center justify-center rounded-full bg-black text-white md:h-7.5 md:w-7.5",
                 isUploadingAttachments ||
                   (!isStreaming && !content.trim() && attachments.length === 0)
                   ? "cursor-not-allowed opacity-45"
@@ -863,10 +866,10 @@ export default function MessageInput({
               data-tooltip={isStreaming ? "Stop generating" : "Send message"}
             >
               {isStreaming ? (
-                <Square size={12} fill="currentColor" />
+                <Square size={14} fill="currentColor" className="md:h-3 md:w-3" />
               ) : (
                 <>
-                  <ArrowUp size={16} strokeWidth={2.4} className="md:hidden" />
+                  <ArrowUp size={18} strokeWidth={2.4} className="md:hidden" />
                   <ArrowUp
                     size={13}
                     strokeWidth={2.4}
