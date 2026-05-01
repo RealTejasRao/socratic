@@ -12,11 +12,13 @@ export interface StaggeredMenuItem {
 type StaggeredMenuProps = {
   items: StaggeredMenuItem[];
   closeOnClickAway?: boolean;
+  className?: string;
 };
 
 export function StaggeredMenu({
   items,
   closeOnClickAway = true,
+  className,
 }: StaggeredMenuProps) {
   const [open, setOpen] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
@@ -98,29 +100,17 @@ export function StaggeredMenu({
   }, [closeOnClickAway, renderPanel, closeMenu]);
 
   return (
-    <div className="relative shrink-0 lg:hidden">
+    <div className={`relative shrink-0 ${className ?? ""}`}>
       <button
         ref={toggleBtnRef}
         type="button"
         onClick={toggleMenu}
-        className="inline-flex h-10 cursor-pointer items-center gap-2 border border-black/12 bg-white/90 px-3.5 text-[0.82rem] font-medium text-black/80 backdrop-blur-md transition-colors duration-200 hover:bg-white"
+        className="inline-flex h-8 min-w-18 cursor-pointer items-center justify-center bg-white/92 px-5 text-[0.82rem] font-medium tracking-[0.02em] text-black/80 backdrop-blur-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-black hover:text-white"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="staggered-menu-panel"
       >
-        <span>{open ? "Close" : "Menu"}</span>
-        <span className="relative inline-flex h-3.5 w-3.5 items-center justify-center">
-          <span
-            className={`absolute h-0.5 w-3 bg-current transition-transform duration-300 ${
-              open ? "rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`absolute h-0.5 w-3 bg-current transition-transform duration-300 ${
-              open ? "-rotate-45" : "rotate-90"
-            }`}
-          />
-        </span>
+        <span>{open ? "Close" : "+ Menu"}</span>
       </button>
 
       {renderPanel ? (
