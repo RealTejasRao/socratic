@@ -138,7 +138,7 @@ export default function HomePage() {
           <div className="hero-bottom-image-scroll pointer-events-none absolute inset-x-0 bottom-0 z-0">
             <div className="hero-load-up hero-load-up-image w-full">
               <Image
-                src="/home/image3.jpeg"
+                src="/home/phi.png"
                 alt="Socratic AI hero visual"
                 width={2400}
                 height={1200}

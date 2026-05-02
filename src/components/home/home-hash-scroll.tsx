@@ -78,6 +78,15 @@ export function HomeHashScroll() {
             detail: { sectionId: "contact" },
           })
         );
+        return;
+      }
+
+      if (href === "#use-cases") {
+        window.dispatchEvent(
+          new CustomEvent("section:typewriter:restart", {
+            detail: { sectionId: "use-cases" },
+          })
+        );
       }
     };
 
