@@ -274,30 +274,6 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
         <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-[length:22px_22px]" />
       </div>
 
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-[0.7%] rounded-[1.75rem] border border-[#A01717]/8" />
-        <div className="absolute left-[4%] top-[16%] h-[72%] w-[92%] border border-[#A01717]/9" />
-        <div className="absolute left-[13%] top-[30%] h-[44%] w-[74%] border border-[#A01717]/8" />
-
-        <div className="absolute left-[30%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
-        <div className="absolute left-[40%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
-        <div className="absolute left-[50%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
-        <div className="absolute left-[60%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
-        <div className="absolute left-[70%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
-
-        <div className="absolute left-[4%] top-[50%] h-px w-[92%] -translate-y-1/2 bg-[#A01717]/9" />
-        <div className="absolute left-[13%] top-[30%] h-px w-[74%] bg-[#A01717]/8" />
-        <div className="absolute left-[13%] bottom-[26%] h-px w-[74%] bg-[#A01717]/8" />
-
-        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-x-full -translate-y-1/2 origin-right rotate-[31deg] bg-[#A01717]/9" />
-        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-y-1/2 origin-left -rotate-[31deg] bg-[#A01717]/9" />
-        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-x-full -translate-y-1/2 origin-right -rotate-[31deg] bg-[#A01717]/8" />
-        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-y-1/2 origin-left rotate-[31deg] bg-[#A01717]/8" />
-
-        <div className="absolute left-[4%] top-[16%] h-[34%] w-[26%] [clip-path:polygon(0_0,100%_100%,0_100%)] bg-[repeating-linear-gradient(120deg,rgba(160,23,23,0.035)_0px,rgba(160,23,23,0.035)_1px,transparent_1px,transparent_8px)]" />
-        <div className="absolute right-[4%] top-[16%] h-[34%] w-[26%] [clip-path:polygon(100%_0,100%_100%,0_100%)] bg-[repeating-linear-gradient(60deg,rgba(160,23,23,0.035)_0px,rgba(160,23,23,0.035)_1px,transparent_1px,transparent_8px)]" />
-      </div>
-
       <div className="relative mx-auto w-full">
         <div className="mx-auto max-w-355 px-6 sm:px-8">
           <motion.div

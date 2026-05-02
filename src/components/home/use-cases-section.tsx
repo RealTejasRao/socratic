@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Instrument_Serif } from "next/font/google";
 import {
@@ -216,46 +216,16 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
         </motion.div>
 
         <div className="mt-2 md:-mt-4">
-          <div className="flex items-stretch justify-center gap-0 lg:px-2 xl:px-4">
-            <motion.div
-              key={`use-cases-pillar-left-${restartLoadSignal}`}
-              className="pointer-events-none relative z-30 hidden w-[clamp(23rem,33vw,40rem)] shrink-0 self-stretch -mr-16 lg:ml-3 lg:translate-x-3 lg:block"
-              aria-hidden="true"
-              initial={{
-                opacity: 0,
-                x: -26,
-                y: 66,
-                scale: 0.95,
-                filter: "blur(8px)",
-              }}
-              whileInView={{
-                opacity: 1,
-                x: 0,
-                y: 0,
-                scale: 1,
-                filter: "blur(0px)",
-              }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 1.75, delay: 0.28, ease: heroSlideEase }}
-            >
-              <Image
-                src="/usecases/pillarLeft.png"
-                alt=""
-                fill
-                className="origin-bottom-left scale-[1.18] object-contain object-bottom"
-                sizes="(max-width: 1279px) 33vw, 40rem"
-              />
-            </motion.div>
-
+          <div className="flex items-stretch justify-center lg:px-2 xl:px-4">
             <motion.div
               key={`use-cases-card-${restartLoadSignal}`}
-              className="relative z-20 min-w-0 flex-1 overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(60vw,66rem)] lg:flex-none"
+              className="relative z-20 min-w-0 w-full max-w-[74rem] overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(70vw,74rem)]"
               initial={heroLoadInitial}
               whileInView={heroLoadInView}
               viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 1.2, delay: 0.3, ease: heroSlideEase }}
             >
-              <div className="grid grid-cols-1 lg:min-h-[25rem] lg:grid-cols-[0.95fr_1.85fr]">
+              <div className="grid grid-cols-1 lg:min-h-[27rem] lg:grid-cols-[0.95fr_1.85fr]">
                 <aside className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10">
                   {useCaseItems.map((item, index) => {
                     const isActive = item.id === activeItem.id;
@@ -312,80 +282,64 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                   })}
                 </aside>
 
-                <motion.div
-                  key={`${activeItem.id}-${restartLoadSignal}`}
-                  className="bg-[#fefefc] px-3 py-4.5 sm:px-4 sm:py-5.5 lg:flex lg:h-full lg:flex-col"
-                  initial={{
-                    opacity: 0,
-                    y: 26,
-                    scale: 0.992,
-                    filter: "blur(5px)",
-                  }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.6, ease: heroSlideEase }}
-                >
-                  <h3
-                    className={`${interClassName} text-[clamp(0.86rem,1.15vw,1.05rem)] font-medium tracking-[-0.02em] text-black`}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={`${activeItem.id}-${restartLoadSignal}`}
+                    className="bg-[#fefefc] px-3.5 py-4.5 sm:px-4.5 sm:py-5 lg:flex lg:h-full lg:flex-col"
+                    initial={{
+                      opacity: 0,
+                      y: 18,
+                      scale: 0.994,
+                      filter: "blur(6px)",
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      filter: "blur(0px)",
+                    }}
+                    exit={{
+                      opacity: 0,
+                      y: -12,
+                      scale: 0.996,
+                      filter: "blur(4px)",
+                    }}
+                    transition={{ duration: 0.42, ease: heroSlideEase }}
                   >
-                    {activeItem.rightTitle}
-                  </h3>
-                  <p className="mt-2.5 max-w-210 text-[clamp(0.68rem,0.8vw,0.76rem)] leading-5 text-black/58">
-                    {activeItem.rightDescription}
-                  </p>
+                    <h3
+                      className={`${interClassName} text-[clamp(0.86rem,1.15vw,1.05rem)] font-medium tracking-[-0.02em] text-black`}
+                    >
+                      {activeItem.rightTitle}
+                    </h3>
+                    <p className="mt-2.5 max-w-210 text-[clamp(0.68rem,0.8vw,0.76rem)] leading-5 text-black/58">
+                      {activeItem.rightDescription}
+                    </p>
 
-                  <div className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1">
-                    <div className="relative flex h-36 w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-41 lg:h-full lg:min-h-51">
-                      {activeImageUrl ? (
-                        <Image
-                          src={activeImageUrl}
-                          alt={activeItem.placeholderLabel}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 72vw, 58vw"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center gap-2 text-black/55">
-                          <ImageIcon className="h-6 w-6" />
-                          <p className="text-[0.73rem] tracking-[0.03em]">
-                            {activeItem.placeholderLabel}
-                          </p>
-                        </div>
-                      )}
+                    <div className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1">
+                      <div className="relative flex h-[10rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[13rem] lg:h-full lg:min-h-[15rem]">
+                        {activeImageUrl ? (
+                          <Image
+                            src={activeImageUrl}
+                            alt={activeItem.placeholderLabel}
+                            fill
+                            unoptimized
+                            decoding="async"
+                            className="object-cover"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 72vw, 58vw"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 text-black/55">
+                            <ImageIcon className="h-6 w-6" />
+                            <p className="text-[0.73rem] tracking-[0.03em]">
+                              {activeItem.placeholderLabel}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
-            </motion.div>
-
-            <motion.div
-              key={`use-cases-pillar-right-${restartLoadSignal}`}
-              className="pointer-events-none relative z-30 hidden w-[clamp(23rem,33vw,40rem)] shrink-0 self-stretch -ml-16 lg:mr-3 lg:-translate-x-10 lg:block"
-              aria-hidden="true"
-              initial={{
-                opacity: 0,
-                x: 26,
-                y: 66,
-                scale: 0.95,
-                filter: "blur(8px)",
-              }}
-              whileInView={{
-                opacity: 1,
-                x: 0,
-                y: 0,
-                scale: 1,
-                filter: "blur(0px)",
-              }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 1.75, delay: 0.28, ease: heroSlideEase }}
-            >
-              <Image
-                src="/usecases/pillarRight.png"
-                alt=""
-                fill
-                className="origin-bottom-right scale-[1.18] ml-6 object-contain object-bottom"
-                sizes="(max-width: 1279px) 33vw, 40rem"
-              />
             </motion.div>
           </div>
         </div>
