@@ -148,7 +148,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
   return (
     <section
       id="features"
-      className="relative scroll-mt-1 bg-white px-6 py-20 sm:px-8 sm:py-24 lg:py-28"
+      className="relative scroll-mt-1 bg-[#fefefc] px-6 py-20 sm:px-8 sm:py-24 lg:py-28"
     >
       <div className="mx-auto w-full max-w-365">
         <motion.div

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import emailjs from "@emailjs/browser";
 import { motion, useInView } from "framer-motion";
+import { Instrument_Serif } from "next/font/google";
 import {
   type ChangeEvent,
   type FormEvent,
@@ -10,15 +11,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 type ContactSectionProps = {
   interClassName: string;
 };
 
-const CONTACT_HEADING_TEXT = "Contact Us";
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const CONTACT_HEADING_TEXT = "We'd love to hear from you :)";
 const MAX_MESSAGE_WORDS = 2000;
 const NAME_REGEX = /^[A-Za-z][A-Za-z\s'-]{0,79}$/;
+const LOVE_START_INDEX = CONTACT_HEADING_TEXT.indexOf("love");
+const LOVE_END_INDEX = LOVE_START_INDEX + "love".length - 1;
+const SMILE_START_INDEX = CONTACT_HEADING_TEXT.lastIndexOf(":)");
+const SMILE_END_INDEX = SMILE_START_INDEX + ":)".length - 1;
 const EMAILJS_SERVICE_ID = process.env["NEXT_PUBLIC_EMAILJS_SERVICE_ID"] ?? "";
 const EMAILJS_TEMPLATE_ID =
   process.env["NEXT_PUBLIC_EMAILJS_TEMPLATE_ID"] ?? "";
@@ -72,6 +81,9 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
     message: "",
   });
   const typedHeading = CONTACT_HEADING_TEXT.slice(0, visibleHeadingChars);
+  const isAccentChar = (index: number) =>
+    (index >= LOVE_START_INDEX && index <= LOVE_END_INDEX) ||
+    (index >= SMILE_START_INDEX && index <= SMILE_END_INDEX);
   const wordsUsed = countWords(messageValue);
   const wordsLeft = Math.max(0, MAX_MESSAGE_WORDS - wordsUsed);
   const sanitizedName = sanitizeField(nameValue);
@@ -256,195 +268,264 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
   return (
     <section
       id="contact"
-      className="relative scroll-mt-1 bg-white px-6 py-14 sm:px-8 sm:py-16 lg:py-18"
+      className="relative scroll-mt-1 overflow-hidden bg-[#fefefc] py-14 sm:py-16 lg:py-18"
     >
-      <div className="mx-auto w-full max-w-330">
-        <div className="text-center">
-          <h2
-            className={`${interClassName} text-[clamp(1.2rem,2.6vw,2.2rem)] font-medium leading-tight text-black`}
-          >
-            <span ref={headingRef} className="inline-grid align-top">
-              <span
-                className="col-start-1 row-start-1 invisible"
-                aria-hidden="true"
-              >
-                {CONTACT_HEADING_TEXT}
-              </span>
-              <span className="col-start-1 row-start-1">
-                {typedHeading}
-                <span className="hero-caret" aria-hidden="true" />
-              </span>
-            </span>
-          </h2>
-          <p className="mx-auto mt-8 inline-flex max-w-152 items-center gap-2 text-[clamp(0.74rem,0.95vw,0.9rem)] leading-[1.6] text-black/62">
-            <span
-              className="relative inline-flex h-2.5 w-2.5 items-center justify-center"
-              aria-hidden="true"
-            >
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500/55" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-blue-500" />
-            </span>
-            <span>Suggestions, feedback, or anything on your mind.</span>
-          </p>
-        </div>
+      <div className="pointer-events-none absolute inset-0 opacity-50">
+        <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-[length:22px_22px]" />
+      </div>
 
-        <div className="mx-auto mt-12 grid w-full max-w-4xl gap-4 lg:mt-14 lg:grid-cols-[0.86fr_1fr] lg:gap-8">
-          <div className="relative overflow-hidden rounded-xl border border-black/12 bg-[#f2f2f2]">
-            <div className="relative h-42 w-full sm:h-48 lg:h-full lg:min-h-62">
-              <Image
-                src={resolveOptimizedCloudinaryPublicAsset(
-                  "/media/About/final_flower.png",
-                  {
-                    width: 1200,
-                    crop: "limit",
-                  },
-                )}
-                alt="Floral artwork"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 42vw"
-              />
-            </div>
-          </div>
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-[0.7%] rounded-[1.75rem] border border-[#A01717]/8" />
+        <div className="absolute left-[4%] top-[16%] h-[72%] w-[92%] border border-[#A01717]/9" />
+        <div className="absolute left-[13%] top-[30%] h-[44%] w-[74%] border border-[#A01717]/8" />
 
+        <div className="absolute left-[30%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
+        <div className="absolute left-[40%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
+        <div className="absolute left-[50%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
+        <div className="absolute left-[60%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
+        <div className="absolute left-[70%] top-[16%] h-[72%] w-px bg-[#A01717]/8" />
+
+        <div className="absolute left-[4%] top-[50%] h-px w-[92%] -translate-y-1/2 bg-[#A01717]/9" />
+        <div className="absolute left-[13%] top-[30%] h-px w-[74%] bg-[#A01717]/8" />
+        <div className="absolute left-[13%] bottom-[26%] h-px w-[74%] bg-[#A01717]/8" />
+
+        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-x-full -translate-y-1/2 origin-right rotate-[31deg] bg-[#A01717]/9" />
+        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-y-1/2 origin-left -rotate-[31deg] bg-[#A01717]/9" />
+        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-x-full -translate-y-1/2 origin-right -rotate-[31deg] bg-[#A01717]/8" />
+        <div className="absolute left-1/2 top-1/2 h-px w-[58%] -translate-y-1/2 origin-left rotate-[31deg] bg-[#A01717]/8" />
+
+        <div className="absolute left-[4%] top-[16%] h-[34%] w-[26%] [clip-path:polygon(0_0,100%_100%,0_100%)] bg-[repeating-linear-gradient(120deg,rgba(160,23,23,0.035)_0px,rgba(160,23,23,0.035)_1px,transparent_1px,transparent_8px)]" />
+        <div className="absolute right-[4%] top-[16%] h-[34%] w-[26%] [clip-path:polygon(100%_0,100%_100%,0_100%)] bg-[repeating-linear-gradient(60deg,rgba(160,23,23,0.035)_0px,rgba(160,23,23,0.035)_1px,transparent_1px,transparent_8px)]" />
+      </div>
+
+      <div className="relative mx-auto w-full">
+        <div className="mx-auto max-w-355 px-6 sm:px-8">
           <motion.div
-            className="flex flex-col justify-center"
-            initial={{ opacity: 0, y: 22 }}
+            key={`contact-heading-${restartSignal}`}
+            className="mx-auto max-w-165 text-center"
+            initial={{ opacity: 0, y: 34 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.55, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.95, ease: "easeOut" }}
           >
             <h2
-              className={`${interClassName} text-[clamp(0.94rem,1.6vw,1.32rem)] font-medium leading-tight text-black`}
+              className={`${instrumentSerif.className} text-[clamp(1.8rem,5vw,3rem)] leading-tight text-black/90`}
             >
-              We&apos;d love to hear from you :)
+              <span ref={headingRef} className="inline-grid align-top">
+                <span
+                  className="col-start-1 row-start-1 invisible"
+                  aria-hidden="true"
+                >
+                  {CONTACT_HEADING_TEXT}
+                </span>
+                <span className="col-start-1 row-start-1">
+                  {typedHeading.split("").map((char, index) => (
+                    <span
+                      key={`${char}-${index}`}
+                      className={isAccentChar(index) ? "text-[#A01717]" : ""}
+                    >
+                      {char}
+                    </span>
+                  ))}
+                  <span className="hero-caret" aria-hidden="true" />
+                </span>
+              </span>
             </h2>
-            <form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              noValidate
-              className="mt-3 max-w-108 space-y-2.5"
-            >
-              <div>
-                <label
-                  htmlFor="contact-name"
-                  className="mb-1 block text-[0.66rem] font-medium text-black/82"
-                >
-                  Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="contact-name"
-                  name="name"
-                  type="text"
-                  maxLength={80}
-                  value={nameValue}
-                  onChange={handleNameChange}
-                  onBlur={() => setNameInteracted(true)}
-                  autoComplete="name"
-                  placeholder="Your name"
-                  className={`w-full rounded-md bg-white px-2.5 py-1.75 text-[0.7rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/35 focus:ring-1 ${
-                    nameStatus === "empty" || nameStatus === "invalid"
-                      ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
-                      : nameStatus === "valid"
-                        ? "border border-emerald-500/70 focus:border-emerald-500 focus:ring-emerald-500/20"
-                        : "border border-black/40 focus:border-black/55 focus:ring-black/22"
-                  }`}
-                />
-              </div>
+          </motion.div>
+        </div>
 
-              <div>
-                <label
-                  htmlFor="contact-email"
-                  className="mb-1 block text-[0.66rem] font-medium text-black/82"
+        <div className="relative mt-8 min-h-[clamp(18rem,38vw,34rem)] w-full sm:mt-10">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
+            <motion.div
+              key={`contact-left-arm-${restartSignal}`}
+              className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(14rem,46vw,52rem)]"
+              initial={{ x: -180, opacity: 0.45 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
+            >
+              <Image
+                src="/contact/left_arm.png"
+                alt="Left reaching hand artwork"
+                fill
+                className="object-contain object-left"
+                sizes="(max-width: 640px) 46vw, (max-width: 1024px) 46vw, 42vw"
+              />
+            </motion.div>
+          </div>
+
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
+            <motion.div
+              key={`contact-right-arm-${restartSignal}`}
+              className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(14rem,46vw,52rem)]"
+              initial={{ x: 180, opacity: 0.45 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
+            >
+              <Image
+                src="/contact/right_arm.png"
+                alt="Right reaching hand artwork"
+                fill
+                className="object-contain object-right"
+                sizes="(max-width: 640px) 46vw, (max-width: 1024px) 46vw, 42vw"
+              />
+            </motion.div>
+          </div>
+
+          <div className="relative z-10 mx-auto flex w-full justify-center px-[clamp(4rem,18vw,24rem)] sm:px-[clamp(6rem,24vw,30rem)]">
+            <motion.div
+              key={`contact-form-${restartSignal}`}
+              className={`${interClassName} relative w-full max-w-[22rem] rounded-[1.35rem] border border-black/8 bg-[#f5f5f3] p-3.5 sm:max-w-[23.5rem] sm:p-4`}
+              initial={{ opacity: 0, y: 36 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.95, ease: "easeOut", delay: 0.08 }}
+            >
+              <div className="relative -mx-3.5 -mt-3.5 overflow-hidden rounded-t-[1.35rem] px-3.5 py-3 sm:-mx-4 sm:-mt-4 sm:px-4">
+                <div className="pointer-events-none absolute inset-0">
+                  <Image
+                    src="/contact/chp.png"
+                    alt=""
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 640px) 100vw, 24rem"
+                  />
+                  <div className="absolute inset-0 bg-black/24" />
+                </div>
+                <h2
+                  className={`${interClassName} relative z-10 text-center text-[clamp(0.92rem,1.2vw,1.08rem)] font-semibold tracking-[0.01em] text-white`}
                 >
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  maxLength={254}
-                  value={emailValue}
-                  onChange={handleEmailChange}
-                  onBlur={() => setEmailInteracted(true)}
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className={`w-full rounded-md bg-white px-2.5 py-1.75 text-[0.7rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/35 focus:ring-1 ${
-                    emailStatus === "invalid"
-                      ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
+                  Contact Us
+                </h2>
+              </div>
+              <form
+                ref={formRef}
+                onSubmit={handleSubmit}
+                noValidate
+                className="mx-auto mt-2.5 w-full max-w-[20rem] space-y-2.25 sm:max-w-[21rem]"
+              >
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="mb-1 block text-[0.58rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                  >
+                    Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="contact-name"
+                    name="name"
+                    type="text"
+                    maxLength={80}
+                    value={nameValue}
+                    onChange={handleNameChange}
+                    onBlur={() => setNameInteracted(true)}
+                    autoComplete="name"
+                    placeholder="Your name"
+                    className={`w-full rounded-full bg-white/90 px-3 py-2 text-[0.69rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                      nameStatus === "empty" || nameStatus === "invalid"
+                        ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
+                        : nameStatus === "valid"
+                          ? "border border-emerald-500/70 focus:border-emerald-500 focus:ring-emerald-500/18"
+                          : "border border-black/30 focus:border-black/48 focus:ring-black/12"
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-1 block text-[0.58rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                  >
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    maxLength={254}
+                    value={emailValue}
+                    onChange={handleEmailChange}
+                    onBlur={() => setEmailInteracted(true)}
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    className={`w-full rounded-full bg-white/90 px-3 py-2 text-[0.69rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                      emailStatus === "invalid"
+                        ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
+                        : emailStatus === "valid"
+                          ? "border border-emerald-500/70 focus:border-emerald-500 focus:ring-emerald-500/18"
+                          : "border border-black/30 focus:border-black/48 focus:ring-black/12"
+                    }`}
+                  />
+                  <p
+                    className={`mt-1 min-h-[0.9rem] text-[0.56rem] ${
+                      emailStatus === "invalid"
+                        ? "text-red-600"
+                        : emailStatus === "valid"
+                          ? "text-emerald-700"
+                          : "text-transparent"
+                    }`}
+                    aria-live="polite"
+                  >
+                    {emailStatus === "invalid"
+                      ? "Enter a valid email (example@domain.com)."
                       : emailStatus === "valid"
-                        ? "border border-emerald-500/70 focus:border-emerald-500 focus:ring-emerald-500/20"
-                        : "border border-black/40 focus:border-black/55 focus:ring-black/22"
-                  }`}
-                />
+                        ? "Email looks good."
+                        : "."}
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-message"
+                    className="mb-1 block text-[0.58rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                  >
+                    Message <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    rows={4}
+                    placeholder="Drop your suggestion, feedback, or anything else..."
+                    value={messageValue}
+                    onChange={handleMessageChange}
+                    onBlur={() => setMessageInteracted(true)}
+                    className={`w-full resize-none rounded-2xl bg-white/90 px-3 py-2 text-[0.69rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                      messageStatus === "empty"
+                        ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
+                        : "border border-black/30 focus:border-black/48 focus:ring-black/12"
+                    }`}
+                  />
+                  <p className="mt-1.5 text-right text-[0.56rem] text-black/46">
+                    {wordsLeft} words left
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full outline outline-[#A01717] bg-transparent px-4 py-2 text-[0.68rem] tracking-[0.04em] text-black transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a01717] hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  <span>{isSending ? "Sending..." : "Send Message"}</span>
+                  <span aria-hidden="true">&gt;</span>
+                </button>
+
                 <p
-                  className={`mt-1 min-h-[0.9rem] text-[0.58rem] ${
-                    emailStatus === "invalid"
-                      ? "text-red-600"
-                      : emailStatus === "valid"
-                        ? "text-emerald-700"
+                  className={`min-h-[1rem] text-[0.58rem] leading-4 ${
+                    submitState.type === "success"
+                      ? "text-emerald-700"
+                      : submitState.type === "error"
+                        ? "text-red-600"
                         : "text-transparent"
                   }`}
+                  role="status"
                   aria-live="polite"
                 >
-                  {emailStatus === "invalid"
-                    ? "Enter a valid email (example@domain.com)."
-                    : emailStatus === "valid"
-                      ? "Email looks good."
-                      : "."}
+                  {submitState.message || "."}
                 </p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="contact-message"
-                  className="mb-1 block text-[0.66rem] font-medium text-black/82"
-                >
-                  Message <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  rows={2}
-                  placeholder="Drop your suggestion, feedback, or anything else..."
-                  value={messageValue}
-                  onChange={handleMessageChange}
-                  onBlur={() => setMessageInteracted(true)}
-                  className={`w-full resize-none rounded-md bg-white px-2.5 py-1.75 text-[0.7rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/35 focus:ring-1 ${
-                    messageStatus === "empty"
-                      ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
-                      : "border border-black/40 focus:border-black/55 focus:ring-black/22"
-                  }`}
-                />
-                <p className="mt-1.5 text-right text-[0.6rem] text-black/48">
-                  {wordsLeft} words left
-                </p>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSending}
-                className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-black/12 bg-black px-4 py-1.75 text-[0.7rem] font-medium text-white transition-colors duration-200 hover:bg-black/90 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                <span>{isSending ? "Sending..." : "Send Message"}</span>
-                <span aria-hidden="true">&gt;</span>
-              </button>
-
-              <p
-                className={`min-h-[1.1rem] text-[0.63rem] leading-4 ${
-                  submitState.type === "success"
-                    ? "text-emerald-700"
-                    : submitState.type === "error"
-                      ? "text-red-600"
-                      : "text-transparent"
-                }`}
-                role="status"
-                aria-live="polite"
-              >
-                {submitState.message || "."}
-              </p>
-            </form>
-          </motion.div>
+              </form>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

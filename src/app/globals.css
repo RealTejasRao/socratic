@@ -1980,6 +1980,22 @@ html.app-dark .app-greeting-heading .hero-caret {
   animation: heroLiveDotPulse 1.4s ease-in-out infinite;
 }
 
+@keyframes heroCtaArrowLoop {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(2px);
+  }
+}
+
+.hero-cta-arrow-loop {
+  display: inline-block;
+  animation: heroCtaArrowLoop 1.25s ease-in-out infinite;
+}
+
 @keyframes scroll-drop {
   0% {
     transform: translateY(-1px);
@@ -2124,6 +2140,7 @@ html.app-dark .app-greeting-heading .hero-caret {
   .hero-load-up-title-2,
   .hero-load-up-hero-cta,
   .hero-load-up-image,
+  .hero-cta-arrow-loop,
   .hero-caret,
   .hero-live-dot {
     animation: none;

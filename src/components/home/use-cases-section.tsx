@@ -153,7 +153,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   return (
     <motion.section
       id="use-cases"
-      className="relative scroll-mt-10 bg-white px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
+      className="relative scroll-mt-10 bg-[#fefefc] px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
       initial={{ opacity: 0, y: 26, filter: "blur(9px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, amount: 0.2 }}
@@ -197,7 +197,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
           </p>
         </div>
 
-        <div className="mt-12 overflow-hidden rounded-2xl border border-black/25 outline-1 -outline-offset-1 outline-black/12 bg-white md:mt-5">
+        <div className="mt-12 overflow-hidden rounded-2xl border border-black/25 outline-1 -outline-offset-1 outline-black/12 bg-[#fefefc] md:mt-5">
           <div className="grid grid-cols-1 lg:min-h-96 lg:grid-cols-[0.95fr_1.85fr]">
             <aside className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10">
               {useCaseItems.map((item, index) => {
@@ -211,7 +211,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                     onClick={() => setActiveId(item.id)}
                     className={`group relative block w-full cursor-pointer border-b border-black/10 px-3 py-3 text-left last:border-b-0 transition-colors duration-200 lg:flex-1 ${
                       isActive
-                        ? "bg-white"
+                        ? "bg-[#fefefc]"
                         : "bg-[#f7f7f7] hover:bg-black/2"
                     }`}
                     aria-pressed={isActive}
@@ -257,7 +257,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
 
             <motion.div
               key={activeItem.id}
-              className="bg-white px-3 py-4.5 sm:px-4 sm:py-5.5 lg:flex lg:h-full lg:flex-col"
+              className="bg-[#fefefc] px-3 py-4.5 sm:px-4 sm:py-5.5 lg:flex lg:h-full lg:flex-col"
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.36, ease: "easeOut" }}

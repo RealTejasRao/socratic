@@ -11,10 +11,10 @@ export function SecuritySeparator({ interClassName }: SecuritySeparatorProps) {
   return (
     <section
       aria-label="Chat security separator"
-      className="relative z-10 -mb-3 -mt-10 -translate-y-8 bg-white px-6 py-4 sm:-mb-4 sm:-mt-12 sm:px-8 sm:py-5"
+      className="relative z-10 -mb-3 -mt-10 -translate-y-8 bg-[#fefefc] px-6 py-4 sm:-mb-4 sm:-mt-12 sm:px-8 sm:py-5"
     >
       <div className="mx-auto w-full max-w-280">
-        <div className="relative overflow-hidden rounded-xl border border-black/12 bg-white px-5 py-4.5 sm:px-7 sm:py-5.5">
+        <div className="relative overflow-hidden rounded-xl border border-black/12 bg-[#fefefc] px-5 py-4.5 sm:px-7 sm:py-5.5">
           <div className="pointer-events-none absolute inset-0" aria-hidden="true">
             <motion.div
               className="absolute left-0 top-1/2 h-px w-[38%] bg-gradient-to-r from-black/20 to-black/55"
@@ -40,7 +40,7 @@ export function SecuritySeparator({ interClassName }: SecuritySeparatorProps) {
 
           <div className="relative flex flex-col items-center justify-center gap-2.5 text-center">
             <motion.div
-              className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-black/12 bg-white"
+              className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-black/12 bg-[#fefefc]"
               animate={{ y: [0, -2.5, 0], scale: [1, 1.045, 1] }}
               transition={{ duration: 1.75, repeat: Infinity, ease: "easeInOut" }}
             >
