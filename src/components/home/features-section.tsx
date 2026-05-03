@@ -75,11 +75,10 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const headingVariants: Variants = {
-  hidden: { opacity: 0, y: 26, filter: "blur(10px)" },
+  hidden: { opacity: 0, y: 26 },
   show: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
   },
 };
@@ -91,7 +90,6 @@ const leftPillarVariants: Variants = {
     y: 120,
     rotate: -8,
     scale: 0.92,
-    filter: "blur(9px)",
   },
   show: {
     opacity: 1,
@@ -99,7 +97,6 @@ const leftPillarVariants: Variants = {
     y: 0,
     rotate: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: { duration: 1.35, ease: [0.22, 1, 0.36, 1] },
   },
 };
@@ -111,7 +108,6 @@ const rightPillarVariants: Variants = {
     y: 120,
     rotate: 8,
     scale: 0.92,
-    filter: "blur(9px)",
   },
   show: {
     opacity: 1,
@@ -119,7 +115,6 @@ const rightPillarVariants: Variants = {
     y: 0,
     rotate: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: { duration: 1.35, ease: [0.22, 1, 0.36, 1] },
   },
 };
@@ -130,14 +125,12 @@ const carouselShellVariants: Variants = {
     y: 54,
     scale: 0.94,
     rotateX: 10,
-    filter: "blur(11px)",
   },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
     rotateX: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1], delay: 0.2 },
   },
 };
@@ -254,7 +247,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
   return (
     <section
       id="features"
-      className="relative -scroll-mt-10 overflow-hidden bg-[#fefefc] px-5 py-10 sm:px-8 sm:py-12 lg:h-[calc(100svh-4.25rem)] lg:min-h-[44rem] lg:py-8"
+      className="relative -scroll-mt-10 overflow-hidden bg-transparent px-5 py-10 sm:px-8 sm:py-12 lg:h-[calc(100svh-4.25rem)] lg:min-h-[44rem] lg:py-8"
     >
       <div className="relative mx-auto flex h-full w-full max-w-[136rem] flex-col justify-center">
         <motion.div

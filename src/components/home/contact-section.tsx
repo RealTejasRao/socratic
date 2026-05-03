@@ -41,7 +41,6 @@ const leftArmVariants: Variants = {
     y: 110,
     rotate: -9,
     scale: 0.9,
-    filter: "blur(8px)",
   },
   show: {
     opacity: 1,
@@ -49,7 +48,6 @@ const leftArmVariants: Variants = {
     y: 0,
     rotate: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: { duration: 1.4, ease: CONTACT_EASE, delay: 0.05 },
   },
 };
@@ -61,7 +59,6 @@ const rightArmVariants: Variants = {
     y: 110,
     rotate: 9,
     scale: 0.9,
-    filter: "blur(8px)",
   },
   show: {
     opacity: 1,
@@ -69,7 +66,6 @@ const rightArmVariants: Variants = {
     y: 0,
     rotate: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: { duration: 1.4, ease: CONTACT_EASE, delay: 0.09 },
   },
 };
@@ -80,14 +76,12 @@ const formShellVariants: Variants = {
     y: 74,
     scale: 0.9,
     rotateX: 12,
-    filter: "blur(10px)",
   },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
     rotateX: 0,
-    filter: "blur(0px)",
     transition: { duration: 1.05, ease: CONTACT_EASE, delay: 0.42 },
   },
 };
@@ -329,12 +323,8 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
   return (
     <section
       id="contact"
-      className="relative -scroll-mt-4 overflow-hidden bg-[#fefefc] py-14 sm:py-16 lg:py-18"
+      className="relative -scroll-mt-4 overflow-hidden bg-transparent py-14 sm:py-16 lg:py-18"
     >
-      <div className="pointer-events-none absolute inset-0 opacity-50">
-        <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-[length:22px_22px]" />
-      </div>
-
       <div className="relative mx-auto w-full">
         <div className="mx-auto max-w-355 px-6 sm:px-8">
           <motion.div

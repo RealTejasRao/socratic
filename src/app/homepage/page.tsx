@@ -40,6 +40,9 @@ export default function HomePage() {
       <main
         className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName}`}
       >
+        <div className="pointer-events-none absolute inset-0 opacity-50">
+          <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-[length:22px_22px]" />
+        </div>
         <HomeHashScroll />
         <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-6 pt-2.5 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-8 sm:pt-2">
           <nav className="relative mx-auto flex w-full max-w-365 items-center justify-between">

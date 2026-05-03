@@ -11,7 +11,7 @@ export function SecuritySeparator({ interClassName }: SecuritySeparatorProps) {
   return (
     <section
       aria-label="Chat security separator"
-      className="relative z-10 -mb-3 -mt-10 -translate-y-8 bg-[#fefefc] px-6 py-4 sm:-mb-4 sm:-mt-12 sm:px-8 sm:py-5"
+      className="relative z-10 -mb-3 -mt-10 -translate-y-8 bg-transparent px-6 py-4 sm:-mb-4 sm:-mt-12 sm:px-8 sm:py-5"
     >
       <div className="mx-auto w-full max-w-280">
         <div className="relative overflow-hidden rounded-xl border border-black/12 bg-[#fefefc] px-5 py-4.5 sm:px-7 sm:py-5.5">

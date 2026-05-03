@@ -81,51 +81,43 @@ const heroLoadInitial = {
   opacity: 0,
   y: 34,
   scale: 0.988,
-  filter: "blur(8px)",
 };
 const heroLoadInView = {
   opacity: 1,
   y: 0,
   scale: 1,
-  filter: "blur(0px)",
 };
 const useCasesCardInitial = {
   opacity: 0,
   y: 56,
   scale: 0.965,
   rotateX: 10,
-  filter: "blur(10px)",
 };
 const useCasesCardInView = {
   opacity: 1,
   y: 0,
   scale: 1,
   rotateX: 0,
-  filter: "blur(0px)",
 };
 const leftRailInitial = {
   opacity: 0,
   x: -52,
   y: 18,
-  filter: "blur(7px)",
 };
 const leftRailInView = {
   opacity: 1,
   x: 0,
   y: 0,
-  filter: "blur(0px)",
 };
 const rightPanelInitial = {
   opacity: 0,
   x: 48,
   y: 14,
-  filter: "blur(7px)",
 };
 const rightPanelInView = {
   opacity: 1,
   x: 0,
   y: 0,
-  filter: "blur(0px)",
 };
 
 export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
@@ -227,7 +219,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   return (
     <section
       id="use-cases"
-      className="relative scroll-mt-15 bg-[#fefefc] px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
+      className="relative scroll-mt-15 bg-transparent px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
     >
       <div className="mx-auto w-full max-w-[138rem]">
         <motion.div
@@ -304,11 +296,10 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                           opacity: 0,
                           x: -28,
                           y: 18,
-                          filter: "blur(4px)",
                         }}
                         animate={
                           useCasesSceneInView
-                            ? { opacity: 1, x: 0, y: 0, filter: "blur(0px)" }
+                            ? { opacity: 1, x: 0, y: 0 }
                             : false
                         }
                         transition={{
@@ -354,7 +345,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                     className="bg-[#fefefc] px-3.5 py-4.5 sm:px-4.5 sm:py-5 lg:flex lg:h-full lg:flex-col"
                     initial={rightPanelInitial}
                     animate={rightPanelInView}
-                    exit={{ opacity: 0, x: -24, y: -8, filter: "blur(4px)" }}
+                    exit={{ opacity: 0, x: -24, y: -8 }}
                     transition={{ duration: 0.48, ease: heroSlideEase }}
                   >
                     <motion.div
@@ -374,8 +365,8 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
 
                     <motion.div
                       className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1"
-                      initial={{ opacity: 0, y: 24, scale: 0.984, filter: "blur(4px)" }}
-                      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                      initial={{ opacity: 0, y: 24, scale: 0.984 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.46, ease: heroSlideEase, delay: 0.08 }}
                     >
                       <div className="relative flex h-[10rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[13rem] lg:h-full lg:min-h-[15rem]">
