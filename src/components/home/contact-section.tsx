@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import emailjs from "@emailjs/browser";
-import { motion, useInView } from "framer-motion";
+import { motion, type Variants, useInView } from "framer-motion";
 import { Instrument_Serif } from "next/font/google";
 import {
   type ChangeEvent,
@@ -32,6 +32,65 @@ const EMAILJS_SERVICE_ID = process.env["NEXT_PUBLIC_EMAILJS_SERVICE_ID"] ?? "";
 const EMAILJS_TEMPLATE_ID =
   process.env["NEXT_PUBLIC_EMAILJS_TEMPLATE_ID"] ?? "";
 const EMAILJS_PUBLIC_KEY = process.env["NEXT_PUBLIC_EMAILJS_PUBLIC_KEY"] ?? "";
+const CONTACT_EASE = [0.22, 1, 0.36, 1] as const;
+
+const leftArmVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: -240,
+    y: 110,
+    rotate: -9,
+    scale: 0.9,
+    filter: "blur(8px)",
+  },
+  show: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 1.4, ease: CONTACT_EASE, delay: 0.05 },
+  },
+};
+
+const rightArmVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: 240,
+    y: 110,
+    rotate: 9,
+    scale: 0.9,
+    filter: "blur(8px)",
+  },
+  show: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 1.4, ease: CONTACT_EASE, delay: 0.09 },
+  },
+};
+
+const formShellVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 74,
+    scale: 0.9,
+    rotateX: 12,
+    filter: "blur(10px)",
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    rotateX: 0,
+    filter: "blur(0px)",
+    transition: { duration: 1.05, ease: CONTACT_EASE, delay: 0.42 },
+  },
+};
 
 const sanitizeField = (value: string) =>
   value
@@ -62,7 +121,9 @@ const isValidEmail = (value: string) => {
 
 export function ContactSection({ interClassName }: ContactSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
+  const sceneInView = useInView(sceneRef, { once: true, amount: 0.3 });
   const formRef = useRef<HTMLFormElement | null>(null);
   const [visibleHeadingChars, setVisibleHeadingChars] = useState(0);
   const [restartSignal, setRestartSignal] = useState(0);
@@ -268,7 +329,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
   return (
     <section
       id="contact"
-      className="relative scroll-mt-1 overflow-hidden bg-[#fefefc] py-14 sm:py-16 lg:py-18"
+      className="relative -scroll-mt-4 overflow-hidden bg-[#fefefc] py-14 sm:py-16 lg:py-18"
     >
       <div className="pointer-events-none absolute inset-0 opacity-50">
         <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-[length:22px_22px]" />
@@ -310,15 +371,17 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           </motion.div>
         </div>
 
-        <div className="relative mt-8 min-h-[clamp(18rem,38vw,34rem)] w-full sm:mt-10">
+        <div
+          ref={sceneRef}
+          className="relative mt-8 min-h-[clamp(18rem,38vw,34rem)] w-full sm:mt-10"
+        >
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
             <motion.div
               key={`contact-left-arm-${restartSignal}`}
               className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(14rem,46vw,52rem)]"
-              initial={{ x: -180, opacity: 0.45 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 1.1, ease: "easeOut" }}
+              variants={leftArmVariants}
+              initial="hidden"
+              animate={sceneInView ? "show" : false}
             >
               <Image
                 src="/contact/left_arm.png"
@@ -334,10 +397,9 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
             <motion.div
               key={`contact-right-arm-${restartSignal}`}
               className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(14rem,46vw,52rem)]"
-              initial={{ x: 180, opacity: 0.45 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 1.1, ease: "easeOut" }}
+              variants={rightArmVariants}
+              initial="hidden"
+              animate={sceneInView ? "show" : false}
             >
               <Image
                 src="/contact/right_arm.png"
@@ -349,16 +411,32 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
             </motion.div>
           </div>
 
-          <div className="relative z-10 mx-auto flex w-full justify-center px-[clamp(4rem,18vw,24rem)] sm:px-[clamp(6rem,24vw,30rem)]">
+          <div
+            className="relative z-10 mx-auto flex w-full justify-center px-[clamp(4rem,18vw,24rem)] sm:px-[clamp(6rem,24vw,30rem)]"
+            style={{ perspective: 1200 }}
+          >
             <motion.div
               key={`contact-form-${restartSignal}`}
               className={`${interClassName} relative w-full max-w-[22rem] rounded-[1.35rem] border border-black/8 bg-[#f5f5f3] p-3.5 sm:max-w-[23.5rem] sm:p-4`}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.95, ease: "easeOut", delay: 0.08 }}
+              variants={formShellVariants}
+              initial="hidden"
+              animate={sceneInView ? "show" : false}
             >
-              <div className="relative -mx-3.5 -mt-3.5 overflow-hidden rounded-t-[1.35rem] px-3.5 py-3 sm:-mx-4 sm:-mt-4 sm:px-4">
+              <motion.div
+                className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-gradient-to-r from-transparent via-white/58 to-transparent blur-md"
+                initial={{ x: "-140%", opacity: 0 }}
+                animate={
+                  sceneInView
+                    ? { x: ["-140%", "300%"], opacity: [0, 0.76, 0] }
+                    : false
+                }
+                transition={{
+                  duration: 1.22,
+                  ease: "easeOut",
+                  delay: 0.66,
+                }}
+              />
+              <div className="relative -mx-3.5 -mt-3.5 overflow-hidden rounded-t-[1.35rem] px-3.5 py-3.5 sm:-mx-4 sm:-mt-4 sm:px-4 sm:py-4">
                 <div className="pointer-events-none absolute inset-0">
                   <Image
                     src="/contact/chp.png"

@@ -89,10 +89,53 @@ const heroLoadInView = {
   scale: 1,
   filter: "blur(0px)",
 };
+const useCasesCardInitial = {
+  opacity: 0,
+  y: 56,
+  scale: 0.965,
+  rotateX: 10,
+  filter: "blur(10px)",
+};
+const useCasesCardInView = {
+  opacity: 1,
+  y: 0,
+  scale: 1,
+  rotateX: 0,
+  filter: "blur(0px)",
+};
+const leftRailInitial = {
+  opacity: 0,
+  x: -52,
+  y: 18,
+  filter: "blur(7px)",
+};
+const leftRailInView = {
+  opacity: 1,
+  x: 0,
+  y: 0,
+  filter: "blur(0px)",
+};
+const rightPanelInitial = {
+  opacity: 0,
+  x: 48,
+  y: 14,
+  filter: "blur(7px)",
+};
+const rightPanelInView = {
+  opacity: 1,
+  x: 0,
+  y: 0,
+  filter: "blur(0px)",
+};
 
 export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
+  const useCasesSceneRef = useRef<HTMLDivElement | null>(null);
+  const useCasesSceneInView = useInView(useCasesSceneRef, {
+    once: true,
+    amount: 0.3,
+  });
   const [activeId, setActiveId] = useState(useCaseItems[0]?.id ?? "");
   const [visibleHeadingChars, setVisibleHeadingChars] = useState(0);
   const [restartHeadingSignal, setRestartHeadingSignal] = useState(0);
@@ -184,7 +227,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   return (
     <section
       id="use-cases"
-      className="relative scroll-mt-10 bg-[#fefefc] px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
+      className="relative scroll-mt-15 bg-[#fefefc] px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
     >
       <div className="mx-auto w-full max-w-[138rem]">
         <motion.div
@@ -215,18 +258,33 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
           </h2>
         </motion.div>
 
-        <div className="mt-2 md:-mt-4">
+        <div ref={useCasesSceneRef} className="mt-2 md:-mt-4">
           <div className="flex items-stretch justify-center lg:px-2 xl:px-4">
             <motion.div
               key={`use-cases-card-${restartLoadSignal}`}
               className="relative z-20 min-w-0 w-full max-w-[74rem] overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(70vw,74rem)]"
-              initial={heroLoadInitial}
-              whileInView={heroLoadInView}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 1.2, delay: 0.3, ease: heroSlideEase }}
+              style={{ perspective: 1200 }}
+              initial={useCasesCardInitial}
+              animate={useCasesSceneInView ? useCasesCardInView : false}
+              transition={{ duration: 1.12, delay: 0.18, ease: heroSlideEase }}
             >
+              <motion.div
+                className="pointer-events-none absolute inset-y-0 left-0 z-30 w-28 -translate-x-full bg-gradient-to-r from-transparent via-white/55 to-transparent blur-md"
+                initial={{ x: "-130%", opacity: 0 }}
+                animate={
+                  useCasesSceneInView
+                    ? { x: ["-130%", "260%"], opacity: [0, 0.72, 0] }
+                    : false
+                }
+                transition={{ duration: 1.25, ease: "easeOut", delay: 0.56 }}
+              />
               <div className="grid grid-cols-1 lg:min-h-[27rem] lg:grid-cols-[0.95fr_1.85fr]">
-                <aside className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10">
+                <motion.aside
+                  className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10"
+                  initial={leftRailInitial}
+                  animate={useCasesSceneInView ? leftRailInView : false}
+                  transition={{ duration: 0.92, delay: 0.28, ease: heroSlideEase }}
+                >
                   {useCaseItems.map((item, index) => {
                     const isActive = item.id === activeItem.id;
                     const Icon = item.icon;
@@ -242,12 +300,20 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                             : "bg-[#f7f7f7] hover:bg-black/2"
                         }`}
                         aria-pressed={isActive}
-                        initial={heroLoadInitial}
-                        whileInView={heroLoadInView}
-                        viewport={{ once: true, amount: 0.55 }}
+                        initial={{
+                          opacity: 0,
+                          x: -28,
+                          y: 18,
+                          filter: "blur(4px)",
+                        }}
+                        animate={
+                          useCasesSceneInView
+                            ? { opacity: 1, x: 0, y: 0, filter: "blur(0px)" }
+                            : false
+                        }
                         transition={{
-                          duration: 1.05,
-                          delay: 0.34 + 0.08 * index,
+                          duration: 0.86,
+                          delay: 0.4 + 0.1 * index,
                           ease: heroSlideEase,
                         }}
                       >
@@ -280,43 +346,49 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                       </motion.button>
                     );
                   })}
-                </aside>
+                </motion.aside>
 
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={`${activeItem.id}-${restartLoadSignal}`}
                     className="bg-[#fefefc] px-3.5 py-4.5 sm:px-4.5 sm:py-5 lg:flex lg:h-full lg:flex-col"
-                    initial={{
-                      opacity: 0,
-                      y: 18,
-                      scale: 0.994,
-                      filter: "blur(6px)",
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      scale: 1,
-                      filter: "blur(0px)",
-                    }}
-                    exit={{
-                      opacity: 0,
-                      y: -12,
-                      scale: 0.996,
-                      filter: "blur(4px)",
-                    }}
-                    transition={{ duration: 0.42, ease: heroSlideEase }}
+                    initial={rightPanelInitial}
+                    animate={rightPanelInView}
+                    exit={{ opacity: 0, x: -24, y: -8, filter: "blur(4px)" }}
+                    transition={{ duration: 0.48, ease: heroSlideEase }}
                   >
-                    <h3
-                      className={`${interClassName} text-[clamp(0.86rem,1.15vw,1.05rem)] font-medium tracking-[-0.02em] text-black`}
+                    <motion.div
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.38, ease: heroSlideEase, delay: 0.04 }}
                     >
-                      {activeItem.rightTitle}
-                    </h3>
-                    <p className="mt-2.5 max-w-210 text-[clamp(0.68rem,0.8vw,0.76rem)] leading-5 text-black/58">
-                      {activeItem.rightDescription}
-                    </p>
+                      <h3
+                        className={`${interClassName} text-[clamp(0.86rem,1.15vw,1.05rem)] font-medium tracking-[-0.02em] text-black`}
+                      >
+                        {activeItem.rightTitle}
+                      </h3>
+                      <p className="mt-2.5 max-w-210 text-[clamp(0.68rem,0.8vw,0.76rem)] leading-5 text-black/58">
+                        {activeItem.rightDescription}
+                      </p>
+                    </motion.div>
 
-                    <div className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1">
+                    <motion.div
+                      className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1"
+                      initial={{ opacity: 0, y: 24, scale: 0.984, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                      transition={{ duration: 0.46, ease: heroSlideEase, delay: 0.08 }}
+                    >
                       <div className="relative flex h-[10rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[13rem] lg:h-full lg:min-h-[15rem]">
+                        <motion.div
+                          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-gradient-to-r from-transparent via-white/52 to-transparent blur-sm"
+                          initial={{ x: "-120%", opacity: 0 }}
+                          animate={{ x: ["-120%", "260%"], opacity: [0, 0.66, 0] }}
+                          transition={{
+                            duration: 1.08,
+                            ease: "easeOut",
+                            delay: 0.16,
+                          }}
+                        />
                         {activeImageUrl ? (
                           <Image
                             src={activeImageUrl}
@@ -336,7 +408,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                           </div>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                   </motion.div>
                 </AnimatePresence>
               </div>

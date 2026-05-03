@@ -87,6 +87,15 @@ export function HomeHashScroll() {
             detail: { sectionId: "use-cases" },
           })
         );
+        return;
+      }
+
+      if (href === "#features") {
+        window.dispatchEvent(
+          new CustomEvent("section:typewriter:restart", {
+            detail: { sectionId: "features" },
+          })
+        );
       }
     };
 
