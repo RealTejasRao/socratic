@@ -9,6 +9,7 @@ import { SecuritySeparator } from "@/src/components/home/security-separator";
 import { UseCasesSection } from "@/src/components/home/use-cases-section";
 import { ContactSection } from "@/src/components/home/contact-section";
 import { Footer } from "@/src/components/home/footer";
+import { HeroRotatingWord } from "@/src/components/home/hero-rotating-word";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
@@ -41,7 +42,7 @@ export default function HomePage() {
         className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName}`}
       >
         <div className="pointer-events-none absolute inset-0 opacity-50">
-          <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-[length:22px_22px]" />
+          <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-size-[22px_22px]" />
         </div>
         <HomeHashScroll />
         <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-6 pt-2.5 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-8 sm:pt-2">
@@ -122,8 +123,7 @@ export default function HomePage() {
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
               <p className="hero-load-up hero-load-up-title-1 text-[clamp(1.8rem,5vw,3rem)] leading-[0.95]">
-                Your Personal AI For{" "}
-                <span className="italic text-[#A01717]">Philosophy</span>
+                Your Personal AI For <HeroRotatingWord />
               </p>
               <Link
                 href={ROUTES.SIGN_UP}
@@ -141,7 +141,7 @@ export default function HomePage() {
           <div className="hero-bottom-image-scroll pointer-events-none absolute inset-x-0 bottom-0 z-0">
             <div className="hero-load-up hero-load-up-image w-full">
               <Image
-                src="/home/phi.png"
+                src="/home/phi2.png"
                 alt="Socratic AI hero visual"
                 width={2400}
                 height={1200}
