@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 type ContactSectionProps = {
   interClassName: string;
@@ -323,20 +324,20 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
   return (
     <section
       id="contact"
-      className="relative -scroll-mt-4 overflow-hidden bg-transparent py-14 sm:py-16 lg:py-18"
+      className="relative -scroll-mt-4 overflow-hidden bg-transparent py-12 sm:py-14 lg:py-16"
     >
       <div className="relative mx-auto w-full">
-        <div className="mx-auto max-w-355 px-6 sm:px-8">
+        <div className="mx-auto max-w-340 px-5 sm:px-7">
           <motion.div
             key={`contact-heading-${restartSignal}`}
-            className="mx-auto max-w-165 text-center"
+            className="mx-auto max-w-150 text-center"
             initial={{ opacity: 0, y: 34 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.95, ease: "easeOut" }}
           >
             <h2
-              className={`${instrumentSerif.className} text-[clamp(1.8rem,5vw,3rem)] leading-tight text-black/90`}
+              className={`${instrumentSerif.className} text-[clamp(1.62rem,4.5vw,2.7rem)] leading-tight text-black/90`}
             >
               <span ref={headingRef} className="inline-grid align-top">
                 <span
@@ -363,18 +364,25 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
 
         <div
           ref={sceneRef}
-          className="relative mt-8 min-h-[clamp(18rem,38vw,34rem)] w-full sm:mt-10"
+          className="relative mt-7 min-h-[clamp(16rem,35vw,30rem)] w-full sm:mt-9"
         >
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
             <motion.div
               key={`contact-left-arm-${restartSignal}`}
-              className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(14rem,46vw,52rem)]"
+              className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(13rem,42vw,48rem)]"
               variants={leftArmVariants}
               initial="hidden"
               animate={sceneInView ? "show" : false}
             >
               <Image
-                src="/contact/left_arm.png"
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/contact/left_arm.webp",
+                  {
+                    width: 1200,
+                    crop: "limit",
+                    quality: "auto:good",
+                  },
+                )}
                 alt="Left reaching hand artwork"
                 fill
                 className="object-contain object-left"
@@ -386,13 +394,20 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
             <motion.div
               key={`contact-right-arm-${restartSignal}`}
-              className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(14rem,46vw,52rem)]"
+              className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(13rem,42vw,48rem)]"
               variants={rightArmVariants}
               initial="hidden"
               animate={sceneInView ? "show" : false}
             >
               <Image
-                src="/contact/right_arm.png"
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/contact/right_arm.webp",
+                  {
+                    width: 1200,
+                    crop: "limit",
+                    quality: "auto:good",
+                  },
+                )}
                 alt="Right reaching hand artwork"
                 fill
                 className="object-contain object-right"
@@ -402,12 +417,12 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           </div>
 
           <div
-            className="relative z-10 mx-auto flex w-full justify-center px-[clamp(4rem,18vw,24rem)] sm:px-[clamp(6rem,24vw,30rem)]"
+            className="relative z-10 mx-auto flex w-full justify-center px-[clamp(3.5rem,16vw,21rem)] sm:px-[clamp(5rem,21vw,27rem)]"
             style={{ perspective: 1200 }}
           >
             <motion.div
               key={`contact-form-${restartSignal}`}
-              className={`${interClassName} relative w-full max-w-[22rem] rounded-[1.35rem] border border-black/8 bg-[#f5f5f3] p-3.5 sm:max-w-[23.5rem] sm:p-4`}
+              className={`${interClassName} relative w-full max-w-[20.5rem] rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-3.25 sm:max-w-[22rem] sm:p-3.5`}
               variants={formShellVariants}
               initial="hidden"
               animate={sceneInView ? "show" : false}
@@ -426,10 +441,17 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                   delay: 0.66,
                 }}
               />
-              <div className="relative -mx-3.5 -mt-3.5 overflow-hidden rounded-t-[1.35rem] px-3.5 py-3.5 sm:-mx-4 sm:-mt-4 sm:px-4 sm:py-4">
+              <div className="relative -mx-3.25 -mt-3.25 overflow-hidden rounded-t-[1.25rem] px-3.25 py-3 sm:-mx-3.5 sm:-mt-3.5 sm:px-3.5 sm:py-3.5">
                 <div className="pointer-events-none absolute inset-0">
                   <Image
-                    src="/contact/chp.png"
+                    src={resolveOptimizedCloudinaryPublicAsset(
+                      "/contact/contact.webp",
+                      {
+                        width: 768,
+                        crop: "limit",
+                        quality: "auto:good",
+                      },
+                    )}
                     alt=""
                     fill
                     className="object-cover object-center"
@@ -438,7 +460,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                   <div className="absolute inset-0 bg-black/24" />
                 </div>
                 <h2
-                  className={`${interClassName} relative z-10 text-center text-[clamp(0.92rem,1.2vw,1.08rem)] font-semibold tracking-[0.01em] text-white`}
+                  className={`${interClassName} relative z-10 text-center text-[clamp(0.84rem,1.08vw,0.98rem)] font-semibold tracking-[0.01em] text-white`}
                 >
                   Contact Us
                 </h2>
@@ -447,12 +469,12 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 ref={formRef}
                 onSubmit={handleSubmit}
                 noValidate
-                className="mx-auto mt-2.5 w-full max-w-[20rem] space-y-2.25 sm:max-w-[21rem]"
+                className="mx-auto mt-2 w-full max-w-[18.75rem] space-y-2 sm:max-w-[20rem]"
               >
                 <div>
                   <label
                     htmlFor="contact-name"
-                    className="mb-1 block text-[0.58rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                    className="mb-1 block text-[0.54rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
                   >
                     Name <span className="text-red-500">*</span>
                   </label>
@@ -466,7 +488,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     onBlur={() => setNameInteracted(true)}
                     autoComplete="name"
                     placeholder="Your name"
-                    className={`w-full rounded-full bg-white/90 px-3 py-2 text-[0.69rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                    className={`w-full rounded-full bg-white/90 px-3 py-1.75 text-[0.64rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
                       nameStatus === "empty" || nameStatus === "invalid"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
                         : nameStatus === "valid"
@@ -479,7 +501,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <div>
                   <label
                     htmlFor="contact-email"
-                    className="mb-1 block text-[0.58rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                    className="mb-1 block text-[0.54rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
                   >
                     Email <span className="text-red-500">*</span>
                   </label>
@@ -493,7 +515,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     onBlur={() => setEmailInteracted(true)}
                     autoComplete="email"
                     placeholder="you@example.com"
-                    className={`w-full rounded-full bg-white/90 px-3 py-2 text-[0.69rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                    className={`w-full rounded-full bg-white/90 px-3 py-1.75 text-[0.64rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
                       emailStatus === "invalid"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
                         : emailStatus === "valid"
@@ -502,7 +524,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     }`}
                   />
                   <p
-                    className={`mt-1 min-h-[0.9rem] text-[0.56rem] ${
+                    className={`mt-1 min-h-[0.8rem] text-[0.52rem] ${
                       emailStatus === "invalid"
                         ? "text-red-600"
                         : emailStatus === "valid"
@@ -522,7 +544,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <div>
                   <label
                     htmlFor="contact-message"
-                    className="mb-1 block text-[0.58rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                    className="mb-1 block text-[0.54rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
                   >
                     Message <span className="text-red-500">*</span>
                   </label>
@@ -534,13 +556,13 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     value={messageValue}
                     onChange={handleMessageChange}
                     onBlur={() => setMessageInteracted(true)}
-                    className={`w-full resize-none rounded-2xl bg-white/90 px-3 py-2 text-[0.69rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                    className={`w-full resize-none rounded-2xl bg-white/90 px-3 py-1.75 text-[0.64rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
                       messageStatus === "empty"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
                         : "border border-black/30 focus:border-black/48 focus:ring-black/12"
                     }`}
                   />
-                  <p className="mt-1.5 text-right text-[0.56rem] text-black/46">
+                  <p className="mt-1.25 text-right text-[0.52rem] text-black/46">
                     {wordsLeft} words left
                   </p>
                 </div>
@@ -548,14 +570,14 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <button
                   type="submit"
                   disabled={isSending}
-                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full outline outline-[#A01717] bg-transparent px-4 py-2 text-[0.68rem] tracking-[0.04em] text-black transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a01717] hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full outline outline-[#A01717] bg-transparent px-4 py-1.75 text-[0.62rem] tracking-[0.04em] text-black transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a01717] hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <span>{isSending ? "Sending..." : "Send Message"}</span>
                   <span aria-hidden="true">&gt;</span>
                 </button>
 
                 <p
-                  className={`min-h-[1rem] text-[0.58rem] leading-4 ${
+                  className={`min-h-[0.9rem] text-[0.54rem] leading-4 ${
                     submitState.type === "success"
                       ? "text-emerald-700"
                       : submitState.type === "error"

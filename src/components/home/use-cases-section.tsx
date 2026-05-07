@@ -40,7 +40,7 @@ const useCaseItems: UseCaseItem[] = [
     rightDescription:
       "Have the deep conversations you've always wanted, at any hour, with someone who takes you seriously. No judgment, no distraction. Just thinking. Together.",
     placeholderLabel: "Deep conversations related image.",
-    imageSrc: "/media/useCasesSection/first.png",
+    imageSrc: "/media/useCasesSection/first.webp",
   },
   {
     id: "debate-drills",
@@ -52,7 +52,7 @@ const useCaseItems: UseCaseItem[] = [
     rightDescription:
       "It maps every claim you make, tracks your logic in real time, and fires back with the most precise counter it can find; then turns around and guides you toward the stronger version of it.",
     placeholderLabel: "Passage Analysis Preview",
-    imageSrc: "/media/useCasesSection/second.png",
+    imageSrc: "/media/useCasesSection/second.webp",
   },
   {
     id: "all-of-philosophy",
@@ -64,7 +64,7 @@ const useCaseItems: UseCaseItem[] = [
     rightDescription:
       "Understand any philosopher, any idea, the way it was always meant to be - through conversation, not a textbook. From the ancient Greeks to modern existentialists, from Stoicism to Nihilism. ",
     placeholderLabel: "Belief Graph Preview",
-    imageSrc: "/media/useCasesSection/third.png",
+    imageSrc: "/media/useCasesSection/third.webp",
   },
 ];
 
@@ -219,7 +219,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   return (
     <section
       id="use-cases"
-      className="relative scroll-mt-15 bg-transparent px-6 py-7 sm:px-8 sm:py-8 lg:py-9"
+      className="relative scroll-mt-15 bg-transparent px-5 py-6 sm:px-7 sm:py-7 lg:py-8"
     >
       <div className="mx-auto w-full max-w-[138rem]">
         <motion.div
@@ -231,7 +231,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
           transition={{ duration: 1.2, delay: 0.2, ease: heroSlideEase }}
         >
           <h2
-            className={`${instrumentSerif.className} -translate-y-3 text-[clamp(1.8rem,5vw,3rem)] font-normal leading-tight text-black sm:-translate-y-10`}
+            className={`${instrumentSerif.className} -translate-y-2 text-[clamp(1.62rem,4.5vw,2.7rem)] font-normal leading-tight text-black sm:-translate-y-8`}
           >
             <span ref={headingRef} className="inline-grid align-top">
               <span
@@ -250,11 +250,11 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
           </h2>
         </motion.div>
 
-        <div ref={useCasesSceneRef} className="mt-2 md:-mt-4">
+        <div ref={useCasesSceneRef} className="mt-1.5 md:-mt-3">
           <div className="flex items-stretch justify-center lg:px-2 xl:px-4">
             <motion.div
               key={`use-cases-card-${restartLoadSignal}`}
-              className="relative z-20 min-w-0 w-full max-w-[74rem] overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(70vw,74rem)]"
+              className="relative z-20 min-w-0 w-full max-w-[72rem] overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(69vw,72rem)]"
               style={{ perspective: 1200 }}
               initial={useCasesCardInitial}
               animate={useCasesSceneInView ? useCasesCardInView : false}
@@ -270,7 +270,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                 }
                 transition={{ duration: 1.25, ease: "easeOut", delay: 0.56 }}
               />
-              <div className="grid grid-cols-1 lg:min-h-[27rem] lg:grid-cols-[0.95fr_1.85fr]">
+              <div className="grid grid-cols-1 lg:min-h-[26rem] lg:grid-cols-[0.95fr_1.85fr]">
                 <motion.aside
                   className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10"
                   initial={leftRailInitial}
@@ -286,7 +286,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                         key={`${item.id}-${restartLoadSignal}`}
                         type="button"
                         onClick={() => setActiveId(item.id)}
-                        className={`group relative block w-full cursor-pointer border-b border-black/10 px-3 py-3 text-left last:border-b-0 transition-colors duration-200 lg:flex-1 ${
+                        className={`group relative block w-full cursor-pointer border-b border-black/10 px-2.5 py-2.5 text-left last:border-b-0 transition-colors duration-200 lg:flex-1 ${
                           isActive
                             ? "bg-[#fefefc]"
                             : "bg-[#f7f7f7] hover:bg-black/2"
@@ -315,23 +315,23 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                           aria-hidden="true"
                         />
                         <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-2.5">
-                            <Icon className="h-3.5 w-3.5 text-black/90" />
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-3.25 w-3.25 text-black/90" />
                             <h3
-                              className={`${interClassName} text-[0.76rem] font-medium tracking-[-0.01em] text-black`}
+                              className={`${interClassName} text-[0.9rem] font-medium tracking-[-0.01em] text-black`}
                             >
                               {item.leftTitle}
                             </h3>
                           </div>
                           <ArrowRight
-                            className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                            className={`h-3.25 w-3.25 transition-transform duration-200 ${
                               isActive
                                 ? "translate-x-0 text-black"
                                 : "text-black/55 group-hover:translate-x-0.5"
                             }`}
                           />
                         </div>
-                        <p className="mt-1.5 max-w-md pr-3 text-[0.72rem] leading-5 text-black/58">
+                        <p className="mt-1.25 max-w-md pr-2.5 text-[0.72rem] leading-[1.2rem] text-black/58">
                           {item.leftDescription}
                         </p>
                       </motion.button>
@@ -342,7 +342,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={`${activeItem.id}-${restartLoadSignal}`}
-                    className="bg-[#fefefc] px-3.5 py-4.5 sm:px-4.5 sm:py-5 lg:flex lg:h-full lg:flex-col"
+                    className="bg-[#fefefc] px-3 py-4 sm:px-4 sm:py-4.5 lg:flex lg:h-full lg:flex-col"
                     initial={rightPanelInitial}
                     animate={rightPanelInView}
                     exit={{ opacity: 0, x: -24, y: -8 }}
@@ -354,22 +354,22 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                       transition={{ duration: 0.38, ease: heroSlideEase, delay: 0.04 }}
                     >
                       <h3
-                        className={`${interClassName} text-[clamp(0.86rem,1.15vw,1.05rem)] font-medium tracking-[-0.02em] text-black`}
+                        className={`${interClassName} text-[clamp(0.9rem,1.16vw,1.08rem)] font-medium tracking-[-0.02em] text-black`}
                       >
                         {activeItem.rightTitle}
                       </h3>
-                      <p className="mt-2.5 max-w-210 text-[clamp(0.68rem,0.8vw,0.76rem)] leading-5 text-black/58">
+                      <p className="mt-2 max-w-210 text-[clamp(0.7rem,0.8vw,0.78rem)] leading-[1.18rem] text-black/58">
                         {activeItem.rightDescription}
                       </p>
                     </motion.div>
 
                     <motion.div
-                      className="mt-4 rounded-2xl bg-transparent p-0 lg:mt-4.5 lg:flex-1"
+                      className="mt-3.5 rounded-2xl bg-transparent p-0 lg:mt-4 lg:flex-1"
                       initial={{ opacity: 0, y: 24, scale: 0.984 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.46, ease: heroSlideEase, delay: 0.08 }}
                     >
-                      <div className="relative flex h-[10rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[13rem] lg:h-full lg:min-h-[15rem]">
+                      <div className="relative flex h-[9.5rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] sm:h-[12rem] lg:h-full lg:min-h-[14.5rem]">
                         <motion.div
                           className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-gradient-to-r from-transparent via-white/52 to-transparent blur-sm"
                           initial={{ x: "-120%", opacity: 0 }}
@@ -392,8 +392,8 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                           />
                         ) : (
                           <div className="flex flex-col items-center gap-2 text-black/55">
-                            <ImageIcon className="h-6 w-6" />
-                            <p className="text-[0.73rem] tracking-[0.03em]">
+                            <ImageIcon className="h-5 w-5" />
+                            <p className="text-[0.68rem] tracking-[0.03em]">
                               {activeItem.placeholderLabel}
                             </p>
                           </div>

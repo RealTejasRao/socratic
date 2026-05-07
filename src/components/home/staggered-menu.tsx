@@ -105,7 +105,7 @@ export function StaggeredMenu({
         ref={toggleBtnRef}
         type="button"
         onClick={toggleMenu}
-        className="inline-flex h-8 min-w-18 cursor-pointer items-center justify-center bg-white/92 px-5 text-[0.82rem] font-medium tracking-[0.02em] text-black/80 backdrop-blur-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-black hover:text-white"
+        className="inline-flex h-7.5 min-w-17 cursor-pointer items-center justify-center bg-white/92 px-4 text-[0.75rem] font-medium tracking-[0.02em] text-black/80 backdrop-blur-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-black hover:text-white"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="staggered-menu-panel"
@@ -129,7 +129,7 @@ export function StaggeredMenu({
           <aside
             id="staggered-menu-panel"
             ref={panelRef}
-            className="absolute inset-y-0 right-0 z-[10] flex h-screen w-[min(26rem,92vw)] flex-col overflow-y-auto border-l border-black/10 bg-white px-6 pb-7 pt-22"
+            className="absolute inset-y-0 right-0 z-[10] flex h-screen w-[min(24rem,90vw)] flex-col overflow-y-auto border-l border-black/10 bg-white px-5 pb-6 pt-20"
           >
             <button
               type="button"
@@ -173,7 +173,7 @@ export function StaggeredMenu({
             </ul>
 
             <div className="mt-auto border-t border-black/10 pt-5">
-              <p className="text-[0.78rem] leading-6 tracking-[0.02em] text-black/52">
+              <p className="text-[0.72rem] leading-5.5 tracking-[0.02em] text-black/52">
                 Socratic AI
                 <br />
                 Your Personal AI for Philosophy.
