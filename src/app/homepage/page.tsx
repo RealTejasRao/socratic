@@ -87,17 +87,10 @@ export default function HomePage() {
 
             <div className="flex items-center justify-end gap-2">
               <Link
-                href={ROUTES.SIGN_IN}
-                className={`${interClassName} hero-load-up hero-load-up-nav-cta outline outline-black inline-flex h-8 min-w-24 items-center justify-center rounded-full border border-black/18 bg-white/92 px-5 text-[0.82rem] font-medium tracking-[0.02em] text-black/80 transition-all duration-250 hover:-translate-y-0.5 hover:bg-white hover:text-white`}
-              >
-                Sign in
-              </Link>
-
-              <Link
-                href={ROUTES.SIGN_UP}
+                href={ROUTES.HOME}
                 className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-8 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92`}
               >
-                Sign up
+                Get started
               </Link>
 
               <StaggeredMenu
@@ -125,10 +118,10 @@ export default function HomePage() {
                 Your Personal AI For <HeroRotatingWord />
               </p>
               <Link
-                href={ROUTES.SIGN_UP}
+                href={ROUTES.HOME}
                 className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-9 inline-flex h-9 items-center gap-2 rounded-full border border-black/55 bg-white px-5 text-[0.75rem] tracking-[0.02em] text-black/85 transition-colors duration-200 hover:bg-[#A01717] hover:text-white`}
               >
-                <span>Try Socratic AI</span>
+                <span>Get Early Access</span>
                 <ArrowRight
                   aria-hidden="true"
                   className="hero-cta-arrow-loop h-3.5 w-3.5 stroke-[2.6]"
