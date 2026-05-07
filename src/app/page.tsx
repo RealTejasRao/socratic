@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { GradientBackground } from "@/src/components/ui/paper-design-shader-background";
 import { Instrument_Serif } from "next/font/google";
 import CurvedLoop from "@/src/components/ui/curved-loop";
 import EarlyAccessForm from "@/src/components/home/early-access-form";
+import { ROUTES } from "@/src/lib/routes";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -16,28 +18,36 @@ export default function HomePage() {
       <div className="hero-fade absolute inset-0 -z-10 bg-black/25" />
 
       <div className="ui-chip-anim absolute left-4 top-4 z-20 sm:left-6 sm:top-6">
-        <div className="group relative">
-          <div className="flex items-center gap-2.5 rounded-full border border-white/30 bg-black/35 px-4 py-2 backdrop-blur-md">
-            <Image
-              src="/brand/Logo_Dark_SVG.svg"
-              alt="Socratic AI logo"
-              width={26}
-              height={26}
-              className="h-6.5 w-6.5 object-contain invert"
+        <div className="flex items-center gap-2">
+          <div className="group relative">
+            <div className="flex items-center gap-2.5 rounded-full border border-white/30 bg-black/35 px-4 py-2 backdrop-blur-md">
+              <Image
+                src="/brand/Logo_Dark_SVG.svg"
+                alt="Socratic AI logo"
+                width={26}
+                height={26}
+                className="h-6.5 w-6.5 object-contain invert"
+              />
+              <span
+                className={`${instrumentSerif.className} text-lg leading-none tracking-wide text-white/92`}
+              >
+                Socratic AI
+              </span>
+            </div>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-6 top-full z-10 mt-1 h-1.5 w-1.5 rotate-45 rounded-[2px] border-l border-t border-white/45 bg-[#1e2430]/90 opacity-0 transition duration-200 group-hover:opacity-100 sm:left-1/2 sm:-translate-x-1/2"
             />
-            <span
-              className={`${instrumentSerif.className} text-lg leading-none tracking-wide text-white/92`}
-            >
-              Socratic AI
-            </span>
+            <div className="pointer-events-none absolute left-0 top-full z-10 mt-2 max-w-40 rounded-lg border border-white/20 bg-[#1e2430]/90 px-2.5 py-1 text-[10px] leading-tight text-white opacity-0 shadow-[0_10px_24px_rgba(15,23,42,0.35)] backdrop-blur-sm transition duration-200 group-hover:opacity-100 sm:left-1/2 sm:max-w-none sm:-translate-x-1/2 sm:text-[11px] sm:whitespace-nowrap">
+              Your Personal AI for Philosophy
+            </div>
           </div>
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute left-6 top-full z-10 mt-1 h-1.5 w-1.5 rotate-45 rounded-[2px] border-l border-t border-white/45 bg-[#1e2430]/90 opacity-0 transition duration-200 group-hover:opacity-100 sm:left-1/2 sm:-translate-x-1/2"
-          />
-          <div className="pointer-events-none absolute left-0 top-full z-10 mt-2 max-w-40 rounded-lg border border-white/20 bg-[#1e2430]/90 px-2.5 py-1 text-[10px] leading-tight text-white opacity-0 shadow-[0_10px_24px_rgba(15,23,42,0.35)] backdrop-blur-sm transition duration-200 group-hover:opacity-100 sm:left-1/2 sm:max-w-none sm:-translate-x-1/2 sm:text-[11px] sm:whitespace-nowrap">
-            Your Personal AI for Philosophy
-          </div>
+          <Link
+            href={ROUTES.HOMEPAGE}
+            className="inline-flex h-10 items-center rounded-full border border-white/30 bg-black/35 px-4 text-sm text-white/92 backdrop-blur-md transition hover:bg-black/55"
+          >
+            About
+          </Link>
         </div>
       </div>
 

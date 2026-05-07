@@ -18,6 +18,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
+  if (pathname === "/homepage" || pathname.startsWith("/homepage/")) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/sign-in")) {
     return NextResponse.next();
   }
