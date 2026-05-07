@@ -422,13 +422,13 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           >
             <motion.div
               key={`contact-form-${restartSignal}`}
-              className={`${interClassName} relative w-full max-w-[20.5rem] rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-3.25 sm:max-w-[22rem] sm:p-3.5`}
+              className={`${interClassName} relative w-full max-w-82 rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-3.25 sm:max-w-88 sm:p-3.5`}
               variants={formShellVariants}
               initial="hidden"
               animate={sceneInView ? "show" : false}
             >
               <motion.div
-                className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-gradient-to-r from-transparent via-white/58 to-transparent blur-md"
+                className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-linear-to-r from-transparent via-white/58 to-transparent blur-md"
                 initial={{ x: "-140%", opacity: 0 }}
                 animate={
                   sceneInView
@@ -469,7 +469,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 ref={formRef}
                 onSubmit={handleSubmit}
                 noValidate
-                className="mx-auto mt-2 w-full max-w-[18.75rem] space-y-2 sm:max-w-[20rem]"
+                className="mx-auto mt-2 w-full max-w-75 space-y-2 sm:max-w-[20rem]"
               >
                 <div>
                   <label
