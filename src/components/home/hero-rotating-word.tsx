@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-const WORDS = ["Philosophy", "Deep Talks", "Wisdom", "Growth"] as const;
+const WORDS = ["Philosophy", "Deep Convos", "Wisdom", "Growth"] as const;
 const ROTATION_MS = 4000;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
