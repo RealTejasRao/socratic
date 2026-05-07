@@ -29,7 +29,6 @@ const navLinks = [
   { label: "Home", href: "#" },
   { label: "Features", href: "#features" },
   { label: "Use Cases", href: "#use-cases" },
-  { label: "About", href: ROUTES.ABOUT },
   { label: "Contact", href: "#contact" },
 ];
 

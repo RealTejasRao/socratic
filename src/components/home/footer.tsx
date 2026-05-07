@@ -16,7 +16,6 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
     { label: "Home", href: sectionPrefix || "#" },
     { label: "Features", href: withPrefix("#features") },
     { label: "Use Cases", href: withPrefix("#use-cases") },
-    { label: "About", href: ROUTES.ABOUT },
     { label: "Contact", href: withPrefix("#contact") },
   ];
 
