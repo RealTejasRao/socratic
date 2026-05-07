@@ -147,7 +147,6 @@ export default function HomePage() {
                 sizes="100vw"
                 className="h-auto w-full object-contain object-bottom"
                 preload
-                priority
               />
             </div>
           </div>
