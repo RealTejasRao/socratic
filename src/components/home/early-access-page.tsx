@@ -46,10 +46,13 @@ export default function EarlyAccessPage() {
     ? "flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/85 bg-white/72 text-slate-800 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-[0_10px_24px_rgba(148,163,184,0.24)]"
     : "flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/90 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-black/55 hover:shadow-[0_10px_24px_rgba(0,0,0,0.35)]";
 
-  const aboutLinkClassName = `${poppins.className} h-9 items-center justify-center rounded-full border-3 border-white bg-transparent text-sm font-medium text-white transition-all duration-300 ease-out hover:-translate-y-0.5`;
+  const aboutLinkClassName = isLight
+    ? `${poppins.className} h-9 items-center justify-center rounded-full border-3 border-black bg-transparent text-sm font-medium text-black transition-all duration-300 ease-out hover:-translate-y-0.5`
+    : `${poppins.className} h-9 items-center justify-center rounded-full border-3 border-white bg-transparent text-sm font-medium text-white transition-all duration-300 ease-out hover:-translate-y-0.5`;
 
-  const toggleButtonClassName =
-    "relative h-9 w-9 items-center justify-center rounded-full border-3 cursor-pointer border-white bg-transparent text-white transition-all duration-350 ease-out hover:-translate-y-0.5";
+  const toggleButtonClassName = isLight
+    ? "relative h-9 w-9 items-center justify-center rounded-full border-3 cursor-pointer border-black bg-transparent text-black transition-all duration-350 ease-out hover:-translate-y-0.5"
+    : "relative h-9 w-9 items-center justify-center rounded-full border-3 cursor-pointer border-white bg-transparent text-white transition-all duration-350 ease-out hover:-translate-y-0.5";
 
   const heroCardClassName = isLight
     ? "hero-card-anim relative mx-auto w-full max-w-[20rem] translate-y-15 overflow-hidden rounded-[1.55rem] border border-white/60 bg-linear-to-br from-white/42 via-[#fffaf3]/32 to-[#fff1f6]/28 p-5 text-slate-950 shadow-[0_24px_70px_rgba(148,163,184,0.28),inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.22)] backdrop-blur-[16px] transition-[background-color,border-color,box-shadow,color] duration-500 ease-out sm:max-w-sm sm:translate-y-16 sm:rounded-[1.7rem] sm:p-7"
