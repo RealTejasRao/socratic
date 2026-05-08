@@ -176,7 +176,21 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
           disabled={isSubmitting}
           className="h-12 w-full cursor-pointer rounded-2xl bg-linear-to-r from-orange-500 via-amber-500 to-rose-500 text-sm font-semibold tracking-[0.01em] text-black shadow-[0_14px_30px_rgba(251,146,60,0.36),inset_0_1px_0_rgba(255,255,255,0.42)] transition-all duration-300 ease-out enabled:hover:-translate-y-0.5 enabled:hover:brightness-110 enabled:hover:shadow-[0_20px_36px_rgba(251,146,60,0.42),inset_0_1px_0_rgba(255,255,255,0.48)] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isSubmitting ? "Hold on..." : "Reserve my spot"}
+          {isSubmitting ? (
+            <span className="inline-flex items-center gap-2">
+              <span className="loading-spinner" aria-hidden="true" />
+              <span className="inline-flex items-center">
+                Hold on
+                <span className="loading-dots" aria-hidden="true">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </span>
+              </span>
+            </span>
+          ) : (
+            "Reserve my spot"
+          )}
         </button>
         <p className={`text-center text-xs transition-colors duration-300 ease-out ${statusClassName}`}>
           {status.message || "No spam. Just one email when access opens."}
@@ -220,9 +234,54 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
       ) : null}
 
       <style jsx>{`
+        .loading-spinner {
+          height: 0.9rem;
+          width: 0.9rem;
+          border-radius: 9999px;
+          border: 2px solid rgba(0, 0, 0, 0.25);
+          border-top-color: rgba(0, 0, 0, 0.95);
+          animation: buttonSpin 0.75s linear infinite;
+        }
+
+        .loading-dots {
+          display: inline-flex;
+          width: 1.05rem;
+          justify-content: flex-start;
+        }
+
+        .loading-dots span {
+          opacity: 0.22;
+          animation: dotPulse 1s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+          animation-delay: 0.16s;
+        }
+
+        .loading-dots span:nth-child(3) {
+          animation-delay: 0.32s;
+        }
+
         .gift-cta {
           animation: giftShake 1.05s ease-in-out infinite;
           transform-origin: center;
+        }
+
+        @keyframes buttonSpin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes dotPulse {
+          0%,
+          80%,
+          100% {
+            opacity: 0.22;
+          }
+          40% {
+            opacity: 1;
+          }
         }
 
         @keyframes giftShake {

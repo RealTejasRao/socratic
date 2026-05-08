@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "report:ai:weekly": "node scripts/ai-weekly-report.mjs",
     "rag:ingest:books": "node scripts/ingest-books.mjs",
     "rag:eval": "node scripts/rag-eval.mjs",

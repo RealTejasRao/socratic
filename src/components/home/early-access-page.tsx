@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Instrument_Serif } from "next/font/google";
+import { Instrument_Serif, Poppins } from "next/font/google";
 import CurvedLoop from "@/src/components/ui/curved-loop";
 import { GradientBackground } from "@/src/components/ui/paper-design-shader-background";
 import EarlyAccessForm from "@/src/components/home/early-access-form";
@@ -14,6 +14,11 @@ type ThemeMode = "dark" | "light";
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: "500",
 });
 
 export default function EarlyAccessPage() {
@@ -41,13 +46,10 @@ export default function EarlyAccessPage() {
     ? "flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/85 bg-white/72 text-slate-800 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-[0_10px_24px_rgba(148,163,184,0.24)]"
     : "flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/90 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-black/55 hover:shadow-[0_10px_24px_rgba(0,0,0,0.35)]";
 
-  const aboutLinkClassName = isLight
-    ? "inline-flex h-9 w-full items-center justify-center rounded-full border border-slate-300/85 bg-white/72 text-sm text-slate-800 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-[0_10px_24px_rgba(148,163,184,0.24)]"
-    : "inline-flex h-9 w-full items-center justify-center rounded-full border border-white/30 bg-black/35 text-sm text-white/92 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-black/55 hover:shadow-[0_10px_24px_rgba(0,0,0,0.35)]";
+  const aboutLinkClassName = `${poppins.className} h-9 items-center justify-center rounded-full border-3 border-white bg-transparent text-sm font-medium text-white transition-all duration-300 ease-out hover:-translate-y-0.5`;
 
-  const toggleButtonClassName = isLight
-    ? "relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/85 bg-white/72 text-slate-800 backdrop-blur-md transition-all duration-350 ease-out hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-[0_10px_24px_rgba(148,163,184,0.24)]"
-    : "relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/92 backdrop-blur-md transition-all duration-350 ease-out hover:-translate-y-0.5 hover:bg-black/55 hover:shadow-[0_10px_24px_rgba(0,0,0,0.35)]";
+  const toggleButtonClassName =
+    "relative h-9 w-9 items-center justify-center rounded-full border-3 cursor-pointer border-white bg-transparent text-white transition-all duration-350 ease-out hover:-translate-y-0.5";
 
   const heroCardClassName = isLight
     ? "hero-card-anim relative mx-auto w-full max-w-[20rem] translate-y-15 overflow-hidden rounded-[1.55rem] border border-white/60 bg-linear-to-br from-white/42 via-[#fffaf3]/32 to-[#fff1f6]/28 p-5 text-slate-950 shadow-[0_24px_70px_rgba(148,163,184,0.28),inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(255,255,255,0.22)] backdrop-blur-[16px] transition-[background-color,border-color,box-shadow,color] duration-500 ease-out sm:max-w-sm sm:translate-y-16 sm:rounded-[1.7rem] sm:p-7"
@@ -77,6 +79,51 @@ export default function EarlyAccessPage() {
     ? `${instrumentSerif.className} fill-slate-900/90 tracking-[0.04em] text-[3rem] transition-colors duration-500 ease-out sm:text-xl`
     : `${instrumentSerif.className} fill-white/90 tracking-[0.04em] text-[3rem] transition-colors duration-500 ease-out sm:text-xl`;
 
+  const ThemeToggleButton = ({ className = "" }: { className?: string }) => (
+    <button
+      type="button"
+      onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+      aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
+      className={`${toggleButtonClassName} ${className}`.trim()}
+    >
+      <span
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-45 scale-75 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4.5 w-4.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4.2" />
+          <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6M18.8 18.8l-1.6-1.6M6.8 6.8L5.2 5.2" />
+        </svg>
+      </span>
+      <span
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-0 scale-100 opacity-100" : "-rotate-45 scale-75 opacity-0"}`}
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4.5 w-4.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
+        </svg>
+      </span>
+    </button>
+  );
+
   return (
     <main className="relative flex h-full min-h-screen w-full items-center justify-center overflow-hidden transition-colors duration-500 ease-out">
       <GradientBackground theme={theme} />
@@ -85,7 +132,7 @@ export default function EarlyAccessPage() {
       />
 
       <div className="ui-chip-anim absolute left-4 top-4 z-20 sm:left-6 sm:top-6">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
           <div className="group relative">
             <div className={chipShellClassName}>
               <Image
@@ -102,48 +149,10 @@ export default function EarlyAccessPage() {
               Your Personal AI for Philosophy
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-            aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
-            className={toggleButtonClassName}
-          >
-            <span
-              className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-45 scale-75 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
-              aria-hidden="true"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-4.5 w-4.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="4.2" />
-                <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6M18.8 18.8l-1.6-1.6M6.8 6.8L5.2 5.2" />
-              </svg>
-            </span>
-            <span
-              className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-0 scale-100 opacity-100" : "-rotate-45 scale-75 opacity-0"}`}
-              aria-hidden="true"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-4.5 w-4.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
-              </svg>
-            </span>
-          </button>
+          <Link href={ROUTES.HOMEPAGE} className={`${aboutLinkClassName} flex w-28 sm:hidden`}>
+            About
+          </Link>
+          <ThemeToggleButton className="hidden sm:inline-flex" />
         </div>
       </div>
 
@@ -196,7 +205,10 @@ export default function EarlyAccessPage() {
               </svg>
             </a>
           </div>
-          <Link href={ROUTES.HOMEPAGE} className={aboutLinkClassName}>
+          <div className="flex justify-end sm:hidden">
+            <ThemeToggleButton className="inline-flex" />
+          </div>
+          <Link href={ROUTES.HOMEPAGE} className={`${aboutLinkClassName} hidden w-full sm:flex`}>
             About
           </Link>
         </div>
