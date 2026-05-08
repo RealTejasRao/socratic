@@ -47,11 +47,11 @@ export default function HomePage() {
           <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-size-[22px_22px]" />
         </div>
         <HomeHashScroll />
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-black/6 bg-white/60 px-5 pt-2 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-7 sm:pt-1.5">
-          <nav className="relative mx-auto flex w-full max-w-365 items-center justify-between">
+        <header className="fixed inset-x-0 top-0 z-50 flex flex-col border-b border-black/6 bg-white/60 px-5 py-0 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-7 sm:pt-1.5 sm:pb-0">
+          <nav className="relative mx-auto flex h-16 w-full max-w-365 items-center justify-between sm:h-auto">
             <a
               href="#"
-              className="hero-load-up hero-load-up-nav-logo group relative flex h-8.5 w-fit cursor-pointer items-center"
+              className="hero-load-up hero-load-up-nav-logo group relative flex h-11 w-fit cursor-pointer items-center sm:h-8.5"
             >
               <div className="shrink-0 overflow-hidden">
                 <Image
@@ -59,7 +59,7 @@ export default function HomePage() {
                   alt="Socratic AI logo"
                   width={50}
                   height={50}
-                  className="h-10 w-10 cursor-pointer object-contain transition duration-500 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.02]"
+                  className="h-12 w-12 cursor-pointer object-contain transition duration-500 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.02] sm:h-10 sm:w-10"
                   priority
                 />
               </div>
@@ -91,13 +91,14 @@ export default function HomePage() {
             <div className="flex items-center justify-end gap-2">
               <Link
                 href={ROUTES.HOME}
-                className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-7.5 min-w-22 items-center justify-center rounded-full border border-black/18 bg-black px-4.5 text-[0.76rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92`}
+                className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
               >
                 Get started
               </Link>
 
               <StaggeredMenu
                 className="hero-load-up hero-load-up-nav-menu lg:hidden"
+                triggerVariant="hamburger"
                 items={navLinks.map((link) => ({
                   label: link.label,
                   link: link.href,
@@ -113,12 +114,22 @@ export default function HomePage() {
         </header>
 
         <section className="relative h-screen w-full">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[7vh] text-center sm:pt-[17vh]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[16vh] text-center sm:pt-[17vh]">
             <div
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
-              <p className="hero-load-up hero-load-up-title-1 text-[clamp(1.62rem,4.5vw,2.7rem)] leading-[0.95]">
-                Your Personal AI For <HeroRotatingWord />
+              <p className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(1.62rem,4.5vw,2.7rem)]">
+                <span className="block text-[clamp(1.8rem,6.8vw,2.6rem)] sm:inline sm:text-inherit">
+                  Your Personal AI for
+                </span>{" "}
+                <span className="mt-4 block text-[clamp(2.55rem,10.6vw,3.55rem)] sm:mt-0 sm:inline sm:text-inherit">
+                  <span className="sm:hidden">
+                    <HeroRotatingWord align="center" />
+                  </span>
+                  <span className="hidden sm:inline">
+                    <HeroRotatingWord />
+                  </span>
+                </span>
               </p>
               <Link
                 href={ROUTES.HOME}
@@ -136,6 +147,19 @@ export default function HomePage() {
           <div className="hero-bottom-image-scroll pointer-events-none absolute inset-x-0 bottom-0 z-0">
             <div className="hero-load-up hero-load-up-image w-full">
               <Image
+                src={resolveOptimizedCloudinaryPublicAsset("/home/hero_m_final.webp", {
+                  width: 1400,
+                  crop: "limit",
+                  quality: "auto:good",
+                })}
+                alt="Socratic AI hero visual"
+                width={1400}
+                height={1400}
+                sizes="100vw"
+                className="block h-auto w-full object-contain object-bottom sm:hidden"
+                preload
+              />
+              <Image
                 src={resolveOptimizedCloudinaryPublicAsset("/home/hero.webp", {
                   width: 2400,
                   crop: "limit",
@@ -145,7 +169,7 @@ export default function HomePage() {
                 width={2400}
                 height={1200}
                 sizes="100vw"
-                className="h-auto w-full object-contain object-bottom"
+                className="hidden h-auto w-full object-contain object-bottom sm:block"
                 preload
               />
             </div>

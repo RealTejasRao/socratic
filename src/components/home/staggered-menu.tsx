@@ -13,12 +13,14 @@ type StaggeredMenuProps = {
   items: StaggeredMenuItem[];
   closeOnClickAway?: boolean;
   className?: string;
+  triggerVariant?: "text" | "hamburger";
 };
 
 export function StaggeredMenu({
   items,
   closeOnClickAway = true,
   className,
+  triggerVariant = "text",
 }: StaggeredMenuProps) {
   const [open, setOpen] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
@@ -105,12 +107,33 @@ export function StaggeredMenu({
         ref={toggleBtnRef}
         type="button"
         onClick={toggleMenu}
-        className="inline-flex h-7.5 min-w-17 cursor-pointer items-center justify-center bg-white/92 px-4 text-[0.75rem] font-medium tracking-[0.02em] text-black/80 backdrop-blur-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-black hover:text-white"
+        className={
+          triggerVariant === "hamburger"
+            ? "inline-flex h-11 w-11 cursor-pointer items-center justify-center bg-white/92 text-black/85 backdrop-blur-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-black hover:text-white"
+            : "inline-flex h-7.5 min-w-17 cursor-pointer items-center justify-center bg-white/92 px-4 text-[0.75rem] font-medium tracking-[0.02em] text-black/80 backdrop-blur-md transition-all duration-250 hover:-translate-y-0.5 hover:bg-black hover:text-white"
+        }
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="staggered-menu-panel"
       >
-        <span>{open ? "Close" : "+ Menu"}</span>
+        {triggerVariant === "hamburger" ? (
+          <span aria-hidden="true" className="relative inline-flex h-5 w-5 items-center justify-center">
+            {open ? (
+              <>
+                <span className="absolute h-0.5 w-5 rotate-45 bg-current" />
+                <span className="absolute h-0.5 w-5 -rotate-45 bg-current" />
+              </>
+            ) : (
+              <>
+                <span className="absolute top-0.5 h-0.5 w-5 bg-current" />
+                <span className="absolute top-1/2 h-0.5 w-5 -translate-y-1/2 bg-current" />
+                <span className="absolute bottom-0.5 h-0.5 w-5 bg-current" />
+              </>
+            )}
+          </span>
+        ) : (
+          <span>{open ? "Close" : "+ Menu"}</span>
+        )}
       </button>
 
       {renderPanel ? (
