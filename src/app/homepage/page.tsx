@@ -93,7 +93,7 @@ export default function HomePage() {
                 href={ROUTES.HOME}
                 className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
               >
-                Get started
+                Get Started
               </Link>
 
               <StaggeredMenu
@@ -119,26 +119,25 @@ export default function HomePage() {
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
               <p className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(1.62rem,4.5vw,2.7rem)]">
-                <span className="block text-[clamp(1.8rem,6.8vw,2.6rem)] sm:inline sm:text-inherit">
+                <span className="block text-[clamp(2.05rem,8vw,2.95rem)] sm:inline sm:text-inherit">
                   Your Personal AI for
                 </span>{" "}
-                <span className="mt-4 block text-[clamp(2.55rem,10.6vw,3.55rem)] sm:mt-0 sm:inline sm:text-inherit">
-                  <span className="sm:hidden">
-                    <HeroRotatingWord align="center" />
-                  </span>
-                  <span className="hidden sm:inline">
-                    <HeroRotatingWord />
-                  </span>
+                <span className="mt-4 block text-[clamp(3.1rem,12.6vw,4.35rem)] sm:hidden">
+                  <HeroRotatingWord align="center" />
+                </span>
+                <span className="hidden sm:inline">
+                  <HeroRotatingWord />
                 </span>
               </p>
               <Link
                 href={ROUTES.HOME}
-                className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-7.5 inline-flex h-8 items-center gap-1.5 rounded-full border border-black/55 bg-white px-4 text-[0.68rem] tracking-[0.02em] text-black/85 transition-colors duration-200 hover:bg-[#A01717] hover:text-white`}
+                className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-7.5 inline-flex h-11 items-center gap-2 rounded-full border border-black/55 bg-white px-6 text-[0.9rem] font-medium tracking-[0.02em] text-black/90 transition-colors duration-200 hover:bg-[#A01717] hover:text-white sm:h-8 sm:gap-1.5 sm:px-4 sm:text-[0.68rem] sm:font-normal sm:text-black/85`}
               >
-                <span>Get Early Access</span>
+                <span className="sm:hidden">Try Socratic AI</span>
+                <span className="hidden sm:inline">Get Early Access</span>
                 <ArrowRight
                   aria-hidden="true"
-                  className="hero-cta-arrow-loop h-3 w-3 stroke-[2.6]"
+                  className="hero-cta-arrow-loop h-4 w-4 stroke-[2.6] sm:h-3 sm:w-3"
                 />
               </Link>
             </div>
