@@ -120,7 +120,7 @@ export default function HomePage() {
             >
               <p className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(1.62rem,4.5vw,2.7rem)]">
                 <span className="block text-[clamp(2.05rem,8vw,2.95rem)] sm:inline sm:text-inherit">
-                  Your Personal AI for
+                  Your Personal AI For
                 </span>{" "}
                 <span className="mt-4 block text-[clamp(3.1rem,12.6vw,4.35rem)] sm:hidden">
                   <HeroRotatingWord align="center" />

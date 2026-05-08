@@ -192,7 +192,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
           viewport={{ once: true, amount: 0.25 }}
         >
           <h2
-            className={`${instrumentSerif.className} text-[clamp(1.62rem,4.5vw,2.7rem)] font-normal leading-tight text-black`}
+            className={`${instrumentSerif.className} text-[clamp(2.4rem,9.5vw,3.35rem)] font-normal leading-tight text-black sm:text-[clamp(1.62rem,4.5vw,2.7rem)]`}
           >
             <span ref={headingRef} className="inline-grid align-top">
               <span
@@ -240,14 +240,14 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
             </motion.div>
           ))}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 -mx-5 sm:mx-0">
             {featureCards.map((card, index) => {
               const Icon = card.icon;
 
               return (
                 <motion.article
                   key={card.id}
-                  className="bg-transparent px-5 py-8 lg:min-h-[14.5rem] lg:px-7 lg:py-4.5"
+                  className="bg-transparent py-8 px-0 sm:px-5 lg:min-h-[14.5rem] lg:px-7 lg:py-4.5"
                   variants={cardVariants}
                   initial="hidden"
                   whileInView="show"
@@ -255,17 +255,41 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                   custom={index}
                 >
                   <div className={index > 0 ? "lg:pl-7" : undefined}>
-                    <Icon className="h-[22px] w-[22px] text-black/85" />
-                    <h3
-                      className={`${interClassName} mt-6 whitespace-pre-line text-[1rem] leading-[1.22] tracking-normal text-black/90 sm:text-[1.1rem] lg:text-[1.18rem]`}
-                    >
-                      {card.title}
-                    </h3>
-                    <p
-                      className={`${interClassName} mt-10 max-w-[32ch] text-[0.74rem] leading-[1.58] text-black/66`}
-                    >
-                      {card.description}
-                    </p>
+                    <div className="flex items-start gap-5 sm:block">
+                      <div className="shrink-0 sm:hidden w-[2rem] ml-[15px]">
+                        <Image
+                          src={resolveOptimizedCloudinaryPublicAsset(
+                            "/features/separator.webp",
+                            {
+                              width: 96,
+                              height: 520,
+                              crop: "limit",
+                              quality: "auto:good",
+                            },
+                          )}
+                          alt=""
+                          aria-hidden="true"
+                          width={96}
+                          height={520}
+                          sizes="96px"
+                          className="h-[14rem] w-full object-cover"
+                        />
+                      </div>
+
+                      <div className="min-w-0 pl-[2px] sm:pl-0">
+                        <Icon className="h-[28px] w-[28px] text-black/85 sm:h-[22px] sm:w-[22px]" />
+                        <h3
+                          className={`${interClassName} mt-6 whitespace-pre-line text-[1.35rem] leading-[1.18] tracking-normal text-black/90 sm:text-[1.1rem] sm:leading-[1.22] lg:text-[1.18rem]`}
+                        >
+                          {card.title}
+                        </h3>
+                        <p
+                          className={`${interClassName} mt-10 max-w-[32ch] text-[0.92rem] leading-[1.6] text-black/66 sm:text-[0.74rem] sm:leading-[1.58]`}
+                        >
+                          {card.description}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </motion.article>
               );
