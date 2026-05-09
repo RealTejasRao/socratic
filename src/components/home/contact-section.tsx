@@ -23,12 +23,19 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const CONTACT_HEADING_TEXT = "We'd love to hear from you :)";
+const MOBILE_CONTACT_FIRST_LINE_TEXT = "We'd love to";
+const MOBILE_CONTACT_SECOND_LINE_TEXT = "hear from you :)";
 const MAX_MESSAGE_WORDS = 2000;
 const NAME_REGEX = /^[A-Za-z][A-Za-z\s'-]{0,79}$/;
 const LOVE_START_INDEX = CONTACT_HEADING_TEXT.indexOf("love");
 const LOVE_END_INDEX = LOVE_START_INDEX + "love".length - 1;
 const SMILE_START_INDEX = CONTACT_HEADING_TEXT.lastIndexOf(":)");
 const SMILE_END_INDEX = SMILE_START_INDEX + ":)".length - 1;
+const mobileContactFirstLineLength = MOBILE_CONTACT_FIRST_LINE_TEXT.length;
+const mobileContactSecondLineStart = Math.max(
+  0,
+  CONTACT_HEADING_TEXT.indexOf(MOBILE_CONTACT_SECOND_LINE_TEXT),
+);
 const EMAILJS_SERVICE_ID = process.env["NEXT_PUBLIC_EMAILJS_SERVICE_ID"] ?? "";
 const EMAILJS_TEMPLATE_ID =
   process.env["NEXT_PUBLIC_EMAILJS_TEMPLATE_ID"] ?? "";
@@ -69,6 +76,27 @@ const rightArmVariants: Variants = {
     scale: 1,
     transition: { duration: 1.4, ease: CONTACT_EASE, delay: 0.09 },
   },
+};
+const mobileHeadingLeftArmInitial = {
+  opacity: 0,
+  x: -120,
+  y: 42,
+  rotate: -9,
+  scale: 0.9,
+};
+const mobileHeadingRightArmInitial = {
+  opacity: 0,
+  x: 120,
+  y: 42,
+  rotate: 9,
+  scale: 0.9,
+};
+const mobileHeadingArmInView = {
+  opacity: 1,
+  x: 0,
+  y: 0,
+  rotate: 0,
+  scale: 1,
 };
 
 const formShellVariants: Variants = {
@@ -140,6 +168,26 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
   const isAccentChar = (index: number) =>
     (index >= LOVE_START_INDEX && index <= LOVE_END_INDEX) ||
     (index >= SMILE_START_INDEX && index <= SMILE_END_INDEX);
+  const renderAccentedText = (text: string, absoluteStart: number) =>
+    text.split("").map((char, index) => {
+      const absoluteIndex = absoluteStart + index;
+      return (
+        <span
+          key={`${char}-${absoluteIndex}`}
+          className={isAccentChar(absoluteIndex) ? "text-[#A01717]" : ""}
+        >
+          {char}
+        </span>
+      );
+    });
+  const typedMobileContactLineOne = typedHeading.slice(
+    0,
+    Math.min(typedHeading.length, mobileContactFirstLineLength),
+  );
+  const typedMobileContactLineTwo =
+    typedHeading.length > mobileContactSecondLineStart
+      ? typedHeading.slice(mobileContactSecondLineStart)
+      : "";
   const wordsUsed = countWords(messageValue);
   const wordsLeft = Math.max(0, MAX_MESSAGE_WORDS - wordsUsed);
   const sanitizedName = sanitizeField(nameValue);
@@ -337,24 +385,91 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
             transition={{ duration: 0.95, ease: "easeOut" }}
           >
             <h2
-              className={`${instrumentSerif.className} text-[clamp(1.62rem,4.5vw,2.7rem)] leading-tight text-black/90`}
+              className={`${instrumentSerif.className} text-[clamp(2.4rem,9.5vw,3.35rem)] leading-tight text-black/90 md:text-[clamp(1.62rem,4.5vw,2.7rem)]`}
             >
               <span ref={headingRef} className="inline-grid align-top">
                 <span
-                  className="col-start-1 row-start-1 invisible"
+                  className="col-start-1 row-start-1 invisible whitespace-pre-line md:hidden"
+                  aria-hidden="true"
+                >
+                  {`${MOBILE_CONTACT_FIRST_LINE_TEXT}\n${MOBILE_CONTACT_SECOND_LINE_TEXT}`}
+                </span>
+                <span
+                  className="col-start-1 row-start-1 invisible hidden md:inline"
                   aria-hidden="true"
                 >
                   {CONTACT_HEADING_TEXT}
                 </span>
-                <span className="col-start-1 row-start-1">
-                  {typedHeading.split("").map((char, index) => (
-                    <span
-                      key={`${char}-${index}`}
-                      className={isAccentChar(index) ? "text-[#A01717]" : ""}
+                <span className="col-start-1 row-start-1 whitespace-pre-line md:hidden">
+                  <span className="relative mx-auto block w-fit px-10 sm:px-0">
+                    <motion.span
+                      key={`contact-mobile-left-arm-${restartSignal}`}
+                      className="pointer-events-none absolute left-[calc(50%-50vw)] top-1/2 block -translate-y-[46%] sm:hidden"
+                      initial={mobileHeadingLeftArmInitial}
+                      animate={headingInView ? mobileHeadingArmInView : false}
+                      transition={{
+                        duration: 1.2,
+                        ease: CONTACT_EASE,
+                        delay: 0.12,
+                      }}
                     >
-                      {char}
-                    </span>
-                  ))}
+                      <span className="relative block aspect-[1.9/1] w-[clamp(7.75rem,36vw,12rem)]">
+                        <Image
+                          src={resolveOptimizedCloudinaryPublicAsset(
+                            "/contact/left_arm.webp",
+                            {
+                              width: 640,
+                              crop: "limit",
+                              quality: "auto:good",
+                            },
+                          )}
+                          alt="Left reaching hand artwork"
+                          fill
+                          className="object-contain object-left"
+                          sizes="(max-width: 640px) 42vw, 0px"
+                        />
+                      </span>
+                    </motion.span>
+                    {renderAccentedText(typedMobileContactLineOne, 0)}
+                    <motion.span
+                      key={`contact-mobile-right-arm-${restartSignal}`}
+                      className="pointer-events-none absolute right-[calc(50%-50vw)] top-1/2 block -translate-y-[46%] sm:hidden"
+                      initial={mobileHeadingRightArmInitial}
+                      animate={headingInView ? mobileHeadingArmInView : false}
+                      transition={{
+                        duration: 1.2,
+                        ease: CONTACT_EASE,
+                        delay: 0.16,
+                      }}
+                    >
+                      <span className="relative block aspect-[1.9/1] w-[clamp(7.75rem,36vw,12rem)]">
+                        <Image
+                          src={resolveOptimizedCloudinaryPublicAsset(
+                            "/contact/right_arm.webp",
+                            {
+                              width: 640,
+                              crop: "limit",
+                              quality: "auto:good",
+                            },
+                          )}
+                          alt="Right reaching hand artwork"
+                          fill
+                          className="object-contain object-right"
+                          sizes="(max-width: 640px) 42vw, 0px"
+                        />
+                      </span>
+                    </motion.span>
+                  </span>
+                  <span className="block">
+                    {renderAccentedText(
+                      typedMobileContactLineTwo,
+                      mobileContactSecondLineStart,
+                    )}
+                    <span className="hero-caret" aria-hidden="true" />
+                  </span>
+                </span>
+                <span className="col-start-1 row-start-1 hidden md:inline">
+                  {renderAccentedText(typedHeading, 0)}
                   <span className="hero-caret" aria-hidden="true" />
                 </span>
               </span>
@@ -417,12 +532,12 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           </div>
 
           <div
-            className="relative z-10 mx-auto flex w-full justify-center px-[clamp(3.5rem,16vw,21rem)] sm:px-[clamp(5rem,21vw,27rem)]"
+            className="relative z-10 mx-auto flex w-full justify-center px-5 md:px-[clamp(5rem,21vw,27rem)]"
             style={{ perspective: 1200 }}
           >
             <motion.div
               key={`contact-form-${restartSignal}`}
-              className={`${interClassName} relative w-full max-w-82 rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-3.25 sm:max-w-88 sm:p-3.5`}
+              className={`${interClassName} relative w-full max-w-[24.5rem] rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-4 md:max-w-88 md:p-3.5`}
               variants={formShellVariants}
               initial="hidden"
               animate={sceneInView ? "show" : false}
@@ -441,7 +556,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                   delay: 0.66,
                 }}
               />
-              <div className="relative -mx-3.25 -mt-3.25 overflow-hidden rounded-t-[1.25rem] px-3.25 py-3 sm:-mx-3.5 sm:-mt-3.5 sm:px-3.5 sm:py-3.5">
+              <div className="relative -mx-4 -mt-4 overflow-hidden rounded-t-[1.25rem] px-4 py-4 md:-mx-3.5 md:-mt-3.5 md:px-3.5 md:py-3.5">
                 <div className="pointer-events-none absolute inset-0">
                   <Image
                     src={resolveOptimizedCloudinaryPublicAsset(
@@ -460,7 +575,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                   <div className="absolute inset-0 bg-black/24" />
                 </div>
                 <h2
-                  className={`${interClassName} relative z-10 text-center text-[clamp(0.84rem,1.08vw,0.98rem)] font-semibold tracking-[0.01em] text-white`}
+                  className={`${interClassName} relative z-10 text-center text-[1.55rem] font-semibold tracking-[0.01em] text-white md:text-[clamp(0.84rem,1.08vw,0.98rem)]`}
                 >
                   Contact Us
                 </h2>
@@ -469,12 +584,12 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 ref={formRef}
                 onSubmit={handleSubmit}
                 noValidate
-                className="mx-auto mt-2 w-full max-w-75 space-y-2 sm:max-w-[20rem]"
+                className="mx-auto mt-3 w-full max-w-none space-y-3 md:mt-2 md:max-w-[20rem] md:space-y-2"
               >
                 <div>
                   <label
                     htmlFor="contact-name"
-                    className="mb-1 block text-[0.54rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                    className="mb-1.5 block text-[0.72rem] font-semibold tracking-[0.08em] text-black/63 uppercase md:mb-1 md:text-[0.54rem]"
                   >
                     Name <span className="text-red-500">*</span>
                   </label>
@@ -488,7 +603,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     onBlur={() => setNameInteracted(true)}
                     autoComplete="name"
                     placeholder="Your name"
-                    className={`w-full rounded-full bg-white/90 px-3 py-1.75 text-[0.64rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                    className={`w-full rounded-full bg-white/90 px-4 py-2.75 text-[0.96rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 md:px-3 md:py-1.75 md:text-[0.64rem] ${
                       nameStatus === "empty" || nameStatus === "invalid"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
                         : nameStatus === "valid"
@@ -501,7 +616,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <div>
                   <label
                     htmlFor="contact-email"
-                    className="mb-1 block text-[0.54rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                    className="mb-1.5 block text-[0.72rem] font-semibold tracking-[0.08em] text-black/63 uppercase md:mb-1 md:text-[0.54rem]"
                   >
                     Email <span className="text-red-500">*</span>
                   </label>
@@ -515,7 +630,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     onBlur={() => setEmailInteracted(true)}
                     autoComplete="email"
                     placeholder="you@example.com"
-                    className={`w-full rounded-full bg-white/90 px-3 py-1.75 text-[0.64rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                    className={`w-full rounded-full bg-white/90 px-4 py-2.75 text-[0.96rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 md:px-3 md:py-1.75 md:text-[0.64rem] ${
                       emailStatus === "invalid"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
                         : emailStatus === "valid"
@@ -524,7 +639,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     }`}
                   />
                   <p
-                    className={`mt-1 min-h-[0.8rem] text-[0.52rem] ${
+                    className={`mt-1 min-h-[1rem] text-[0.64rem] md:min-h-[0.8rem] md:text-[0.52rem] ${
                       emailStatus === "invalid"
                         ? "text-red-600"
                         : emailStatus === "valid"
@@ -544,25 +659,25 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <div>
                   <label
                     htmlFor="contact-message"
-                    className="mb-1 block text-[0.54rem] font-semibold tracking-[0.08em] text-black/63 uppercase"
+                    className="mb-1.5 block text-[0.72rem] font-semibold tracking-[0.08em] text-black/63 uppercase md:mb-1 md:text-[0.54rem]"
                   >
                     Message <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="contact-message"
                     name="message"
-                    rows={4}
+                    rows={5}
                     placeholder="Drop your suggestion, feedback, or anything else..."
                     value={messageValue}
                     onChange={handleMessageChange}
                     onBlur={() => setMessageInteracted(true)}
-                    className={`w-full resize-none rounded-2xl bg-white/90 px-3 py-1.75 text-[0.64rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 ${
+                    className={`w-full resize-none rounded-2xl bg-white/90 px-4 py-2.75 text-[0.96rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 md:px-3 md:py-1.75 md:text-[0.64rem] ${
                       messageStatus === "empty"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
                         : "border border-black/30 focus:border-black/48 focus:ring-black/12"
                     }`}
                   />
-                  <p className="mt-1.25 text-right text-[0.52rem] text-black/46">
+                  <p className="mt-1.5 text-right text-[0.64rem] text-black/46 md:mt-1.25 md:text-[0.52rem]">
                     {wordsLeft} words left
                   </p>
                 </div>
@@ -570,14 +685,14 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <button
                   type="submit"
                   disabled={isSending}
-                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full outline outline-[#A01717] bg-transparent px-4 py-1.75 text-[0.62rem] tracking-[0.04em] text-black transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a01717] hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full outline outline-[#A01717] bg-transparent px-4 py-2.75 text-[0.98rem] tracking-[0.02em] text-black transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a01717] hover:text-white disabled:cursor-not-allowed disabled:opacity-70 md:py-1.75 md:text-[0.62rem] md:tracking-[0.04em]"
                 >
                   <span>{isSending ? "Sending..." : "Send Message"}</span>
                   <span aria-hidden="true">&gt;</span>
                 </button>
 
                 <p
-                  className={`min-h-[0.9rem] text-[0.54rem] leading-4 ${
+                  className={`min-h-[1rem] text-[0.64rem] leading-5 md:min-h-[0.9rem] md:text-[0.54rem] md:leading-4 ${
                     submitState.type === "success"
                       ? "text-emerald-700"
                       : submitState.type === "error"

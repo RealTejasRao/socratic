@@ -11,47 +11,41 @@ export function SecuritySeparator({ interClassName }: SecuritySeparatorProps) {
   return (
     <section
       aria-label="Chat security separator"
-      className="relative z-10 -mb-2.5 -mt-5 -translate-y-4 bg-transparent px-5 py-3.5 sm:-mb-3 sm:-mt-10 sm:px-7 sm:py-4.5"
+      className="relative z-10 -mb-2.5 -mt-5 -translate-y-4 bg-transparent px-5 py-2.5 sm:-mb-3 sm:-mt-10 sm:px-7 sm:py-3"
     >
       <div className="mx-auto w-full max-w-280">
-        <div className="relative overflow-hidden rounded-xl border border-black/12 bg-[#fefefc] px-4.5 py-4 sm:px-6 sm:py-5">
-          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="relative px-1 py-1.5 sm:px-2 sm:py-2">
+          <div className="relative flex items-center justify-center gap-3">
             <motion.div
-              className="absolute left-0 top-1/2 h-px w-[38%] bg-gradient-to-r from-black/20 to-black/55"
-              animate={{ x: [0, 28, 0], opacity: [0.28, 1, 0.28], scaleY: [1, 1.2, 1] }}
-              transition={{ duration: 1.28, repeat: Infinity, ease: "easeInOut" }}
+              className="h-px w-full max-w-40 bg-gradient-to-r from-black/12 via-[#166534]/40 to-[#166534]/62"
+              animate={{ opacity: [0.35, 0.8, 0.35], x: [0, 8, 0] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="absolute right-0 top-1/2 h-px w-[38%] bg-gradient-to-l from-black/20 to-black/55"
-              animate={{ x: [0, -28, 0], opacity: [0.28, 1, 0.28], scaleY: [1, 1.2, 1] }}
-              transition={{ duration: 1.28, repeat: Infinity, ease: "easeInOut" }}
-            />
+              className="relative inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#166534]/28 bg-white"
+              animate={{ y: [0, -1.5, 0], scale: [1, 1.04, 1] }}
+              transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <LockKeyhole className="h-4.5 w-4.5 text-[#166534]" />
+            </motion.div>
             <motion.div
-              className="absolute left-[39%] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-black/65"
-              animate={{ scale: [0.78, 1.45, 0.78], opacity: [0.35, 1, 0.35] }}
-              transition={{ duration: 1.28, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute right-[39%] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-black/65"
-              animate={{ scale: [0.78, 1.45, 0.78], opacity: [0.35, 1, 0.35] }}
-              transition={{ duration: 1.28, repeat: Infinity, ease: "easeInOut" }}
+              className="h-px w-full max-w-40 bg-gradient-to-l from-black/12 via-[#166534]/40 to-[#166534]/62"
+              animate={{ opacity: [0.35, 0.8, 0.35], x: [0, -8, 0] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
 
-          <div className="relative flex flex-col items-center justify-center gap-2 text-center">
-            <motion.div
-              className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-full border border-black/12 bg-[#fefefc]"
-              animate={{ y: [0, -2.5, 0], scale: [1, 1.045, 1] }}
-              transition={{ duration: 1.75, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <LockKeyhole className="h-6 w-6 text-black/85" />
-            </motion.div>
-            <p
-              className={`${interClassName} text-[0.76rem] font-medium tracking-[0.02em] text-black/78 sm:text-[0.82rem]`}
-            >
-              Your conversations stay private. Always.
-            </p>
-          </div>
+          <p
+            className={`${interClassName} mt-2 text-center text-[0.8rem] font-medium tracking-[0.01em] text-black/72 sm:text-[0.82rem]`}
+          >
+            Your conversations stay <span className="text-[#166534]">private</span>.
+            <span className="ml-1">Always.</span>
+          </p>
+          <motion.div
+            className="mx-auto mt-1 h-px w-full max-w-56 bg-gradient-to-r from-transparent via-[#166534]/24 to-transparent"
+            animate={{ opacity: [0.2, 0.6, 0.2] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
       </div>
     </section>

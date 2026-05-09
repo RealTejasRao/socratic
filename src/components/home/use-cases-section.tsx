@@ -126,27 +126,6 @@ const rightPanelInView = {
   x: 0,
   y: 0,
 };
-const mobileLeftArmInitial = {
-  opacity: 0,
-  x: -120,
-  y: 42,
-  rotate: -9,
-  scale: 0.9,
-};
-const mobileRightArmInitial = {
-  opacity: 0,
-  x: 120,
-  y: 42,
-  rotate: 9,
-  scale: 0.9,
-};
-const mobileArmInView = {
-  opacity: 1,
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-};
 
 export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
@@ -283,65 +262,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                 {USE_CASES_HEADING_TEXT}
               </span>
               <span className="col-start-1 row-start-1 whitespace-pre-line md:hidden">
-                <span className="relative mx-auto block w-fit px-10 sm:px-0">
-                  <motion.span
-                    key={`use-cases-left-arm-${restartLoadSignal}`}
-                    className="pointer-events-none absolute left-[calc(50%-50vw)] top-1/2 block -translate-y-[46%] sm:hidden"
-                    initial={mobileLeftArmInitial}
-                    animate={headingInView ? mobileArmInView : false}
-                    transition={{
-                      duration: 1.2,
-                      ease: heroSlideEase,
-                      delay: 0.12,
-                    }}
-                  >
-                    <span className="relative block aspect-[1.9/1] w-[clamp(9rem,42vw,14rem)]">
-                      <Image
-                        src={resolveOptimizedCloudinaryPublicAsset(
-                          "/contact/left_arm.webp",
-                          {
-                            width: 640,
-                            crop: "limit",
-                            quality: "auto:good",
-                          },
-                        )}
-                        alt="Left reaching hand artwork"
-                        fill
-                        className="object-contain object-left"
-                        sizes="(max-width: 640px) 28vw, 0px"
-                      />
-                    </span>
-                  </motion.span>
-                  {typedMobileLineOne}
-                  <motion.span
-                    key={`use-cases-right-arm-${restartLoadSignal}`}
-                    className="pointer-events-none absolute right-[calc(50%-50vw)] top-1/2 block -translate-y-[46%] sm:hidden"
-                    initial={mobileRightArmInitial}
-                    animate={headingInView ? mobileArmInView : false}
-                    transition={{
-                      duration: 1.2,
-                      ease: heroSlideEase,
-                      delay: 0.16,
-                    }}
-                  >
-                    <span className="relative block aspect-[1.9/1] w-[clamp(9rem,42vw,14rem)]">
-                      <Image
-                        src={resolveOptimizedCloudinaryPublicAsset(
-                          "/contact/right_arm.webp",
-                          {
-                            width: 640,
-                            crop: "limit",
-                            quality: "auto:good",
-                          },
-                        )}
-                        alt="Right reaching hand artwork"
-                        fill
-                        className="object-contain object-right"
-                        sizes="(max-width: 640px) 28vw, 0px"
-                      />
-                    </span>
-                  </motion.span>
-                </span>
+                <span className="block">{typedMobileLineOne}</span>
                 <span className="block">
                   <span className="text-[#a01717]">{typedMobileLineTwo}</span>
                   <span className="hero-caret" aria-hidden="true" />
@@ -357,7 +278,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
           </h2>
         </motion.div>
 
-        <div ref={useCasesSceneRef} className="mt-3 md:-mt-3">
+        <div ref={useCasesSceneRef} className="mt-6 md:-mt-3">
           <div className="flex items-stretch justify-center lg:px-2 xl:px-4">
             <motion.div
               key={`use-cases-card-${restartLoadSignal}`}
