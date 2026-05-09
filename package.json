@@ -30,6 +30,7 @@
     "framer-motion": "^12.38.0",
     "gpt-tokenizer": "^3.4.0",
     "gsap": "^3.14.2",
+    "lottie-web": "^5.13.0",
     "lucide-react": "^0.576.0",
     "next": "16.1.6",
     "ogl": "^1.0.11",

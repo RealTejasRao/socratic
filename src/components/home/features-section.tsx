@@ -4,13 +4,7 @@ import { motion, type Variants, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Instrument_Serif } from "next/font/google";
 import Image from "next/image";
-import {
-  Brain,
-  MessageSquareMore,
-  Route,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
+import Script from "next/script";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 type FeaturesSectionProps = {
@@ -21,7 +15,11 @@ type FeatureCard = {
   id: string;
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: {
+    src: string;
+    colors: string;
+    state?: string;
+  };
 };
 
 const featureCards: FeatureCard[] = [
@@ -30,28 +28,42 @@ const featureCards: FeatureCard[] = [
     title: "It Argues Back.\nBy Design.",
     description:
       "Most AI tells you what you want to hear. This one is wired to push back readily.",
-    icon: MessageSquareMore,
+    icon: {
+      src: "https://cdn.lordicon.com/fozsorqm.json",
+      colors: "primary:#121331,secondary:#a01717",
+      state: "in-reveal",
+    },
   },
   {
     id: "corpus",
     title: "A Corpus Built for\nPhilosophers",
     description:
       "Responses based on original writings, not skimmed Reddit summaries.",
-    icon: Brain,
+    icon: {
+      src: "https://cdn.lordicon.com/rrbmabsx.json",
+      colors: "primary:#121331,secondary:#a01717",
+      state: "morph-open",
+    },
   },
   {
     id: "model-of-you",
     title: "It Builds a Model,\nof You",
     description:
       "Actively tracks your beliefs and assumptions, connects them into a living model of your thinking.",
-    icon: Route,
+    icon: {
+      src: "https://cdn.lordicon.com/vgwutnhw.json",
+      colors: "primary:#121331,secondary:#a01717",
+    },
   },
   {
     id: "clarity",
     title: "Clarity You Can Take\nWith You",
     description:
       "Discover positions you didn't know you held, gaps you didn't know were there.",
-    icon: Sparkles,
+    icon: {
+      src: "https://cdn.lordicon.com/ebvizisb.json",
+      colors: "primary:#a01717,secondary:#000000",
+    },
   },
 ];
 
@@ -181,9 +193,10 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
   return (
     <section
       id="features"
-      className="relative -scroll-mt-10 overflow-hidden bg-transparent px-5 py-9 sm:px-7 sm:py-10 lg:h-[calc(100svh-4.25rem)] lg:min-h-[40rem] lg:py-7"
+      className="relative -scroll-mt-10 overflow-hidden bg-transparent px-5 py-9 sm:px-7 sm:py-10 lg:h-[calc(100svh-4.25rem)] lg:min-h-160 lg:py-7"
     >
-      <div className="relative mx-auto flex h-full w-full max-w-[136rem] flex-col justify-center">
+      <Script src="https://cdn.lordicon.com/lordicon.js" strategy="afterInteractive" />
+      <div className="relative mx-auto flex h-full w-full max-w-544 flex-col justify-center">
         <motion.div
           className="mx-auto max-w-210 text-center"
           variants={headingVariants}
@@ -240,14 +253,12 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
             </motion.div>
           ))}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 -mx-5 sm:mx-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {featureCards.map((card, index) => {
-              const Icon = card.icon;
-
               return (
                 <motion.article
                   key={card.id}
-                  className="bg-transparent py-8 px-0 sm:px-5 lg:min-h-[14.5rem] lg:px-7 lg:py-4.5"
+                  className="bg-transparent px-5 py-8 sm:px-5 lg:min-h-[14.5rem] lg:px-7 lg:py-4.5"
                   variants={cardVariants}
                   initial="hidden"
                   whileInView="show"
@@ -256,28 +267,20 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                 >
                   <div className={index > 0 ? "lg:pl-7" : undefined}>
                     <div className="flex items-start gap-5 sm:block">
-                      <div className="shrink-0 sm:hidden w-[2rem] ml-[15px]">
-                        <Image
-                          src={resolveOptimizedCloudinaryPublicAsset(
-                            "/features/separator.webp",
-                            {
-                              width: 96,
-                              height: 520,
-                              crop: "limit",
-                              quality: "auto:good",
-                            },
-                          )}
-                          alt=""
-                          aria-hidden="true"
-                          width={96}
-                          height={520}
-                          sizes="96px"
-                          className="h-[14rem] w-full object-cover"
-                        />
-                      </div>
-
-                      <div className="min-w-0 pl-[2px] sm:pl-0">
-                        <Icon className="h-[28px] w-[28px] text-black/85 sm:h-[22px] sm:w-[22px]" />
+                      <div className="min-w-0">
+                        <div className="h-[32px] w-[32px] sm:h-[30px] sm:w-[30px]">
+                          <lord-icon
+                            src={card.icon.src}
+                            trigger="loop"
+                            delay="2000"
+                            stroke="bold"
+                            colors={card.icon.colors}
+                            {...(card.icon.state
+                              ? { state: card.icon.state }
+                              : {})}
+                            style={{ width: "100%", height: "100%" }}
+                          />
+                        </div>
                         <h3
                           className={`${interClassName} mt-6 whitespace-pre-line text-[1.35rem] leading-[1.18] tracking-normal text-black/90 sm:text-[1.1rem] sm:leading-[1.22] lg:text-[1.18rem]`}
                         >
