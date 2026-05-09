@@ -258,7 +258,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
               return (
                 <motion.article
                   key={card.id}
-                  className="bg-transparent px-5 py-8 sm:px-5 lg:min-h-[14.5rem] lg:px-7 lg:py-4.5"
+                  className="bg-transparent px-5 py-8 sm:px-5 lg:min-h-58 lg:px-7 lg:py-4.5"
                   variants={cardVariants}
                   initial="hidden"
                   whileInView="show"
@@ -268,7 +268,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                   <div className={index > 0 ? "lg:pl-7" : undefined}>
                     <div className="flex items-start gap-5 sm:block">
                       <div className="min-w-0">
-                        <div className="h-[32px] w-[32px] sm:h-[30px] sm:w-[30px]">
+                        <div className="h-8 w-8 sm:h-7.5 sm:w-7.5">
                           <lord-icon
                             src={card.icon.src}
                             trigger="loop"
