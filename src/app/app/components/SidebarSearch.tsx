@@ -168,7 +168,7 @@ export default function SidebarSearch() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="absolute inset-x-0 top-0 flex h-9 cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 transition-all duration-200 hover:bg-white/70 hover:text-black lg:h-9 lg:gap-2 lg:rounded-[14px] lg:px-2.5 lg:py-2 lg:text-[14px]"
+          className="app-sidebar-nav-item absolute inset-x-0 top-0 flex h-9 cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition-all duration-200 lg:h-9 lg:gap-2 lg:rounded-[14px] lg:px-2.5 lg:py-2 lg:text-[14px]"
         >
           <Search size={15} className="lg:h-[15px] lg:w-[15px]" />
           <span>Search chats</span>

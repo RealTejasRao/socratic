@@ -73,6 +73,9 @@ export default function SidebarSessions({
     y: number;
   } | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [openMenuDirection, setOpenMenuDirection] = useState<"up" | "down">(
+    "down",
+  );
   const [actionDialog, setActionDialog] = useState<SessionActionDialog | null>(
     null,
   );
@@ -282,6 +285,38 @@ export default function SidebarSessions({
     );
   }
 
+  function getMenuDirection(triggerElement: HTMLElement): "up" | "down" {
+    const preferredMenuHeight = 92;
+    const container = triggerElement.closest(".sidebar-scroll") as
+      | HTMLElement
+      | null;
+    const triggerRect = triggerElement.getBoundingClientRect();
+
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      const spaceBelow = containerRect.bottom - triggerRect.bottom;
+      const spaceAbove = triggerRect.top - containerRect.top;
+
+      if (
+        spaceBelow >= preferredMenuHeight ||
+        spaceBelow >= spaceAbove
+      ) {
+        return "down";
+      }
+
+      return "up";
+    }
+
+    const spaceBelow = window.innerHeight - triggerRect.bottom;
+    const spaceAbove = triggerRect.top;
+
+    if (spaceBelow >= preferredMenuHeight || spaceBelow >= spaceAbove) {
+      return "down";
+    }
+
+    return "up";
+  }
+
   function handleSessionOpen(
     event: ReactMouseEvent<HTMLAnchorElement>,
     id: string,
@@ -308,7 +343,7 @@ export default function SidebarSessions({
   }
 
   return (
-    <div className="space-y-0 lg:space-y-0">
+    <div className="space-y-1 lg:space-y-1">
       {successToast && (
         <div className="pointer-events-none fixed right-4 top-4 z-70">
           <div
@@ -334,11 +369,9 @@ export default function SidebarSessions({
         const isActive = pathname === `/app/${session.id}`;
         const isOpening = pendingSessionId === session.id && !isActive;
         const hoverPreview =
-          session.mode === "SOCRATIC"
-            ? session.firstMessagePreview?.trim() ||
-              session.title ||
-              "Untitled Session"
-            : session.title || "Untitled Session";
+          session.firstMessagePreview?.trim() ||
+          session.title ||
+          "Untitled Session";
 
         return (
           <div
@@ -353,7 +386,7 @@ export default function SidebarSessions({
                   : "bg-slate-100 text-slate-900 lg:bg-slate-100"
                 : isOpening
                   ? "text-slate-600"
-                  : "text-slate-600 lg:hover:bg-slate-100 lg:hover:text-slate-900",
+                  : "text-slate-600",
             )}
             onMouseEnter={(event) => {
               if (!showHoverPreviews) return;
@@ -426,19 +459,33 @@ export default function SidebarSessions({
                 >
                   <button
                     type="button"
-                    onClick={() =>
-                      setOpenMenuId((current) =>
-                        current === session.id ? null : session.id,
-                      )
-                    }
-                    className="cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] hover:bg-slate-100 hover:text-slate-600 lg:p-2 lg:opacity-0 lg:group-hover:opacity-100"
+                    onClick={(event) => {
+                      const triggerElement = event.currentTarget;
+
+                      setOpenMenuId((current) => {
+                        if (current === session.id) {
+                          return null;
+                        }
+
+                        setOpenMenuDirection(getMenuDirection(triggerElement));
+                        return session.id;
+                      });
+                    }}
+                    className="app-session-menu-trigger cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] lg:p-2 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="Open chat actions"
                   >
                     <MoreHorizontal size={16} className="lg:h-[17px] lg:w-[17px]" />
                   </button>
 
                   {openMenuId === session.id && (
-                    <div className="app-card absolute top-full right-0 z-40 mt-1.5 w-31 origin-top-right rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                    <div
+                      className={cn(
+                        "app-card absolute right-0 z-120 w-31 rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]",
+                        openMenuDirection === "up"
+                          ? "bottom-full mb-1.5 origin-bottom-right"
+                          : "top-full mt-1.5 origin-top-right",
+                      )}
+                    >
                       <button
                         type="button"
                         onClick={() => startRename(session)}
@@ -483,9 +530,9 @@ export default function SidebarSessions({
           className="pointer-events-none fixed z-50 w-64 -translate-y-1/2"
           style={{ left: hoveredSession.x, top: hoveredSession.y }}
         >
-          <div className="app-card app-session-preview-card relative rounded-xl border border-slate-200/90 bg-white/96 px-3 py-2 text-[11px] leading-4.5 text-slate-700 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
-            <div className="app-session-preview-arrow absolute top-1/2 -left-1.5 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l border-slate-200/90 bg-white/96" />
-            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap wrap-break-word">
+          <div className="app-card app-session-preview-card relative rounded-xl border px-3 py-2.5 text-[12px] leading-5 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
+            <div className="app-session-preview-arrow absolute top-1/2 -left-1.5 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l" />
+            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap break-words">
               {hoveredSession.preview}
             </p>
           </div>

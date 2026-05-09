@@ -729,7 +729,7 @@ export default function MessageInput({
                     type="button"
                     onClick={() => setIsActionMenuOpen((current) => !current)}
                     className={cn(
-                      "inline-flex cursor-pointer items-center justify-center hover:bg-slate-100",
+                      "app-input-action-btn inline-flex cursor-pointer items-center justify-center hover:bg-slate-100",
                       variant === "hero"
                         ? "h-10 w-10 rounded-xl md:h-10 md:w-10"
                         : "h-10 w-10 rounded-xl md:h-7.5 md:w-7.5",
@@ -798,19 +798,13 @@ export default function MessageInput({
               <button
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}
-                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-[14px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 md:gap-1 md:px-2 md:py-1 md:text-[10px]"
+                className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-[14px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 md:gap-1.5 md:px-3 md:py-2 md:text-[14px]"
                 aria-label="Disable web search"
                 data-tooltip="Disable web search"
               >
                 <span className="grid place-items-center">
-                  <span className="grid place-items-center md:hidden">
-                    <Globe size={16} className="group-hover:hidden" />
-                    <X size={16} className="hidden group-hover:block" />
-                  </span>
-                  <span className="hidden place-items-center md:grid">
-                    <Globe size={11} className="group-hover:hidden" />
-                    <X size={11} className="hidden group-hover:block" />
-                  </span>
+                  <Globe size={16} className="group-hover:hidden" />
+                  <X size={16} className="hidden group-hover:block" />
                 </span>
                 <span>Web search</span>
               </button>
@@ -845,7 +839,7 @@ export default function MessageInput({
                 onClick={handleVoiceToggle}
                 disabled={isStreaming}
                 className={cn(
-                  "inline-flex cursor-pointer items-center hover:bg-slate-100 disabled:cursor-not-allowed",
+                  "app-input-action-btn inline-flex cursor-pointer items-center hover:bg-slate-100 disabled:cursor-not-allowed",
                   variant === "hero"
                     ? "h-9 gap-1.5 rounded-xl px-2 md:h-9 md:gap-1.5 md:px-2"
                     : "h-9 gap-1.5 rounded-xl px-2 md:h-7 md:gap-1 md:px-2",
@@ -868,7 +862,7 @@ export default function MessageInput({
 
           <div className="flex items-center gap-2">
             {content.length >= 3000 && (
-              <span className="app-input-max-limit-error text-[10px] text-amber-700">
+              <span className="app-input-max-limit-error text-[12px] leading-4 text-amber-700 md:text-[11px]">
                 Max limit reached
               </span>
             )}
@@ -880,12 +874,14 @@ export default function MessageInput({
             {attachmentError &&
               !isUploadingAttachments &&
               content.length < 3000 && (
-                <span className="app-input-attachment-error text-[10px] text-amber-700">
+                <span className="app-input-attachment-error text-[12px] leading-4 text-amber-700 md:text-[11px]">
                   {attachmentError}
                 </span>
               )}
             {voiceError && !attachmentError && content.length < 3000 && (
-              <span className="text-[10px] text-amber-700">{voiceError}</span>
+              <span className="text-[12px] leading-4 text-amber-700 md:text-[11px]">
+                {voiceError}
+              </span>
             )}
             <button
               type="button"

@@ -74,6 +74,13 @@ export default async function AppLayout({ children }: Props) {
       debateWinner: true,
       roleplayMeta: true,
       lastActivityAt: true,
+      messages: {
+        orderBy: { createdAt: "asc" },
+        take: 1,
+        select: {
+          content: true,
+        },
+      },
     },
   });
 
@@ -84,17 +91,17 @@ export default async function AppLayout({ children }: Props) {
       mode: session.mode,
       debate: serializeSessionMeta(session).debate ?? null,
       roleplay: serializeSessionMeta(session).roleplay ?? null,
-      firstMessagePreview: null,
+      firstMessagePreview: session.messages[0]?.content ?? null,
     }),
   );
 
   return (
-    <div className="app-layout h-svh bg-white">
-      <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-white">
+    <div className="app-layout h-svh bg-[#fefefc]">
+      <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-[#fefefc]">
         <div className="flex min-h-0 flex-1">
           <AppSidebar sessions={sidebarSessions} />
 
-          <section className="app-chat-section relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+          <section className="app-chat-section relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#fefefc]">
             <AppTopBar sessions={sidebarSessions} />
             <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
               {children}

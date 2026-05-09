@@ -33,6 +33,20 @@
   --border: rgba(53, 57, 60, 0.12);
   --input: rgba(53, 57, 60, 0.12);
   --ring: rgba(66, 133, 140, 0.35);
+  --app-light-chat-bg: #fefefc;
+  --app-light-sidebar-bg: #f4f3ee;
+  --app-light-user-bubble-bg: #eceae3;
+  --app-light-border: #e3e1d8;
+  --app-light-text-primary: #1f1f1d;
+  --app-light-text-secondary: #6b6a66;
+  --app-light-text-muted: #9a9892;
+  --app-light-sidebar-hover-bg: #ebe9e2;
+  --app-light-sidebar-active-bg: #e6e3da;
+  --app-light-button-secondary-bg: #eceae3;
+  --app-light-button-secondary-hover-bg: #e2dfd6;
+  --app-light-button-primary-bg: #2c3a4b;
+  --app-light-button-primary-hover-bg: #243140;
+  --app-light-button-primary-text: #fefefc;
   --radius: 1rem;
 }
 
@@ -259,12 +273,12 @@ html.theme-switching {
 }
 
 .app-mode-switch-trigger {
-  border-color: rgba(15, 23, 42, 0.1);
-  background: rgba(255, 255, 255, 0.82);
-  color: #172033;
+  border-color: var(--app-light-border);
+  background: var(--app-light-sidebar-bg);
+  color: var(--app-light-text-primary);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 8px 22px rgba(15, 23, 42, 0.07);
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 8px 22px rgba(31, 31, 29, 0.06);
   backdrop-filter: blur(16px) saturate(150%);
   transform: translateY(0);
   transition:
@@ -275,19 +289,19 @@ html.theme-switching {
 }
 
 .app-mode-switch-trigger:hover {
-  border-color: rgba(15, 23, 42, 0.16);
-  background: rgba(255, 255, 255, 0.94);
+  border-color: var(--app-light-border);
+  background: var(--app-light-user-bubble-bg);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.96),
-    0 12px 28px rgba(15, 23, 42, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 12px 28px rgba(31, 31, 29, 0.08);
   transform: translateY(-1px);
 }
 
 .app-mode-switch-trigger-open {
-  border-color: rgba(15, 23, 42, 0.2);
+  border-color: var(--app-light-border);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.96),
-    0 16px 34px rgba(15, 23, 42, 0.13);
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 16px 34px rgba(31, 31, 29, 0.1);
 }
 
 .app-mode-switch-icon {
@@ -297,8 +311,8 @@ html.theme-switching {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--app-light-button-primary-bg);
+  color: var(--app-light-button-primary-text);
 }
 
 .app-mode-switch-label {
@@ -307,21 +321,21 @@ html.theme-switching {
 }
 
 .app-mode-switch-chevron {
-  color: #64748b;
+  color: var(--app-light-text-secondary);
 }
 
 .app-mode-switch-menu {
   z-index: 40;
-  border-color: rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.92);
+  border-color: var(--app-light-border);
+  background: var(--app-light-chat-bg);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.94),
-    0 18px 48px rgba(15, 23, 42, 0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 18px 48px rgba(31, 31, 29, 0.12);
   backdrop-filter: blur(18px) saturate(150%);
 }
 
 .app-mode-switch-option {
-  color: #334155;
+  color: var(--app-light-text-secondary);
   font-weight: 500;
   border: 1px solid transparent;
   transition:
@@ -332,21 +346,21 @@ html.theme-switching {
 }
 
 .app-mode-switch-option:hover {
-  background: rgba(15, 23, 42, 0.045);
-  border-color: rgba(15, 23, 42, 0.1);
-  color: #0f172a;
+  background: var(--app-light-sidebar-hover-bg);
+  border-color: var(--app-light-border);
+  color: var(--app-light-text-primary);
   transform: none;
 }
 
 .app-mode-switch-option[data-active="true"] {
-  background: rgba(15, 23, 42, 0.095);
-  border-color: rgba(15, 23, 42, 0.14);
-  color: #0f172a;
+  background: var(--app-light-sidebar-active-bg);
+  border-color: var(--app-light-border);
+  color: var(--app-light-text-primary);
 }
 
 .app-mode-switch-option[data-active="true"]:hover {
-  background: rgba(15, 23, 42, 0.11);
-  border-color: rgba(15, 23, 42, 0.18);
+  background: var(--app-light-button-secondary-hover-bg);
+  border-color: var(--app-light-border);
 }
 
 .app-search-highlight {
@@ -420,6 +434,360 @@ html.theme-switching {
   .hero-loop-anim {
     animation: none !important;
   }
+}
+
+html:not(.app-dark) .app-layout,
+html:not(.app-dark) .app-layout-inner,
+html:not(.app-dark) .app-chat-section,
+html:not(.app-dark) .app-chat-main,
+html:not(.app-dark) .app-topbar {
+  background: var(--app-light-chat-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-topbar {
+  border-bottom: 1px solid var(--app-light-border);
+  box-shadow: inset 0 -0.5px 0 var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-sidebar {
+  background: var(--app-light-sidebar-bg) !important;
+  border-right-color: var(--app-light-border) !important;
+  box-shadow: inset -0.5px 0 0 var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-sidebar .border-slate-200,
+html:not(.app-dark) .app-sidebar .border-slate-300,
+html:not(.app-dark) .app-topbar .border-slate-200,
+html:not(.app-dark) .app-topbar .border-slate-300,
+html:not(.app-dark) .app-chat-section .border-slate-200,
+html:not(.app-dark) .app-chat-section .border-slate-300 {
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-sidebar-nav-item {
+  background: transparent !important;
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-sidebar-nav-item:hover,
+html:not(.app-dark) .app-sidebar-nav-item:focus-visible {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-topbar-share-btn,
+html:not(.app-dark) .app-topbar-theme-toggle {
+  background: var(--app-light-chat-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-topbar-share-btn:hover,
+html:not(.app-dark) .app-topbar-theme-toggle:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-topbar-title-trigger {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-topbar-title-trigger:hover {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-topbar-share-menu,
+html:not(.app-dark) .app-topbar-title-menu {
+  background: var(--app-light-chat-bg) !important;
+  border: 1px solid var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-topbar-menu-item {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-topbar-menu-item:hover {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-topbar-menu-danger {
+  color: #b54747 !important;
+}
+
+html:not(.app-dark) .app-topbar-menu-danger:hover {
+  background: #f8eeea !important;
+  color: #9f3e3e !important;
+}
+
+html:not(.app-dark) .app-session-row {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-session-row:hover {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-session-row-active {
+  background: var(--app-light-sidebar-active-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-session-row-active:hover {
+  background: var(--app-light-sidebar-active-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-session-menu-trigger:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-session-row-loading {
+  background: linear-gradient(
+    90deg,
+    var(--app-light-sidebar-bg) 0%,
+    var(--app-light-chat-bg) 50%,
+    var(--app-light-sidebar-bg) 100%
+  );
+  border-color: var(--app-light-border);
+}
+
+html:not(.app-dark) .app-session-row-loading:hover {
+  background: linear-gradient(
+    90deg,
+    var(--app-light-sidebar-bg) 0%,
+    var(--app-light-chat-bg) 50%,
+    var(--app-light-sidebar-bg) 100%
+  ) !important;
+}
+
+html:not(.app-dark) .app-user-bubble,
+html:not(.app-dark) .app-user-edit-shell {
+  background: var(--app-light-user-bubble-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-assistant-text,
+html:not(.app-dark) .app-greeting-heading {
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-input-shell,
+html:not(.app-dark) .app-input-textarea,
+html:not(.app-dark) .app-input-toolbar {
+  background: var(--app-light-chat-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-input-textarea::placeholder,
+html:not(.app-dark) .app-session-dialog-input::placeholder,
+html:not(.app-dark) .app-sidebar-search-input::placeholder {
+  color: var(--app-light-text-muted) !important;
+}
+
+html:not(.app-dark) .app-input-action-btn {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-input-action-btn:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-session-preview-card,
+html:not(.app-dark) .app-session-preview-arrow,
+html:not(.app-dark) .app-sidebar-search-modal,
+html:not(.app-dark) .app-sidebar-search-input,
+html:not(.app-dark) .app-sidebar-search-state,
+html:not(.app-dark) .app-sidebar-search-result,
+html:not(.app-dark) .app-session-dialog,
+html:not(.app-dark) .app-debate-ended-card,
+html:not(.app-dark) .app-debate-winner-modal,
+html:not(.app-dark) .app-roleplay-card {
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-session-preview-card {
+  background: var(--app-light-chat-bg) !important;
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-session-preview-arrow {
+  background: var(--app-light-chat-bg) !important;
+}
+
+html:not(.app-dark) .app-session-preview-text {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-send-button,
+html:not(.app-dark) .app-user-edit-send,
+html:not(.app-dark) .app-session-dialog-save,
+html:not(.app-dark) .app-debate-ended-primary,
+html:not(.app-dark) .app-debate-primary-btn,
+html:not(.app-dark) .app-roleplay-primary-btn {
+  background: var(--app-light-button-primary-bg) !important;
+  color: var(--app-light-button-primary-text) !important;
+  border-color: transparent !important;
+}
+
+html:not(.app-dark) .app-send-button:hover,
+html:not(.app-dark) .app-user-edit-send:hover,
+html:not(.app-dark) .app-session-dialog-save:hover,
+html:not(.app-dark) .app-debate-ended-primary:hover,
+html:not(.app-dark) .app-debate-primary-btn:hover,
+html:not(.app-dark) .app-roleplay-primary-btn:hover {
+  background: var(--app-light-button-primary-hover-bg) !important;
+  color: var(--app-light-button-primary-text) !important;
+}
+
+html:not(.app-dark) .app-user-edit-cancel,
+html:not(.app-dark) .app-session-dialog-cancel,
+html:not(.app-dark) .app-debate-ended-secondary,
+html:not(.app-dark) .app-debate-secondary-btn,
+html:not(.app-dark) .app-roleplay-secondary-btn,
+html:not(.app-dark) .app-change-philosopher-btn {
+  background: var(--app-light-button-secondary-bg) !important;
+  color: var(--app-light-text-primary) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-user-edit-cancel:hover,
+html:not(.app-dark) .app-session-dialog-cancel:hover,
+html:not(.app-dark) .app-debate-ended-secondary:hover,
+html:not(.app-dark) .app-debate-secondary-btn:hover,
+html:not(.app-dark) .app-roleplay-secondary-btn:hover,
+html:not(.app-dark) .app-change-philosopher-btn:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-panel {
+  background: var(--app-light-chat-bg) !important;
+  border-color: var(--app-light-border) !important;
+  box-shadow: 0 22px 70px rgba(31, 31, 29, 0.14) !important;
+}
+
+html:not(.app-dark) .app-settings-sidebar {
+  background: var(--app-light-sidebar-bg) !important;
+  border-right-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-content {
+  background: var(--app-light-chat-bg) !important;
+}
+
+html:not(.app-dark) .app-settings-tab-btn {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-settings-tab-btn:hover {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-tab-btn.bg-slate-200 {
+  background: var(--app-light-sidebar-active-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-close {
+  color: var(--app-light-text-muted) !important;
+}
+
+html:not(.app-dark) .app-settings-close:hover {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-segmented {
+  background: var(--app-light-sidebar-bg) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-segmented-option {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-settings-segmented-option:hover {
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-segmented-option .app-settings-segmented-pill {
+  background: var(--app-light-sidebar-active-bg) !important;
+  box-shadow: 0 1px 2px rgba(31, 31, 29, 0.08) !important;
+}
+
+html:not(.app-dark) .app-settings-dropdown-trigger {
+  background: var(--app-light-sidebar-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-dropdown-trigger:hover {
+  background: var(--app-light-user-bubble-bg) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-dropdown {
+  background: var(--app-light-chat-bg) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-dropdown-option {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-settings-dropdown-option:hover {
+  background: var(--app-light-sidebar-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-dropdown-option.bg-slate-100 {
+  background: var(--app-light-sidebar-active-bg) !important;
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-settings-secondary-btn {
+  background: var(--app-light-button-secondary-bg) !important;
+  color: var(--app-light-text-primary) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-secondary-btn:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+  color: var(--app-light-text-primary) !important;
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-settings-primary-btn {
+  background: var(--app-light-button-primary-bg) !important;
+  color: var(--app-light-button-primary-text) !important;
+}
+
+html:not(.app-dark) .app-settings-primary-btn:hover {
+  background: var(--app-light-button-primary-hover-bg) !important;
+  color: var(--app-light-button-primary-text) !important;
+}
+
+html:not(.app-dark) .app-suggestion-pill {
+  background: var(--app-light-button-secondary-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-suggestion-pill:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+  border-color: var(--app-light-border) !important;
+  color: var(--app-light-text-primary) !important;
 }
 
 html.app-dark .app-layout,
@@ -2106,6 +2474,31 @@ html.app-dark .app-greeting-heading .hero-caret {
 
 *::-webkit-scrollbar-thumb:hover {
   background: #a01717;
+}
+
+.app-layout,
+.app-layout * {
+  scrollbar-color: #7a2f17 transparent;
+}
+
+.app-layout::-webkit-scrollbar,
+.app-layout *::-webkit-scrollbar {
+  background: transparent;
+}
+
+.app-layout::-webkit-scrollbar-track,
+.app-layout *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-layout::-webkit-scrollbar-thumb,
+.app-layout *::-webkit-scrollbar-thumb {
+  background: #7a2f17;
+}
+
+.app-layout::-webkit-scrollbar-thumb:hover,
+.app-layout *::-webkit-scrollbar-thumb:hover {
+  background: #8b361c;
 }
 
 @supports not (zoom: 1) {

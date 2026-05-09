@@ -555,7 +555,7 @@ export default function AppTopBar({ sessions }: Props) {
             key={themeSweep.id}
             className={cn(
               "pointer-events-none fixed inset-0 z-55",
-              themeSweep.dark ? "bg-black" : "bg-white",
+              themeSweep.dark ? "bg-black" : "bg-[#fefefc]",
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, themeSweep.dark ? 0.22 : 0.16, 0] }}
@@ -585,7 +585,12 @@ export default function AppTopBar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => void handleShareMenuToggle()}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-3 py-1.5 text-[14px] text-slate-700 transition hover:bg-slate-50"
+                  className={cn(
+                    "app-topbar-share-btn inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border px-3 py-1.5 text-[14px] transition",
+                    isDarkMode
+                      ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      : "border-[#e3e1d8] bg-[#fefefc] text-[#6b6a66] hover:bg-[#e2dfd6] hover:text-[#1f1f1d]",
+                  )}
                   data-tooltip="Share chat"
                 >
                   <Send size={15} />
@@ -593,12 +598,12 @@ export default function AppTopBar({ sessions }: Props) {
                 </button>
 
                 {shareMenuOpen && (
-                  <div className="app-card absolute left-0 top-full z-40 mt-1.5 w-53.5 origin-top-left rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+                  <div className="app-card app-topbar-share-menu absolute left-0 top-full z-40 mt-1.5 w-53.5 origin-top-left rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                     <button
                       type="button"
                       onClick={() => void handleCopyLink()}
                       disabled={isPreparingShare}
-                      className="flex w-full cursor-pointer items-center justify-between rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="app-topbar-menu-item flex w-full cursor-pointer items-center justify-between rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-50"
                       data-tooltip="Copy share link"
                     >
                       <span className="inline-flex items-center gap-2">
@@ -622,7 +627,7 @@ export default function AppTopBar({ sessions }: Props) {
                           )
                         }
                         disabled={!shareUrl || isPreparingShare}
-                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="app-topbar-menu-item flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                         data-tooltip="Share to X"
                       >
                         <XBrandIcon />
@@ -636,7 +641,7 @@ export default function AppTopBar({ sessions }: Props) {
                           )
                         }
                         disabled={!shareUrl || isPreparingShare}
-                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="app-topbar-menu-item flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                         data-tooltip="Share to LinkedIn"
                       >
                         <LinkedInIcon />
@@ -652,7 +657,7 @@ export default function AppTopBar({ sessions }: Props) {
                           )
                         }
                         disabled={!shareUrl || isPreparingShare}
-                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="app-topbar-menu-item flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                         data-tooltip="Share to WhatsApp"
                       >
                         <WhatsAppIcon />
@@ -668,7 +673,7 @@ export default function AppTopBar({ sessions }: Props) {
                           )
                         }
                         disabled={!shareUrl || isPreparingShare}
-                        className="flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="app-topbar-menu-item flex cursor-pointer flex-col items-center gap-1 rounded-[9px] px-1.5 py-2 text-[10px] text-[#6B6B6B] transition hover:bg-[#F6F6F3] disabled:cursor-not-allowed disabled:opacity-45"
                         data-tooltip="Share via email"
                       >
                         <EmailIcon />
@@ -702,9 +707,11 @@ export default function AppTopBar({ sessions }: Props) {
               }}
               disabled={!activeSession}
               className={cn(
-                "inline-flex max-w-85 tracking-wide items-center gap-1.5 rounded-[9px] px-2.5 py-1.5 text-[14px] text-slate-700",
+                "app-topbar-title-trigger inline-flex max-w-85 tracking-wide items-center gap-1.5 rounded-[9px] px-2.5 py-1.5 text-[14px]",
                 activeSession
-                  ? "cursor-pointer transition hover:bg-[#f4f4f4] hover:text-slate-900"
+                  ? isDarkMode
+                    ? "cursor-pointer text-slate-700 transition hover:bg-[#f4f4f4] hover:text-slate-900"
+                    : "cursor-pointer text-[#6b6a66] transition hover:bg-[#e2dfd6] hover:text-[#1f1f1d]"
                   : "cursor-default",
               )}
               data-tooltip={activeSession ? "Chat menu" : "No active chat"}
@@ -724,11 +731,11 @@ export default function AppTopBar({ sessions }: Props) {
             </button>
 
             {menuOpen && activeSession && (
-              <div className="app-card absolute left-1/2 top-full z-40 mt-1.5 w-31 origin-top -translate-x-1/2 rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
+              <div className="app-card app-topbar-title-menu absolute left-1/2 top-full z-40 mt-1.5 w-31 origin-top -translate-x-1/2 rounded-[9px] bg-white p-1.5 shadow-[0_0_0_0.5px_#C9C9C3,0_8px_18px_rgba(26,26,26,0.06)] animate-[dropdownSlideIn_180ms_cubic-bezier(0.22,1,0.36,1)_both]">
                 <button
                   type="button"
                   onClick={openRenameDialog}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
+                  className="app-topbar-menu-item flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
                   data-tooltip="Rename chat"
                 >
                   <Pencil size={13} />
@@ -737,7 +744,7 @@ export default function AppTopBar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={openDeleteDialog}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#EF4444] transition hover:bg-rose-50"
+                  className="app-topbar-menu-danger flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[12px] text-[#EF4444] transition hover:bg-rose-50"
                   data-tooltip="Delete chat"
                 >
                   <Trash2 size={13} />
@@ -789,7 +796,12 @@ export default function AppTopBar({ sessions }: Props) {
           <button
             type="button"
             onClick={() => handleThemeChange(!isDarkMode)}
-            className="hidden h-9 w-9 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:inline-flex"
+            className={cn(
+              "app-topbar-theme-toggle hidden h-9 w-9 cursor-pointer items-center justify-center rounded-[9px] border transition lg:inline-flex",
+              isDarkMode
+                ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                : "border-[#e3e1d8] bg-[#fefefc] text-[#6b6a66] hover:bg-[#e2dfd6] hover:text-[#1f1f1d]",
+            )}
             aria-label={
               isDarkMode ? "Switch to light mode" : "Switch to dark mode"
             }
