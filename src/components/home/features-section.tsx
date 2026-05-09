@@ -205,7 +205,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
           viewport={{ once: true, amount: 0.25 }}
         >
           <h2
-            className={`${instrumentSerif.className} text-[clamp(2.4rem,9.5vw,3.35rem)] font-normal leading-tight text-black sm:text-[clamp(1.62rem,4.5vw,2.7rem)]`}
+            className={`${instrumentSerif.className} text-[clamp(2.4rem,9.5vw,3.35rem)] font-normal leading-tight text-black sm:text-[clamp(1.62rem,4.5vw,2.7rem)] [@media(orientation:portrait)_and_(min-width:768px)_and_(max-width:1023px)]:text-[clamp(2.4rem,9.5vw,3.35rem)]`}
           >
             <span ref={headingRef} className="inline-grid align-top">
               <span
@@ -253,6 +253,26 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
             </motion.div>
           ))}
 
+          <div
+            className="pointer-events-none absolute inset-0 z-10 hidden sm:block lg:hidden"
+            aria-hidden="true"
+          >
+            <div className="absolute left-1/2 top-1/2 h-[88%] -translate-x-1/2 -translate-y-1/2">
+              <Image
+                src={resolveOptimizedCloudinaryPublicAsset("/features/separator.webp", {
+                  width: 412,
+                  height: 1536,
+                  crop: "limit",
+                  quality: "auto:good",
+                })}
+                alt=""
+                width={412}
+                height={1536}
+                className="h-full w-auto opacity-78"
+              />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {featureCards.map((card, index) => {
               return (
@@ -265,7 +285,13 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                   viewport={{ once: true, amount: 0.45 }}
                   custom={index}
                 >
-                  <div className={index > 0 ? "lg:pl-7" : undefined}>
+                  <div
+                    className={`${index > 0 ? "lg:pl-7" : ""} sm:max-lg:w-[90%] ${
+                      index % 2 === 0
+                        ? "sm:max-lg:mr-auto"
+                        : "sm:max-lg:ml-auto sm:max-lg:translate-x-6"
+                    }`}
+                  >
                     <div className="flex items-start gap-5 sm:block">
                       <div className="min-w-0">
                         <div className="h-8 w-8 sm:h-7.5 sm:w-7.5">

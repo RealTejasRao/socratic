@@ -114,30 +114,34 @@ export default function HomePage() {
         </header>
 
         <section className="relative h-screen w-full">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[16vh] text-center sm:pt-[17vh]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[16vh] text-center sm:pt-[17vh] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:pt-[10vh]">
             <div
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
               <p className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(1.62rem,4.5vw,2.7rem)]">
-                <span className="block text-[clamp(2.05rem,8vw,2.95rem)] sm:inline sm:text-inherit">
+                <span className="block text-[clamp(2.05rem,8vw,2.95rem)] sm:inline sm:text-inherit [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(2.05rem,8vw,2.95rem)]">
                   Your Personal AI For
                 </span>{" "}
-                <span className="mt-4 block text-[clamp(3.1rem,12.6vw,4.35rem)] sm:hidden">
+                <span className="mt-4 block text-[clamp(3.1rem,12.6vw,4.35rem)] sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block">
                   <HeroRotatingWord align="center" />
                 </span>
-                <span className="hidden sm:inline">
+                <span className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden">
                   <HeroRotatingWord />
                 </span>
               </p>
               <Link
                 href={ROUTES.HOME}
-                className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-7.5 inline-flex h-11 items-center gap-2 rounded-full border border-black/55 bg-white px-6 text-[0.9rem] font-medium tracking-[0.02em] text-black/90 transition-colors duration-200 hover:bg-[#A01717] hover:text-white sm:h-8 sm:gap-1.5 sm:px-4 sm:text-[0.68rem] sm:font-normal sm:text-black/85`}
+                className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-7.5 inline-flex h-11 items-center gap-2 rounded-full border border-black/55 bg-white px-6 text-[0.9rem] font-medium tracking-[0.02em] text-black/90 transition-colors duration-200 hover:bg-[#A01717] hover:text-white sm:h-8 sm:gap-1.5 sm:px-4 sm:text-[0.68rem] sm:font-normal sm:text-black/85 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:h-11 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:gap-2 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:px-6 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[0.9rem] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:font-medium`}
               >
-                <span className="sm:hidden">Try Socratic AI</span>
-                <span className="hidden sm:inline">Get Early Access</span>
+                <span className="sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:inline">
+                  Try Socratic AI
+                </span>
+                <span className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden">
+                  Get Early Access
+                </span>
                 <ArrowRight
                   aria-hidden="true"
-                  className="hero-cta-arrow-loop h-4 w-4 stroke-[2.6] sm:h-3 sm:w-3"
+                  className="hero-cta-arrow-loop h-4 w-4 stroke-[2.6] sm:h-3 sm:w-3 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:h-4 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:w-4"
                 />
               </Link>
             </div>
@@ -155,7 +159,7 @@ export default function HomePage() {
                 width={1400}
                 height={1400}
                 sizes="100vw"
-                className="block h-auto w-full object-contain object-bottom sm:hidden"
+                className="block h-auto w-full object-contain object-bottom sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block"
                 preload
               />
               <Image
@@ -168,7 +172,7 @@ export default function HomePage() {
                 width={2400}
                 height={1200}
                 sizes="100vw"
-                className="hidden h-auto w-full object-contain object-bottom sm:block"
+                className="hidden h-auto w-full object-contain object-bottom sm:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden"
                 preload
               />
             </div>
