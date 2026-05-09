@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Inter } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -46,7 +47,11 @@ interface Props {
   sessions: Session[];
 }
 
-const poppinsClassName = "[font-family:Poppins,sans-serif]";
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+const interClassName = inter.className;
 const smoothUiClass =
   "transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]";
 const COLLAPSE_BY_DEFAULT_KEY = "socratic:sidebar:collapseByDefault";
@@ -324,9 +329,9 @@ export default function AppSidebar({ sessions }: Props) {
 
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? 58 : 248 }}
+        animate={{ width: collapsed ? 72 : 312 }}
         transition={{ type: "spring", stiffness: 320, damping: 34, mass: 0.9 }}
-        className={`${poppinsClassName} app-sidebar relative hidden shrink-0 overflow-visible border-r border-transparent bg-[#f9f9f9] p-2 shadow-[inset_-0.5px_0_0_rgba(0,0,0,0.10)] lg:flex lg:flex-col`}
+        className={`${interClassName} app-sidebar relative hidden shrink-0 overflow-visible border-r border-transparent bg-[#f9f9f9] p-2 shadow-[inset_-0.5px_0_0_rgba(0,0,0,0.10)] lg:flex lg:flex-col`}
       >
         <div
           className={`mb-2 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}
@@ -368,14 +373,14 @@ export default function AppSidebar({ sessions }: Props) {
         <button
           type="button"
           onClick={() => setCollapsed((current) => !current)}
-          className="app-sidebar-toggle absolute top-6.5 -right-3 z-30 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-slate-300 bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900"
+          className="app-sidebar-toggle absolute top-6.5 -right-3 z-30 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-slate-300 bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           data-tooltip={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
-            <PanelLeftOpen size={13} />
+            <PanelLeftOpen size={15} />
           ) : (
-            <PanelLeftClose size={13} />
+            <PanelLeftClose size={15} />
           )}
         </button>
 
@@ -385,45 +390,45 @@ export default function AppSidebar({ sessions }: Props) {
               <Link
                 href={ROUTES.APP}
                 onClick={handleNewChatClick}
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
                 aria-label="New chat"
               >
-                <PenSquare size={13} />
+                <PenSquare size={17} />
               </Link>
               <button
                 type="button"
                 onClick={() => setCollapsed(false)}
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
                 aria-label="Expand search and sidebar"
               >
-                <Search size={13} />
+                <Search size={17} />
               </button>
             </div>
 
             <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
               <Link
                 href={ROUTES.HOME}
-                className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
+                className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
                 aria-label="Home"
               >
-                <House size={13} />
+                <House size={17} />
               </Link>
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className={`mx-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-black hover:bg-white/70 hover:text-black ${smoothUiClass}`}
+                className={`mx-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-black hover:bg-white/70 hover:text-black ${smoothUiClass}`}
                 aria-label="Settings"
               >
-                <Settings size={13} />
+                <Settings size={17} />
               </button>
               <Link
                 href={`${ROUTES.HOME}#contact`}
                 target="_blank"
                 rel="noreferrer"
-                className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
+                className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg text-black transition hover:bg-white/70 hover:text-black"
                 aria-label="Contact us"
               >
-                <Mail size={13} />
+                <Mail size={17} />
               </Link>
             </div>
           </>
@@ -435,9 +440,9 @@ export default function AppSidebar({ sessions }: Props) {
               <Link
                 href={ROUTES.APP}
                 onClick={handleNewChatClick}
-                className="flex items-center gap-1.5 rounded-lg px-2 py-1.25 text-[11px] text-black/90 transition hover:bg-white/70 hover:text-black"
+                className="flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 transition hover:bg-white/70 hover:text-black"
               >
-                <PenSquare size={12} />
+                <PenSquare size={16} />
                 <span>New Chat</span>
               </Link>
             </div>
@@ -445,7 +450,7 @@ export default function AppSidebar({ sessions }: Props) {
             <SidebarSearch />
 
             <div className="sidebar-scroll mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-              <p className="mb-1.5 px-2 text-[8px] uppercase tracking-[0.18em] text-slate-400">
+              <p className="mb-2 px-3 text-[11px] uppercase tracking-[0.14em] text-slate-500">
                 Chats
               </p>
               <SidebarSessions
@@ -458,24 +463,24 @@ export default function AppSidebar({ sessions }: Props) {
             <div className="mt-3 space-y-0.5 border-t border-slate-200 pt-2">
               <Link
                 href={ROUTES.HOME}
-                className="flex w-full items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
+                className="flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black"
               >
-                <House size={12} /> Home
+                <House size={16} /> Home
               </Link>
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className={`flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black ${smoothUiClass}`}
+                className={`flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black ${smoothUiClass}`}
               >
-                <Settings size={12} /> Settings
+                <Settings size={16} /> Settings
               </button>
               <Link
                 href={`${ROUTES.HOME}#contact`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex w-full items-center gap-2 rounded-lg px-2 py-1.25 text-[11px] text-black/90 hover:bg-white/70 hover:text-black"
+                className="flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black"
               >
-                <Mail size={12} /> Send Us a Message
+                <Mail size={16} /> Send Us a Message
               </Link>
             </div>
           </>
@@ -500,7 +505,7 @@ export default function AppSidebar({ sessions }: Props) {
         animate={{ x: isMobileSidebarOpen ? 0 : "-100%" }}
         transition={{ type: "spring", stiffness: 320, damping: 34, mass: 0.9 }}
         style={{ willChange: "transform" }}
-        className={`${poppinsClassName} app-sidebar fixed inset-y-0 left-0 z-109 flex w-[min(88vw,340px)] transform-gpu flex-col border-r border-transparent bg-[#f9f9f9] px-3 pb-3 pt-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.16)] lg:hidden`}
+        className={`${interClassName} app-sidebar fixed inset-y-0 left-0 z-109 flex w-[min(92vw,400px)] transform-gpu flex-col border-r border-transparent bg-[#f9f9f9] px-3 pb-3 pt-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.16)] lg:hidden`}
         aria-hidden={!isMobileSidebarOpen}
       >
         <div className="mb-2.5 flex items-center justify-between">
@@ -551,9 +556,9 @@ export default function AppSidebar({ sessions }: Props) {
               handleNewChatClick();
               setIsMobileSidebarOpen(false);
             }}
-            className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-[15px] text-black/90 transition hover:bg-white/70 hover:text-black"
+            className="flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 transition hover:bg-white/70 hover:text-black"
           >
-            <PenSquare size={16} />
+            <PenSquare size={18} />
             <span>New Chat</span>
           </Link>
         </div>
@@ -561,7 +566,7 @@ export default function AppSidebar({ sessions }: Props) {
         <SidebarSearch />
 
         <div className="sidebar-scroll mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <p className="mb-2 px-2.5 text-[11px] uppercase tracking-[0.12em] text-slate-500">
+          <p className="mb-2 px-2.5 text-[12px] uppercase tracking-[0.11em] text-slate-500">
             Chats
           </p>
           <SidebarSessions
@@ -575,9 +580,9 @@ export default function AppSidebar({ sessions }: Props) {
           <Link
             href={ROUTES.HOME}
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black"
+            className="flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black"
           >
-            <House size={16} /> Home
+            <House size={18} /> Home
           </Link>
           <button
             type="button"
@@ -585,18 +590,18 @@ export default function AppSidebar({ sessions }: Props) {
               setIsSettingsOpen(true);
               setIsMobileSidebarOpen(false);
             }}
-            className={`flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black ${smoothUiClass}`}
+            className={`flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black ${smoothUiClass}`}
           >
-            <Settings size={16} /> Settings
+            <Settings size={18} /> Settings
           </button>
           <Link
             href={`${ROUTES.HOME}#contact`}
             target="_blank"
             rel="noreferrer"
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black"
+            className="flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] text-black/90 hover:bg-white/70 hover:text-black"
           >
-            <Mail size={16} /> Send Us a Message
+            <Mail size={18} /> Send Us a Message
           </Link>
         </div>
       </motion.aside>
@@ -642,7 +647,7 @@ export default function AppSidebar({ sessions }: Props) {
                 }`}
               >
                 <p
-                  className={`px-2 pb-2 text-[10px] uppercase tracking-[0.14em] ${
+                  className={`px-2 pb-2 text-[11px] uppercase tracking-[0.12em] ${
                     isDarkMode ? "text-slate-500" : "text-slate-400"
                   }`}
                 >
@@ -652,7 +657,7 @@ export default function AppSidebar({ sessions }: Props) {
                   <button
                     type="button"
                     onClick={() => setActiveSettingsTab("GENERAL")}
-                    className={`w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] ${smoothUiClass} ${
+                    className={`w-full cursor-pointer rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
                       activeSettingsTab === "GENERAL"
                         ? isDarkMode
                           ? "bg-[#35363a] text-slate-100"
@@ -667,7 +672,7 @@ export default function AppSidebar({ sessions }: Props) {
                   <button
                     type="button"
                     onClick={() => setActiveSettingsTab("SOCRATIC")}
-                    className={`w-full cursor-pointer rounded-lg px-2.5 py-2 text-left text-[11px] ${smoothUiClass} ${
+                    className={`w-full cursor-pointer rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
                       activeSettingsTab === "SOCRATIC"
                         ? isDarkMode
                           ? "bg-[#35363a] text-slate-100"
@@ -683,13 +688,13 @@ export default function AppSidebar({ sessions }: Props) {
               </aside>
 
               <section
-                className={`flex min-w-0 flex-1 flex-col px-4 py-4 md:px-6 md:py-5 ${
+                className={`flex min-w-0 flex-1 flex-col px-5 py-5 md:px-7 md:py-6 ${
                   isDarkMode ? "bg-[#262624]" : "bg-white"
                 }`}
               >
                 <div>
                   <p
-                    className={`text-[18px] font-medium ${
+                    className={`text-[20px] font-medium ${
                       isDarkMode ? "text-slate-100" : "text-slate-900"
                     } ${activeSettingsTab === "GENERAL" ? "font-[Georgia,serif]" : ""}`}
                   >
@@ -697,7 +702,7 @@ export default function AppSidebar({ sessions }: Props) {
                   </p>
                   {activeSettingsTab === "SOCRATIC" && (
                     <p
-                      className={`mt-1 text-[11px] ${
+                      className={`mt-1 text-[12px] ${
                         isDarkMode ? "text-slate-400" : "text-slate-500"
                       }`}
                     >
@@ -710,7 +715,7 @@ export default function AppSidebar({ sessions }: Props) {
                   <button
                     type="button"
                     onClick={() => setActiveSettingsTab("GENERAL")}
-                    className={`rounded-lg px-2.5 py-1.5 text-[11px] ${smoothUiClass} ${
+                    className={`rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
                       activeSettingsTab === "GENERAL"
                         ? isDarkMode
                           ? "bg-[#35363a] text-slate-100"
@@ -725,7 +730,7 @@ export default function AppSidebar({ sessions }: Props) {
                   <button
                     type="button"
                     onClick={() => setActiveSettingsTab("SOCRATIC")}
-                    className={`rounded-lg px-2.5 py-1.5 text-[11px] ${smoothUiClass} ${
+                    className={`rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
                       activeSettingsTab === "SOCRATIC"
                         ? isDarkMode
                           ? "bg-[#35363a] text-slate-100"
@@ -742,14 +747,14 @@ export default function AppSidebar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsSettingsOpen(false)}
-                  className={`absolute right-5 top-4 cursor-pointer rounded-full p-1 ${smoothUiClass} ${
+                  className={`absolute right-5 top-4 cursor-pointer rounded-full p-1.5 ${smoothUiClass} ${
                     isDarkMode
                       ? "text-slate-400 hover:bg-[#36373b] hover:text-slate-200"
                       : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
                   }`}
                   aria-label="Close settings"
                 >
-                  <X size={13} />
+                  <X size={15} />
                 </button>
 
                 <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
@@ -772,7 +777,7 @@ export default function AppSidebar({ sessions }: Props) {
                         >
                           <div>
                             <p
-                              className={`text-[13px] ${
+                              className={`text-[14px] ${
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
@@ -780,7 +785,7 @@ export default function AppSidebar({ sessions }: Props) {
                             </p>
                           </div>
                           <div
-                            className={`inline-flex rounded-lg border p-0.5 ${
+                            className={`inline-flex rounded-[14px] border p-0.5 ${
                               isDarkMode
                                 ? "border-[#44454a] bg-[#25262a]"
                                 : "border-slate-200 bg-slate-50"
@@ -789,7 +794,7 @@ export default function AppSidebar({ sessions }: Props) {
                             <button
                               type="button"
                               onClick={() => handleThemePreference("light")}
-                              className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] ${smoothUiClass} ${
+                              className={`relative cursor-pointer overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
                                 !isDarkMode
                                   ? "text-slate-900"
                                   : "text-slate-400 hover:text-slate-200"
@@ -798,7 +803,7 @@ export default function AppSidebar({ sessions }: Props) {
                               {!isDarkMode && (
                                 <motion.span
                                   layoutId="settings-theme-active-pill"
-                                  className={`absolute inset-0 rounded-md ${
+                                  className={`absolute inset-0 rounded-[14px] ${
                                     isDarkMode
                                       ? "bg-[#3a3b40] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
                                       : "bg-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
@@ -816,7 +821,7 @@ export default function AppSidebar({ sessions }: Props) {
                             <button
                               type="button"
                               onClick={() => handleThemePreference("dark")}
-                              className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] ${smoothUiClass} ${
+                              className={`relative cursor-pointer overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
                                 isDarkMode
                                   ? "text-slate-100"
                                   : "text-slate-500 hover:text-slate-700"
@@ -825,7 +830,7 @@ export default function AppSidebar({ sessions }: Props) {
                               {isDarkMode && (
                                 <motion.span
                                   layoutId="settings-theme-active-pill"
-                                  className={`absolute inset-0 rounded-md ${
+                                  className={`absolute inset-0 rounded-[14px] ${
                                     isDarkMode
                                       ? "bg-[#3a3b40] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
                                       : "bg-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
@@ -850,7 +855,7 @@ export default function AppSidebar({ sessions }: Props) {
                         >
                           <div>
                             <p
-                              className={`text-[13px] ${
+                              className={`text-[14px] ${
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
@@ -871,7 +876,7 @@ export default function AppSidebar({ sessions }: Props) {
                         >
                           <div>
                             <p
-                              className={`text-[13px] ${
+                              className={`text-[14px] ${
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
@@ -892,7 +897,7 @@ export default function AppSidebar({ sessions }: Props) {
                         >
                           <div>
                             <p
-                              className={`text-[13px] ${
+                              className={`text-[14px] ${
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
@@ -909,7 +914,7 @@ export default function AppSidebar({ sessions }: Props) {
                         <div className="flex items-center justify-between gap-4 py-3">
                           <div>
                             <p
-                              className={`text-[13px] ${
+                              className={`text-[14px] ${
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
@@ -917,7 +922,7 @@ export default function AppSidebar({ sessions }: Props) {
                             </p>
                           </div>
                           <div
-                            className={`relative inline-flex rounded-lg border p-0.5 ${
+                            className={`relative inline-flex rounded-[14px] border p-0.5 ${
                               isDarkMode
                                 ? "border-[#44454a] bg-[#25262a]"
                                 : "border-slate-200 bg-slate-50"
@@ -932,7 +937,7 @@ export default function AppSidebar({ sessions }: Props) {
                                   onClick={() =>
                                     handleChatFontSizeChange(option.value)
                                   }
-                                  className={`relative cursor-pointer overflow-hidden rounded-md px-3 py-1 text-[11px] ${smoothUiClass} ${
+                                  className={`relative cursor-pointer overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
                                     isActive
                                       ? isDarkMode
                                         ? "text-slate-100"
@@ -945,7 +950,7 @@ export default function AppSidebar({ sessions }: Props) {
                                   {isActive && (
                                     <motion.span
                                       layoutId="chat-font-size-active-pill"
-                                      className={`absolute inset-0 rounded-md ${
+                                      className={`absolute inset-0 rounded-[14px] ${
                                         isDarkMode
                                           ? "bg-[#3a3b40] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
                                           : "bg-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
@@ -984,14 +989,14 @@ export default function AppSidebar({ sessions }: Props) {
                           }`}
                         >
                           <p
-                            className={`text-[13px] ${
+                            className={`text-[14px] ${
                               isDarkMode ? "text-slate-100" : "text-slate-800"
                             }`}
                           >
                             Tone
                           </p>
                           <p
-                            className={`mt-0.5 text-[11px] ${
+                            className={`mt-0.5 text-[12px] ${
                               isDarkMode ? "text-slate-400" : "text-slate-500"
                             }`}
                           >
@@ -1004,7 +1009,7 @@ export default function AppSidebar({ sessions }: Props) {
                               onClick={() =>
                                 setIsToneDropdownOpen((current) => !current)
                               }
-                              className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-left text-[11px] ${smoothUiClass} ${
+                              className={`flex w-full cursor-pointer items-center justify-between rounded-[14px] border px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
                                 isDarkMode
                                   ? "border-[#4a4b50] bg-[#25262a] text-slate-100 hover:border-[#5b5c62] hover:bg-[#2d2e33]"
                                   : "border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-300 hover:bg-slate-100"
@@ -1035,7 +1040,7 @@ export default function AppSidebar({ sessions }: Props) {
                                     duration: 0.16,
                                     ease: [0.22, 1, 0.36, 1],
                                   }}
-                                  className={`absolute left-0 right-0 z-20 mt-1.5 rounded-lg border p-1 shadow-[0_10px_30px_rgba(15,23,42,0.10)] ${
+                                  className={`absolute left-0 right-0 z-20 mt-1.5 rounded-[14px] border p-1 shadow-[0_10px_30px_rgba(15,23,42,0.10)] ${
                                     isDarkMode
                                       ? "border-[#4a4b50] bg-[#2c2d32]"
                                       : "border-slate-200 bg-white"
@@ -1048,7 +1053,7 @@ export default function AppSidebar({ sessions }: Props) {
                                       onClick={() =>
                                         handleSocraticToneChange(option.value)
                                       }
-                                      className={`w-full cursor-pointer rounded-md px-2.5 py-2 text-left ${smoothUiClass} ${
+                                      className={`w-full cursor-pointer rounded-[14px] px-2.5 py-2 text-left ${smoothUiClass} ${
                                         socraticTone === option.value
                                           ? isDarkMode
                                             ? "bg-[#3a3b40] text-slate-100"
@@ -1058,11 +1063,11 @@ export default function AppSidebar({ sessions }: Props) {
                                             : "text-slate-700 hover:bg-slate-50"
                                       }`}
                                     >
-                                      <p className="text-[10px] font-medium">
+                                      <p className="text-[12px] font-medium">
                                         {option.label}
                                       </p>
                                       <p
-                                        className={`mt-0.5 text-[9px] ${
+                                        className={`mt-0.5 text-[11px] ${
                                           isDarkMode
                                             ? "text-slate-400"
                                             : "text-slate-500"
@@ -1078,7 +1083,7 @@ export default function AppSidebar({ sessions }: Props) {
                           </div>
 
                           <p
-                            className={`mt-2 text-[11px] ${
+                            className={`mt-2 text-[12px] ${
                               isDarkMode ? "text-slate-400" : "text-slate-500"
                             }`}
                           >
@@ -1102,7 +1107,7 @@ export default function AppSidebar({ sessions }: Props) {
                   <button
                     type="button"
                     onClick={() => setIsResetDefaultsConfirmOpen(true)}
-                    className={`cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] ${smoothUiClass} ${
+                    className={`cursor-pointer rounded-[14px] border px-3 py-2 text-[13px] ${smoothUiClass} ${
                       isDarkMode
                         ? "border-[#4a4b50] text-slate-300 hover:bg-[#121212] hover:text-slate-100"
                         : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -1113,7 +1118,7 @@ export default function AppSidebar({ sessions }: Props) {
                   <button
                     type="button"
                     onClick={() => setIsSettingsOpen(false)}
-                    className={`cursor-pointer rounded-lg px-3 py-1.5 text-[10px] text-white ${smoothUiClass} ${
+                    className={`cursor-pointer rounded-[14px] px-3 py-2 text-[13px] text-white ${smoothUiClass} ${
                       isDarkMode
                         ? "bg-emerald-600 hover:bg-emerald-700"
                         : "bg-emerald-600 hover:bg-emerald-700"
@@ -1162,7 +1167,7 @@ export default function AppSidebar({ sessions }: Props) {
                           <button
                             type="button"
                             onClick={() => setIsResetDefaultsConfirmOpen(false)}
-                            className={`cursor-pointer rounded-lg border px-3 py-1.5 text-[11px] ${smoothUiClass} ${
+                            className={`cursor-pointer rounded-[14px] border px-3 py-2 text-[13px] ${smoothUiClass} ${
                               isDarkMode
                                 ? "border-[#4a4946] text-slate-300 hover:bg-[#333230] hover:text-slate-100"
                                 : "border-slate-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -1177,7 +1182,7 @@ export default function AppSidebar({ sessions }: Props) {
                               setIsResetDefaultsConfirmOpen(false);
                               showResetToast();
                             }}
-                            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-[11px] text-white hover:bg-rose-700 ${smoothUiClass}`}
+                            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-rose-600 px-3 py-2 text-[13px] text-white hover:bg-rose-700 ${smoothUiClass}`}
                           >
                             Reset
                           </button>

@@ -592,10 +592,15 @@ export default function MessageInput({
     <div
       className={cn(
         "mx-auto w-full",
-        variant === "hero" ? "max-w-125" : "max-w-155",
+        variant === "hero" ? "max-w-[44rem]" : "max-w-155",
       )}
     >
-      <div className="app-input-shell overflow-visible rounded-[12px] border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]">
+      <div
+        className={cn(
+          "app-input-shell overflow-visible border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]",
+          variant === "hero" ? "rounded-[14px]" : "rounded-[12px]",
+        )}
+      >
         {composerAttachments.length > 0 && (
           <div className="app-input-attachments flex flex-wrap gap-2 px-3.5 py-2.5">
             {composerAttachments.map((attachment) => (
@@ -673,7 +678,12 @@ export default function MessageInput({
           placeholder={placeholder}
           maxLength={3000}
           rows={1}
-          className={`${poppinsClassName} app-input-textarea block min-h-[60px] w-full resize-none px-4 pt-3.5 pb-2.5 text-[16px] leading-7 text-slate-900 outline-none placeholder:text-slate-400 md:min-h-11 md:px-3.5 md:pt-2.5 md:pb-1.5 md:text-[12px] md:leading-5`}
+          className={cn(
+            `${poppinsClassName} app-input-textarea block w-full resize-none text-slate-900 outline-none placeholder:text-slate-400`,
+            variant === "hero"
+              ? "min-h-[56px] px-4.5 pt-2.5 pb-1.5 text-[16px] leading-6 md:min-h-[56px] md:px-4.5 md:pt-2.5 md:pb-1.5 md:text-[16px] md:leading-6"
+              : "min-h-[56px] px-4 pt-3 pb-2 text-[16px] leading-6.5 md:min-h-10 md:px-3.5 md:pt-2 md:pb-1.5 md:text-[12px] md:leading-5",
+          )}
           onKeyDown={(event) => {
             if (
               event.key === "Enter" &&
@@ -686,9 +696,21 @@ export default function MessageInput({
           }}
         />
 
-        <div className="app-input-toolbar -mt-px flex flex-wrap items-center justify-between gap-2 px-3.5 py-2">
+        <div
+          className={cn(
+            "app-input-toolbar -mt-px flex flex-wrap items-center justify-between gap-2",
+            variant === "hero"
+              ? "px-3.5 py-1.5 md:px-3.5 md:py-1.5"
+              : "px-3.5 py-2",
+          )}
+        >
           <div
-            className={`${poppinsClassName} flex flex-wrap items-center gap-1.5 text-[14px] text-slate-600 md:gap-1 md:text-[10px]`}
+            className={cn(
+              `${poppinsClassName} flex flex-wrap items-center text-slate-600`,
+              variant === "hero"
+                ? "gap-1.5 text-[14px] md:gap-1.5 md:text-[14px]"
+                : "gap-1.5 text-[14px] md:gap-1 md:text-[10px]",
+            )}
           >
             {canShowActionMenu && (
               <>
@@ -706,17 +728,28 @@ export default function MessageInput({
                   <button
                     type="button"
                     onClick={() => setIsActionMenuOpen((current) => !current)}
-                    className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl hover:bg-slate-100 md:h-7.5 md:w-7.5"
+                    className={cn(
+                      "inline-flex cursor-pointer items-center justify-center hover:bg-slate-100",
+                      variant === "hero"
+                        ? "h-10 w-10 rounded-xl md:h-10 md:w-10"
+                        : "h-10 w-10 rounded-xl md:h-7.5 md:w-7.5",
+                    )}
                     aria-label="Open actions"
                     data-tooltip="Attach files and more..."
                     aria-expanded={isActionMenuOpen}
                   >
-                    <Plus size={21} className="md:hidden" />
-                    <Plus size={15} className="hidden md:block" />
+                    <Plus
+                      size={variant === "hero" ? 20 : 21}
+                      className={cn(variant === "hero" ? "" : "md:hidden")}
+                    />
+                    <Plus
+                      size={15}
+                      className={cn(variant === "hero" ? "hidden" : "hidden md:block")}
+                    />
                   </button>
 
                   {isActionMenuOpen && (
-                    <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-33 rounded-[10px] border border-slate-200 bg-white p-1 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
+                    <div className="app-card absolute bottom-full left-0 z-20 mb-2 min-w-37 rounded-[12px] border border-slate-200 bg-white p-1.5 shadow-[0_12px_30px_rgba(15,23,42,0.10)]">
                       {allowImageAttachments && (
                         <button
                           type="button"
@@ -724,11 +757,11 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                             fileInputRef.current?.click();
                           }}
-                          className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[14px] text-slate-700 transition hover:bg-slate-50 md:py-1.5 md:text-[10px]"
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-[12px] px-2.5 py-2 text-left text-[13px] text-slate-700 transition hover:bg-slate-50 md:py-2 md:text-[13px]"
                           data-tooltip="Attach photos"
                         >
                           <Paperclip size={16} className="md:hidden" />
-                          <Paperclip size={11} className="hidden md:block" />
+                          <Paperclip size={16} className="hidden md:block" />
                           Attach photos
                         </button>
                       )}
@@ -740,7 +773,7 @@ export default function MessageInput({
                             setIsActionMenuOpen(false);
                           }}
                           className={cn(
-                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-xl px-2 py-2 text-left text-[14px] transition hover:bg-slate-50 md:py-1.5 md:text-[10px]",
+                            "app-websearch-menu-btn flex w-full cursor-pointer items-center gap-2 rounded-[12px] px-2.5 py-2 text-left text-[13px] transition hover:bg-slate-50 md:py-2 md:text-[13px]",
                             webSearchEnabled
                               ? "bg-sky-50 text-sky-700"
                               : "text-slate-700",
@@ -752,7 +785,7 @@ export default function MessageInput({
                           }
                         >
                           <Globe size={16} className="md:hidden" />
-                          <Globe size={11} className="hidden md:block" />
+                          <Globe size={16} className="hidden md:block" />
                           Web search
                         </button>
                       )}
@@ -811,14 +844,22 @@ export default function MessageInput({
                 type="button"
                 onClick={handleVoiceToggle}
                 disabled={isStreaming}
-                className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-xl px-2.5 hover:bg-slate-100 disabled:cursor-not-allowed md:h-7.5 md:gap-1 md:px-2"
+                className={cn(
+                  "inline-flex cursor-pointer items-center hover:bg-slate-100 disabled:cursor-not-allowed",
+                  variant === "hero"
+                    ? "h-9 gap-1.5 rounded-xl px-2 md:h-9 md:gap-1.5 md:px-2"
+                    : "h-9 gap-1.5 rounded-xl px-2 md:h-7 md:gap-1 md:px-2",
+                )}
                 data-tooltip={
                   isListening ? "Stop listening" : "Start voice input"
                 }
               >
                 <Mic
-                  size={19}
-                  className={cn("md:h-4 md:w-4", isListening && "text-sky-600")}
+                  size={variant === "hero" ? 17 : 17}
+                  className={cn(
+                    variant === "hero" ? "md:h-[17px] md:w-[17px]" : "md:h-[15px] md:w-[15px]",
+                    isListening && "text-sky-600",
+                  )}
                 />{" "}
                 {isListening ? "Listening..." : "Voice"}
               </button>
@@ -854,7 +895,9 @@ export default function MessageInput({
                 (!isStreaming && !content.trim() && attachments.length === 0)
               }
               className={cn(
-                "app-send-button inline-flex h-10 w-10 items-center justify-center rounded-full bg-black text-white md:h-7.5 md:w-7.5",
+                variant === "hero"
+                  ? "app-send-button inline-flex h-9 w-9 items-center justify-center rounded-full bg-black text-white md:h-9 md:w-9"
+                  : "app-send-button inline-flex h-9 w-9 items-center justify-center rounded-full bg-black text-white md:h-7 md:w-7",
                 isUploadingAttachments ||
                   (!isStreaming && !content.trim() && attachments.length === 0)
                   ? "cursor-not-allowed opacity-45"
@@ -866,14 +909,24 @@ export default function MessageInput({
               data-tooltip={isStreaming ? "Stop generating" : "Send message"}
             >
               {isStreaming ? (
-                <Square size={14} fill="currentColor" className="md:h-3 md:w-3" />
+                <Square
+                  size={variant === "hero" ? 13 : 13}
+                  fill="currentColor"
+                  className={cn(
+                    variant === "hero" ? "md:h-[13px] md:w-[13px]" : "md:h-[11px] md:w-[11px]",
+                  )}
+                />
               ) : (
                 <>
-                  <ArrowUp size={18} strokeWidth={2.4} className="md:hidden" />
                   <ArrowUp
-                    size={13}
+                    size={variant === "hero" ? 16 : 16}
                     strokeWidth={2.4}
-                    className="hidden md:block"
+                    className={cn(variant === "hero" ? "" : "md:hidden")}
+                  />
+                  <ArrowUp
+                    size={12}
+                    strokeWidth={2.4}
+                    className={cn(variant === "hero" ? "hidden" : "hidden md:block")}
                   />
                 </>
               )}

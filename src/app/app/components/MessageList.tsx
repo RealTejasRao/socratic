@@ -501,26 +501,26 @@ export default function MessageList({
     lastAssistantIndex === -1 ? -1 : messages.length - 1 - lastAssistantIndex;
   const userTextClass =
     chatFontSize === "SMALL"
-      ? "text-[14px] md:text-[12px]"
+      ? "text-[13px] leading-6"
       : chatFontSize === "LARGE"
-        ? "text-[18px] md:text-[14px]"
-        : "text-[16px] md:text-[13px]";
+        ? "text-[17px] leading-7"
+        : "text-[15px] leading-6.5";
   const assistantTextClass =
     chatFontSize === "SMALL"
-      ? "text-[14px] leading-6.5 md:text-[12px] md:leading-6"
+      ? "text-[14px] leading-[1.8]"
       : chatFontSize === "LARGE"
-        ? "text-[18px] leading-8 md:text-[14px] md:leading-7"
-        : "text-[16px] leading-7 md:text-[13px] md:leading-6.75";
+        ? "text-[18px] leading-[1.78]"
+        : "text-[16px] leading-[1.78]";
   const editTextClass =
     chatFontSize === "SMALL"
-      ? "text-[14px] leading-6 md:text-[12px] md:leading-5.5"
+      ? "text-[13px] leading-6"
       : chatFontSize === "LARGE"
-        ? "text-[18px] leading-8 md:text-[14px] md:leading-6.5"
-        : "text-[16px] leading-7 md:text-[13px] md:leading-6";
+        ? "text-[17px] leading-7"
+        : "text-[15px] leading-6.5";
 
   return (
     <div className="flex-1">
-      <div className="mx-auto flex w-full max-w-170 flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
+      <div className="mx-auto flex w-full max-w-[700px] flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
         {topContent}
         {messages.map((message, index) => {
           const isLastUser = index === actualLastUserIndex;
@@ -578,10 +578,10 @@ export default function MessageList({
               ) : (
                 <div
                   className={cn(
-                    "max-w-140 whitespace-pre-wrap px-3 py-2",
+                    "whitespace-pre-wrap px-3 py-2",
                     isUser
-                      ? `${poppinsClassName} ${userTextClass} app-user-bubble rounded-[9px] tracking-wider border border-slate-300 bg-[#f4f4f4] text-slate-900`
-                      : `app-assistant-text ${assistantTextClass} bg-transparent tracking-[0.02em] text-slate-950 font-[Georgia,serif]`,
+                      ? `max-w-140 ${poppinsClassName} ${userTextClass} app-user-bubble rounded-[9px] tracking-wider border border-slate-300 bg-[#f4f4f4] text-slate-900`
+                      : `w-full max-w-[68ch] app-assistant-text ${assistantTextClass} bg-transparent tracking-[0.01em] text-slate-950 font-[Georgia,serif]`,
                   )}
                 >
                   {message.attachments && message.attachments.length > 0 && (
@@ -635,14 +635,14 @@ export default function MessageList({
                 >
                   <button
                     onClick={() => handleCopy(message.id, message.content)}
-                    className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                    className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
                     aria-label="Copy message"
                     data-tooltip="Copy message"
                   >
                     {copiedMessageId === message.id ? (
-                      <Check size={12} />
+                      <Check size={14} />
                     ) : (
-                      <Copy size={12} />
+                      <Copy size={14} />
                     )}
                   </button>
 
@@ -653,17 +653,17 @@ export default function MessageList({
                           onClick={() =>
                             speakMessage(message.id, message.content)
                           }
-                          className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                          className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
                           aria-label="Speak response"
                           data-tooltip="Speak response"
                         >
-                          <Volume2 size={12} />
+                          <Volume2 size={14} />
                         </button>
                       ) : (
                         <>
                           <button
                             onClick={togglePauseSpeech}
-                            className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                            className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
                             aria-label={
                               isSpeechPaused ? "Resume speech" : "Pause speech"
                             }
@@ -672,18 +672,18 @@ export default function MessageList({
                             }
                           >
                             {isSpeechPaused ? (
-                              <Play size={12} />
+                              <Play size={14} />
                             ) : (
-                              <Pause size={12} />
+                              <Pause size={14} />
                             )}
                           </button>
                           <button
                             onClick={stopSpeech}
-                            className="msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
+                            className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
                             aria-label="Stop speech"
                             data-tooltip="Stop speech"
                           >
-                            <Square size={11} />
+                            <Square size={13} />
                           </button>
                         </>
                       )}
@@ -697,7 +697,7 @@ export default function MessageList({
                         onClick={onRegenerate}
                         disabled={isStreaming}
                         className={cn(
-                          "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
+                          "msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center",
                           isStreaming
                             ? "cursor-not-allowed opacity-40"
                             : "text-slate-400 transition hover:text-slate-700",
@@ -705,7 +705,7 @@ export default function MessageList({
                         aria-label="Regenerate response"
                         data-tooltip="Regenerate response"
                       >
-                        <RotateCcw size={12} />
+                        <RotateCcw size={14} />
                       </button>
                     )}
 
@@ -715,7 +715,7 @@ export default function MessageList({
                         onClick={() => onEdit(message)}
                         disabled={isStreaming}
                         className={cn(
-                          "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
+                          "msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center",
                           isStreaming
                             ? "cursor-not-allowed opacity-40"
                             : "text-slate-400 transition hover:text-slate-700",
@@ -723,13 +723,13 @@ export default function MessageList({
                         aria-label="Edit message"
                         data-tooltip="Edit message"
                       >
-                        <PenLine size={12} />
+                        <PenLine size={14} />
                       </button>
                       <button
                         onClick={onRegenerate}
                         disabled={isStreaming}
                         className={cn(
-                          "msg-action-btn inline-flex h-7 w-7 cursor-pointer items-center justify-center",
+                          "msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center",
                           isStreaming
                             ? "cursor-not-allowed opacity-40"
                             : "text-slate-400 transition hover:text-slate-700",
@@ -737,7 +737,7 @@ export default function MessageList({
                         aria-label="Regenerate response"
                         data-tooltip="Regenerate response"
                       >
-                        <RotateCcw size={12} />
+                        <RotateCcw size={14} />
                       </button>
                     </>
                   )}

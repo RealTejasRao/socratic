@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Inter } from "next/font/google";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -48,6 +49,11 @@ type ActionDialog =
       sessionId: string;
       currentTitle: string;
     };
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 export default function AppTopBar({ sessions }: Props) {
   const pathname = usePathname();
@@ -483,7 +489,7 @@ export default function AppTopBar({ sessions }: Props) {
   function pendingLabel(label: string) {
     return (
       <>
-        <LoaderCircle size={11} className="animate-spin" />
+        <LoaderCircle size={12} className="animate-spin" />
         {label}
       </>
     );
@@ -559,17 +565,17 @@ export default function AppTopBar({ sessions }: Props) {
         )}
       </AnimatePresence>
 
-      <header className="app-topbar sticky top-0 z-20 flex h-12 shrink-0 items-center bg-white px-3 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:h-10 md:px-5">
+      <header className="app-topbar sticky top-0 z-20 flex h-12 shrink-0 items-center bg-white px-4 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:h-12 md:px-6">
         <div className="flex min-w-0 flex-1 items-center lg:w-47 lg:flex-none">
           <div className="flex items-center gap-2 lg:hidden">
             <button
               type="button"
               onClick={handleMobileSidebarToggle}
-              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-slate-800 transition hover:bg-slate-100/70 active:bg-slate-100"
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-slate-800 transition hover:bg-slate-100/70 active:bg-slate-100"
               aria-label="Open sidebar"
               data-tooltip="Open sidebar"
             >
-              <PanelLeftOpen size={20} />
+              <PanelLeftOpen size={22} />
             </button>
           </div>
 
@@ -579,10 +585,10 @@ export default function AppTopBar({ sessions }: Props) {
                 <button
                   type="button"
                   onClick={() => void handleShareMenuToggle()}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-2.5 py-1 text-[12px] text-slate-700 transition hover:bg-slate-50"
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-[9px] border border-slate-200 bg-white px-3 py-1.5 text-[14px] text-slate-700 transition hover:bg-slate-50"
                   data-tooltip="Share chat"
                 >
-                  <Send size={12} />
+                  <Send size={15} />
                   Share
                 </button>
 
@@ -696,7 +702,7 @@ export default function AppTopBar({ sessions }: Props) {
               }}
               disabled={!activeSession}
               className={cn(
-                "inline-flex max-w-85 tracking-wide items-center gap-1 rounded-[9px] px-2 py-1 text-[13px] text-slate-700",
+                "inline-flex max-w-85 tracking-wide items-center gap-1.5 rounded-[9px] px-2.5 py-1.5 text-[14px] text-slate-700",
                 activeSession
                   ? "cursor-pointer transition hover:bg-[#f4f4f4] hover:text-slate-900"
                   : "cursor-default",
@@ -704,17 +710,17 @@ export default function AppTopBar({ sessions }: Props) {
               data-tooltip={activeSession ? "Chat menu" : "No active chat"}
             >
               {activeSession && activeSession.mode !== "SOCRATIC" && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-0.5 text-[9px] uppercase tracking-[0.12em] text-slate-600">
+                <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-1.5 py-0.5 text-[11px] uppercase tracking-[0.09em] text-slate-600">
                   {activeSession.mode === "DEBATE" ? (
-                    <Swords size={9} />
+                    <Swords size={11} />
                   ) : (
-                    <ScrollText size={9} />
+                    <ScrollText size={11} />
                   )}
                   {activeSession.mode === "DEBATE" ? "Debate" : "Roleplay"}
                 </span>
               )}
-              <span className="truncate">{title}</span>
-              {activeSession && <ChevronDown size={12} className="shrink-0" />}
+              <span className={`${inter.className} truncate`}>{title}</span>
+              {activeSession && <ChevronDown size={15} className="shrink-0" />}
             </button>
 
             {menuOpen && activeSession && (
@@ -744,8 +750,8 @@ export default function AppTopBar({ sessions }: Props) {
 
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:w-60 lg:flex-none lg:gap-3">
           {activeDebate?.hasTimer && remainingSeconds !== null && (
-            <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-2.5 py-1 text-[12px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
-              <Clock3 size={12} className="text-slate-500" />
+            <div className="inline-flex items-center gap-1.5 rounded-[9px] border border-slate-300 bg-white px-3 py-1.5 text-[14px] text-slate-700 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+              <Clock3 size={15} className="text-slate-500" />
               <span
                 className="font-medium tabular-nums"
                 suppressHydrationWarning
@@ -765,16 +771,16 @@ export default function AppTopBar({ sessions }: Props) {
                 onClick={handleEndDebate}
                 disabled={isEndingDebate}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-[9px] border px-2.5 py-1 text-[12px] shadow-[0_1px_0_rgba(0,0,0,0.03)] transition disabled:cursor-not-allowed disabled:opacity-70",
+                  "inline-flex items-center gap-1.5 rounded-[9px] border px-3 py-1.5 text-[14px] shadow-[0_1px_0_rgba(0,0,0,0.03)] transition disabled:cursor-not-allowed disabled:opacity-70",
                   isDarkMode
                     ? "cursor-pointer border-[#6a3a3a] bg-[#382424] text-[#f2c2c2] hover:border-[#805050] hover:bg-[#452a2a]"
                     : "cursor-pointer border-[#f2c7c7] bg-[#fff1f1] text-[#b54747] hover:border-[#eab4b4] hover:bg-[#ffe8e8]",
                 )}
               >
                 {isEndingDebate ? (
-                  <LoaderCircle size={12} className="animate-spin" />
+                  <LoaderCircle size={15} className="animate-spin" />
                 ) : (
-                  <X size={12} />
+                  <X size={15} />
                 )}
                 End Debate
               </button>
@@ -783,7 +789,7 @@ export default function AppTopBar({ sessions }: Props) {
           <button
             type="button"
             onClick={() => handleThemeChange(!isDarkMode)}
-            className="hidden h-7 w-7 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:inline-flex"
+            className="hidden h-9 w-9 cursor-pointer items-center justify-center rounded-[9px] border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 lg:inline-flex"
             aria-label={
               isDarkMode ? "Switch to light mode" : "Switch to dark mode"
             }
@@ -800,24 +806,24 @@ export default function AppTopBar({ sessions }: Props) {
                 transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 className="grid place-items-center"
               >
-                {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
               </motion.span>
             </AnimatePresence>
           </button>
 
           <div className="hidden lg:block">
-            <AppUserButton size="sm" />
+            <AppUserButton size="md" />
           </div>
 
           <div className="lg:hidden">
-            <AppUserButton size="sm" />
+            <AppUserButton size="md" />
           </div>
         </div>
       </header>
 
       {actionDialog && (
         <div
-          className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/12 p-4 backdrop-blur-[2px]"
+          className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/16 p-4 backdrop-blur-[2px]"
           onClick={() => {
             if (!isDialogBusy) {
               closeDialog();
@@ -825,17 +831,17 @@ export default function AppTopBar({ sessions }: Props) {
           }}
         >
           <div
-            className="app-card app-session-dialog w-full max-w-[320px] rounded-[9px] border border-[#C8C8C2] bg-white px-4 py-3.5"
+            className="app-card app-session-dialog w-full max-w-[380px] rounded-2xl border border-[#C8C8C2] bg-white px-5 py-4.5"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <p className="text-[12px] font-medium text-slate-900">
+                <p className="text-[20px] leading-none tracking-[-0.04em] text-slate-900 font-[Georgia,serif]">
                   {actionDialog.mode === "rename"
                     ? "Rename chat"
                     : "Delete chat"}
                 </p>
-                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                <p className="mt-1.5 text-[12px] leading-5 text-slate-500">
                   {actionDialog.mode === "rename"
                     ? "Give this chat a cleaner title."
                     : "This removes the chat permanently."}
@@ -866,14 +872,14 @@ export default function AppTopBar({ sessions }: Props) {
                   disabled={isDialogBusy}
                   maxLength={80}
                   autoFocus
-                  className="app-session-dialog-input h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-[11px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="app-session-dialog-input h-10 w-full rounded-[14px] border border-slate-300 bg-white px-3 text-[13px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
                 />
                 <div className="mt-3 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={closeDialog}
                     disabled={isDialogBusy}
-                    className="app-session-dialog-cancel cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="app-session-dialog-cancel cursor-pointer rounded-[14px] border border-slate-300 px-3 py-2 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                     data-tooltip="Cancel"
                   >
                     Cancel
@@ -882,14 +888,14 @@ export default function AppTopBar({ sessions }: Props) {
                     type="button"
                     onClick={() => void handleRenameSubmit()}
                     disabled={isDialogBusy || !renameValue.trim()}
-                    className="app-session-dialog-save inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="app-session-dialog-save inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-slate-900 px-3 py-2 text-[13px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                     data-tooltip="Save title"
                   >
                     {pendingAction === "rename" ? (
                       pendingLabel("Saving...")
                     ) : (
                       <>
-                        <Check size={11} />
+                        <Check size={12} />
                         Save
                       </>
                     )}
@@ -898,7 +904,7 @@ export default function AppTopBar({ sessions }: Props) {
               </>
             ) : (
               <>
-                <div className="app-session-dialog-danger-box rounded-xl bg-slate-50 px-3 py-2 text-[10px] leading-4 text-slate-600">
+                <div className="app-session-dialog-danger-box rounded-[14px] bg-slate-50 px-3 py-2 text-[12px] leading-5 text-slate-600">
                   {actionDialog.currentTitle}
                 </div>
                 <div className="mt-3 flex justify-end gap-2">
@@ -906,7 +912,7 @@ export default function AppTopBar({ sessions }: Props) {
                     type="button"
                     onClick={closeDialog}
                     disabled={isDialogBusy}
-                    className="app-session-dialog-cancel cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="app-session-dialog-cancel cursor-pointer rounded-[14px] border border-slate-300 px-3 py-2 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                     data-tooltip="Cancel"
                   >
                     Cancel
@@ -915,14 +921,14 @@ export default function AppTopBar({ sessions }: Props) {
                     type="button"
                     onClick={() => void handleDeleteSubmit()}
                     disabled={isDialogBusy}
-                    className="app-session-dialog-delete inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 py-1.5 text-[10px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="app-session-dialog-delete inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-rose-600 px-3 py-2 text-[13px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
                     data-tooltip="Delete chat"
                   >
                     {pendingAction === "delete" ? (
                       pendingLabel("Deleting...")
                     ) : (
                       <>
-                        <Trash2 size={11} />
+                        <Trash2 size={12} />
                         Delete
                       </>
                     )}

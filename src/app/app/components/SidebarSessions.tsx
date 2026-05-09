@@ -276,7 +276,7 @@ export default function SidebarSessions({
   function renderPendingLabel(label: string) {
     return (
       <>
-        <LoaderCircle size={11} className="animate-spin" />
+        <LoaderCircle size={12} className="animate-spin" />
         {label}
       </>
     );
@@ -308,7 +308,7 @@ export default function SidebarSessions({
   }
 
   return (
-    <div className="space-y-1 lg:space-y-0.5">
+    <div className="space-y-0 lg:space-y-0">
       {successToast && (
         <div className="pointer-events-none fixed right-4 top-4 z-70">
           <div
@@ -344,16 +344,16 @@ export default function SidebarSessions({
           <div
             key={session.id}
             className={cn(
-              "app-session-row group flex items-center justify-between rounded-xl px-2.5 py-2 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-2 lg:py-1.25",
+              "app-session-row group flex items-center justify-between rounded-[14px] px-1.5 py-1 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-1.5 lg:py-1",
               isActive && "app-session-row-active",
               isOpening && "app-session-row-loading",
               isActive
                 ? session.mode === "DEBATE"
-                  ? "bg-slate-100 text-slate-900 lg:bg-white"
-                  : "bg-slate-100 text-slate-900 lg:bg-white"
+                  ? "bg-slate-100 text-slate-900 lg:bg-slate-100"
+                  : "bg-slate-100 text-slate-900 lg:bg-slate-100"
                 : isOpening
                   ? "text-slate-600"
-                  : "text-slate-600 lg:hover:translate-x-[1px] lg:hover:bg-black lg:hover:text-white",
+                  : "text-slate-600 lg:hover:bg-slate-100 lg:hover:text-slate-900",
             )}
             onMouseEnter={(event) => {
               if (!showHoverPreviews) return;
@@ -385,38 +385,38 @@ export default function SidebarSessions({
                 className="block min-w-0 flex-1"
                 onClick={(event) => handleSessionOpen(event, session.id)}
               >
-                <div className="flex min-w-0 items-center gap-2.5 lg:gap-2">
+                <div className="flex min-w-0 items-center gap-2 lg:gap-2">
                   {session.mode !== "SOCRATIC" && (
                     showModeBadges && (
                       <span
                         className={cn(
-                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex",
+                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:h-[24px] lg:w-[24px]",
                           isActive
                             ? "border-slate-300 bg-slate-50"
                             : "border-slate-200 bg-white",
                         )}
                       >
                         {session.mode === "DEBATE" ? (
-                          <Swords size={11} />
+                          <Swords size={13} />
                         ) : (
-                          <ScrollText size={11} />
+                          <ScrollText size={13} />
                         )}
                       </span>
                     )
                   )}
-                  <p className="truncate text-[15px] leading-5.5 lg:text-[11px] lg:leading-normal">
+                  <p className="truncate text-[14px] leading-5 lg:text-[14px] lg:leading-5">
                     {session.title || "Untitled Session"}
                   </p>
                   {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (
-                    <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex">
+                    <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:text-[10px]">
                       {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
                     </span>
                   )}
                 </div>
               </Link>
               {isOpening ? (
-                <div className="app-session-opening-chip ml-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 px-2 py-1 text-[10px] text-slate-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
-                  <LoaderCircle size={10} className="animate-spin" />
+                <div className="app-session-opening-chip ml-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 px-2 py-1 text-[11px] text-slate-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
+                  <LoaderCircle size={11} className="animate-spin" />
                   <span className="font-medium">Opening</span>
                 </div>
               ) : (
@@ -431,10 +431,10 @@ export default function SidebarSessions({
                         current === session.id ? null : session.id,
                       )
                     }
-                    className="cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] hover:bg-slate-100 hover:text-slate-600 lg:p-1 lg:opacity-0 lg:group-hover:opacity-100"
+                    className="cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] hover:bg-slate-100 hover:text-slate-600 lg:p-2 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="Open chat actions"
                   >
-                    <MoreHorizontal size={16} className="lg:h-[13px] lg:w-[13px]" />
+                    <MoreHorizontal size={16} className="lg:h-[17px] lg:w-[17px]" />
                   </button>
 
                   {openMenuId === session.id && (
@@ -442,9 +442,9 @@ export default function SidebarSessions({
                       <button
                         type="button"
                         onClick={() => startRename(session)}
-                        className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
+                        className="flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2 py-1.5 text-left text-[14px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
                       >
-                        <Pencil size={13} />
+                        <Pencil size={15} />
                         Rename
                       </button>
                       <button
@@ -458,9 +458,9 @@ export default function SidebarSessions({
                             currentTitle: session.title || "Untitled Session",
                           });
                         }}
-                        className="flex w-full cursor-pointer items-center gap-2 rounded-[9px] px-2.5 py-2 text-left text-[11px] text-[#EF4444] transition hover:bg-rose-50"
+                        className="flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2 py-1.5 text-left text-[14px] text-[#EF4444] transition hover:bg-rose-50"
                       >
-                        <Trash2 size={13} />
+                        <Trash2 size={15} />
                         Delete
                       </button>
                     </div>
@@ -507,17 +507,17 @@ export default function SidebarSessions({
           }}
         >
           <div
-            className="app-card app-session-dialog w-full max-w-[320px] rounded-[9px] border border-[#C8C8C2] bg-white px-4 py-3.5"
+            className="app-card app-session-dialog w-full max-w-[380px] rounded-2xl border border-[#C8C8C2] bg-white px-5 py-4.5"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <p className="text-[12px] font-medium text-slate-900">
+                <p className="text-[20px] leading-none tracking-[-0.04em] text-slate-900 font-[Georgia,serif]">
                   {actionDialog.mode === "rename"
                     ? "Rename chat"
                     : "Delete chat"}
                 </p>
-                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                <p className="mt-1.5 text-[12px] leading-5 text-slate-500">
                   {actionDialog.mode === "rename"
                     ? "Give this chat a cleaner title."
                     : "This removes the chat permanently."}
@@ -548,14 +548,14 @@ export default function SidebarSessions({
                   disabled={isDialogBusy}
                   maxLength={80}
                   autoFocus
-                  className="app-session-dialog-input h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-[11px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="app-session-dialog-input h-10 w-full rounded-[14px] border border-slate-300 bg-white px-3 text-[13px] text-slate-800 outline-none focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
                 />
                 <div className="mt-3 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={closeActionDialog}
                     disabled={isDialogBusy}
-                    className="app-session-dialog-cancel cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="app-session-dialog-cancel cursor-pointer rounded-[14px] border border-slate-300 px-3 py-2 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Cancel
                   </button>
@@ -565,13 +565,13 @@ export default function SidebarSessions({
                       void handleRenameSubmit(actionDialog.sessionId)
                     }
                     disabled={isDialogBusy || !renameValue.trim()}
-                    className="app-session-dialog-save inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="app-session-dialog-save inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-slate-900 px-3 py-2 text-[13px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {pendingAction === "rename" ? (
                       renderPendingLabel("Saving...")
                     ) : (
                       <>
-                        <Check size={11} />
+                        <Check size={12} />
                         Save
                       </>
                     )}
@@ -580,7 +580,7 @@ export default function SidebarSessions({
               </>
             ) : (
               <>
-                <div className="app-session-dialog-danger-box rounded-xl bg-slate-50 px-3 py-2 text-[10px] leading-4 text-slate-600">
+                <div className="app-session-dialog-danger-box rounded-[14px] bg-slate-50 px-3 py-2 text-[12px] leading-5 text-slate-600">
                   {actionDialog.currentTitle}
                 </div>
                 <div className="mt-3 flex justify-end gap-2">
@@ -588,7 +588,7 @@ export default function SidebarSessions({
                     type="button"
                     onClick={closeActionDialog}
                     disabled={isDialogBusy}
-                    className="app-session-dialog-cancel cursor-pointer rounded-full border border-slate-300 px-3 py-1.5 text-[10px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="app-session-dialog-cancel cursor-pointer rounded-[14px] border border-slate-300 px-3 py-2 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Cancel
                   </button>
@@ -596,13 +596,13 @@ export default function SidebarSessions({
                     type="button"
                     onClick={() => void handleDelete(actionDialog.sessionId)}
                     disabled={isDialogBusy}
-                    className="app-session-dialog-delete inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 py-1.5 text-[10px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="app-session-dialog-delete inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-rose-600 px-3 py-2 text-[13px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {pendingAction === "delete" ? (
                       renderPendingLabel("Deleting...")
                     ) : (
                       <>
-                        <Trash2 size={11} />
+                        <Trash2 size={12} />
                         Delete
                       </>
                     )}

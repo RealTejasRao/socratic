@@ -1004,17 +1004,17 @@ export default function ChatContainer({
                 type="button"
                 onClick={() => setIsModeMenuOpen((prev) => !prev)}
                 className={cn(
-                  "app-mode-switch-trigger group inline-flex cursor-pointer items-center gap-2 rounded-full border px-2.5 py-1.5 text-[11px] transition",
+                  "app-mode-switch-trigger group inline-flex cursor-pointer items-center gap-2.5 rounded-full border px-3 py-2 text-[14px] transition",
                   isModeMenuOpen && "app-mode-switch-trigger-open",
                 )}
               >
                 <span className="app-mode-switch-icon">
                   {modeSelection === "SOCRATIC" ? (
-                    <GraduationCap size={12} />
+                    <GraduationCap size={14} />
                   ) : null}
-                  {modeSelection === "DEBATE" ? <Swords size={12} /> : null}
+                  {modeSelection === "DEBATE" ? <Swords size={14} /> : null}
                   {modeSelection === "ROLEPLAY" ? (
-                    <ScrollText size={12} />
+                    <ScrollText size={14} />
                   ) : null}
                 </span>
                 <span className="app-mode-switch-label">
@@ -1025,7 +1025,7 @@ export default function ChatContainer({
                       : "Roleplay"}
                 </span>
                 <ChevronDown
-                  size={12}
+                  size={14}
                   className={cn(
                     "app-mode-switch-chevron transition-transform duration-200",
                     isModeMenuOpen ? "rotate-180" : "rotate-0",
@@ -1040,7 +1040,7 @@ export default function ChatContainer({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.98 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                    className="app-mode-switch-menu absolute left-0 top-full mt-2 min-w-42 origin-top rounded-2xl border p-1.5"
+                    className="app-mode-switch-menu absolute left-0 top-full mt-2 flex min-w-42 origin-top flex-col gap-1 rounded-2xl border p-1.5"
                   >
                     <button
                       type="button"
@@ -1049,14 +1049,14 @@ export default function ChatContainer({
                         setIsModeMenuOpen(false);
                       }}
                       data-active={modeSelection === "SOCRATIC"}
-                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-[11px] transition"
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <GraduationCap size={13} />
+                    className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
+                  >
+                    <span className="inline-flex items-center gap-2">
+                        <GraduationCap size={15} />
                         Socratic
                       </span>
                       {modeSelection === "SOCRATIC" ? (
-                        <Check size={12} />
+                        <Check size={14} />
                       ) : null}
                     </button>
 
@@ -1067,13 +1067,13 @@ export default function ChatContainer({
                         setIsModeMenuOpen(false);
                       }}
                       data-active={modeSelection === "DEBATE"}
-                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-[11px] transition"
+                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Swords size={13} />
+                        <Swords size={15} />
                         Debate
                       </span>
-                      {modeSelection === "DEBATE" ? <Check size={12} /> : null}
+                      {modeSelection === "DEBATE" ? <Check size={14} /> : null}
                     </button>
 
                     <button
@@ -1083,14 +1083,14 @@ export default function ChatContainer({
                         setIsModeMenuOpen(false);
                       }}
                       data-active={modeSelection === "ROLEPLAY"}
-                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-[11px] transition"
+                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <ScrollText size={13} />
+                        <ScrollText size={15} />
                         Roleplay
                       </span>
                       {modeSelection === "ROLEPLAY" ? (
-                        <Check size={12} />
+                        <Check size={14} />
                       ) : null}
                     </button>
                   </motion.div>
@@ -1110,7 +1110,7 @@ export default function ChatContainer({
               >
                 <div className="mx-auto max-w-190 text-center">
                   <h2
-                    className="app-greeting-heading mx-auto max-w-110 text-center text-[32px] font-normal leading-[1.1] tracking-[-0.035em] text-slate-900 font-[Georgia,serif] md:max-w-100 md:text-[30px] md:leading-[1.12] md:tracking-[-0.03em]"
+                    className="app-greeting-heading mx-auto max-w-115 text-center text-[34px] font-normal leading-[1.1] tracking-[-0.035em] text-slate-900 font-[Georgia,serif] md:max-w-110 md:text-[33px] md:leading-[1.1] md:tracking-[-0.032em]"
                     style={{ visibility: greetingLine ? "visible" : "hidden" }}
                   >
                     {greetingLine ? (
@@ -1138,9 +1138,9 @@ export default function ChatContainer({
                   />
                 </div>
 
-                <div className="mt-4 flex justify-center">
-                  <div className="w-full max-w-110 px-3 md:w-max md:max-w-none md:px-0">
-                    <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-2 md:whitespace-nowrap">
+                <div className="mt-5 flex justify-center">
+                  <div className="w-full max-w-120 px-3 md:w-max md:max-w-none md:px-0">
+                    <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-2.5 md:whitespace-nowrap">
                       <button
                         key={starterChips[0] ?? "starter-suggestion"}
                         type="button"
@@ -1154,7 +1154,7 @@ export default function ChatContainer({
                           });
                         }}
                         disabled={isStreaming || !starterChips[0]}
-                        className={`${poppinsClassName} app-suggestion-pill w-full cursor-pointer whitespace-normal rounded-[12px] border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] leading-5 text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 md:hidden`}
+                        className={`${poppinsClassName} app-suggestion-pill w-full cursor-pointer whitespace-normal rounded-[12px] border border-slate-200 bg-slate-50 px-3.5 py-2 text-[13px] leading-5.5 text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 md:hidden`}
                       >
                         {starterChips[0] ?? ""}
                       </button>
@@ -1171,7 +1171,7 @@ export default function ChatContainer({
                             })
                           }
                           disabled={isStreaming}
-                          className={`${poppinsClassName} app-suggestion-pill hidden cursor-pointer rounded-[10px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 md:inline-flex md:w-auto`}
+                          className={`${poppinsClassName} app-suggestion-pill hidden cursor-pointer rounded-[12px] border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-[13px] text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 md:inline-flex md:w-auto`}
                         >
                           {chip}
                         </button>
@@ -1281,6 +1281,7 @@ export default function ChatContainer({
             onStop={handleStopStreaming}
             isStreaming={isStreaming}
             initialValue={undefined}
+            variant="hero"
             placeholder={inputPlaceholder}
             showWebSearch={!isDebateSession}
             allowImageAttachments={!isDebateSession}

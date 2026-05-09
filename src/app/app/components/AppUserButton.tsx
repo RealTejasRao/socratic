@@ -44,13 +44,13 @@ export default function AppUserButton({ size = "md" }: Props) {
             : "border border-slate-200 bg-white",
         )
       : cn(
-          "!h-[34px] !w-[34px] shadow-[0_6px_18px_rgba(15,23,42,0.06)]",
+          "!h-[36px] !w-[36px] shadow-[0_6px_18px_rgba(15,23,42,0.06)]",
           isDarkMode
             ? "border border-slate-700 bg-slate-900"
             : "border border-slate-200 bg-white",
         );
   const avatarClassName =
-    size === "sm" ? "!h-[28px] !w-[28px]" : "!h-[34px] !w-[34px]";
+    size === "sm" ? "!h-[28px] !w-[28px]" : "!h-[36px] !w-[36px]";
 
   if (!isMounted) {
     return (
@@ -58,7 +58,7 @@ export default function AppUserButton({ size = "md" }: Props) {
         className={
           size === "sm"
             ? "h-7 w-7 rounded-full border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
-            : "h-8.5 w-8.5 rounded-full border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
+            : "h-9 w-9 rounded-full border border-slate-200 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
         }
       />
     );
