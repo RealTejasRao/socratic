@@ -236,7 +236,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
       id="use-cases"
       className="relative scroll-mt-15 bg-transparent px-5 py-6 sm:px-7 sm:py-7 lg:py-8"
     >
-      <div className="mx-auto w-full max-w-[138rem]">
+      <div className="mx-auto w-full max-w-552">
         <motion.div
           key={`use-cases-heading-${restartLoadSignal}`}
           className="text-center"
@@ -282,14 +282,14 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
           <div className="flex items-stretch justify-center lg:px-2 xl:px-4">
             <motion.div
               key={`use-cases-card-${restartLoadSignal}`}
-              className="relative z-20 min-w-0 w-full max-w-[72rem] overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(69vw,72rem)]"
+              className="relative z-20 min-w-0 w-full max-w-6xl overflow-hidden rounded-2xl border border-black/25 bg-[#fefefc] outline-1 -outline-offset-1 outline-black/12 lg:w-[min(69vw,72rem)]"
               style={{ perspective: 1200 }}
               initial={useCasesCardInitial}
               animate={useCasesSceneInView ? useCasesCardInView : false}
               transition={{ duration: 1.12, delay: 0.18, ease: heroSlideEase }}
             >
               <motion.div
-                className="pointer-events-none absolute inset-y-0 left-0 z-30 w-28 -translate-x-full bg-gradient-to-r from-transparent via-white/55 to-transparent blur-md"
+                className="pointer-events-none absolute inset-y-0 left-0 z-30 w-28 -translate-x-full bg-linear-to-r from-transparent via-white/55 to-transparent blur-md"
                 initial={{ x: "-130%", opacity: 0 }}
                 animate={
                   useCasesSceneInView
@@ -298,7 +298,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                 }
                 transition={{ duration: 1.25, ease: "easeOut", delay: 0.56 }}
               />
-              <div className="grid grid-cols-1 lg:min-h-[26rem] lg:grid-cols-[0.95fr_1.85fr]">
+              <div className="grid grid-cols-1 lg:min-h-104 lg:grid-cols-[0.95fr_1.85fr]">
                 <motion.aside
                   className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10"
                   initial={leftRailInitial}
@@ -382,11 +382,11 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                       transition={{ duration: 0.38, ease: heroSlideEase, delay: 0.04 }}
                     >
                       <h3
-                        className={`${interClassName} text-[1.36rem] leading-[1.24] font-medium tracking-[-0.02em] text-black md:text-[clamp(0.9rem,1.16vw,1.08rem)] md:leading-normal`}
+                        className={`${interClassName} text-[1.36rem] leading-[1.32] font-medium tracking-[-0.02em] text-black md:text-[clamp(0.9rem,1.16vw,1.08rem)] md:leading-normal`}
                       >
                         {activeItem.rightTitle}
                       </h3>
-                      <p className="mt-2.5 max-w-210 text-[0.98rem] leading-[1.66] text-black/62 md:mt-2 md:text-[clamp(0.7rem,0.8vw,0.78rem)] md:leading-[1.18rem] md:text-black/58">
+                      <p className="mt-3.25 max-w-210 text-[0.92rem] leading-[1.66] text-black/62 md:mt-2 md:text-[clamp(0.7rem,0.8vw,0.78rem)] md:leading-[1.18rem] md:text-black/58">
                         {activeItem.rightDescription}
                       </p>
                     </motion.div>
@@ -397,9 +397,9 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.46, ease: heroSlideEase, delay: 0.08 }}
                     >
-                      <div className="relative flex h-[14rem] w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] md:h-[12rem] lg:h-full lg:min-h-[14.5rem]">
+                      <div className="relative flex h-56 w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] md:h-48 lg:h-full lg:min-h-58">
                         <motion.div
-                          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-gradient-to-r from-transparent via-white/52 to-transparent blur-sm"
+                          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-linear-to-r from-transparent via-white/52 to-transparent blur-sm"
                           initial={{ x: "-120%", opacity: 0 }}
                           animate={{ x: ["-120%", "260%"], opacity: [0, 0.66, 0] }}
                           transition={{
