@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type Particle = {
   angle: number;
@@ -21,8 +22,36 @@ const PARTICLE_COUNT = 6;
 export default function ClickPulse() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pulsesRef = useRef<Pulse[]>([]);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const pathname = usePathname();
+  const isHomepageRoute = pathname === "/homepage";
+  const isEnabled = isDesktop && isHomepageRoute;
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const onChange = (event: MediaQueryListEvent) => {
+      setIsDesktop(event.matches);
+    };
+
+    setIsDesktop(mediaQuery.matches);
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", onChange);
+    } else {
+      mediaQuery.addListener(onChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", onChange);
+      } else {
+        mediaQuery.removeListener(onChange);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isEnabled) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -42,9 +71,11 @@ export default function ClickPulse() {
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
-  }, []);
+  }, [isEnabled]);
 
   useEffect(() => {
+    if (!isEnabled) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -99,9 +130,11 @@ export default function ClickPulse() {
 
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [isEnabled]);
 
   useEffect(() => {
+    if (!isEnabled) return;
+
     const onPointerDown = (event: PointerEvent) => {
       // Left click/touch/pen only.
       if (event.button !== 0 && event.pointerType === "mouse") return;
@@ -123,7 +156,9 @@ export default function ClickPulse() {
 
     window.addEventListener("pointerdown", onPointerDown);
     return () => window.removeEventListener("pointerdown", onPointerDown);
-  }, []);
+  }, [isEnabled]);
+
+  if (!isEnabled) return null;
 
   return (
     <canvas
