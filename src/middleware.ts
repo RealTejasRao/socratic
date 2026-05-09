@@ -30,6 +30,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/api/early-access")) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/_next/")) {
     return NextResponse.next();
   }

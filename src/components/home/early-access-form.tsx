@@ -85,7 +85,11 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
         body: JSON.stringify({ email: normalizedEmail }),
       });
 
-      const data = (await response.json()) as { message?: string };
+      let data: { message?: string } = {};
+      const contentType = response.headers.get("content-type") ?? "";
+      if (contentType.includes("application/json")) {
+        data = (await response.json()) as { message?: string };
+      }
 
       if (response.status === 409) {
         setStatus({
@@ -113,7 +117,7 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
     } catch {
       setStatus({
         tone: "error",
-        message: "Network error. Please try again.",
+        message: "Unable to submit right now. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
