@@ -366,7 +366,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           ref={sceneRef}
           className="relative mt-7 min-h-[clamp(16rem,35vw,30rem)] w-full sm:mt-9"
         >
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
+          <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center sm:flex">
             <motion.div
               key={`contact-left-arm-${restartSignal}`}
               className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(13rem,42vw,48rem)]"
@@ -391,7 +391,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
             </motion.div>
           </div>
 
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
+          <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center sm:flex">
             <motion.div
               key={`contact-right-arm-${restartSignal}`}
               className="relative -translate-y-[20%] aspect-[1.9/1] w-[clamp(13rem,42vw,48rem)]"

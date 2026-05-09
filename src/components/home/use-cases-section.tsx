@@ -126,6 +126,27 @@ const rightPanelInView = {
   x: 0,
   y: 0,
 };
+const mobileLeftArmInitial = {
+  opacity: 0,
+  x: -120,
+  y: 42,
+  rotate: -9,
+  scale: 0.9,
+};
+const mobileRightArmInitial = {
+  opacity: 0,
+  x: 120,
+  y: 42,
+  rotate: 9,
+  scale: 0.9,
+};
+const mobileArmInView = {
+  opacity: 1,
+  x: 0,
+  y: 0,
+  rotate: 0,
+  scale: 1,
+};
 
 export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
@@ -262,7 +283,65 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                 {USE_CASES_HEADING_TEXT}
               </span>
               <span className="col-start-1 row-start-1 whitespace-pre-line md:hidden">
-                <span className="block">{typedMobileLineOne}</span>
+                <span className="relative mx-auto block w-fit px-10 sm:px-0">
+                  <motion.span
+                    key={`use-cases-left-arm-${restartLoadSignal}`}
+                    className="pointer-events-none absolute left-[calc(50%-50vw)] top-1/2 block -translate-y-[46%] sm:hidden"
+                    initial={mobileLeftArmInitial}
+                    animate={headingInView ? mobileArmInView : false}
+                    transition={{
+                      duration: 1.2,
+                      ease: heroSlideEase,
+                      delay: 0.12,
+                    }}
+                  >
+                    <span className="relative block aspect-[1.9/1] w-[clamp(9rem,42vw,14rem)]">
+                      <Image
+                        src={resolveOptimizedCloudinaryPublicAsset(
+                          "/contact/left_arm.webp",
+                          {
+                            width: 640,
+                            crop: "limit",
+                            quality: "auto:good",
+                          },
+                        )}
+                        alt="Left reaching hand artwork"
+                        fill
+                        className="object-contain object-left"
+                        sizes="(max-width: 640px) 28vw, 0px"
+                      />
+                    </span>
+                  </motion.span>
+                  {typedMobileLineOne}
+                  <motion.span
+                    key={`use-cases-right-arm-${restartLoadSignal}`}
+                    className="pointer-events-none absolute right-[calc(50%-50vw)] top-1/2 block -translate-y-[46%] sm:hidden"
+                    initial={mobileRightArmInitial}
+                    animate={headingInView ? mobileArmInView : false}
+                    transition={{
+                      duration: 1.2,
+                      ease: heroSlideEase,
+                      delay: 0.16,
+                    }}
+                  >
+                    <span className="relative block aspect-[1.9/1] w-[clamp(9rem,42vw,14rem)]">
+                      <Image
+                        src={resolveOptimizedCloudinaryPublicAsset(
+                          "/contact/right_arm.webp",
+                          {
+                            width: 640,
+                            crop: "limit",
+                            quality: "auto:good",
+                          },
+                        )}
+                        alt="Right reaching hand artwork"
+                        fill
+                        className="object-contain object-right"
+                        sizes="(max-width: 640px) 28vw, 0px"
+                      />
+                    </span>
+                  </motion.span>
+                </span>
                 <span className="block">
                   <span className="text-[#a01717]">{typedMobileLineTwo}</span>
                   <span className="hero-caret" aria-hidden="true" />
@@ -303,7 +382,11 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                   className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10"
                   initial={leftRailInitial}
                   animate={useCasesSceneInView ? leftRailInView : false}
-                  transition={{ duration: 0.92, delay: 0.28, ease: heroSlideEase }}
+                  transition={{
+                    duration: 0.92,
+                    delay: 0.28,
+                    ease: heroSlideEase,
+                  }}
                 >
                   {useCaseItems.map((item, index) => {
                     const isActive = item.id === activeItem.id;
@@ -337,9 +420,9 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                         }}
                       >
                         <span
-                        className={`absolute inset-y-0 left-0 w-1 bg-[#a01717] ${
-                          isActive ? "opacity-100" : "opacity-0"
-                        }`}
+                          className={`absolute inset-y-0 left-0 w-1 bg-[#a01717] ${
+                            isActive ? "opacity-100" : "opacity-0"
+                          }`}
                           aria-hidden="true"
                         />
                         <div className="flex items-start justify-between gap-3">
@@ -379,7 +462,11 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                     <motion.div
                       initial={{ opacity: 0, y: 14 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.38, ease: heroSlideEase, delay: 0.04 }}
+                      transition={{
+                        duration: 0.38,
+                        ease: heroSlideEase,
+                        delay: 0.04,
+                      }}
                     >
                       <h3
                         className={`${interClassName} text-[1.36rem] leading-[1.32] font-medium tracking-[-0.02em] text-black md:text-[clamp(0.9rem,1.16vw,1.08rem)] md:leading-normal`}
@@ -395,13 +482,20 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                       className="mt-4.5 rounded-2xl bg-transparent p-0 md:mt-3.5 lg:mt-4 lg:flex-1"
                       initial={{ opacity: 0, y: 24, scale: 0.984 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.46, ease: heroSlideEase, delay: 0.08 }}
+                      transition={{
+                        duration: 0.46,
+                        ease: heroSlideEase,
+                        delay: 0.08,
+                      }}
                     >
                       <div className="relative flex h-56 w-full items-center justify-center overflow-hidden rounded-xl bg-[#ececec] md:h-48 lg:h-full lg:min-h-58">
                         <motion.div
                           className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 -translate-x-full bg-linear-to-r from-transparent via-white/52 to-transparent blur-sm"
                           initial={{ x: "-120%", opacity: 0 }}
-                          animate={{ x: ["-120%", "260%"], opacity: [0, 0.66, 0] }}
+                          animate={{
+                            x: ["-120%", "260%"],
+                            opacity: [0, 0.66, 0],
+                          }}
                           transition={{
                             duration: 1.08,
                             ease: "easeOut",
