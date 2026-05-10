@@ -14,15 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async redirects() {
-    return [
-      { source: "/HomePage", destination: "/homepage", permanent: true },
-      { source: "/Homepage", destination: "/homepage", permanent: true },
-      { source: "/About", destination: "/about", permanent: true },
-      { source: "/Features", destination: "/features", permanent: true },
-      { source: "/Contact", destination: "/contact", permanent: true },
-    ];
-  },
   async headers() {
     return [
       {
@@ -56,14 +47,6 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/home/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-      },
-      {
-        source: "/features/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-      },
-      {
-        source: "/contact/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ];

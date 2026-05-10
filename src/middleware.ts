@@ -12,9 +12,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const staticCanonicalRouteMap: Record<string, string> = {
     "/": "/",
     "/homepage": "/homepage",
-    "/about": "/about",
-    "/features": "/features",
-    "/contact": "/contact",
     "/sign-in": "/sign-in",
     "/sign-up": "/sign-up",
   };
@@ -44,18 +41,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   if (pathname === "/homepage" || pathname.startsWith("/homepage/")) {
-    return NextResponse.next();
-  }
-
-  if (pathname === "/about" || pathname.startsWith("/about/")) {
-    return NextResponse.next();
-  }
-
-  if (pathname === "/features" || pathname.startsWith("/features/")) {
-    return NextResponse.next();
-  }
-
-  if (pathname === "/contact" || pathname.startsWith("/contact/")) {
     return NextResponse.next();
   }
 
