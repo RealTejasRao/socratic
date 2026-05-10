@@ -670,6 +670,118 @@ html:not(.app-dark) .app-change-philosopher-btn:hover {
   border-color: var(--app-light-border) !important;
 }
 
+html:not(.app-dark) .app-debate-step-label,
+html:not(.app-dark) .app-debate-label {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-debate-progress-active {
+  background: #3a3126 !important;
+}
+
+html:not(.app-dark) .app-debate-progress-inactive {
+  background: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-debate-card,
+html:not(.app-dark) .app-debate-modal {
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-debate-heading,
+html:not(.app-dark) .app-debate-surface-title {
+  color: var(--app-light-text-primary) !important;
+}
+
+html:not(.app-dark) .app-debate-muted,
+html:not(.app-dark) .app-debate-option-meta {
+  color: var(--app-light-text-secondary) !important;
+}
+
+html:not(.app-dark) .app-debate-surface,
+html:not(.app-dark) .app-debate-option,
+html:not(.app-dark) .app-debate-field,
+html:not(.app-dark) .app-debate-info-trigger,
+html:not(.app-dark) .app-debate-info-popover {
+  border-color: var(--app-light-border) !important;
+}
+
+html:not(.app-dark) .app-debate-surface,
+html:not(.app-dark) .app-debate-field,
+html:not(.app-dark) .app-debate-info-trigger {
+  background: var(--app-light-chat-bg) !important;
+}
+
+html:not(.app-dark) .app-debate-option:hover,
+html:not(.app-dark) .app-debate-info-trigger:hover {
+  background: var(--app-light-button-secondary-hover-bg) !important;
+}
+
+html:not(.app-dark) .app-debate-option-selected {
+  background: #3a3126 !important;
+  border-color: #3a3126 !important;
+  color: #f6f2e8 !important;
+}
+
+html:not(.app-dark) .app-debate-option-selected .app-debate-option-meta {
+  color: #d9d1c1 !important;
+}
+
+html:not(.app-dark) .app-debate-status-chip {
+  border-color: #d6cec0 !important;
+  background: #efe9dd !important;
+  color: #756d60 !important;
+}
+
+html:not(.app-dark) .app-debate-primary-btn,
+html:not(.app-dark) .app-debate-ended-primary,
+html:not(.app-dark) .app-debate-modal-confirm {
+  background: #3a3126 !important;
+  border-color: #3a3126 !important;
+  color: #f6f2e8 !important;
+}
+
+html:not(.app-dark) .app-debate-primary-btn:hover,
+html:not(.app-dark) .app-debate-ended-primary:hover,
+html:not(.app-dark) .app-debate-modal-confirm:hover {
+  background: #30291f !important;
+  border-color: #30291f !important;
+  color: #f6f2e8 !important;
+}
+
+html:not(.app-dark) .app-debate-secondary-btn,
+html:not(.app-dark) .app-debate-ended-secondary,
+html:not(.app-dark) .app-debate-modal-cancel {
+  background: #ece6d9 !important;
+  border-color: #cfc4b2 !important;
+  color: #5d5447 !important;
+}
+
+html:not(.app-dark) .app-debate-secondary-btn:hover,
+html:not(.app-dark) .app-debate-ended-secondary:hover,
+html:not(.app-dark) .app-debate-modal-cancel:hover {
+  background: #e5dece !important;
+  border-color: #b9ad99 !important;
+  color: #29231b !important;
+}
+
+html:not(.app-dark) .app-debate-winner-chip {
+  border-color: #cfbf9f !important;
+  background: #efe4d0 !important;
+  color: #7a5f39 !important;
+}
+
+html:not(.app-dark) .app-debate-winner-close {
+  border-color: #d6cec0 !important;
+  background: #f1ecdf !important;
+  color: #7a7164 !important;
+}
+
+html:not(.app-dark) .app-debate-winner-close:hover {
+  background: #e5dece !important;
+  color: #2a241c !important;
+}
+
 html:not(.app-dark) .app-settings-panel {
   background: var(--app-light-chat-bg) !important;
   border-color: var(--app-light-border) !important;
@@ -1282,18 +1394,28 @@ html.app-dark .app-debate-ended-verdict {
   color: #b7b7b3 !important;
 }
 
-html.app-dark .app-debate-ended-primary,
+html.app-dark .app-debate-ended-primary {
+  background: #f1f1ef !important;
+  border-color: transparent !important;
+  color: #141414 !important;
+}
+
 html.app-dark .app-debate-ended-secondary {
   background: transparent !important;
   border-color: #67655f !important;
   color: #ecebe8 !important;
 }
 
-html.app-dark .app-debate-ended-primary:hover,
+html.app-dark .app-debate-ended-primary:hover {
+  background: #dfdfdc !important;
+  border-color: transparent !important;
+  color: #111 !important;
+}
+
 html.app-dark .app-debate-ended-secondary:hover {
   background: #333230 !important;
   border-color: #7a7770 !important;
-  color: #ffffff !important;
+  color: #f3eee4 !important;
 }
 
 html.app-dark .app-debate-ended-reveal {
@@ -1320,6 +1442,18 @@ html.app-dark .app-debate-winner-copy {
   color: #c3c3be !important;
 }
 
+html.app-dark .app-debate-status-chip {
+  background: #2f2e2c !important;
+  border-color: #4a4946 !important;
+  color: #b7b7b3 !important;
+}
+
+html.app-dark .app-debate-winner-chip {
+  background: #3b3020 !important;
+  border-color: #6c5536 !important;
+  color: #f3dfbd !important;
+}
+
 html.app-dark .app-debate-winner-close {
   background: #2f2e2c !important;
   border-color: #4a4946 !important;
@@ -1329,7 +1463,7 @@ html.app-dark .app-debate-winner-close {
 html.app-dark .app-debate-winner-close:hover {
   background: #333230 !important;
   border-color: #67655f !important;
-  color: #ffffff !important;
+  color: #f3eee4 !important;
 }
 
 html.app-dark .summary-page {

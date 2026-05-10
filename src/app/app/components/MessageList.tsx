@@ -345,9 +345,9 @@ export default function MessageList({
       return;
     }
 
-    const scrollContainer = bottomEl.closest(".app-chat-main") as
-      | HTMLElement
-      | null;
+    const scrollContainer = bottomEl.closest(
+      ".app-chat-main",
+    ) as HTMLElement | null;
     if (!scrollContainer) {
       return;
     }
@@ -598,7 +598,7 @@ export default function MessageList({
 
   return (
     <div className="flex-1">
-      <div className="mx-auto flex w-full max-w-[700px] flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
+      <div className="mx-auto flex w-full max-w-175 flex-col gap-1 px-3 pb-10 pt-3 md:px-4">
         {topContent}
         {messages.map((message, index) => {
           const isLastUser = index === actualLastUserIndex;

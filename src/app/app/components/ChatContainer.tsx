@@ -1290,17 +1290,17 @@ export default function ChatContainer({
       ) : (
         <div className="px-3 pb-10 md:px-4 md:pb-14">
           <div className="mx-auto max-w-170">
-            <div className="app-card app-debate-ended-card rounded-3xl border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_16px_42px_rgba(15,23,42,0.08)]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-500">
+            <div className="app-card app-debate-card app-debate-ended-card rounded-3xl border border-[#ddd5c7] bg-[#f7f4ee] px-5 py-5 text-center shadow-[0_16px_42px_rgba(31,27,21,0.08)]">
+              <div className="app-debate-status-chip inline-flex items-center gap-2 rounded-full border border-[#d6cec0] bg-[#efe9dd] px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-[#756d60]">
                 <Swords size={12} />
                 Debate Closed
               </div>
 
-              <h3 className="app-debate-ended-title mt-4 text-[24px] leading-[1.08] tracking-[-0.04em] text-slate-950 font-[Georgia,serif] md:text-[30px]">
+              <h3 className="app-debate-ended-title mt-4 text-[26px] leading-[1.08] tracking-[-0.04em] text-[#1f1b15] font-[Georgia,serif] md:text-[32px]">
                 Time up! Debate has ended.
               </h3>
 
-              <p className="app-debate-ended-copy mt-3 text-[12px] leading-6 text-slate-500">
+              <p className="app-debate-ended-copy mt-3 text-[13px] leading-6 text-[#6f6658]">
                 The clock has run out. Review the full summary or reveal the
                 verdict here.
               </p>
@@ -1311,7 +1311,7 @@ export default function ChatContainer({
                     href={`/app/${activeSessionId}/summary`}
                     target="_blank"
                     rel="noreferrer"
-                    className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
                   >
                     <ScrollText size={14} />
                     Show summary
@@ -1321,7 +1321,7 @@ export default function ChatContainer({
                 <button
                   type="button"
                   onClick={() => setShowWinnerReveal((current) => !current)}
-                  className="app-debate-ended-secondary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                  className="app-debate-ended-secondary inline-flex items-center gap-2 rounded-full border border-[#cfc4b2] bg-[#ece6d9] px-4 py-2 text-[13px] text-[#5d5447] transition hover:bg-[#e5dece] hover:text-[#29231b]"
                 >
                   <Crown size={14} />
                   Reveal Winner
@@ -1347,7 +1347,7 @@ export default function ChatContainer({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.97 }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-              className="app-card app-debate-winner-modal relative w-full max-w-110 rounded-[28px] border border-slate-200 bg-white px-5 py-5 text-center shadow-[0_22px_70px_rgba(15,23,42,0.16)]"
+              className="app-card app-debate-card app-debate-winner-modal relative w-full max-w-110 rounded-[28px] border border-[#d6cec0] bg-[#f7f4ee] px-5 py-5 text-center shadow-[0_22px_70px_rgba(31,27,21,0.16)]"
               role="dialog"
               aria-modal="true"
               aria-label="Debate winner"
@@ -1356,22 +1356,22 @@ export default function ChatContainer({
               <button
                 type="button"
                 onClick={() => setShowWinnerReveal(false)}
-                className="app-debate-winner-close absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                className="app-debate-winner-close absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#d6cec0] bg-[#f1ecdf] text-[#7a7164] transition hover:bg-[#e5dece] hover:text-[#2a241c]"
                 aria-label="Close winner reveal"
               >
                 <X size={14} />
               </button>
 
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-amber-700">
+              <div className="app-debate-winner-chip inline-flex items-center gap-2 rounded-full border border-[#cfbf9f] bg-[#efe4d0] px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-[#7a5f39]">
                 <Crown size={12} />
                 Winner Revealed
               </div>
 
-              <h3 className="app-debate-winner-title mt-4 text-[28px] leading-[1.04] tracking-[-0.05em] text-slate-950 font-[Georgia,serif]">
+              <h3 className="app-debate-winner-title mt-4 text-[30px] leading-[1.04] tracking-[-0.05em] text-[#1f1b15] font-[Georgia,serif]">
                 {winnerLabel}
               </h3>
 
-              <p className="app-debate-winner-copy mt-3 text-[13px] leading-6 text-slate-600">
+              <p className="app-debate-winner-copy mt-3 text-[14px] leading-7 text-[#6f6658]">
                 {completedDebate.verdictSummary ||
                   "The verdict is available in the full summary."}
               </p>
@@ -1382,7 +1382,7 @@ export default function ChatContainer({
                     href={`/app/${activeSessionId}/summary`}
                     target="_blank"
                     rel="noreferrer"
-                    className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-[12px] text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
                   >
                     <ScrollText size={14} />
                     Open full summary
