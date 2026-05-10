@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { motion } from "framer-motion";
 import {
   Check,
   Copy,
@@ -198,6 +199,7 @@ export default function MessageList({
   topContent,
 }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
   const editTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -215,6 +217,15 @@ export default function MessageList({
   >([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
   const [chatFontSize, setChatFontSize] = useState<ChatFontSize>("MEDIUM");
+  const [streamingChunkMessageId, setStreamingChunkMessageId] = useState<
+    string | null
+  >(null);
+  const [streamingChunks, setStreamingChunks] = useState<
+    Array<{ id: number; text: string }>
+  >([]);
+  const streamingChunkCounterRef = useRef(0);
+  const previousStreamingMessageIdRef = useRef<string | null>(null);
+  const previousStreamingContentRef = useRef("");
 
   async function handleCopy(messageId: string, content: string) {
     try {
@@ -340,6 +351,7 @@ export default function MessageList({
     if (!scrollContainer) {
       return;
     }
+    scrollContainerRef.current = scrollContainer;
 
     const updateAutoScrollState = () => {
       const distanceFromBottom =
@@ -356,6 +368,7 @@ export default function MessageList({
 
     return () => {
       scrollContainer.removeEventListener("scroll", updateAutoScrollState);
+      scrollContainerRef.current = null;
     };
   }, []);
 
@@ -364,8 +377,25 @@ export default function MessageList({
       return;
     }
 
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      bottomRef.current?.scrollIntoView({
+        behavior: isStreaming ? "auto" : "smooth",
+        block: "end",
+      });
+      return;
+    }
+
+    if (isStreaming) {
+      const previousScrollBehavior = scrollContainer.style.scrollBehavior;
+      scrollContainer.style.scrollBehavior = "auto";
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      scrollContainer.style.scrollBehavior = previousScrollBehavior;
+      return;
+    }
+
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages]);
+  }, [isStreaming, messages]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -475,6 +505,54 @@ export default function MessageList({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [previewImage]);
+
+  useEffect(() => {
+    const lastAssistantMessage = [...messages]
+      .reverse()
+      .find((message) => message.role === "ASSISTANT");
+
+    if (!isStreaming || !lastAssistantMessage) {
+      setStreamingChunkMessageId(null);
+      setStreamingChunks([]);
+      streamingChunkCounterRef.current = 0;
+      previousStreamingMessageIdRef.current = null;
+      previousStreamingContentRef.current = "";
+      return;
+    }
+
+    const currentMessageId = lastAssistantMessage.id;
+    const currentContent = lastAssistantMessage.content ?? "";
+    const previousMessageId = previousStreamingMessageIdRef.current;
+    const previousContent = previousStreamingContentRef.current;
+    const isNewStreamingMessage = previousMessageId !== currentMessageId;
+    const canDiffFromPrevious =
+      !isNewStreamingMessage && currentContent.startsWith(previousContent);
+    const chunkText = canDiffFromPrevious
+      ? currentContent.slice(previousContent.length)
+      : currentContent;
+
+    if (isNewStreamingMessage || !canDiffFromPrevious) {
+      streamingChunkCounterRef.current = 0;
+    }
+
+    setStreamingChunkMessageId(currentMessageId);
+    setStreamingChunks((previousChunks) => {
+      const baseChunks =
+        isNewStreamingMessage || !canDiffFromPrevious ? [] : previousChunks;
+
+      if (!chunkText) {
+        return baseChunks;
+      }
+
+      const chunkId = streamingChunkCounterRef.current;
+      streamingChunkCounterRef.current += 1;
+
+      return [...baseChunks, { id: chunkId, text: chunkText }];
+    });
+
+    previousStreamingMessageIdRef.current = currentMessageId;
+    previousStreamingContentRef.current = currentContent;
+  }, [isStreaming, messages]);
 
   useLayoutEffect(() => {
     const textarea = editTextareaRef.current;
@@ -620,6 +698,25 @@ export default function MessageList({
                   isLastAssistant &&
                   !message.content.trim() ? (
                     <ThinkingBubble />
+                  ) : isAssistant && isStreaming && isLastAssistant ? (
+                    streamingChunkMessageId === message.id &&
+                    streamingChunks.length > 0 ? (
+                      streamingChunks.map((chunk) => (
+                        <motion.span
+                          key={`${message.id}-chunk-${chunk.id}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{
+                            duration: 3,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                        >
+                          {renderMessageContentWithLinks(chunk.text)}
+                        </motion.span>
+                      ))
+                    ) : (
+                      renderMessageContentWithLinks(message.content)
+                    )
                   ) : (
                     renderMessageContentWithLinks(message.content)
                   )}

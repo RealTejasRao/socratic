@@ -110,7 +110,7 @@ export async function POST(req: Request) {
   const forceWebSearch = body?.webSearch === true;
   const requestedSocraticTone = isSocraticTone(body?.socraticTone)
     ? (body.socraticTone as SocraticTone)
-    : "RUTHLESS_BLUNT";
+    : "SIMPLE_CLEAR";
 
   if (typeof content !== "string") {
     return new NextResponse("Invalid content", { status: 400 });

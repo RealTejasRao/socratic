@@ -155,7 +155,7 @@ export async function generateReply(params: {
     runInsightExtraction = true,
     replaceBeliefsForSourceMessage = false,
     maxTokens = 500,
-    socraticTone = "BALANCED",
+    socraticTone = "SIMPLE_CLEAR",
   } = params;
 
   let effectiveSourceMessageId = sourceUserMessageId;

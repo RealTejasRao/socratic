@@ -76,14 +76,14 @@ function readBooleanSetting(key: string, fallback: boolean): boolean {
 
 function readSocraticToneSetting(): SocraticTone {
   if (typeof window === "undefined") {
-    return "RUTHLESS_BLUNT";
+    return "SIMPLE_CLEAR";
   }
 
   try {
     const value = localStorage.getItem(SOCRATIC_TONE_KEY);
-    return isSocraticTone(value) ? value : "RUTHLESS_BLUNT";
+    return isSocraticTone(value) ? value : "SIMPLE_CLEAR";
   } catch {
-    return "RUTHLESS_BLUNT";
+    return "SIMPLE_CLEAR";
   }
 }
 
@@ -110,7 +110,7 @@ export default function AppSidebar({ sessions }: Props) {
   const [showHoverPreviews, setShowHoverPreviews] = useState(true);
   const [showModeBadges, setShowModeBadges] = useState(true);
   const [socraticTone, setSocraticTone] =
-    useState<SocraticTone>("RUTHLESS_BLUNT");
+    useState<SocraticTone>("SIMPLE_CLEAR");
   const [chatFontSize, setChatFontSize] = useState<ChatFontSize>("MEDIUM");
   const [activeSettingsTab, setActiveSettingsTab] = useState<
     "GENERAL" | "SOCRATIC"
@@ -285,7 +285,7 @@ export default function AppSidebar({ sessions }: Props) {
     handleCollapseDefaultChange(false);
     handleHoverPreviewsChange(true);
     handleModeBadgesChange(true);
-    handleSocraticToneChange("RUTHLESS_BLUNT");
+    handleSocraticToneChange("SIMPLE_CLEAR");
     handleChatFontSizeChange("MEDIUM");
   }
 

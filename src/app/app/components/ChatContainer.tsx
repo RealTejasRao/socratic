@@ -172,14 +172,14 @@ function pickRandomQuestions(questions: string[], count: number) {
 
 function getSocraticToneSetting(): SocraticTone {
   if (typeof window === "undefined") {
-    return "RUTHLESS_BLUNT";
+    return "SIMPLE_CLEAR";
   }
 
   try {
     const stored = localStorage.getItem(SOCRATIC_TONE_KEY);
-    return isSocraticTone(stored) ? stored : "RUTHLESS_BLUNT";
+    return isSocraticTone(stored) ? stored : "SIMPLE_CLEAR";
   } catch {
-    return "RUTHLESS_BLUNT";
+    return "SIMPLE_CLEAR";
   }
 }
 

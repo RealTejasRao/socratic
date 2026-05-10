@@ -414,7 +414,7 @@ export function buildSocraticPrompt(params: {
     appendUserMessageToPrompt = true,
     knowledgeRoute = "conversation_only",
     includeVisionContent = true,
-    tone = "BALANCED",
+    tone = "SIMPLE_CLEAR",
   } = params;
 
   const corePolicy = buildCorePolicyMessage(tone);
