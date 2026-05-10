@@ -68,7 +68,7 @@ export default async function SignInPage() {
         <div className="relative z-10 grid min-h-svh grid-cols-1 lg:h-svh lg:grid-cols-2">
           <section className="flex items-center justify-center px-4 py-6 lg:px-10 lg:py-8">
             {userId ? (
-              <div className="auth-sign-up-zoom w-full max-w-110 rounded-3xl border border-white/22 bg-[#04070d]/92 p-6 text-white shadow-[0_28px_90px_rgba(0,0,0,0.56)] backdrop-blur-[28px] backdrop-saturate-140">
+              <div className="auth-sign-in-zoom w-full max-w-110 rounded-3xl border border-white/22 bg-[#04070d]/92 p-6 text-white shadow-[0_28px_90px_rgba(0,0,0,0.56)] backdrop-blur-[28px] backdrop-saturate-140">
                 <p className="text-xl leading-tight text-white">
                   Already signed in
                 </p>
@@ -91,7 +91,7 @@ export default async function SignInPage() {
                 </SignOutButton>
               </div>
             ) : (
-              <div className="auth-sign-up-zoom w-full max-w-md">
+              <div className="auth-sign-in-zoom w-full max-w-md">
                 <SignIn appearance={clerkGlassAppearance} />
               </div>
             )}

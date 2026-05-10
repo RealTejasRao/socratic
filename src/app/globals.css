@@ -2281,6 +2281,12 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
   zoom: 0.8;
 }
 
+@media (min-width: 1024px) {
+  .auth-sign-in-zoom {
+    zoom: 0.94;
+  }
+}
+
 .hero-bg-fade {
   animation: heroBgFadeIn 1100ms ease-out both;
 }
@@ -2505,6 +2511,14 @@ html.app-dark .app-greeting-heading .hero-caret {
   .auth-sign-in-zoom {
     transform: scale(0.78);
     transform-origin: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  @supports not (zoom: 1) {
+    .auth-sign-in-zoom {
+      transform: scale(0.94);
+    }
   }
 }
 

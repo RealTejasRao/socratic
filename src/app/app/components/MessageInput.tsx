@@ -592,7 +592,7 @@ export default function MessageInput({
     <div
       className={cn(
         "mx-auto w-full",
-        variant === "hero" ? "max-w-[44rem]" : "max-w-155",
+        variant === "hero" ? "max14" : "max-w-155",
       )}
     >
       <div
@@ -681,8 +681,8 @@ export default function MessageInput({
           className={cn(
             `${poppinsClassName} app-input-textarea block w-full resize-none text-slate-900 outline-none placeholder:text-slate-400`,
             variant === "hero"
-              ? "min-h-[56px] px-4.5 pt-2.5 pb-1.5 text-[16px] leading-6 md:min-h-[56px] md:px-4.5 md:pt-2.5 md:pb-1.5 md:text-[16px] md:leading-6"
-              : "min-h-[56px] px-4 pt-3 pb-2 text-[16px] leading-6.5 md:min-h-10 md:px-3.5 md:pt-2 md:pb-1.5 md:text-[12px] md:leading-5",
+              ? "min-h-14 px-4.5 pt-2.5 pb-1.5 text-[16px] leading-6 md:min-h-14 md:px-4.5 md:pt-2.5 md:pb-1.5 md:text-[16px] md:leading-6"
+              : "min-h-14 px-4 pt-3 pb-2 text-[16px] leading-6.5 md:min-h-10 md:px-3.5 md:pt-2 md:pb-1.5 md:text-[12px] md:leading-5",
           )}
           onKeyDown={(event) => {
             if (
@@ -818,7 +818,7 @@ export default function MessageInput({
                   className="relative inline-flex cursor-not-allowed items-center gap-1.5 rounded-xl px-1.5 py-1 text-[14px] text-slate-400 md:text-[10px]"
                   data-tooltip="Voice input not supported on this browser"
                 >
-                  <Mic size={16} className="md:h-[11px] md:w-[11px]" /> Voice
+                  <Mic size={16} className="md:h-2.75 md:w-2.75" /> Voice
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute top-1/2 left-1/2 h-5 w-px -translate-x-1/2 -translate-y-1/2 rotate-[-36deg] bg-red-500"
@@ -851,7 +851,7 @@ export default function MessageInput({
                 <Mic
                   size={variant === "hero" ? 17 : 17}
                   className={cn(
-                    variant === "hero" ? "md:h-[17px] md:w-[17px]" : "md:h-[15px] md:w-[15px]",
+                    variant === "hero" ? "md:h-4.25 md:w-4.25" : "md:h-3.75 md:w-3.75",
                     isListening && "text-sky-600",
                   )}
                 />{" "}
@@ -909,7 +909,7 @@ export default function MessageInput({
                   size={variant === "hero" ? 13 : 13}
                   fill="currentColor"
                   className={cn(
-                    variant === "hero" ? "md:h-[13px] md:w-[13px]" : "md:h-[11px] md:w-[11px]",
+                    variant === "hero" ? "md:h-3.25 md:w-3.25" : "md:h-2.75 md:w-2.75",
                   )}
                 />
               ) : (

@@ -537,7 +537,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
           >
             <motion.div
               key={`contact-form-${restartSignal}`}
-              className={`${interClassName} relative w-full max-w-[24.5rem] rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-4 md:max-w-88 md:p-3.5`}
+              className={`${interClassName} relative w-full max-w-[24.5rem] rounded-[1.25rem] border border-black/8 bg-[#f5f5f3] p-4 md:max-w-88 md:p-3.5 lg:scale-110 lg:origin-top`}
               variants={formShellVariants}
               initial="hidden"
               animate={sceneInView ? "show" : false}

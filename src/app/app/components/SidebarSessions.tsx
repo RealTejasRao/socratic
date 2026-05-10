@@ -423,7 +423,7 @@ export default function SidebarSessions({
                     showModeBadges && (
                       <span
                         className={cn(
-                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:h-[24px] lg:w-[24px]",
+                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:h-6 lg:w-6",
                           isActive
                             ? "border-slate-300 bg-slate-50"
                             : "border-slate-200 bg-white",
@@ -474,7 +474,7 @@ export default function SidebarSessions({
                     className="app-session-menu-trigger cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] lg:p-2 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="Open chat actions"
                   >
-                    <MoreHorizontal size={16} className="lg:h-[17px] lg:w-[17px]" />
+                    <MoreHorizontal size={16} className="lg:h-4.25 lg:w-4.25" />
                   </button>
 
                   {openMenuId === session.id && (
@@ -532,7 +532,7 @@ export default function SidebarSessions({
         >
           <div className="app-card app-session-preview-card relative rounded-xl border px-3 py-2.5 text-[12px] leading-5 shadow-[0_16px_36px_rgba(15,23,42,0.16)] backdrop-blur-sm">
             <div className="app-session-preview-arrow absolute top-1/2 -left-1.5 h-2.5 w-2.5 -translate-y-1/2 rotate-45 border-b border-l" />
-            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap break-words">
+            <p className="app-session-preview-text line-clamp-6 whitespace-pre-wrap wrap-break-word">
               {hoveredSession.preview}
             </p>
           </div>
@@ -554,7 +554,7 @@ export default function SidebarSessions({
           }}
         >
           <div
-            className="app-card app-session-dialog w-full max-w-[380px] rounded-2xl border border-[#C8C8C2] bg-white px-5 py-4.5"
+            className="app-card app-session-dialog w-full max-w-95 rounded-2xl border border-[#C8C8C2] bg-white px-5 py-4.5"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
