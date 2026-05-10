@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -16,6 +17,14 @@ import {
   resolveOptimizedCloudinaryPublicAsset,
 } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
+import { createPageMetadata } from "@/src/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Socratic AI Homepage | AI for Philosophy, Strategy, and Deep Thinking",
+  description:
+    "Explore Socratic AI: an AI for philosophy and strategy built as an AI thinking partner and intelligent learning assistant for rigorous conversation.",
+  path: "/homepage",
+});
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const inter = Inter({
@@ -118,7 +127,7 @@ export default function HomePage() {
             <div
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
-              <p className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(1.62rem,4.5vw,2.7rem)]">
+              <h1 className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(1.62rem,4.5vw,2.7rem)]">
                 <span className="block text-[clamp(2.05rem,8vw,2.95rem)] sm:inline sm:text-inherit [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(2.05rem,8vw,2.95rem)]">
                   Your Personal AI For
                 </span>{" "}
@@ -128,7 +137,7 @@ export default function HomePage() {
                 <span className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden">
                   <HeroRotatingWord />
                 </span>
-              </p>
+              </h1>
               <Link
                 href={ROUTES.HOME}
                 className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-7.5 inline-flex h-11 items-center gap-2 rounded-full border border-black/55 bg-white px-6 text-[0.9rem] font-medium tracking-[0.02em] text-black/90 transition-colors duration-200 hover:bg-[#A01717] hover:text-white sm:h-8 sm:gap-1.5 sm:px-4 sm:text-[0.68rem] sm:font-normal sm:text-black/85 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:h-11 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:gap-2 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:px-6 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[0.9rem] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:font-medium`}

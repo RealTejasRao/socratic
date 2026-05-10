@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { SignUp } from "@clerk/nextjs";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { createPageMetadata } from "@/src/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Sign Up",
+  description: "Create your Socratic AI account.",
+  path: "/sign-up",
+  index: false,
+});
 
 export default function SignUpPage() {
   const clerkGlassAppearance = {

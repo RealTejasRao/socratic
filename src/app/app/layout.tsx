@@ -1,15 +1,37 @@
 import { ReactNode } from "react";
+import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import { serializeSessionMeta } from "src/server/chat/session-meta";
+import { absoluteUrl } from "src/lib/seo";
 import AppSidebar from "./components/AppSidebar";
 import AppTopBar from "./components/AppTopBar";
 
 interface Props {
   children: ReactNode;
 }
+
+export const metadata: Metadata = {
+  title: "Socratic AI App",
+  description: "Private Socratic AI workspace for guided dialogue sessions.",
+  alternates: {
+    canonical: absoluteUrl("/app"),
+  },
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      "max-snippet": 0,
+      "max-image-preview": "none",
+    },
+  },
+};
 
 export default async function AppLayout({ children }: Props) {
   const { userId: clerkUserId } = await auth();

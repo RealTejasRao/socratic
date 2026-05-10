@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
+import {
+  absoluteUrl,
+  organizationSchema,
+  seoConfig,
+  softwareApplicationSchema,
+  websiteSchema,
+} from "@/src/lib/seo";
 import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(() => {
@@ -12,8 +19,55 @@ const THEME_INIT_SCRIPT = `(() => {
 })();`;
 
 export const metadata: Metadata = {
-  title: "Socratic AI- Your Personal AI for Philosophy",
-  description: "Question-first Socratic dialogue system",
+  metadataBase: new URL(seoConfig.siteUrl),
+  applicationName: seoConfig.applicationName,
+  title: {
+    default: seoConfig.defaultTitle,
+    template: seoConfig.titleTemplate,
+  },
+  description: seoConfig.defaultDescription,
+  keywords: [...seoConfig.keywords],
+  authors: [...seoConfig.authors],
+  creator: seoConfig.creator,
+  publisher: seoConfig.publisher,
+  category: seoConfig.category,
+  alternates: {
+    canonical: absoluteUrl("/"),
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: seoConfig.siteName,
+    url: absoluteUrl("/"),
+    title: seoConfig.defaultTitle,
+    description: seoConfig.defaultDescription,
+    images: [
+      {
+        url: "/home/hero.webp",
+        width: 1200,
+        height: 630,
+        alt: "Socratic AI - AI for philosophy and strategic thinking",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: seoConfig.defaultTitle,
+    description: seoConfig.defaultDescription,
+    images: ["/home/hero.webp"],
+  },
   icons: {
     icon: [
       { url: "/favicon/favicon.ico", sizes: "any" },
@@ -39,6 +93,8 @@ export const metadata: Metadata = {
   manifest: "/favicon/site.webmanifest",
 };
 
+const structuredData = [organizationSchema, websiteSchema, softwareApplicationSchema];
+
 export default function RootLayout({
   children,
 }: {
@@ -61,6 +117,13 @@ export default function RootLayout({
       </head>
       <body>
         <ClerkProvider>
+          {structuredData.map((schema, index) => (
+            <script
+              key={`ld-json-${index}`}
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
+          ))}
           <ClickPulse />
           {children}
         </ClerkProvider>

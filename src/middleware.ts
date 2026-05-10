@@ -9,9 +9,34 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const env = process.env["VERCEL_TARGET_ENV"] ?? process.env["VERCEL_ENV"];
   const isProduction = env === "production";
+  const staticCanonicalRouteMap: Record<string, string> = {
+    "/": "/",
+    "/homepage": "/homepage",
+    "/about": "/about",
+    "/features": "/features",
+    "/contact": "/contact",
+    "/sign-in": "/sign-in",
+    "/sign-up": "/sign-up",
+  };
 
   if (!isProduction) {
     return NextResponse.next();
+  }
+
+  const normalizedPathname =
+    pathname.length > 1 && pathname.endsWith("/")
+      ? pathname.slice(0, -1)
+      : pathname;
+  const lowerPathname = normalizedPathname.toLowerCase();
+  const canonicalStaticPath = staticCanonicalRouteMap[lowerPathname];
+
+  if (
+    canonicalStaticPath &&
+    (pathname !== canonicalStaticPath || normalizedPathname !== canonicalStaticPath)
+  ) {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = canonicalStaticPath;
+    return NextResponse.redirect(redirectUrl, 308);
   }
 
   if (pathname === "/") {
@@ -19,6 +44,18 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   if (pathname === "/homepage" || pathname.startsWith("/homepage/")) {
+    return NextResponse.next();
+  }
+
+  if (pathname === "/about" || pathname.startsWith("/about/")) {
+    return NextResponse.next();
+  }
+
+  if (pathname === "/features" || pathname.startsWith("/features/")) {
+    return NextResponse.next();
+  }
+
+  if (pathname === "/contact" || pathname.startsWith("/contact/")) {
     return NextResponse.next();
   }
 

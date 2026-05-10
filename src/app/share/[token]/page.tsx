@@ -3,10 +3,19 @@ import { notFound } from "next/navigation";
 import type { ChatImageAttachment } from "src/types/chat";
 import { prisma } from "src/server/db/client";
 import { readShareToken } from "src/server/chat/share-token";
+import type { Metadata } from "next";
+import { createPageMetadata } from "src/lib/seo";
 
 interface Props {
   params: Promise<{ token: string }>;
 }
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Shared Chat",
+  description: "Read-only shared Socratic AI conversation.",
+  path: "/share",
+  index: false,
+});
 
 export default async function SharedChatPage({ params }: Props) {
   const { token } = await params;
