@@ -41,6 +41,7 @@ const navLinks = [
   { label: "Home", href: "#" },
   { label: "Features", href: "#features" },
   { label: "Use Cases", href: "#use-cases" },
+  { label: "Blog", href: ROUTES.BLOG },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -102,7 +103,7 @@ export default function HomePage() {
                 href={ROUTES.HOME}
                 className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
               >
-                Get Started
+                Try Socratic AI
               </Link>
 
               <StaggeredMenu

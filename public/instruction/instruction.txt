@@ -1,51 +1,12 @@
-First:
+for text below "Blog" write:
 
-<script src="https://cdn.lordicon.com/lordicon.js"></script>
-<lord-icon
-    src="https://cdn.lordicon.com/fozsorqm.json"
-    trigger="loop"
-    delay="2000"
-    stroke="bold"
-    state="in-reveal"
-    colors="primary:#121331,secondary:#a01717"
-    style="width:28px;height:28px">
-</lord-icon>
+Ideas on philosophy, critical thinking, AI, learning, the future of human intelligence, and us!
 
+For the categories use:
 
+1. Philosophy
+2. AI & Learning
+3. Essays
+4. About
 
-second:
-
-<script src="https://cdn.lordicon.com/lordicon.js"></script>
-<lord-icon
-    src="https://cdn.lordicon.com/rrbmabsx.json"
-    trigger="loop"
-    delay="2000"
-    stroke="bold"
-    state="morph-open"
-    colors="primary:#121331,secondary:#a01717"
-    style="width:28px;height:28px">
-</lord-icon>
-
-Third:
-
-<script src="https://cdn.lordicon.com/lordicon.js"></script>
-<lord-icon
-    src="https://cdn.lordicon.com/vgwutnhw.json"
-    trigger="loop"
-    delay="2000"
-    stroke="bold"
-    colors="primary:#121331,secondary:#a01717"
-    style="width:28px;height:28px">
-</lord-icon>
-
-Fourth:
-
-<script src="https://cdn.lordicon.com/lordicon.js"></script>
-<lord-icon
-    src="https://cdn.lordicon.com/ebvizisb.json"
-    trigger="loop"
-    delay="2000"
-    stroke="bold"
-    colors="primary:#a01717,secondary:#000000"
-    style="width:28px;height:28px">
-</lord-icon>
+and obviously All will be the fist as in the scnreenshot.

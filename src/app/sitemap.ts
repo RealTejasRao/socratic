@@ -10,6 +10,7 @@ const publicStaticRoutes: Array<{
 }> = [
   { path: "/", changeFrequency: "daily", priority: 1 },
   { path: "/homepage", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/blog", changeFrequency: "weekly", priority: 0.8 },
 ];
 
 async function getDynamicSitemapEntries(): Promise<MetadataRoute.Sitemap> {
