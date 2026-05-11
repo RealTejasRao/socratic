@@ -152,7 +152,10 @@ export default function EarlyAccessPage() {
               Your Personal AI for Philosophy
             </div>
           </div>
-          <Link href={ROUTES.HOMEPAGE} className={`${aboutLinkClassName} flex w-28 sm:hidden`}>
+          <Link
+            href={ROUTES.HOME}
+            className={`${aboutLinkClassName} flex w-28 sm:hidden`}
+          >
             About
           </Link>
           <ThemeToggleButton className="hidden sm:inline-flex" />
@@ -211,7 +214,10 @@ export default function EarlyAccessPage() {
           <div className="flex justify-end sm:hidden">
             <ThemeToggleButton className="inline-flex" />
           </div>
-          <Link href={ROUTES.HOMEPAGE} className={`${aboutLinkClassName} hidden w-full sm:flex`}>
+          <Link
+            href={ROUTES.HOME}
+            className={`${aboutLinkClassName} hidden w-full sm:flex`}
+          >
             About
           </Link>
         </div>
@@ -226,8 +232,9 @@ export default function EarlyAccessPage() {
 
             <h1 className={heroTitleClassName}>Get Priority Access</h1>
             <p className={heroCopyClassName}>
-              Socratic AI is launching soon. We are planning to give early access
-              to a limited number of people. Reserve your spot now!
+              Socratic AI is in private beta. Early access is currently being
+              granted to limited founding members at no cost. Reserve your spot
+              now!
             </p>
 
             <EarlyAccessForm theme={theme} />

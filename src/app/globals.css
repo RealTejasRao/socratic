@@ -2471,6 +2471,10 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
   animation-delay: 500ms;
 }
 
+.hero-load-up-hero-copy {
+  animation-delay: 620ms;
+}
+
 .hero-load-up-image {
   animation-delay: 320ms;
   animation-duration: 1500ms;
@@ -2660,6 +2664,12 @@ html.app-dark .app-greeting-heading .hero-caret {
   .auth-sign-up-zoom,
   .auth-sign-in-zoom {
     zoom: 1;
+  }
+
+  .home-hero-mobile-image {
+    height: min(52svh, 32rem);
+    object-fit: cover;
+    object-position: center top;
   }
 
   @supports not (zoom: 1) {

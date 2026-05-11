@@ -16,6 +16,24 @@ Let's fix that.
 
 ---
 
+## Nietzsche Was Right: Key Takeaways:
+
+- Nietzsche never claimed God literally doesn't exist — "God is dead" is a cultural diagnosis, not an atheist declaration
+
+- He feared nihilism more than anyone — his entire philosophy was an attempt to overcome it
+
+- The will to power is about self-mastery and growth, not domination over others
+
+- The Ubermensch has nothing to do with race or superiority - it is about creating your own values
+
+- Eternal recurrence is a psychological test: would you live your life again, exactly as it was?
+
+- His sister Elisabeth forged his work and handed a distorted version to the Nazis - the real Nietzsche explicitly opposed everything they stood for
+
+- Modern Utility: Tools like [Socratic AI](https://www.usesocratic.com/) allow you to apply Nietzschean "self-overcoming" by challenging your own comfortable biases every day.
+
+---
+
 ## The Man Before the Myth
 
 Before we get into what Nietzsche actually believed, you need to know who he was. Because the person is inseparable from the philosophy, and the person is nothing like the image.
@@ -80,11 +98,9 @@ His answer to this is where he gets genuinely extraordinary, and genuinely diffi
 
 ---
 
-## The Will to Power (Which Is Not What You Think)
+## The Will to Power (And Why Socratic AI Is Built Around It)
 
-The phrase "will to power" has been so thoroughly abused that it's almost impossible to hear it fresh. People think it means the drive to dominate, to control, to stand over others and assert superiority.
-
-Nietzsche meant something almost completely different.
+The phrase 'will to power' has been so thoroughly abused that it's almost impossible to hear it fresh. People think it means the drive to dominate. Nietzsche meant something almost completely different. And it's the reason [Socratic AI](https://www.usesocratic.com/) was built the way it was: not to give you answers, but to push you to grow beyond where you currently are. That impulse, the drive to overcome, to expand, to become more, that is will to power in its truest form.
 
 The will to power, for Nietzsche, was not primarily about power over other people. It was about power over yourself. It was the drive to grow, to overcome, to become more than you currently are. It was the fundamental life force he saw in every living thing: not the desire to survive, as Darwin suggested, but the desire to expand, to create, to push beyond current limits.
 
@@ -156,9 +172,9 @@ I'm not sure he was wrong. But I don't think he was entirely right either.
 
 ---
 
-## The Invitation
+## The Invitation: This Is What Socratic AI Was Built For
 
-Nietzsche once wrote that his books were written for nobody yet. That they were messages in bottles thrown into the ocean, waiting for the reader who deserved them.
+Nietzsche once wrote that his books were written for nobody yet. Messages in bottles waiting for the reader who deserved them. [Socratic AI](https://www.usesocratic.com/) was built for exactly that reader, the one who recognized something in this piece and wants to go deeper, argue it, push on it, and find out what they actually believe.
 
 Whether you're that reader is something only you can figure out.
 

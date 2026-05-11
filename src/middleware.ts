@@ -11,7 +11,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const isProduction = env === "production";
   const staticCanonicalRouteMap: Record<string, string> = {
     "/": "/",
-    "/homepage": "/homepage",
     "/sign-in": "/sign-in",
     "/sign-up": "/sign-up",
   };
@@ -37,10 +36,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   if (pathname === "/") {
-    return NextResponse.next();
-  }
-
-  if (pathname === "/homepage" || pathname.startsWith("/homepage/")) {
     return NextResponse.next();
   }
 

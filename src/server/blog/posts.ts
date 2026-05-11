@@ -17,6 +17,11 @@ export type BlogPost = BlogPostSummary & {
   markdown: string;
 };
 
+export type BlogPostSitemapEntry = {
+  slug: string;
+  lastModified: Date;
+};
+
 type BlogPostRecord = BlogPostSummary & {
   contentFilePath: string;
 };
@@ -56,7 +61,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/ai_will_never_replace_thinking.md",
   },
   {
-    slug: "nietzsche-was-right-the-philosophy-most-people-get-completely-wrong",
+    slug: "nietzsche-philosophy",
     title: "Nietzsche Was Right: The Philosophy Most People Get Completely Wrong",
     category: "Philosophy",
     author: "Socratic AI team",
@@ -86,11 +91,11 @@ const BLOG_POSTS: BlogPostRecord[] = [
     readTimeLabel: "5 min read",
     excerpt:
       "Why Socratic AI was built, how it works, and what makes it different from general chatbots.",
-    coverImagePath: "/blog/images/what-is-socratic-ai.png",
+    coverImagePath: "/blog/images/what-is-SocraticAI.webp",
     contentFilePath: "public/blog/content/what_is_socratic_ai_blog.md",
   },
   {
-    slug: "what-is-stoicism-understanding-stoicism-from-the-ground-up",
+    slug: "what-is-stoicism",
     title: "What is Stoicism? Understanding Stoicism From the Ground Up",
     category: "Philosophy",
     author: "Socratic AI team",
@@ -105,6 +110,11 @@ const BLOG_POSTS: BlogPostRecord[] = [
 function readMarkdownFile(relativePath: string) {
   const absolutePath = path.join(process.cwd(), relativePath);
   return fs.readFileSync(absolutePath, "utf8");
+}
+
+function getFileLastModified(relativePath: string) {
+  const absolutePath = path.join(process.cwd(), relativePath);
+  return fs.statSync(absolutePath).mtime;
 }
 
 export function getAllBlogPostSummaries(
@@ -148,4 +158,11 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
 
 export function getAllBlogSlugs() {
   return BLOG_POSTS.map((post) => post.slug);
+}
+
+export function getBlogPostSitemapEntries(): BlogPostSitemapEntry[] {
+  return BLOG_POSTS.map((post) => ({
+    slug: post.slug,
+    lastModified: getFileLastModified(post.contentFilePath),
+  }));
 }

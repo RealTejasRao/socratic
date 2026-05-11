@@ -1,4 +1,4 @@
-# What is Stoicism?: Understanding Stoicism From the Ground Up
+# What is Stoicism: Understanding Stoicism From the Ground Up
 
 ---
 
@@ -13,6 +13,24 @@ That man is Socrates. And the way he died - the attitude with which he met the w
 But that's exactly the point. Stoicism wasn't invented. It was *discovered* - pulled out of the deepest questions human beings have ever asked about how to live.
 
 This is the story of that discovery. And by the end of it, you won't just *know* what Stoicism is. You'll feel it differently than you did before.
+
+---
+
+## What is Stoicism: Key Takeaways:
+
+- Stoicism is an ancient Greek philosophy founded by Zeno of Citium around 300 BC
+
+- Its core idea: you cannot control what happens to you, only how you respond
+
+- The four Stoic virtues are wisdom, courage, justice, and temperance
+
+- The three most important Stoic thinkers are Marcus Aurelius, Epictetus, and Seneca
+
+- Stoicism is a daily practice, not just a set of ideas. It includes exercises like negative visualization and evening review
+
+- The goal of Stoicism is not the absence of emotion, but the absence of being controlled by emotion
+
+- Practical Modern Application: Use tools like [Socratic AI](https://www.usesocratic.com/) to perform a nightly "Evening Review" of your actions.
 
 ---
 
@@ -54,7 +72,7 @@ Think about what you spent energy worrying about this week. Other people's opini
 
 Now ask: how many of those things were actually in your control?
 
-The Stoics had a word for this distinction. They called it the *dichotomy of control* - a clean, precise division of all of reality into two columns:
+The Stoics had a word for this distinction. They called it the *dichotomy of control* - a clean, precise division of all of reality into two columns. This principle is exactly what [Socratic AI](https://www.usesocratic.com/) is designed to help you master through rigorous self-reflection.
 
 **In your control:** your thoughts, your judgments, your desires, your intentions, your responses.
 
@@ -164,8 +182,8 @@ Kings and slaves, conquests and defeats, fame and obscurity - all of it, from fa
 
 This isn't nihilism. It's perspective. The Stoics used it to dissolve the ego - to shrink the problems that felt enormous down to their actual size.
 
-### Evening Review
-Each night, Seneca recommended reviewing your day with the question: *Where did I fall short today? What could I have done better?*
+### Evening Review: The Practice Socratic AI Was Built Around
+Each night, Seneca recommended reviewing your day with brutal honesty. This is the spirit Socratic AI runs on — not telling you what you want to hear, but asking the questions that actually matter. Start with: *Where did I fall short today? What could I have done better?*
 
 Not as self-punishment. As honest accounting. The Stoic self-review was precise and clinical - like an athlete watching game tape. What worked? What didn't? What needs to change tomorrow?
 
@@ -192,7 +210,7 @@ Because Stoicism is so frequently misunderstood, it's worth being blunt about wh
 
 ---
 
-## Why Stoicism Now
+## Why Stoicism Now (Socratic AI's perspective)
 
 You might be wondering why an ancient Greek philosophy is having a moment in 2026. Why are Navy SEALs and Silicon Valley founders and professional athletes all reading Marcus Aurelius?
 
@@ -208,9 +226,9 @@ That's the promise. And after 2,300 years, nobody has offered a better one.
 
 ---
 
-## Where Do You Start?
+## Where Do You Start? (Socratic AI Has an Answer)
 
-If you've read this far and you want to actually *practice* Stoicism rather than just know about it, here's the honest starting point:
+If you've read this far and you want to actually practice Stoicism rather than just know about it, [Socratic AI](https://www.usesocratic.com/) was built for exactly this. Bring it the Stoics, debate their ideas, and let it push back on what you think you believe. Here's the honest starting point:
 
 Read *Meditations* by Marcus Aurelius. Not as a historical document. As a letter written to you, personally, by someone who struggled with the same things you struggle with and found, through philosophy, a way through.
 

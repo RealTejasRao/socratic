@@ -27,11 +27,11 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const navLinks = [
-  { label: "Home", href: ROUTES.HOMEPAGE },
-  { label: "Features", href: `${ROUTES.HOMEPAGE}#features` },
-  { label: "Use Cases", href: `${ROUTES.HOMEPAGE}#use-cases` },
+  { label: "Home", href: ROUTES.HOME },
+  { label: "Features", href: `${ROUTES.HOME}#features` },
+  { label: "Use Cases", href: `${ROUTES.HOME}#use-cases` },
   { label: "Blog", href: ROUTES.BLOG },
-  { label: "Contact", href: `${ROUTES.HOMEPAGE}#contact` },
+  { label: "Contact", href: `${ROUTES.HOME}#contact` },
 ];
 
 type BlogPostPageProps = {
@@ -333,7 +333,7 @@ function PostContent({ post }: { post: BlogPost }) {
           </div>
 
           <Link
-            href={ROUTES.HOME}
+            href="https://usesocratic.com"
             className={`${interClassName} inline-flex w-full min-w-62 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-6 py-4 text-[1rem] font-semibold text-white transition-colors duration-220 hover:bg-[#8f1414] lg:w-auto`}
           >
             Try Socratic AI
@@ -384,7 +384,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <header className="fixed inset-x-0 top-0 z-50 flex flex-col border-b border-black/6 bg-white/60 px-5 py-0 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-7 sm:pt-1.5 sm:pb-0">
         <nav className="relative mx-auto flex h-16 w-full max-w-365 items-center justify-between sm:h-auto">
           <Link
-            href={ROUTES.HOMEPAGE}
+            href={ROUTES.HOME}
             className="hero-load-up hero-load-up-nav-logo group relative flex h-11 w-fit items-center sm:h-8.5"
           >
             <div className="shrink-0 overflow-hidden">
@@ -504,7 +504,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </section>
 
-      <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOMEPAGE} />
+      <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOME} />
     </main>
   );
 }

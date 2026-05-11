@@ -24,8 +24,8 @@ export default function ClickPulse() {
   const pulsesRef = useRef<Pulse[]>([]);
   const [isDesktop, setIsDesktop] = useState(false);
   const pathname = usePathname();
-  const isHomepageRoute = pathname === "/homepage";
-  const isEnabled = isDesktop && isHomepageRoute;
+  const isHomeRoute = pathname === "/";
+  const isEnabled = isDesktop && isHomeRoute;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 1024px)");

@@ -1,9 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, ReactNode, useState } from "react";
 import { Gift } from "lucide-react";
 import confetti from "canvas-confetti";
 import { Instrument_Serif } from "next/font/google";
+import { createPortal } from "react-dom";
 
 type FormStatus = {
   tone: "idle" | "error" | "success";
@@ -62,10 +63,25 @@ export default function EarlyAccessForm({
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showGiftPopup, setShowGiftPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [popupErrorMessage, setPopupErrorMessage] = useState("");
   const [status, setStatus] = useState<FormStatus>({
     tone: "idle",
     message: "",
   });
+  const canUseDOM = typeof window !== "undefined" && typeof document !== "undefined";
+
+  const showError = (message: string) => {
+    setStatus({
+      tone: "error",
+      message,
+    });
+
+    if (isInlineHero) {
+      setPopupErrorMessage(message);
+      setShowErrorPopup(true);
+    }
+  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -73,14 +89,13 @@ export default function EarlyAccessForm({
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!EMAIL_REGEX.test(normalizedEmail)) {
-      setStatus({
-        tone: "error",
-        message: "Please enter a valid email address.",
-      });
+      showError("Please enter a valid email address.");
       return;
     }
 
     setIsSubmitting(true);
+    setShowErrorPopup(false);
+    setPopupErrorMessage("");
     setStatus({ tone: "idle", message: "" });
 
     try {
@@ -97,18 +112,12 @@ export default function EarlyAccessForm({
       }
 
       if (response.status === 409) {
-        setStatus({
-          tone: "error",
-          message: data.message ?? "This email is already registered.",
-        });
+        showError(data.message ?? "This email is already registered.");
         return;
       }
 
       if (!response.ok) {
-        setStatus({
-          tone: "error",
-          message: data.message ?? "Something went wrong. Please try again.",
-        });
+        showError(data.message ?? "Something went wrong. Please try again.");
         return;
       }
 
@@ -120,10 +129,7 @@ export default function EarlyAccessForm({
       setShowGiftPopup(true);
       launchConfetti();
     } catch {
-      setStatus({
-        tone: "error",
-        message: "Unable to submit right now. Please try again.",
-      });
+      showError("Unable to submit right now. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -146,37 +152,61 @@ export default function EarlyAccessForm({
     ? "h-12 w-full rounded-2xl border border-slate-300/80 bg-white/92 px-4 text-sm text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),0_10px_20px_rgba(148,163,184,0.2)] outline-none placeholder:text-slate-500 focus:border-orange-400/70 focus:bg-white focus:ring-2 focus:ring-orange-300/45"
     : "h-12 w-full rounded-2xl border border-white/24 bg-black/40 px-4 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_10px_24px_rgba(0,0,0,0.35)] outline-none placeholder:text-slate-300/65 focus:border-orange-300/55 focus:bg-black/52 focus:ring-2 focus:ring-orange-300/35";
   const inlineHeroInputClassName =
-    "h-13 w-full border-0 bg-white px-4 text-[0.95rem] text-black outline-none placeholder:text-black/45 sm:h-14 sm:px-6 sm:text-[1.5rem]";
+    "h-11 w-full border-0 bg-[#f7f4ee] px-3.5 text-[0.9rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] outline-none placeholder:text-black/58 focus:bg-white sm:h-12 sm:px-5 sm:text-[1.15rem]";
 
   const overlayClassName = isLight
-    ? "fixed inset-0 z-120 flex items-center justify-center bg-[#f8fafc]/72 p-4 backdrop-blur-sm transition-all duration-300 ease-out"
-    : "fixed inset-0 z-120 flex items-center justify-center bg-[#0f172a]/45 p-4 backdrop-blur-sm transition-all duration-300 ease-out";
+    ? "fixed inset-0 z-[180] grid place-items-center bg-black/35 px-4 py-6 backdrop-blur-sm transition-all duration-300 ease-out"
+    : "fixed inset-0 z-[180] grid place-items-center bg-black/55 px-4 py-6 backdrop-blur-sm transition-all duration-300 ease-out";
 
   const modalClassName = isLight
-    ? "w-full max-w-sm rounded-2xl border border-slate-300/70 bg-white/96 p-5 text-center shadow-[0_24px_64px_rgba(148,163,184,0.34)] transition-all duration-300 ease-out"
-    : "w-full max-w-sm rounded-2xl border border-white/22 bg-slate-950/88 p-5 text-center shadow-[0_24px_64px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out";
+    ? "w-full max-w-2xl max-h-[calc(100svh-1.5rem)] overflow-y-auto rounded-[2rem] border border-[#d7c19f] bg-[#fffaf1] px-5 py-5 text-center shadow-[0_30px_80px_rgba(15,23,42,0.35)] transition-all duration-300 ease-out sm:px-8 sm:py-7"
+    : "w-full max-w-2xl max-h-[calc(100svh-1.5rem)] overflow-y-auto rounded-[2rem] border border-amber-100/20 bg-slate-950 px-5 py-5 text-center shadow-[0_30px_80px_rgba(0,0,0,0.62)] transition-all duration-300 ease-out sm:px-8 sm:py-7";
+
+  const errorModalClassName = isLight
+    ? "w-full max-w-xl rounded-[1.75rem] border border-red-300/80 bg-white p-6 text-center shadow-[0_24px_64px_rgba(127,29,29,0.22)] transition-all duration-300 ease-out sm:p-8"
+    : "w-full max-w-xl rounded-[1.75rem] border border-red-300/35 bg-slate-950 p-6 text-center shadow-[0_24px_64px_rgba(0,0,0,0.6)] transition-all duration-300 ease-out sm:p-8";
 
   const popupLabelClassName = isLight
-    ? "text-[11px] font-medium tracking-[0.08em] text-emerald-700 uppercase"
-    : "text-[11px] font-medium tracking-[0.08em] text-emerald-300 uppercase";
+    ? "text-sm font-semibold tracking-[0.14em] text-emerald-700 uppercase"
+    : "text-sm font-semibold tracking-[0.14em] text-emerald-300 uppercase";
 
   const popupHeadingClassName = isLight
-    ? `${instrumentSerif.className} mt-1.5 text-3xl leading-tight text-slate-950`
-    : `${instrumentSerif.className} mt-1.5 text-3xl leading-tight text-white`;
+    ? `${instrumentSerif.className} mt-2.5 text-[clamp(2rem,7svh,3.4rem)] leading-[1.02] text-slate-950`
+    : `${instrumentSerif.className} mt-2.5 text-[clamp(2rem,7svh,3.4rem)] leading-[1.02] text-white`;
+
+  const popupCopyClassName = isLight
+    ? "mx-auto mt-3 max-w-xl text-[clamp(1rem,2.7svh,1.2rem)] leading-relaxed text-slate-700"
+    : "mx-auto mt-3 max-w-xl text-[clamp(1rem,2.7svh,1.2rem)] leading-relaxed text-slate-200/90";
+
+  const errorLabelClassName = isLight
+    ? "text-sm font-semibold tracking-[0.14em] text-red-700 uppercase"
+    : "text-sm font-semibold tracking-[0.14em] text-red-300 uppercase";
+
+  const errorCopyClassName = isLight
+    ? "mx-auto mt-4 max-w-lg text-[1rem] leading-relaxed text-slate-800 sm:text-[1.16rem]"
+    : "mx-auto mt-4 max-w-lg text-[1rem] leading-relaxed text-slate-100 sm:text-[1.16rem]";
 
   const popupCloseClassName = isLight
-    ? "relative z-10 mt-2 flex h-10 w-full cursor-pointer items-center justify-center rounded-lg text-xs text-slate-600 underline-offset-2 transition-all duration-300 ease-out hover:text-slate-950 hover:underline"
-    : "relative z-10 mt-2 flex h-10 w-full cursor-pointer items-center justify-center rounded-lg text-xs text-slate-300 underline-offset-2 transition-all duration-300 ease-out hover:text-white hover:underline";
+    ? "relative z-10 mt-5 inline-flex h-11 min-w-36 cursor-pointer items-center justify-center rounded-full border border-black/15 bg-black px-7 text-base font-medium text-white transition-all duration-300 ease-out hover:bg-black/88"
+    : "relative z-10 mt-5 inline-flex h-11 min-w-36 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-white/10 px-7 text-base font-medium text-white transition-all duration-300 ease-out hover:bg-white/16";
+
+  const renderOverlay = (content: ReactNode) => {
+    if (!canUseDOM) {
+      return null;
+    }
+
+    return createPortal(content, document.body);
+  };
 
   return (
     <>
       <form
         noValidate
         onSubmit={onSubmit}
-        className={isInlineHero ? "relative mt-2 w-full max-w-3xl sm:mt-2.5" : "relative mt-5 space-y-3"}
+        className={isInlineHero ? "relative mt-1.5 w-full max-w-2xl sm:mt-2" : "relative mt-5 space-y-3"}
       >
         {isInlineHero ? (
-          <div className="flex w-full overflow-hidden rounded-none border-2 border-black bg-white">
+          <div className="flex w-full overflow-hidden rounded-none border-2 border-black bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
             <input
               type="text"
               name="email"
@@ -191,7 +221,7 @@ export default function EarlyAccessForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-13 min-w-[9.5rem] cursor-pointer border-l-2 border-black bg-[#A01717] px-4 text-[0.9rem] font-medium tracking-[0.01em] text-white transition-colors duration-200 enabled:hover:bg-[#870f0f] disabled:cursor-not-allowed disabled:opacity-70 sm:h-14 sm:min-w-[13rem] sm:px-7 sm:text-[1.5rem]"
+              className="h-11 min-w-[8.6rem] cursor-pointer border-l-2 border-black bg-[#A01717] px-3.5 text-[0.82rem] font-medium tracking-[0.01em] text-white transition-colors duration-200 enabled:hover:bg-[#870f0f] disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:min-w-[11.5rem] sm:px-5 sm:text-[1.1rem]"
             >
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
@@ -248,7 +278,7 @@ export default function EarlyAccessForm({
         )}
 
         {isInlineHero ? (
-          status.message ? (
+          status.message && status.tone !== "error" ? (
             <p
               className={`mt-3 text-center text-xs transition-colors duration-300 ease-out ${statusClassName}`}
             >
@@ -262,41 +292,68 @@ export default function EarlyAccessForm({
         )}
       </form>
 
-      {showGiftPopup ? (
-        <div className={overlayClassName}>
-          <div className={modalClassName}>
-            <p className={popupLabelClassName}>
-              Added successfully
-            </p>
-            <h3 className={popupHeadingClassName}>
-              Here is a gift for you
-            </h3>
-            <a
-              href="https://youtu.be/QDia3e12czc?si=VmG8elzvdKkMvZT4"
-              target="_blank"
-              rel="noreferrer"
-              className="gift-cta group relative mx-auto mt-5 mb-3 flex h-32 w-32 cursor-pointer items-center justify-center rounded-full bg-linear-to-br from-amber-200 via-orange-100 to-rose-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_14px_34px_rgba(217,119,6,0.34)] transition-all duration-300 ease-out hover:scale-105 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_40px_rgba(217,119,6,0.4)]"
-              aria-label="Open your gift"
-            >
-              <Gift
-                aria-hidden="true"
-                className="h-20 w-20 text-amber-600 drop-shadow-[0_3px_8px_rgba(146,64,14,0.35)]"
-                strokeWidth={2.3}
-              />
-              <span className="pointer-events-none absolute -right-1 -top-1 text-lg text-amber-500">
-                ✨
-              </span>
-            </a>
-            <button
-              type="button"
-              onClick={() => setShowGiftPopup(false)}
-              className={popupCloseClassName}
-            >
-              Close
-            </button>
+      {showErrorPopup
+        ? renderOverlay(
+          <div className={overlayClassName}>
+            <div className={errorModalClassName}>
+              <p className={errorLabelClassName}>
+                Submission error
+              </p>
+              <p className={errorCopyClassName}>
+                {popupErrorMessage}
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowErrorPopup(false)}
+                className={popupCloseClassName}
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
-      ) : null}
+        )
+        : null}
+
+      {showGiftPopup
+        ? renderOverlay(
+          <div className={overlayClassName}>
+            <div className={modalClassName}>
+              <p className={popupLabelClassName}>
+                Added successfully
+              </p>
+              <h3 className={popupHeadingClassName}>
+                You&apos;re on the list
+              </h3>
+              <p className={popupCopyClassName}>
+                Tap the gift to open your surprise while you wait for early access.
+              </p>
+              <a
+                href="https://youtu.be/QDia3e12czc?si=VmG8elzvdKkMvZT4"
+                target="_blank"
+                rel="noreferrer"
+                className="gift-cta group relative mx-auto mt-5 mb-1 flex h-[min(15rem,34svh)] w-[min(15rem,34svh)] cursor-pointer items-center justify-center rounded-full bg-linear-to-br from-amber-200 via-orange-100 to-rose-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_18px_46px_rgba(217,119,6,0.36)] transition-all duration-300 ease-out hover:scale-105 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_22px_50px_rgba(217,119,6,0.42)] sm:h-[min(18rem,40svh)] sm:w-[min(18rem,40svh)]"
+                aria-label="Open your gift"
+              >
+                <Gift
+                  aria-hidden="true"
+                  className="h-[min(6.5rem,14svh)] w-[min(6.5rem,14svh)] text-amber-600 drop-shadow-[0_4px_10px_rgba(146,64,14,0.35)] sm:h-[min(8rem,17svh)] sm:w-[min(8rem,17svh)]"
+                  strokeWidth={2.25}
+                />
+                <span className="pointer-events-none absolute -right-2 -top-2 text-4xl text-amber-500">
+                  ✨
+                </span>
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowGiftPopup(false)}
+                className={popupCloseClassName}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )
+        : null}
 
       <style jsx>{`
         .loading-spinner {
