@@ -278,9 +278,9 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                 <Link
                   key={post.slug}
                   href={`${ROUTES.BLOG}/${post.slug}` as Route}
-                  className="group block"
+                  className="group block h-full"
                 >
-                  <article className="overflow-hidden rounded-[14px] border border-black/7 bg-white/70 p-3.5 outline outline-1 outline-black/8 transition-all duration-220 hover:-translate-y-1 hover:border-[#a01717]/25 hover:outline-[#a01717]/30 hover:shadow-[0_16px_30px_rgba(160,23,23,0.12)]">
+                  <article className="flex h-full flex-col overflow-hidden rounded-[14px] border border-black/7 bg-white/70 p-3.5 outline outline-1 outline-black/8 transition-all duration-220 hover:-translate-y-1 hover:border-[#a01717]/25 hover:outline-[#a01717]/30 hover:shadow-[0_16px_30px_rgba(160,23,23,0.12)]">
                     <div className="relative h-52 overflow-hidden rounded-[10px]">
                       <Image
                         src={resolveOptimizedCloudinaryPublicAsset(
@@ -297,26 +297,21 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                       />
                     </div>
 
-                    <div className="mt-3">
+                    <div className="mt-3 flex flex-1 flex-col">
                       <span className="inline-flex rounded-[6px] bg-[#243140] px-2.5 py-1 text-[0.77rem] font-medium tracking-[0.01em] text-[#fefefc]">
                         {post.category}
                       </span>
 
                       <h3
-                        className={`${instrumentSerif.className} mt-2.5 text-[1.85rem] leading-[1.1] font-normal tracking-[-0.02em] text-black/90 transition-colors duration-220 group-hover:text-[#a01717]`}
+                        className={`${instrumentSerif.className} mt-2.5 text-[1.85rem] leading-[1.18] font-normal tracking-[-0.01em] text-black/90 transition-colors duration-220 group-hover:text-[#a01717]`}
                       >
                         {post.title}
                       </h3>
 
                       <p
-                        className={`${interClassName} mt-2 text-[0.9rem] text-black/58`}
+                        className={`${interClassName} mt-auto pt-2 text-[0.9rem] text-black/58`}
                       >
-                        {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}{" "}
-                        • {post.readTimeLabel}
+                        {post.author} • {post.readTimeLabel}
                       </p>
                     </div>
                   </article>

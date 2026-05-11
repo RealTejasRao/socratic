@@ -7,8 +7,8 @@ export type BlogPostSummary = {
   slug: string;
   title: string;
   category: string;
+  author: string;
   readTimeLabel: string;
-  publishedAt: string;
   excerpt: string;
   coverImagePath: string;
 };
@@ -23,27 +23,88 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "what-is-philosophy-and-why-its-the-most-practical-thing-you-can-study",
+    title: "What Is Philosophy? And Why It's the Most Practical Thing You Can Study",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "8 min read",
+    excerpt:
+      "A practical explanation of philosophy, why it matters, and how it sharpens everyday thinking.",
+    coverImagePath: "/blog/images/what_is_philosophy.webp",
+    contentFilePath: "public/blog/content/what_is_philosophy.md",
+  },
+  {
+    slug: "free-will-vs-determinism-do-you-actually-have-a-choice",
+    title: "Free Will vs Determinism: Do You Actually Have a Choice?",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "10 min read",
+    excerpt:
+      "A clear tour through the free will debate, from hard determinism to compatibility.",
+    coverImagePath: "/blog/images/Free will vs Determinism.webp",
+    contentFilePath: "public/blog/content/Free_will_vs_determinism.md",
+  },
+  {
+    slug: "why-ai-will-never-replace-the-need-to-think-for-yourself",
+    title: "Thinking is Your Moat: Why AI Will Never Replace the Need to Think for Yourself",
+    category: "AI & Learning",
+    author: "Socratic AI Founder",
+    readTimeLabel: "7 min read",
+    excerpt:
+      "Why independent thinking becomes more valuable, not less, in an AI-first world.",
+    coverImagePath: "/blog/images/thinking_is_your_moat.webp",
+    contentFilePath: "public/blog/content/ai_will_never_replace_thinking.md",
+  },
+  {
+    slug: "nietzsche-was-right-the-philosophy-most-people-get-completely-wrong",
+    title: "Nietzsche Was Right: The Philosophy Most People Get Completely Wrong",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "11 min read",
+    excerpt:
+      "Who Nietzsche really was, what he actually argued, and why his philosophy is still widely misunderstood.",
+    coverImagePath: "/blog/images/nietzche.webp",
+    contentFilePath: "public/blog/content/nietzsche_blog.md",
+  },
+  {
+    slug: "the-socratic-method-what-it-is-and-why-its-the-most-powerful-thinking-tool-ever-invented",
+    title:
+      "The Socratic Method: What It Is and Why It's the Most Powerful Thinking Tool Ever Invented",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "7 min read",
+    excerpt:
+      "A practical breakdown of the Socratic Method and why it remains the sharpest tool for clear thinking.",
+    coverImagePath: "/blog/images/socratic-method.webp",
+    contentFilePath: "public/blog/content/socratic_method_blog.md",
+  },
+  {
+    slug: "what-is-socratic-ai-the-philosophy-ai-that-actually-challenges-you",
+    title: "What is Socratic AI? The Philosophy AI That Actually Challenges You",
+    category: "About",
+    author: "Socratic AI Founder",
+    readTimeLabel: "5 min read",
+    excerpt:
+      "Why Socratic AI was built, how it works, and what makes it different from general chatbots.",
+    coverImagePath: "/blog/images/what-is-socratic-ai.png",
+    contentFilePath: "public/blog/content/what_is_socratic_ai_blog.md",
+  },
+  {
     slug: "what-is-stoicism-understanding-stoicism-from-the-ground-up",
     title: "What is Stoicism? Understanding Stoicism From the Ground Up",
     category: "Philosophy",
+    author: "Socratic AI team",
     readTimeLabel: "15 min read",
-    publishedAt: "2026-05-11",
     excerpt:
-      "A grounded introduction to Stoicism through Socrates, Zeno, Epictetus, Seneca, and Marcus Aurelius.",
-    coverImagePath: "/blog/Philosophy/Aurelius.webp",
-    contentFilePath: "public/instruction/stoicism_blog_final.md",
+      "The complete story of Stoicism - its origins, core ideas, and how to live it.",
+    coverImagePath: "/blog/images/Aurelius.webp",
+    contentFilePath: "public/blog/content/stoicism_blog_final.md",
   },
 ];
 
 function readMarkdownFile(relativePath: string) {
   const absolutePath = path.join(process.cwd(), relativePath);
   return fs.readFileSync(absolutePath, "utf8");
-}
-
-function compareByDate(a: BlogPostSummary, b: BlogPostSummary) {
-  return (
-    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
 }
 
 export function getAllBlogPostSummaries(
@@ -53,13 +114,13 @@ export function getAllBlogPostSummaries(
     slug: post.slug,
     title: post.title,
     category: post.category,
+    author: post.author,
     readTimeLabel: post.readTimeLabel,
-    publishedAt: post.publishedAt,
     excerpt: post.excerpt,
     coverImagePath: post.coverImagePath,
   }));
 
-  const sorted = summaries.sort(compareByDate);
+  const sorted = [...summaries];
   if (sortOrder === "oldest") {
     sorted.reverse();
   }
@@ -77,8 +138,8 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     slug: post.slug,
     title: post.title,
     category: post.category,
+    author: post.author,
     readTimeLabel: post.readTimeLabel,
-    publishedAt: post.publishedAt,
     excerpt: post.excerpt,
     coverImagePath: post.coverImagePath,
     markdown: readMarkdownFile(post.contentFilePath),

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Instrument_Serif, Inter } from "next/font/google";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { FeaturesSection } from "@/src/components/home/features-section";
@@ -12,6 +11,7 @@ import { ContactSection } from "@/src/components/home/contact-section";
 import { Footer } from "@/src/components/home/footer";
 import { HeroRotatingWord } from "@/src/components/home/hero-rotating-word";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
+import EarlyAccessForm from "@/src/components/home/early-access-form";
 import {
   resolveCloudinaryPublicAsset,
   resolveOptimizedCloudinaryPublicAsset,
@@ -124,7 +124,7 @@ export default function HomePage() {
         </header>
 
         <section className="relative h-screen w-full">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[16vh] text-center sm:pt-[17vh] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:pt-[10vh]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[4.9rem] text-center sm:px-7 sm:pt-[5.3rem]">
             <div
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
@@ -139,21 +139,15 @@ export default function HomePage() {
                   <HeroRotatingWord />
                 </span>
               </h1>
-              <Link
-                href={ROUTES.HOME}
-                className={`${interClassName} hero-load-up hero-load-up-hero-cta group outline outline-[#A01717] mt-7.5 inline-flex h-11 items-center gap-2 rounded-full border border-black/55 bg-white px-6 text-[0.9rem] font-medium tracking-[0.02em] text-black/90 transition-colors duration-200 hover:bg-[#A01717] hover:text-white sm:h-8 sm:gap-1.5 sm:px-4 sm:text-[0.68rem] sm:font-normal sm:text-black/85 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:h-11 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:gap-2 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:px-6 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[0.9rem] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:font-medium`}
+              <div className="hero-load-up hero-load-up-hero-cta mt-2 w-full px-0 sm:mt-3 sm:px-4">
+                <EarlyAccessForm variant="inlineHero" theme="light" />
+              </div>
+              <p
+                className={`${interClassName} mt-1 max-w-3xl text-center text-[0.72rem] leading-relaxed text-black/45 sm:text-[0.82rem]`}
               >
-                <span className="sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:inline">
-                  Try Socratic AI
-                </span>
-                <span className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden">
-                  Get Early Access
-                </span>
-                <ArrowRight
-                  aria-hidden="true"
-                  className="hero-cta-arrow-loop h-4 w-4 stroke-[2.6] sm:h-3 sm:w-3 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:h-4 [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:w-4"
-                />
-              </Link>
+                Socratic AI is launching soon. We&apos;re giving early access to a
+                limited number of people, that too 100% FREE!
+              </p>
             </div>
           </div>
 

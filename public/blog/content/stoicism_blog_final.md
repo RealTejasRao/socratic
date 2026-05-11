@@ -224,10 +224,4 @@ Those three questions, asked honestly every night, will do more for you than a h
 
 Philosophy isn't information. It's a way of seeing. And once you start seeing through Stoic eyes, you can't unsee it.
 
-The porch is open. Come think.
-
 ---
-
-*Socratic AI is built on the greatest philosophical texts ever written - including the complete works of the Stoics. Ask it anything. Debate it. Let it challenge what you think you know.*
-
-*[Try Socratic AI → usesocratic.com](https://usesocratic.com)*

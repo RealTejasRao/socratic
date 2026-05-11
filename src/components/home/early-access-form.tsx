@@ -19,6 +19,7 @@ const instrumentSerif = Instrument_Serif({
 
 type EarlyAccessFormProps = {
   theme?: "dark" | "light";
+  variant?: "card" | "inlineHero";
 };
 
 function launchConfetti() {
@@ -52,8 +53,12 @@ function launchConfetti() {
   }, 260);
 }
 
-export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps) {
+export default function EarlyAccessForm({
+  theme = "dark",
+  variant = "card",
+}: EarlyAccessFormProps) {
   const isLight = theme === "light";
+  const isInlineHero = variant === "inlineHero";
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showGiftPopup, setShowGiftPopup] = useState(false);
@@ -140,6 +145,8 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
   const inputClassName = isLight
     ? "h-12 w-full rounded-2xl border border-slate-300/80 bg-white/92 px-4 text-sm text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),0_10px_20px_rgba(148,163,184,0.2)] outline-none placeholder:text-slate-500 focus:border-orange-400/70 focus:bg-white focus:ring-2 focus:ring-orange-300/45"
     : "h-12 w-full rounded-2xl border border-white/24 bg-black/40 px-4 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_10px_24px_rgba(0,0,0,0.35)] outline-none placeholder:text-slate-300/65 focus:border-orange-300/55 focus:bg-black/52 focus:ring-2 focus:ring-orange-300/35";
+  const inlineHeroInputClassName =
+    "h-13 w-full border-0 bg-white px-4 text-[0.95rem] text-black outline-none placeholder:text-black/45 sm:h-14 sm:px-6 sm:text-[1.5rem]";
 
   const overlayClassName = isLight
     ? "fixed inset-0 z-120 flex items-center justify-center bg-[#f8fafc]/72 p-4 backdrop-blur-sm transition-all duration-300 ease-out"
@@ -163,42 +170,96 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
 
   return (
     <>
-      <form noValidate onSubmit={onSubmit} className="relative mt-5 space-y-3">
-        <input
-          type="text"
-          name="email"
-          inputMode="email"
-          autoComplete="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Enter your email"
-          aria-invalid={status.tone === "error"}
-          className={inputClassName}
-        />
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="h-12 w-full cursor-pointer rounded-2xl bg-linear-to-r from-orange-500 via-amber-500 to-rose-500 text-sm font-semibold tracking-[0.01em] text-black shadow-[0_14px_30px_rgba(251,146,60,0.36),inset_0_1px_0_rgba(255,255,255,0.42)] transition-all duration-300 ease-out enabled:hover:-translate-y-0.5 enabled:hover:brightness-110 enabled:hover:shadow-[0_20px_36px_rgba(251,146,60,0.42),inset_0_1px_0_rgba(255,255,255,0.48)] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {isSubmitting ? (
-            <span className="inline-flex items-center gap-2">
-              <span className="loading-spinner" aria-hidden="true" />
-              <span className="inline-flex items-center">
-                Hold on
-                <span className="loading-dots" aria-hidden="true">
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
+      <form
+        noValidate
+        onSubmit={onSubmit}
+        className={isInlineHero ? "relative mt-2 w-full max-w-3xl sm:mt-2.5" : "relative mt-5 space-y-3"}
+      >
+        {isInlineHero ? (
+          <div className="flex w-full overflow-hidden rounded-none border-2 border-black bg-white">
+            <input
+              type="text"
+              name="email"
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Enter your email"
+              aria-invalid={status.tone === "error"}
+              className={inlineHeroInputClassName}
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-13 min-w-[9.5rem] cursor-pointer border-l-2 border-black bg-[#A01717] px-4 text-[0.9rem] font-medium tracking-[0.01em] text-white transition-colors duration-200 enabled:hover:bg-[#870f0f] disabled:cursor-not-allowed disabled:opacity-70 sm:h-14 sm:min-w-[13rem] sm:px-7 sm:text-[1.5rem]"
+            >
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="loading-spinner loading-spinner-light" aria-hidden="true" />
+                  <span className="inline-flex items-center">
+                    Hold on
+                    <span className="loading-dots" aria-hidden="true">
+                      <span>.</span>
+                      <span>.</span>
+                      <span>.</span>
+                    </span>
+                  </span>
                 </span>
-              </span>
-            </span>
-          ) : (
-            "Reserve my spot"
-          )}
-        </button>
-        <p className={`text-center text-xs transition-colors duration-300 ease-out ${statusClassName}`}>
-          {status.message || "No spam. Just one email when access opens."}
-        </p>
+              ) : (
+                "Get Early Access"
+              )}
+            </button>
+          </div>
+        ) : (
+          <>
+            <input
+              type="text"
+              name="email"
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Enter your email"
+              aria-invalid={status.tone === "error"}
+              className={inputClassName}
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-12 w-full cursor-pointer rounded-2xl bg-linear-to-r from-orange-500 via-amber-500 to-rose-500 text-sm font-semibold tracking-[0.01em] text-black shadow-[0_14px_30px_rgba(251,146,60,0.36),inset_0_1px_0_rgba(255,255,255,0.42)] transition-all duration-300 ease-out enabled:hover:-translate-y-0.5 enabled:hover:brightness-110 enabled:hover:shadow-[0_20px_36px_rgba(251,146,60,0.42),inset_0_1px_0_rgba(255,255,255,0.48)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="loading-spinner" aria-hidden="true" />
+                  <span className="inline-flex items-center">
+                    Hold on
+                    <span className="loading-dots" aria-hidden="true">
+                      <span>.</span>
+                      <span>.</span>
+                      <span>.</span>
+                    </span>
+                  </span>
+                </span>
+              ) : (
+                "Reserve my spot"
+              )}
+            </button>
+          </>
+        )}
+
+        {isInlineHero ? (
+          status.message ? (
+            <p
+              className={`mt-3 text-center text-xs transition-colors duration-300 ease-out ${statusClassName}`}
+            >
+              {status.message}
+            </p>
+          ) : null
+        ) : (
+          <p className={`text-center text-xs transition-colors duration-300 ease-out ${statusClassName}`}>
+            {status.message || "No spam. Just one email when access opens."}
+          </p>
+        )}
       </form>
 
       {showGiftPopup ? (
@@ -245,6 +306,11 @@ export default function EarlyAccessForm({ theme = "dark" }: EarlyAccessFormProps
           border: 2px solid rgba(0, 0, 0, 0.25);
           border-top-color: rgba(0, 0, 0, 0.95);
           animation: buttonSpin 0.75s linear infinite;
+        }
+
+        .loading-spinner-light {
+          border: 2px solid rgba(255, 255, 255, 0.45);
+          border-top-color: rgba(255, 255, 255, 0.98);
         }
 
         .loading-dots {

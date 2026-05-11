@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { Cormorant_Garamond, Instrument_Serif, Inter } from "next/font/google";
-import { ArrowLeft } from "lucide-react";
+import { Instrument_Serif, Inter } from "next/font/google";
+import { ArrowLeft, Instagram, Linkedin, Mail } from "lucide-react";
+import { Footer } from "@/src/components/home/footer";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
@@ -14,7 +16,6 @@ import {
   type BlogPost,
 } from "@/src/server/blog/posts";
 
-const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -24,10 +25,7 @@ const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin"],
 });
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
+
 const navLinks = [
   { label: "Home", href: ROUTES.HOMEPAGE },
   { label: "Features", href: `${ROUTES.HOMEPAGE}#features` },
@@ -134,9 +132,9 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
 }
 
 function renderInlineMarkdown(text: string) {
-  const tokens: React.ReactNode[] = [];
+  const tokens: ReactNode[] = [];
   const pattern =
-    /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*)/;
+    /(\*\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)\*|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*)/;
   let remaining = text;
   let tokenIndex = 0;
 
@@ -159,21 +157,33 @@ function renderInlineMarkdown(text: string) {
           href={match[3]}
           target="_blank"
           rel="noreferrer"
-          className="underline decoration-black/30 underline-offset-3 transition-colors duration-200 hover:text-[#a01717] hover:decoration-[#a01717]"
+          className="text-blue-600 underline decoration-blue-600 underline-offset-3 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-700"
         >
           {match[2]}
         </a>,
       );
-    } else if (match[4]) {
+    } else if (match[4] && match[5]) {
       tokens.push(
-        <strong key={`strong-${tokenIndex}`} className="font-semibold text-black/88">
+        <a
+          key={`link-${tokenIndex}`}
+          href={match[5]}
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-600 underline decoration-blue-600 underline-offset-3 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-700"
+        >
           {match[4]}
+        </a>,
+      );
+    } else if (match[6]) {
+      tokens.push(
+        <strong key={`strong-${tokenIndex}`} className="font-medium text-black/92">
+          {match[6]}
         </strong>,
       );
-    } else if (match[5]) {
+    } else if (match[7]) {
       tokens.push(
-        <em key={`em-${tokenIndex}`} className="italic text-black/82">
-          {match[5]}
+        <em key={`em-${tokenIndex}`} className="italic text-black/84">
+          {match[7]}
         </em>,
       );
     } else {
@@ -187,16 +197,40 @@ function renderInlineMarkdown(text: string) {
   return tokens;
 }
 
+function renderStyledPostTitle(title: string) {
+  const highlightPattern =
+    /(Stoicism|Socratic AI|Socratic Method|Most Powerful)/gi;
+  const parts = title.split(highlightPattern);
+
+  return parts.map((part, index) => {
+    const normalizedPart = part.toLowerCase();
+    if (
+      normalizedPart === "stoicism" ||
+      normalizedPart === "socratic ai" ||
+      normalizedPart === "socratic method" ||
+      normalizedPart === "most powerful"
+    ) {
+      return (
+        <span key={`highlight-${index}`} className="text-[#a01717]">
+          {part}
+        </span>
+      );
+    }
+
+    return <span key={`title-${index}`}>{part}</span>;
+  });
+}
+
 function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   if (block.type === "hr") {
-    return <hr key={`hr-${index}`} className="my-8 border-black/8" />;
+    return <hr key={`hr-${index}`} className="my-10 border-black/10" />;
   }
 
   if (block.type === "h1") {
     return (
       <h1
         key={`h1-${index}`}
-        className={`${cormorantGaramond.className} mt-3 text-[2.2rem] leading-[1.06] tracking-[-0.02em] text-black/92 sm:text-[2.6rem]`}
+        className={`${instrumentSerif.className} mt-3 text-[2.2rem] leading-[1.16] tracking-normal text-black sm:text-[2.7rem]`}
       >
         {renderInlineMarkdown(block.content)}
       </h1>
@@ -207,7 +241,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
     return (
       <h2
         key={`h2-${index}`}
-        className={`${cormorantGaramond.className} mt-10 text-[1.95rem] leading-[1.1] tracking-[-0.02em] text-black/90 sm:text-[2.15rem]`}
+        className={`${instrumentSerif.className} mt-12 text-[1.9rem] leading-[1.18] tracking-normal text-black/92 sm:text-[2.25rem]`}
       >
         {renderInlineMarkdown(block.content)}
       </h2>
@@ -218,7 +252,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
     return (
       <h3
         key={`h3-${index}`}
-        className={`${cormorantGaramond.className} mt-8 text-[1.48rem] leading-[1.14] tracking-[-0.01em] text-black/88 sm:text-[1.62rem]`}
+        className={`${instrumentSerif.className} mt-10 text-[1.55rem] leading-[1.2] tracking-normal text-black/90 sm:text-[1.8rem]`}
       >
         {renderInlineMarkdown(block.content)}
       </h3>
@@ -228,15 +262,19 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   return (
     <p
       key={`p-${index}`}
-      className={`${interClassName} mt-5 text-[1rem] leading-8 font-normal text-black/72 sm:text-[1.05rem]`}
+      className={`${interClassName} mt-6 text-[1.03rem] leading-[1.95] tracking-normal text-black/82 sm:text-[1.1rem]`}
     >
       {renderInlineMarkdown(block.content)}
     </p>
   );
 }
 
+function normalizeHeadingText(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
 function PostContent({ post }: { post: BlogPost }) {
-  const blocks = toMarkdownBlocks(post.markdown).filter((block) => {
+  const rawBlocks = toMarkdownBlocks(post.markdown).filter((block) => {
     if (block.type !== "p") {
       return true;
     }
@@ -259,31 +297,48 @@ function PostContent({ post }: { post: BlogPost }) {
     return true;
   });
 
+  const normalizedPostTitle = normalizeHeadingText(post.title);
+  const firstHeadingIndex = rawBlocks.findIndex((block) => block.type === "h1");
+  const blocks = rawBlocks.filter((block, index) => {
+    if (index !== firstHeadingIndex || block.type !== "h1") {
+      return true;
+    }
+
+    return normalizeHeadingText(block.content) !== normalizedPostTitle;
+  });
+
+  while (blocks[0]?.type === "hr") {
+    blocks.shift();
+  }
+
   return (
-    <article className="mx-auto w-full max-w-220 px-4 pb-22 sm:px-8">
+    <article>
       {blocks.map((block, index) => renderMarkdownBlock(block, index))}
 
-      <div className="mt-16 overflow-hidden rounded-[18px] border border-[#a01717]/18 bg-[linear-gradient(135deg,#fff9f7_0%,#fff2eb_45%,#fffaf6_100%)] p-6 shadow-[0_20px_42px_rgba(160,23,23,0.10)] sm:p-8">
-        <p
-          className={`${instrumentSerif.className} text-[1.45rem] leading-[1.25] text-black/86 sm:text-[1.7rem]`}
-        >
-          Keep this momentum going with Socratic AI.
-        </p>
-        <p
-          className={`${interClassName} mt-2 max-w-150 text-[0.99rem] leading-7 text-black/68 sm:text-[1.02rem]`}
-        >
-          Explore the original Stoic texts, challenge your assumptions, and
-          sharpen your thinking through dialogue.
-        </p>
+      <div className="mt-14 rounded-[3px] border border-black/10 bg-[#f0f0f0] px-6 py-7 sm:px-9 sm:py-9">
+        <div className="grid gap-7 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
+          <div>
+            <h3
+              className={`${interClassName} text-[2rem] font-semibold text-black/92`}
+            >
+              Socratic AI
+            </h3>
+            <p
+              className={`${interClassName} mt-3 max-w-180 text-[1.02rem] leading-[1.85] text-black/76 sm:text-[1.06rem]`}
+            >
+              Socratic AI is built on the greatest philosophical texts ever
+              written. The thinking partner you never had, available even at 2 AM
+              when the questions won't stop. Ask anything. Debate everything.
+            </p>
+          </div>
 
-        <a
-          href="https://usesocrtic.com"
-          target="_blank"
-          rel="noreferrer"
-          className={`${interClassName} mt-5 inline-flex items-center justify-center rounded-full border border-[#a01717]/35 bg-[#a01717] px-5 py-2.5 text-[0.9rem] font-medium tracking-[0.01em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8f1414]`}
-        >
-          Try Socratic AI
-        </a>
+          <Link
+            href={ROUTES.HOME}
+            className={`${interClassName} inline-flex w-full min-w-62 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-6 py-4 text-[1rem] font-semibold text-white transition-colors duration-220 hover:bg-[#8f1414] lg:w-auto`}
+          >
+            Try Socratic AI
+          </Link>
+        </div>
       </div>
     </article>
   );
@@ -297,17 +352,40 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  return (
-    <main className={`min-h-screen bg-[#fefefc] ${poppinsClassName}`}>
-      <div className="pointer-events-none absolute inset-0 opacity-40">
-        <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.1)_1px,transparent_1.5px)] bg-size-[22px_22px]" />
-      </div>
+  const shareItems = [
+    {
+      label: "X",
+      href: "https://x.com/useSocraticAI",
+      icon: (
+        <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
+          <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.847h-7.406l-5.8-7.584-6.639 7.584H.474l8.599-9.83L0 1.154h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" />
+        </svg>
+      ),
+    },
+    {
+      label: "Email",
+      href: "mailto:usesocratic@gmail.com",
+      icon: <Mail size={14} />,
+    },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/company/usesocratic/",
+      icon: <Linkedin size={14} />,
+    },
+    {
+      label: "Instagram",
+      href: "https://www.instagram.com/usesocratic/",
+      icon: <Instagram size={14} />,
+    },
+  ];
 
+  return (
+    <main className="min-h-screen bg-white text-black">
       <header className="fixed inset-x-0 top-0 z-50 flex flex-col border-b border-black/6 bg-white/60 px-5 py-0 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-7 sm:pt-1.5 sm:pb-0">
         <nav className="relative mx-auto flex h-16 w-full max-w-365 items-center justify-between sm:h-auto">
           <Link
             href={ROUTES.HOMEPAGE}
-            className="group relative flex h-11 w-fit items-center sm:h-8.5"
+            className="hero-load-up hero-load-up-nav-logo group relative flex h-11 w-fit items-center sm:h-8.5"
           >
             <div className="shrink-0 overflow-hidden">
               <Image
@@ -347,13 +425,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="flex items-center justify-end gap-2">
             <Link
               href={ROUTES.HOME}
-              className={`${interClassName} inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
+              className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
             >
               Try Socratic AI
             </Link>
 
             <StaggeredMenu
-              className="lg:hidden"
+              className="hero-load-up hero-load-up-nav-menu lg:hidden"
               triggerVariant="hamburger"
               items={navLinks.map((link) => ({
                 label: link.label,
@@ -369,54 +447,64 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </header>
 
-      <section className="relative z-10 flex min-h-screen flex-col px-5 pt-28 pb-8 sm:px-7 sm:pt-30">
-        <div className="mx-auto flex w-full max-w-365 flex-1 flex-col">
-          <div className="mx-auto flex w-full max-w-170 flex-col items-center text-center">
-            <h1
-              className={`${instrumentSerif.className} text-[clamp(2.6rem,6vw,4.9rem)] leading-[0.96] tracking-[-0.02em] text-black/92`}
-            >
-              What is <span className="text-[#a01717]">Stoicism</span>?
-            </h1>
-            <p
-              className={`${instrumentSerif.className} mt-4 text-[clamp(1.3rem,3vw,2rem)] leading-[1.08] tracking-[-0.01em] text-black/68`}
-            >
-              Understanding Stoicism from the ground up.
-            </p>
-          </div>
-
-          <div className="flex-1" />
-        </div>
-      </section>
-
-      <section className="relative z-10 pt-8 sm:pt-12">
-        <div className="sticky top-[4.85rem] left-0 z-40 mx-auto mb-4 w-full max-w-220 px-4 sm:top-[5.05rem] sm:px-8">
+      <section className="px-5 pt-30 pb-20 sm:px-7 sm:pt-34">
+        <div className="mx-auto w-full max-w-365">
           <Link
             href={ROUTES.BLOG}
-            className={`${interClassName} inline-flex items-center gap-2 rounded-full border border-black/10 bg-[#f3f3f2]/96 px-3.5 py-2 text-[0.86rem] font-medium text-black/76 backdrop-blur-sm transition-colors duration-200 hover:border-[#a01717]/30 hover:bg-[#a01717] hover:text-white`}
+            className={`${interClassName} inline-flex items-center gap-2 rounded-full border border-black/16 bg-[#2f2f2f] px-4 py-2 text-[0.82rem] font-semibold tracking-[0.01em] text-white transition-all duration-220 hover:-translate-y-0.5 hover:border-[#a01717]/45 hover:bg-[#a01717]`}
           >
             <ArrowLeft size={14} />
             Back to Blogs
           </Link>
-        </div>
 
-        <PostContent post={post} />
+          <div className="mt-8 grid gap-8 lg:grid-cols-[56px_minmax(0,1fr)] lg:gap-16">
+            <aside className="lg:sticky lg:top-32 lg:h-fit">
+              <ul className="flex items-center gap-2.5 lg:flex-col lg:items-start">
+                {shareItems.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      target={item.href.startsWith("http") ? "_blank" : undefined}
+                      rel={item.href.startsWith("http") ? "noreferrer" : undefined}
+                      aria-label={item.label}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/12 text-black/74 transition-colors duration-200 hover:border-[#a01717]/45 hover:text-[#a01717]"
+                    >
+                      {item.icon}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+
+            <article className="w-full max-w-220">
+              <p
+                className={`${interClassName} text-[0.76rem] font-semibold tracking-[0.14em] text-[#a01717] uppercase`}
+              >
+                {post.category}
+              </p>
+              <h1
+                className={`${instrumentSerif.className} mt-4 text-[clamp(2.6rem,6vw,5.5rem)] leading-[1.02] tracking-normal text-black`}
+              >
+                {renderStyledPostTitle(post.title)}
+              </h1>
+              <p
+                className={`${interClassName} mt-5 max-w-190 text-[clamp(1rem,1.95vw,1.28rem)] leading-[1.68] tracking-normal text-black/74`}
+              >
+                {post.excerpt}
+              </p>
+              <p className={`${interClassName} mt-6 text-[0.84rem] text-black/56`}>
+                {post.author} • {post.readTimeLabel}
+              </p>
+
+              <div className="mt-12 border-t border-black/10 pt-6">
+                <PostContent post={post} />
+              </div>
+            </article>
+          </div>
+        </div>
       </section>
 
-      <footer className="relative z-10 border-t border-black/8 bg-white/72 px-5 py-8 sm:px-7 sm:py-10">
-        <div className="mx-auto flex w-full max-w-365 flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-          <p className={`${interClassName} text-[0.88rem] text-black/56`}>
-            © {new Date().getFullYear()} Socratic AI. Think better, live wiser.
-          </p>
-          <a
-            href="https://usesocrtic.com"
-            target="_blank"
-            rel="noreferrer"
-            className={`${interClassName} text-[0.88rem] font-medium text-black/70 transition-colors duration-200 hover:text-[#a01717]`}
-          >
-            Visit usesocrtic.com
-          </a>
-        </div>
-      </footer>
+      <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOMEPAGE} />
     </main>
   );
 }
