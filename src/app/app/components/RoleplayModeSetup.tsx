@@ -46,7 +46,7 @@ export default function RoleplayModeSetup({ onChatNow }: Props) {
                       quality: "auto",
                     },
                   )}
-                  alt={philosopher.name}
+                  alt={`${philosopher.name} portrait for Socratic AI roleplay conversations`}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
                   className="object-cover"

@@ -39,7 +39,7 @@ const useCaseItems: UseCaseItem[] = [
     rightTitle: "Finally Someone to Think Out Loud With.",
     rightDescription:
       "Have the deep conversations you've always wanted, at any hour, with someone who takes you seriously. No judgment, no distraction. Just thinking. Together.",
-    placeholderLabel: "Deep conversations related image.",
+    placeholderLabel: "Philosophy conversation scene for deep dialogue",
     imageSrc: "/media/useCasesSection/first.webp",
   },
   {
@@ -51,7 +51,7 @@ const useCaseItems: UseCaseItem[] = [
     rightTitle: "Turn Your Ideas Into Powerful Arguments.",
     rightDescription:
       "It maps every claim you make, tracks your logic in real time, and fires back with the most precise counter it can find; then turns around and guides you toward the stronger version of it.",
-    placeholderLabel: "Passage Analysis Preview",
+    placeholderLabel: "Debate practice visualization with structured arguments",
     imageSrc: "/media/useCasesSection/second.webp",
   },
   {
@@ -63,7 +63,7 @@ const useCaseItems: UseCaseItem[] = [
     rightTitle: "The Entire History of Human Thought, Ready to Discuss.",
     rightDescription:
       "Understand any philosopher, any idea, the way it was always meant to be - through conversation, not a textbook. From the ancient Greeks to modern existentialists, from Stoicism to Nihilism. ",
-    placeholderLabel: "Belief Graph Preview",
+    placeholderLabel: "Classical architecture visual representing the history of philosophy",
     imageSrc: "/media/useCasesSection/third.webp",
   },
 ];

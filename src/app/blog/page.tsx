@@ -171,7 +171,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                   crop: "limit",
                   quality: "auto:good",
                 })}
-                alt="Socratic AI blog hero visual"
+                alt="Socratic AI blog hero illustration about philosophy and deep thinking"
                 width={1400}
                 height={1400}
                 sizes="100vw"
@@ -184,7 +184,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                   crop: "limit",
                   quality: "auto:good",
                 })}
-                alt="Socratic AI blog hero visual"
+                alt="Socratic AI blog hero illustration about philosophy and deep thinking"
                 width={2400}
                 height={1200}
                 sizes="100vw"

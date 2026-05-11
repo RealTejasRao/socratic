@@ -119,7 +119,7 @@ export default async function SignInPage() {
                     crop: "limit",
                   },
                 )}
-                alt="Nietzsche component"
+                alt="Friedrich Nietzsche illustration for the Socratic AI sign-in page"
                 width={1050}
                 height={1050}
                 priority

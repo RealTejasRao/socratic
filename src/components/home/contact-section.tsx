@@ -423,7 +423,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                               quality: "auto:good",
                             },
                           )}
-                          alt="Left reaching hand artwork"
+                          alt="Left classical sculpture hand reaching toward the contact section"
                           fill
                           className="object-contain object-left"
                           sizes="(max-width: 640px) 42vw, 0px"
@@ -452,7 +452,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                               quality: "auto:good",
                             },
                           )}
-                          alt="Right reaching hand artwork"
+                          alt="Right classical sculpture hand reaching toward the contact section"
                           fill
                           className="object-contain object-right"
                           sizes="(max-width: 640px) 42vw, 0px"
@@ -498,7 +498,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     quality: "auto:good",
                   },
                 )}
-                alt="Left reaching hand artwork"
+                alt="Left classical sculpture hand reaching toward the contact form"
                 fill
                 className="object-contain object-left"
                 sizes="(max-width: 640px) 46vw, (max-width: 1024px) 46vw, 42vw"
@@ -523,7 +523,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     quality: "auto:good",
                   },
                 )}
-                alt="Right reaching hand artwork"
+                alt="Right classical sculpture hand reaching toward the contact form"
                 fill
                 className="object-contain object-right"
                 sizes="(max-width: 640px) 46vw, (max-width: 1024px) 46vw, 42vw"
@@ -567,7 +567,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                         quality: "auto:good",
                       },
                     )}
-                    alt=""
+                    alt="Socratic AI contact form header background artwork"
                     fill
                     className="object-cover object-center"
                     sizes="(max-width: 640px) 100vw, 24rem"

@@ -79,7 +79,7 @@ export default function SignUpPage() {
                     crop: "limit",
                   },
                 )}
-                alt="Socrates component"
+                alt="Socrates illustration for the Socratic AI sign-up page"
                 width={1050}
                 height={1050}
                 priority

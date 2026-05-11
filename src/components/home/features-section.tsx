@@ -244,8 +244,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                   crop: "limit",
                   quality: "auto:good",
                 })}
-                alt=""
-                aria-hidden="true"
+                alt="Vertical decorative divider inspired by classical architecture"
                 width={412}
                 height={1536}
                 className="h-full w-auto"
@@ -265,7 +264,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                   crop: "limit",
                   quality: "auto:good",
                 })}
-                alt=""
+                alt="Vertical decorative divider inspired by classical architecture"
                 width={412}
                 height={1536}
                 className="h-full w-auto opacity-78"

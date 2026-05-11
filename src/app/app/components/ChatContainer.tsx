@@ -785,7 +785,7 @@ export default function ChatContainer({
             visibleRoleplayPhilosopher.imagePath,
             { width: 240, height: 240, crop: "fill", quality: "auto" },
           )}
-          alt={visibleRoleplayPhilosopher.philosopherName}
+          alt={`${visibleRoleplayPhilosopher.philosopherName} portrait for Socratic AI roleplay mode`}
           fill
           sizes="80px"
           className="object-cover"

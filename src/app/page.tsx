@@ -163,7 +163,7 @@ export default function HomePage() {
                     quality: "auto:good",
                   },
                 )}
-                alt="Socratic AI hero visual"
+                alt="Socratic AI hero illustration for philosophy and strategic thinking"
                 width={1400}
                 height={1400}
                 sizes="100vw"
@@ -176,7 +176,7 @@ export default function HomePage() {
                   crop: "limit",
                   quality: "auto:good",
                 })}
-                alt="Socratic AI hero visual"
+                alt="Socratic AI hero illustration for philosophy and strategic thinking"
                 width={2400}
                 height={1200}
                 sizes="100vw"
