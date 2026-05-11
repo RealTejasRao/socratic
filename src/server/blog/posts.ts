@@ -28,8 +28,9 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
-    slug: "what-is-philosophy-and-why-its-the-most-practical-thing-you-can-study",
-    title: "What Is Philosophy? And Why It's the Most Practical Thing You Can Study",
+    slug: "what-is-philosophy",
+    title:
+      "What Is Philosophy? And Why It's the Most Practical Thing You Can Study",
     category: "Philosophy",
     author: "Socratic AI team",
     readTimeLabel: "8 min read",
@@ -39,7 +40,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/what_is_philosophy.md",
   },
   {
-    slug: "free-will-vs-determinism-do-you-actually-have-a-choice",
+    slug: "free-will-vs-determinism",
     title: "Free Will vs Determinism: Do You Actually Have a Choice?",
     category: "Philosophy",
     author: "Socratic AI team",
@@ -50,8 +51,9 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/Free_will_vs_determinism.md",
   },
   {
-    slug: "why-ai-will-never-replace-the-need-to-think-for-yourself",
-    title: "Thinking is Your Moat: Why AI Will Never Replace the Need to Think for Yourself",
+    slug: "ai-and-critical-thinking ",
+    title:
+      "Thinking is Your Moat: Why AI Will Never Replace the Need to Think for Yourself",
     category: "AI & Learning",
     author: "Socratic AI Founder",
     readTimeLabel: "7 min read",
@@ -62,7 +64,8 @@ const BLOG_POSTS: BlogPostRecord[] = [
   },
   {
     slug: "nietzsche-philosophy",
-    title: "Nietzsche Was Right: The Philosophy Most People Get Completely Wrong",
+    title:
+      "Nietzsche Was Right: The Philosophy Most People Get Completely Wrong",
     category: "Philosophy",
     author: "Socratic AI team",
     readTimeLabel: "11 min read",
@@ -72,7 +75,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/nietzsche_blog.md",
   },
   {
-    slug: "the-socratic-method-what-it-is-and-why-its-the-most-powerful-thinking-tool-ever-invented",
+    slug: "socratic-method",
     title:
       "The Socratic Method: What It Is and Why It's the Most Powerful Thinking Tool Ever Invented",
     category: "Philosophy",
@@ -84,8 +87,9 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/socratic_method_blog.md",
   },
   {
-    slug: "what-is-socratic-ai-the-philosophy-ai-that-actually-challenges-you",
-    title: "What is Socratic AI? The Philosophy AI That Actually Challenges You",
+    slug: "what-is-socratic-ai",
+    title:
+      "What is Socratic AI? The Philosophy AI That Actually Challenges You",
     category: "About",
     author: "Socratic AI Founder",
     readTimeLabel: "5 min read",
