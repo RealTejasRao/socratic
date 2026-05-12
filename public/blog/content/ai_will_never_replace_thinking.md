@@ -12,7 +12,27 @@ That gap is the most important thing nobody is talking about.
 
 ---
 
-## Everyone Is Optimizing for the Wrong Thing
+---
+
+## **Thinking is Your Moat: Key Takeaways:**
+
+- AI is extraordinarily good at giving answers. It is almost useless at teaching you how to think
+
+- Every time you outsource a question to AI without attempting to think it through first, you skip the step where thinking ability actually gets built
+
+- AI is a compression of existing human knowledge. It cannot generate something genuinely new, make a conceptual leap no human has made, or sit with a problem that has no known answer
+
+- In a world where everyone has the same AI tools, what differentiates you is not access to information. It is what you do with it
+
+- Most people will become worse thinkers over the next decade, not better. Not because AI is making them dumb, but because they will choose to let it do the cognitive heavy lifting
+
+- The ability to think clearly has no ceiling and never becomes obsolete. Every other skill does
+
+- [Socratic AI](https://usesocratic.com/) was built to make you a better thinker, not to think for you
+
+---
+
+## The Problem with AI: Why Efficiency is Killing Critical Thinking
 
 There's a pattern I've noticed in how people are adapting to AI, and it worries me.
 
@@ -112,7 +132,7 @@ You want to be the good thinker.
 
 ---
 
-## Where to Start
+## Where to Start (Using Socratic AI)
 
 I'm not going to pretend this is easy or that I have it fully figured out myself.
 
@@ -126,10 +146,8 @@ Have conversations where you actually try to change your mind, not just defend y
 
 And use AI, absolutely use it, but use it the way a good athlete uses a training partner. To be pushed, to be challenged, to find the gaps in your thinking, not to do the thinking for you.
 
-That's the version of the AI age I'm trying to build toward. Not one where thinking becomes unnecessary. One where the people who take thinking seriously become genuinely extraordinary.
+That's the version of the AI age I'm trying to build toward. Not one where thinking becomes unnecessary. One where the people who take thinking seriously become genuinely extraordinary. And that's the reasson I built [Socratic AI](https://usesocratic.com/). 
 
 The tools exist. The question is how you use them.
-
-*[Socratic AI was built to challenge your thinking, not replace it. usesocratic.com](https://usesocratic.com)*
 
 ---

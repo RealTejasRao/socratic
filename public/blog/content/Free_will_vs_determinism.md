@@ -6,7 +6,7 @@ You woke up this morning and made a series of choices.
 
 What time to get up. Whether to check your phone immediately or wait. What to eat, what to wear, what to think about first. Small choices, mostly. Unremarkable. The kind you make hundreds of times a day without noticing.
 
-Now here's the question that has quietly haunted philosophy for over two thousand years:
+Now here's the question that has quietly haunted [philosophy](https://www.usesocratic.com/blog/what-is-philosophy) for over two thousand years:
 
 Did you actually make any of those choices? Or did the universe make them for you, and you just watched?
 
@@ -18,7 +18,28 @@ Nobody actually knows. And that's what makes this the most dangerous question in
 
 ---
 
-## The Determinist's Argument (And Why It's Hard to Escape)
+---
+
+## **Free Will vs Determinism: Key Takeaways:**
+
+- Determinism argues every event is the inevitable result of prior causes, meaning your choices may already be fixed before you make them
+
+- Kant believed humans exist in two frameworks at once: as physical objects subject to causation, and as rational agents capable of genuine freedom
+
+- Spinoza was a determinist who still believed in freedom. For him, freedom meant understanding the causes acting through you, not escaping them
+
+- William James argued that regardless of what is metaphysically true, humans cannot live, build ethics, or hold each other responsible without assuming free will
+
+- Compatibilism, the most popular position among philosophers today, says free will and determinism are not in conflict. Freedom means acting from your own character, not escaping causation
+
+- The Libet experiment suggested decisions happen before we are conscious of them, but did not prove free will is an illusion
+
+- Nobody has solved this. After 2,500 years, the debate is still open. That is not a failure of philosophy. It is a sign of a genuinely hard question
+
+-The Socratic Approach= [Socratic AI](https://www.usesocratic.com/) doesn't give you the "answer"; it uses Debate Mode to help you stress-test your own position on whether you are truly the author of your life.
+---
+
+## The Case for Determinism: Are Our Choices Pre-Determined?
 
 Let's start with the hardest position to argue against, because most people dismiss it too quickly.
 
@@ -146,22 +167,18 @@ The fact that human beings, across every culture and every era, cannot shake the
 
 Maybe freedom is not a fact about physics. Maybe it is a fact about what it means to be the kind of thing that asks questions about physics.
 
-Socrates would not have given you an answer here. He would have asked you another question.
+Socrates would not have given you an answer here. He would have used the [Socratic Method](https://www.usesocratic.com/blog/socratic-method) to show you the contradictions in your own logic.
 
 What do you think?
 
 ---
 
-## This Is Exactly What Debate Mode Is For
+## Test Your Agency: Using Socratic AI to Debate Free Will
 
 The free will debate is not an academic exercise. It is one of the most consequential questions a human being can sit with, because how you answer it, or how you live as if you've answered it, shapes everything. How you hold people responsible. How you hold yourself responsible. Whether regret makes sense. Whether effort makes sense. Whether you are the author of your life or its audience.
 
 These are not questions with easy answers. They are questions that need to be argued, tested, pushed on from every angle.
 
-That is exactly what Socratic AI's debate mode was built for.
-
-Pick a side. Defend it. See if it holds.
-
-*[Take the debate to usesocratic.com](https://usesocratic.com)*
+Is freedom a fact of physics or a fact of the soul? Pick a side. Defend it. See if it holds. [Challenge your assumptions in Debate Mode on Socratic AI](https://www.usesocratic.com/#use-cases)
 
 ---

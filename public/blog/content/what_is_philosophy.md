@@ -12,6 +12,24 @@ That's not an insult. It's an invitation.
 
 ---
 
+## **What Is Philosophy? Key Takeaways: **
+
+- Philosophy is not an academic subject. It is the practice of examining what you actually believe and why
+
+- You are already doing philosophy every day, just badly and without the [right tools](https://www.usesocratic.com/blog/socratic-method)
+
+- Every opinion, value, and moral decision you make is a philosophical position whether you know it or not
+
+- The difference between a bad philosopher and a good one is not intelligence. It is the habit of examining your own thinking
+
+- Philosophy is the most practical discipline that exists: it makes you harder to manipulate, better at decisions, and more resilient when things go wrong
+
+- The right entry point is not Plato or Aristotle. It is your own beliefs, your own assumptions, your own life
+
+- [Socratic AI](https://www.usesocratic.com/) was built for exactly this: not to teach you philosophy as history, but to help you practice it as a daily discipline
+
+---
+
 ## What Philosophy Actually Is
 
 Here's the definition you got in school, if you got one at all: philosophy is the study of fundamental questions about existence, knowledge, values, reason, and language.
@@ -44,7 +62,7 @@ When you think about what you actually want from your life, what would make it f
 
 You are not choosing whether to do philosophy. You are choosing whether to do it deliberately and well, or accidentally and badly.
 
-Most people choose the second option by default. Not because they're incapable of the first, but because nobody ever showed them that the first option existed.
+Most people choose the second option by default. Take [Stoicism](https://www.usesocratic.com/blog/what-is-stoicism). The entire philosophy is built on one practical question: what is actually in your control and what isn't? Every time you catch yourself spiraling about something you cannot change, and consciously redirect your energy toward what you can, you are doing [Stoic philosophy](https://www.usesocratic.com/blog/what-is-stoicism). You just didn't know it had a name.
 
 ---
 
@@ -64,6 +82,7 @@ A good philosopher is harder to fool. Including by themselves.
 
 That is worth a great deal in any life.
 
+[Nietzsche](https://www.usesocratic.com/blog/nietzsche-philosophy) is a good example of what happens when philosophy gets genuinely personal. He didn't write for academics. He wrote for people who were willing to look at their own values, really look at them, and ask whether they had actually chosen them or just inherited them from a culture that needed them to stay comfortable and compliant. That question is philosophy at its most practical and its most dangerous. It changes the way you see everything once you actually sit with it.
 ---
 
 ## What the Greatest Minds Understood That Most People Miss
@@ -136,8 +155,8 @@ You cannot become a better thinker by consuming content about thinking. You beco
 
 That is what Socratic AI is designed to create. Not a philosophy encyclopedia. A philosophy practice. A place to bring the questions you actually have and work through them with something that has genuine philosophical depth and is not going to tell you what you want to hear just because it's easier.
 
-You are already a philosopher. The question is whether you're going to get better at it.
+You are already a philosopher. The question is whether you're going to get better at it. [Socratic AI is the gym where you train your mind. Claim your spot in our Early Access cohort today.](https://www.usesocratic.com/) 
 
-*[Start the practice at usesocratic.com](https://usesocratic.com)*
+
 
 

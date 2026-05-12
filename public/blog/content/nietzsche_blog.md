@@ -18,9 +18,9 @@ Let's fix that.
 
 ## Nietzsche Was Right: Key Takeaways:
 
-- Nietzsche never claimed God literally doesn't exist — "God is dead" is a cultural diagnosis, not an atheist declaration
+- Nietzsche never claimed God literally doesn't exist - "God is dead" is a cultural diagnosis, not an atheist declaration
 
-- He feared nihilism more than anyone — his entire philosophy was an attempt to overcome it
+- He feared nihilism more than anyone - his entire philosophy was an attempt to overcome it
 
 - The will to power is about self-mastery and growth, not domination over others
 
@@ -72,7 +72,7 @@ We killed God not with disbelief but with knowledge. And we didn't fully underst
 
 Here's the part that most people miss entirely. Nietzsche wasn't celebrating this. He was alarmed by it.
 
-The passage where "God is dead" appears in The Gay Science is one of the most haunting things in all of philosophy. A madman runs into a marketplace holding a lantern in broad daylight, screaming that he's looking for God. The crowd laughs at him. He turns on them: "Where has God gone? I shall tell you. We have killed him, you and I. But how did we do this? How could we drink up the sea? Who gave us the sponge to wipe away the entire horizon?"
+The passage where "God is dead" appears in The Gay Science is one of the most haunting things in all of [philosophy](https://www.usesocratic.com/blog/what-is-philosophy). A madman runs into a marketplace holding a lantern in broad daylight, screaming that he's looking for God. The crowd laughs at him. He turns on them: "Where has God gone? I shall tell you. We have killed him, you and I. But how did we do this? How could we drink up the sea? Who gave us the sponge to wipe away the entire horizon?"
 
 The madman then falls silent and says: "I have come too early. This tremendous event is still on its way."
 

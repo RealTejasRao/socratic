@@ -10,7 +10,27 @@ So let's talk.
 
 ---
 
-## Nobody Was Building This
+---
+
+## What is Socratic AI? Key Takeaways*:
+
+- Socratic AI is a philosophy AI trained on the greatest philosophical texts ever written. Not summaries. The actual texts, absorbed at depth
+
+- It is the most sophisticated AI built specifically for philosophy. Not a generalist with a philosophy mode. A specialist
+
+- Socratic Mode is the default. It challenges your assumptions, debates your positions, explains ideas at depth, and holds genuine intellectual conversation depending on what you need
+
+- Debate Mode takes the opposite side of any position you hold and argues it relentlessly, without ego, until the argument is completely exhausted
+
+- There are three tones: Ruthless and Blunt, Simple and Clear, and Encouraging and Supportive. Same philosophical depth underneath all three
+
+- It was built because nothing like it existed. Every other AI gave Wikipedia summaries and called it philosophy
+
+- Early access is open now at [usesocratic.com](https://www.usesocratic.com/)
+
+---
+
+## Why I Built Socratic AI: The Problem with Standard Chatbots
 
 I've been obsessed with philosophy for a while. Not in an academic, memorize-the-textbook way. In a "I can't stop thinking about this" way.
 
@@ -97,7 +117,7 @@ So I built three tones. Ruthless and Blunt for people like me. Simple and Clear 
 I personally use either Simple and Clear, or Ruthless and Blunt mostly.
 ---
 
-## We're Just Getting Started
+## Join the Future of Philosophy: Socratic AI Early Access
 
 Socratic AI is in early access right now. Limited spots. Once they're gone, you'll wait for the full launch.
 
@@ -108,3 +128,5 @@ If you've read this entire thing and something in you is lit up, that feeling is
 Philosophy isn't something you study. It's something you do.
 
 Go do it.
+
+[Claim your spot in Socratic AI Early Access at usesocratic.com](https://www.usesocratic.com/)

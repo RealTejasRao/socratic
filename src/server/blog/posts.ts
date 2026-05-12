@@ -51,7 +51,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/Free_will_vs_determinism.md",
   },
   {
-    slug: "ai-and-critical-thinking ",
+    slug: "ai-and-critical-thinking",
     title:
       "Thinking is Your Moat: Why AI Will Never Replace the Need to Think for Yourself",
     category: "AI & Learning",

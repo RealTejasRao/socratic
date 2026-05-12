@@ -18,7 +18,25 @@ That man was Socrates. And what he just did to you has a name.
 
 ---
 
-## He Never Wrote a Single Word
+## The Socratic Method: Key Takeaways
+
+- The Socratic Method is a process of questioning that tests whether a belief actually holds up under scrutiny
+
+- It works from the inside out, not adding new information, but examining what you already believe
+
+- The goal is not to win arguments but to reach aporia: the productive state of realizing you don't know what you thought you knew
+
+- Socrates never wrote a single word. Everything we know comes from his students, mainly Plato
+
+- He was sentenced to death for asking too many questions, and spent his last morning still asking them
+
+- The method underlies science, law, therapy, and first principles thinking - it has survived 2,500 years because it works
+
+- [Socratic AI](https://www.usesocratic.com/) is built around this method, it is the engine under every conversation
+
+---
+
+## The Origins of the Socratic Method (And Why It Matters to Socratic AI)
 
 Here's something that gets me every time I think about it.
 
@@ -126,11 +144,13 @@ That discomfort you feel right now is 2,500 years old. It's Socrates, still out 
 
 ---
 
-## Why We Built Around This
+## [Socratic AI](https://www.usesocratic.com/): Bringing the Elenchus into the Digital Age
 
 Socratic AI is named after this method because the method is the product.
 
-Not as a metaphor. Not as branding. The Socratic Method is literally what Socratic AI runs on. Socratic Mode finds your assumptions, asks the questions you haven't asked yourself, follows the logic wherever it actually leads, and does not let you off easy just because letting you off easy would feel nicer.
+The Socratic Method is literally the engine under the hood. Most AI is built to give you a quick answer so you can stop thinking. Socratic AI is built to be the barefoot man on the street who stops you and asks: 'But how do you know that is true?
+
+Socratic Mode finds your assumptions, asks the questions you haven't asked yourself, follows the logic wherever it actually leads, and does not let you off easy just because letting you off easy would feel nicer.
 
 Because the point was never to make you feel smart.
 
