@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { Instrument_Serif, Inter } from "next/font/google";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { FeaturesSection } from "@/src/components/home/features-section";
@@ -18,6 +17,7 @@ import {
 } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
+import { HOME_HERO_HASH, HOME_HERO_ID } from "@/src/lib/home-hero";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Socratic AI Homepage | AI for Philosophy, Strategy, and Deep Thinking",
@@ -51,6 +51,7 @@ export default function HomePage() {
       fallbackClassName={`min-h-screen w-full bg-[#fefefc] ${poppinsClassName}`}
     >
       <main
+        id="home"
         className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName}`}
       >
         <div className="pointer-events-none absolute inset-0 opacity-50">
@@ -99,12 +100,12 @@ export default function HomePage() {
             </div>
 
             <div className="flex items-center justify-end gap-2">
-              <Link
-                href={ROUTES.HOME}
+              <a
+                href={HOME_HERO_HASH}
                 className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
               >
                 Try Socratic AI
-              </Link>
+              </a>
 
               <StaggeredMenu
                 className="hero-load-up hero-load-up-nav-menu lg:hidden"
@@ -123,27 +124,27 @@ export default function HomePage() {
           </div>
         </header>
 
-        <section className="relative h-screen w-full">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-[5rem] text-center sm:px-7 sm:pt-[4.6rem]">
+        <section id={HOME_HERO_ID} className="relative h-screen w-full">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-24 text-center sm:px-7 sm:pt-[4.6rem]">
             <div
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
-              <h1 className="hero-load-up hero-load-up-title-1 leading-[1.05] sm:leading-[0.96] sm:text-[clamp(1.45rem,4vw,2.35rem)]">
-                <span className="block text-[clamp(1.82rem,7vw,2.55rem)] sm:inline sm:text-inherit [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(1.82rem,7vw,2.55rem)]">
+              <h1 className="hero-load-up hero-load-up-title-1 leading-[1.03] sm:leading-[0.96] sm:text-[clamp(1.45rem,4vw,2.35rem)]">
+                <span className="block text-[clamp(1.95rem,7.6vw,2.7rem)] sm:inline sm:text-inherit [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(1.95rem,7.6vw,2.7rem)]">
                   Your Personal AI For
                 </span>{" "}
-                <span className="mt-2.5 block text-[clamp(2.55rem,10.6vw,3.85rem)] sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block">
+                <span className="mt-2.5 block text-[clamp(2.95rem,11.2vw,4.2rem)] sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block">
                   <HeroRotatingWord align="center" />
                 </span>
                 <span className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden">
                   <HeroRotatingWord />
                 </span>
               </h1>
-              <div className="hero-load-up hero-load-up-hero-cta mt-2.5 w-full px-0 sm:mt-2.5 sm:px-4">
+              <div className="hero-load-up hero-load-up-hero-cta mt-3.5 w-full px-1 sm:mt-2.5 sm:px-4">
                 <EarlyAccessForm variant="inlineHero" theme="light" />
               </div>
               <p
-                className={`${interClassName} hero-load-up hero-load-up-hero-copy mt-2 max-w-2xl text-center text-[0.68rem] leading-relaxed text-black/45 sm:text-[0.78rem]`}
+                className={`${interClassName} hero-load-up hero-load-up-hero-copy mt-2.5 max-w-2xl text-center text-[0.74rem] leading-relaxed text-black/45 sm:text-[0.78rem]`}
               >
                 Socratic AI is in private beta. Early access is currently being
                 granted to limited founding members at no cost. Reserve your

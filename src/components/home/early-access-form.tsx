@@ -1,10 +1,15 @@
 "use client";
 
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Gift } from "lucide-react";
 import confetti from "canvas-confetti";
 import { Instrument_Serif } from "next/font/google";
 import { createPortal } from "react-dom";
+import {
+  HOME_HERO_EMAIL_FOCUS_EVENT,
+  HOME_HERO_EMAIL_INPUT_ID,
+  HOME_HERO_HASH,
+} from "@/src/lib/home-hero";
 
 type FormStatus = {
   tone: "idle" | "error" | "success";
@@ -65,11 +70,61 @@ export default function EarlyAccessForm({
   const [showGiftPopup, setShowGiftPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [popupErrorMessage, setPopupErrorMessage] = useState("");
+  const [isHeroInputHighlighted, setIsHeroInputHighlighted] = useState(false);
   const [status, setStatus] = useState<FormStatus>({
     tone: "idle",
     message: "",
   });
+  const heroInputRef = useRef<HTMLInputElement | null>(null);
+  const highlightTimeoutRef = useRef<number | null>(null);
   const canUseDOM = typeof window !== "undefined" && typeof document !== "undefined";
+
+  useEffect(() => {
+    if (!isInlineHero) return;
+
+    const triggerHeroInputHighlight = () => {
+      if (highlightTimeoutRef.current !== null) {
+        window.clearTimeout(highlightTimeoutRef.current);
+      }
+
+      setIsHeroInputHighlighted(false);
+      window.requestAnimationFrame(() => {
+        setIsHeroInputHighlighted(true);
+      });
+
+      highlightTimeoutRef.current = window.setTimeout(() => {
+        setIsHeroInputHighlighted(false);
+        highlightTimeoutRef.current = null;
+      }, 850);
+    };
+
+    const focusHeroInput = () => {
+      const input = heroInputRef.current;
+      if (!input) return;
+
+      input.focus();
+      const caretPosition = input.value.length;
+      input.setSelectionRange(caretPosition, caretPosition);
+    };
+
+    const onRequestFocus = () => {
+      focusHeroInput();
+      window.setTimeout(focusHeroInput, 160);
+      triggerHeroInputHighlight();
+    };
+
+    if (window.location.hash === HOME_HERO_HASH) {
+      onRequestFocus();
+    }
+
+    window.addEventListener(HOME_HERO_EMAIL_FOCUS_EVENT, onRequestFocus);
+    return () => {
+      window.removeEventListener(HOME_HERO_EMAIL_FOCUS_EVENT, onRequestFocus);
+      if (highlightTimeoutRef.current !== null) {
+        window.clearTimeout(highlightTimeoutRef.current);
+      }
+    };
+  }, [isInlineHero]);
 
   const showError = (message: string) => {
     setStatus({
@@ -152,7 +207,7 @@ export default function EarlyAccessForm({
     ? "h-12 w-full rounded-2xl border border-slate-300/80 bg-white/92 px-4 text-sm text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),0_10px_20px_rgba(148,163,184,0.2)] outline-none placeholder:text-slate-500 focus:border-orange-400/70 focus:bg-white focus:ring-2 focus:ring-orange-300/45"
     : "h-12 w-full rounded-2xl border border-white/24 bg-black/40 px-4 text-sm text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_10px_24px_rgba(0,0,0,0.35)] outline-none placeholder:text-slate-300/65 focus:border-orange-300/55 focus:bg-black/52 focus:ring-2 focus:ring-orange-300/35";
   const inlineHeroInputClassName =
-    "h-11 w-full border-0 bg-[#f7f4ee] px-3.5 text-[0.9rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] outline-none placeholder:text-black/58 focus:bg-white sm:h-12 sm:px-5 sm:text-[1.15rem]";
+    "h-[3.35rem] w-full border-0 bg-[#f7f4ee] px-4 text-[1.2rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] outline-none placeholder:text-[1.2rem] placeholder:text-black/58 focus:bg-white sm:h-12 sm:px-5 sm:text-[1.15rem]";
 
   const overlayClassName = isLight
     ? "fixed inset-0 z-[180] grid place-items-center bg-black/35 px-4 py-6 backdrop-blur-sm transition-all duration-300 ease-out"
@@ -206,8 +261,14 @@ export default function EarlyAccessForm({
         className={isInlineHero ? "relative mt-1.5 w-full max-w-2xl sm:mt-2" : "relative mt-5 space-y-3"}
       >
         {isInlineHero ? (
-          <div className="flex w-full overflow-hidden rounded-none border-2 border-black bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+          <div
+            className={`flex w-full flex-col overflow-hidden rounded-none border-2 border-black bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)] sm:flex-row ${
+              isHeroInputHighlighted ? "hero-email-input-highlight" : ""
+            }`}
+          >
             <input
+              id={HOME_HERO_EMAIL_INPUT_ID}
+              ref={heroInputRef}
               type="text"
               name="email"
               inputMode="email"
@@ -221,7 +282,7 @@ export default function EarlyAccessForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-11 min-w-[8.6rem] cursor-pointer border-l-2 border-black bg-[#A01717] px-3.5 text-[0.82rem] font-medium tracking-[0.01em] text-white transition-colors duration-200 enabled:hover:bg-[#870f0f] disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:min-w-[11.5rem] sm:px-5 sm:text-[1.1rem]"
+              className="h-[3.35rem] w-full cursor-pointer border-t-2 border-black bg-[#A01717] px-4 text-[1.5rem] font-medium tracking-[0.01em] text-white transition-colors duration-200 enabled:hover:bg-[#870f0f] disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:w-auto sm:min-w-46 sm:border-t-0 sm:border-l-2 sm:px-5 sm:text-[1.1rem]"
             >
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
@@ -430,6 +491,38 @@ export default function EarlyAccessForm({
           }
           75% {
             transform: rotate(-3deg);
+          }
+        }
+
+        .hero-email-input-highlight {
+          animation: heroInputFocusPulse 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+          transform-origin: center;
+          will-change: transform, box-shadow;
+        }
+
+        @keyframes heroInputFocusPulse {
+          0% {
+            transform: scale(1);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+          }
+          35% {
+            transform: scale(1.018);
+            box-shadow:
+              0 0 0 4px rgba(160, 23, 23, 0.22),
+              0 14px 28px rgba(160, 23, 23, 0.2);
+          }
+          100% {
+            transform: scale(1);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-email-input-highlight {
+            animation: none;
+            box-shadow:
+              0 0 0 4px rgba(160, 23, 23, 0.2),
+              0 8px 18px rgba(15, 23, 42, 0.08);
           }
         }
       `}</style>

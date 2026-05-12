@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  HOME_HERO_EMAIL_FOCUS_EVENT,
+  HOME_HERO_HASH,
+} from "@/src/lib/home-hero";
 
 const MAX_RETRIES = 18;
 const RETRY_MS = 80;
@@ -34,6 +38,12 @@ function scrollToCurrentHash(behavior: ScrollBehavior): boolean {
   return true;
 }
 
+function requestHeroEmailFocusForHash() {
+  if (typeof window === "undefined") return;
+  if (window.location.hash !== HOME_HERO_HASH) return;
+  window.dispatchEvent(new CustomEvent(HOME_HERO_EMAIL_FOCUS_EVENT));
+}
+
 export function HomeHashScroll() {
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -49,12 +59,14 @@ export function HomeHashScroll() {
       tries += 1;
       const didScroll = scrollToCurrentHash(initialBehavior);
       if (didScroll || tries >= MAX_RETRIES) {
+        requestHeroEmailFocusForHash();
         window.clearInterval(intervalId);
       }
     }, RETRY_MS);
 
     const onHashChange = () => {
       scrollToCurrentHash(prefersReducedMotion ? "auto" : "smooth");
+      requestHeroEmailFocusForHash();
     };
 
     const onHashLinkClick = (event: MouseEvent) => {
@@ -69,6 +81,11 @@ export function HomeHashScroll() {
 
       if (href === "#") {
         replayHeroLoadAnimation();
+        return;
+      }
+
+      if (href === HOME_HERO_HASH) {
+        window.dispatchEvent(new CustomEvent(HOME_HERO_EMAIL_FOCUS_EVENT));
         return;
       }
 

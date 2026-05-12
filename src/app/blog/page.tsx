@@ -2,13 +2,13 @@ import type { Metadata, Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Instrument_Serif, Inter } from "next/font/google";
-import { ChevronDown } from "lucide-react";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import {
   resolveCloudinaryPublicAsset,
   resolveOptimizedCloudinaryPublicAsset,
 } from "@/src/lib/cloudinary-public-assets";
+import { HOME_HERO_URL } from "@/src/lib/home-hero";
 import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
 import {
@@ -55,20 +55,50 @@ const sortOptions = [
 ] as const;
 
 type BlogPageProps = {
-  searchParams?: {
-    sort?: string;
-  };
+  searchParams?:
+    | Promise<{
+        sort?: string | string[];
+        category?: string | string[];
+      }>
+    | {
+        sort?: string | string[];
+        category?: string | string[];
+      };
 };
 
-export default function BlogPage({ searchParams }: BlogPageProps) {
-  const requestedSort = searchParams?.sort?.toLowerCase();
+function getFirstParamValue(
+  value: string | string[] | undefined,
+): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function slugifyCategory(category: string) {
+  return category.toLowerCase().replace(/ & /g, "-and-").replace(/\s+/g, "-");
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const resolvedSearchParams =
+    searchParams && "then" in searchParams ? await searchParams : searchParams;
+  const requestedSort = getFirstParamValue(resolvedSearchParams?.sort)
+    ?.toLowerCase()
+    .trim();
+  const requestedCategory = getFirstParamValue(resolvedSearchParams?.category)
+    ?.toLowerCase()
+    .trim();
   const sortValue: BlogSortOrder =
     requestedSort === "oldest" || requestedSort === "newest"
       ? requestedSort
       : "newest";
-  const activeSortLabel =
-    sortOptions.find((option) => option.value === sortValue)?.label ?? "Newest";
-  const posts = getAllBlogPostSummaries(sortValue);
+  const categoryBySlug = new Map(
+    blogCategories.map((category) => [slugifyCategory(category), category]),
+  );
+  const activeCategory =
+    requestedCategory && categoryBySlug.has(requestedCategory)
+      ? categoryBySlug.get(requestedCategory)!
+      : "All";
+  const posts = getAllBlogPostSummaries(sortValue).filter((post) =>
+    activeCategory === "All" ? true : post.category === activeCategory,
+  );
 
   return (
     <LoadGate
@@ -124,7 +154,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
 
             <div className="flex items-center justify-end gap-2">
               <Link
-                href={ROUTES.HOME}
+                href={HOME_HERO_URL}
                 className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
               >
                 Try Socratic AI
@@ -195,7 +225,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
           </div>
         </section>
 
-        <section className="relative z-20 px-4 pt-28 pb-16 sm:px-6 sm:pt-[9rem] sm:pb-20">
+        <section className="relative z-20 px-4 pt-28 pb-16 sm:px-6 sm:pt-36 sm:pb-20">
           <div className="mx-auto w-full max-w-365 px-4 py-5 sm:px-8 sm:py-8">
             <div className="space-y-2.5">
               <h2
@@ -214,20 +244,26 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
             <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 {blogCategories.map((category) => {
-                  const isActive = category === "All";
+                  const isActive = category === activeCategory;
+                  const categorySlug = slugifyCategory(category);
+                  const href =
+                    category === "All"
+                      ? (`${ROUTES.BLOG}?sort=${sortValue}` as Route)
+                      : (`${ROUTES.BLOG}?sort=${sortValue}&category=${categorySlug}` as Route);
 
                   return (
-                    <button
+                    <Link
                       key={category}
-                      type="button"
+                      href={href}
+                      scroll={false}
                       className={`${interClassName} cursor-pointer rounded-[11px] border px-4 py-2 text-[0.98rem] font-medium transition-colors duration-220 sm:px-5 ${
                         isActive
-                          ? "border-transparent bg-[#dfdfdd] text-black/90"
+                          ? "border-transparent bg-[#a01717] text-white"
                           : "border-transparent bg-transparent text-black/86 hover:bg-[#e5e4e2] hover:text-[#a01717]"
                       }`}
                     >
                       {category}
-                    </button>
+                    </Link>
                   );
                 })}
               </div>
@@ -238,38 +274,30 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                 >
                   Sort by:
                 </span>
-                <details className="group relative">
-                  <summary
-                    className={`${interClassName} inline-flex cursor-pointer list-none items-center gap-2 rounded-[11px] border border-black/10 bg-[#f4f4f3] px-4 py-2 text-[1rem] font-medium text-black/88 transition-colors duration-220 marker:content-none hover:border-[#a01717]/25 hover:bg-[#a01717] hover:text-white`}
-                  >
-                    {activeSortLabel}
-                    <ChevronDown
-                      size={16}
-                      strokeWidth={2}
-                      className="transition-transform duration-220 group-open:rotate-180"
-                    />
-                  </summary>
+                <div className="inline-flex items-center gap-1 rounded-[11px] border border-black/10 bg-[#f4f4f3] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
+                  {sortOptions.map((option) => {
+                    const isActive = option.value === sortValue;
+                    const categoryQuery =
+                      activeCategory === "All"
+                        ? ""
+                        : `&category=${slugifyCategory(activeCategory)}`;
 
-                  <div className="absolute right-0 z-20 mt-2 min-w-32 rounded-[11px] border border-black/10 bg-[#f4f4f3] p-1.5 shadow-[0_10px_22px_rgba(0,0,0,0.08)]">
-                    {sortOptions.map((option) => {
-                      const isActive = option.value === sortValue;
-
-                      return (
-                        <Link
-                          key={option.value}
-                          href={`${ROUTES.BLOG}?sort=${option.value}` as Route}
-                          className={`${interClassName} block rounded-[8px] px-3 py-1.5 text-[0.93rem] font-medium transition-colors duration-200 ${
-                            isActive
-                              ? "bg-[#dfdfdd] text-black/90"
-                              : "text-black/84 hover:bg-[#a01717] hover:text-white"
-                          }`}
-                        >
-                          {option.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </details>
+                    return (
+                      <Link
+                        key={option.value}
+                        href={`${ROUTES.BLOG}?sort=${option.value}${categoryQuery}` as Route}
+                        scroll={false}
+                        className={`${interClassName} rounded-xl border px-3 py-1.5 text-[0.93rem] font-medium transition-all duration-300 ease-out ${
+                          isActive
+                            ? "border-[#8a1414] bg-[#a01717] text-white shadow-[0_3px_10px_rgba(160,23,23,0.3)]"
+                            : "border-transparent text-black/84 hover:border-[#992424]/35 hover:bg-[#c34545] hover:text-white"
+                        }`}
+                      >
+                        {option.label}
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -280,7 +308,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                   href={`${ROUTES.BLOG}/${post.slug}` as Route}
                   className="group block h-full"
                 >
-                  <article className="flex h-full flex-col overflow-hidden rounded-[14px] border border-black/7 bg-white/70 p-3.5 outline outline-1 outline-black/8 transition-all duration-220 hover:-translate-y-1 hover:border-[#a01717]/25 hover:outline-[#a01717]/30 hover:shadow-[0_16px_30px_rgba(160,23,23,0.12)]">
+                  <article className="flex h-full flex-col overflow-hidden rounded-[14px] border border-black/7 bg-white/70 p-3.5 outline outline-black/8 transition-all duration-220 hover:-translate-y-1 hover:border-[#a01717]/25 hover:outline-[#a01717]/30 hover:shadow-[0_16px_30px_rgba(160,23,23,0.12)]">
                     <div className="relative h-52 overflow-hidden rounded-[10px]">
                       <Image
                         src={resolveOptimizedCloudinaryPublicAsset(
@@ -298,7 +326,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                     </div>
 
                     <div className="mt-3 flex flex-1 flex-col">
-                      <span className="inline-flex rounded-[6px] bg-[#243140] px-2.5 py-1 text-[0.77rem] font-medium tracking-[0.01em] text-[#fefefc]">
+                      <span className="inline-flex self-start rounded-[6px] bg-[#243140] px-2.5 py-1 text-[0.77rem] font-medium tracking-[0.01em] text-[#fefefc]">
                         {post.category}
                       </span>
 

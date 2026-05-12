@@ -8,6 +8,7 @@ import { ArrowLeft, Instagram, Linkedin, Mail } from "lucide-react";
 import { Footer } from "@/src/components/home/footer";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { HOME_HERO_URL } from "@/src/lib/home-hero";
 import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
 import {
@@ -197,19 +198,32 @@ function renderInlineMarkdown(text: string) {
   return tokens;
 }
 
-function renderStyledPostTitle(title: string) {
-  const highlightPattern =
-    /(Stoicism|Socratic AI|Socratic Method|Most Powerful)/gi;
-  const parts = title.split(highlightPattern);
+const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
+  "what-is-philosophy": ["Philosophy", "Most Practical Thing"],
+  "free-will-vs-determinism": ["Free Will", "Determinism"],
+  "ai-and-critical-thinking": ["Thinking is Your Moat", "Never"],
+  "nietzsche-philosophy": ["Nietzsche Was Right", "Completely Wrong"],
+  "socratic-method": ["The Socratic Method", "Most Powerful"],
+  "what-is-socratic-ai": ["What is Socratic AI?"],
+  "what-is-stoicism": ["What is Stoicism?"],
+};
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function renderStyledPostTitle(post: BlogPost) {
+  const phrases = TITLE_HIGHLIGHTS_BY_SLUG[post.slug];
+  if (!phrases || phrases.length === 0) {
+    return post.title;
+  }
+
+  const highlightSet = new Set(phrases.map((phrase) => phrase.toLowerCase()));
+  const pattern = new RegExp(`(${phrases.map(escapeRegExp).join("|")})`, "gi");
+  const parts = post.title.split(pattern);
 
   return parts.map((part, index) => {
-    const normalizedPart = part.toLowerCase();
-    if (
-      normalizedPart === "stoicism" ||
-      normalizedPart === "socratic ai" ||
-      normalizedPart === "socratic method" ||
-      normalizedPart === "most powerful"
-    ) {
+    if (highlightSet.has(part.toLowerCase())) {
       return (
         <span key={`highlight-${index}`} className="text-[#a01717]">
           {part}
@@ -333,7 +347,7 @@ function PostContent({ post }: { post: BlogPost }) {
           </div>
 
           <Link
-            href="https://usesocratic.com"
+            href={HOME_HERO_URL}
             className={`${interClassName} inline-flex w-full min-w-62 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-6 py-4 text-[1rem] font-semibold text-white transition-colors duration-220 hover:bg-[#8f1414] lg:w-auto`}
           >
             Try Socratic AI
@@ -424,7 +438,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           <div className="flex items-center justify-end gap-2">
             <Link
-              href={ROUTES.HOME}
+              href={HOME_HERO_URL}
               className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
             >
               Try Socratic AI
@@ -485,7 +499,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <h1
                 className={`${instrumentSerif.className} mt-4 text-[clamp(2.6rem,6vw,5.5rem)] leading-[1.02] tracking-normal text-black`}
               >
-                {renderStyledPostTitle(post.title)}
+                {renderStyledPostTitle(post)}
               </h1>
               <p
                 className={`${interClassName} mt-5 max-w-190 text-[clamp(1rem,1.95vw,1.28rem)] leading-[1.68] tracking-normal text-black/74`}
