@@ -1,6 +1,6 @@
 const RESEND_API_URL = "https://api.resend.com/emails";
 const EARLY_ACCESS_SUBJECT = "Socratic AI: Your early access is confirmed";
-const DEFAULT_FROM_NAME = "Tejas | Socratic AI";
+const DEFAULT_FROM_NAME = "Socratic";
 const EARLY_ACCESS_LOGO_URL = "https://usesocratic.com/brand/Logo_Dark.png";
 
 type ResendConfig = {
@@ -96,7 +96,7 @@ function buildEarlyAccessMessage(email: string) {
           <tr>
             <td class="sa-email-footer" style="padding:24px 52px 32px 52px;border-top:1px solid #e8e5e0;">
               <p style="margin:0;font-size:12px;line-height:1.6;color:#aaa9a5;">
-                You received this email because you joined the Socratic AI early access list.
+                You received this email because you joined the Socratic AI early access list. You made a good choice. 
               </p>
             </td>
           </tr>
