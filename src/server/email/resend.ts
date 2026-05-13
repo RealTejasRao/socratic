@@ -96,7 +96,7 @@ function buildEarlyAccessMessage(email: string) {
           <tr>
             <td class="sa-email-footer" style="padding:24px 52px 32px 52px;border-top:1px solid #e8e5e0;">
               <p style="margin:0;font-size:12px;line-height:1.6;color:#aaa9a5;">
-                You received this email because you joined the Socratic AI early access list. You made a good choice.
+                You received this email because you joined the Socratic AI early access list.
               </p>
             </td>
           </tr>
