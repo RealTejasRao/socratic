@@ -49,31 +49,31 @@ function buildEarlyAccessMessage(email: string) {
     to: [email],
     subject: EARLY_ACCESS_SUBJECT,
     html: `
-<div style="margin:0;padding:44px 18px;background-color:#ede8df;font-family:Georgia,'Times New Roman',serif;">
+<div style="margin:0;padding:44px 18px;background-color:#f0eeeb;font-family:Georgia,'Times New Roman',serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
       <td align="center">
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-          style="max-width:620px;background:#faf7f2;border:1px solid #d9d1c2;">
+          style="max-width:620px;background:#ffffff;border:1px solid #dddad5;">
 
           <!-- top rule -->
           <tr>
-            <td style="height:3px;background:#1a1209;font-size:0;line-height:0;">&nbsp;</td>
+            <td style="height:2px;background:#111111;font-size:0;line-height:0;">&nbsp;</td>
           </tr>
 
           <!-- header -->
           <tr>
-            <td style="padding:44px 52px 36px 52px;text-align:center;border-bottom:1px solid #e0d8cc;">
-              <p style="margin:0 0 18px 0;font-size:10px;letter-spacing:0.3em;color:#a09070;text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;">Socratic AI</p>
+            <td style="padding:44px 52px 36px 52px;text-align:center;border-bottom:1px solid #e8e5e0;">
+              <p style="margin:0 0 6px 0;font-size:10px;letter-spacing:0.3em;color:#333230;text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;">Socratic AI</p>
               <img
                 src="${EARLY_ACCESS_LOGO_URL}"
                 alt="Socratic AI"
                 width="160"
-                style="display:block;margin:0 auto 18px auto;width:160px;height:auto;border:0;outline:none;text-decoration:none;"
+                style="display:block;margin:0 auto;width:160px;height:auto;border:0;outline:none;text-decoration:none;"
               />
-              <div style="width:32px;height:1px;background:#b08d57;margin:0 auto 18px auto;font-size:0;line-height:0;">&nbsp;</div>
-              <p style="margin:0;font-size:10px;letter-spacing:0.18em;color:#c8b89a;text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;">Early Access Confirmed</p>
+              <div style="width:28px;height:1px;background:#555350;margin:16px auto;font-size:0;line-height:0;">&nbsp;</div>
+              <p style="margin:0;font-size:10px;letter-spacing:0.18em;color:#555350;text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;">Early Access Confirmed</p>
             </td>
           </tr>
 
@@ -81,41 +81,24 @@ function buildEarlyAccessMessage(email: string) {
           <tr>
             <td style="padding:44px 52px 8px 52px;">
 
-              <h1 style="margin:0 0 32px 0;font-size:28px;line-height:1.35;font-weight:400;color:#1a1209;font-style:italic;font-family:Georgia,'Times New Roman',serif;">
-                We saw you.
+              <h1 style="margin:0 0 32px 0;font-size:26px;line-height:1.35;font-weight:400;color:#111111;font-style:italic;font-family:Georgia,'Times New Roman',serif;">
+                We saw what you just did.  
               </h1>
 
-              <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#3d3322;font-family:Georgia,'Times New Roman',serif;">
-                Most people scroll past things that make them think. You didn't. That decision says something.
+              <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#333230;font-family:Georgia,'Times New Roman',serif;">
+                You just did something most people won't. You stopped, thought, and acted.
               </p>
 
-              <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#3d3322;font-family:Georgia,'Times New Roman',serif;">
-                Your place on the Socratic AI early access list is now reserved. We're opening access carefully, in stages, while we continue refining the experience.
+              <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#333230;font-family:Georgia,'Times New Roman',serif;">
+                Your spot for Socratic AI Early Access is locked in. We're handpicking who gets in first, and you're on that list. When it's your turn, we'll land in your inbox with everything: how to get in, what to explore first, all of it.
               </p>
 
-              <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#3d3322;font-family:Georgia,'Times New Roman',serif;">
-                When your access is ready, you'll receive another email with everything you need to begin. Until then, sit with a question you haven't been able to answer. We'll help you go deeper.
+              <p style="margin:0 0 40px 0;font-size:16px;line-height:1.85;color:#333230;font-family:Georgia,'Times New Roman',serif;">
+                Most waitlists forget you exist. We promise that we won't. We appreciate your patience and your interest in what we're building.
               </p>
 
-              <p style="margin:0 0 36px 0;font-size:16px;line-height:1.85;color:#3d3322;font-family:Georgia,'Times New Roman',serif;">
-                We appreciate your patience and your interest in what we're building.
-              </p>
-
-              <!-- quote block -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                style="border-left:2px solid #b08d57;background:#f0e9de;margin:0 0 40px 0;">
-                <tr>
-                  <td style="padding:20px 24px;">
-                    <p style="margin:0 0 8px 0;font-size:15px;line-height:1.8;color:#5a3e1b;font-style:italic;font-family:Georgia,'Times New Roman',serif;">
-                      "The unexamined life is not worth living."
-                    </p>
-                    <p style="margin:0;font-size:10px;letter-spacing:0.15em;color:#b08d57;text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;">Socrates</p>
-                  </td>
-                </tr>
-              </table>
-
-              <p style="margin:0 0 44px 0;font-size:16px;line-height:1.7;color:#3d3322;font-family:Georgia,'Times New Roman',serif;">
-                &mdash; Socratic AI
+              <p style="margin:0 0 44px 0;font-size:16px;line-height:1.7;color:#333230;font-family:Georgia,'Times New Roman',serif;">
+                &mdash; Socratic AI Team
               </p>
 
             </td>
@@ -123,10 +106,9 @@ function buildEarlyAccessMessage(email: string) {
 
           <!-- footer -->
           <tr>
-            <td style="padding:24px 52px 32px 52px;border-top:1px solid #e0d8cc;">
-              <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:0.15em;color:#b0a090;text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;">usesocratic.com</p>
-              <p style="margin:0;font-size:12px;line-height:1.6;color:#b0a090;font-family:Georgia,'Times New Roman',serif;">
-                You received this email because you joined the Socratic AI early access list.
+            <td style="padding:24px 52px 32px 52px;border-top:1px solid #e8e5e0;">
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#aaa9a5;font-family:Georgia,'Times New Roman',serif;">
+                You received this email because you joined the Socratic AI early access list. We promise that you made a good choice. 
               </p>
             </td>
           </tr>
