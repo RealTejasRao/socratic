@@ -1,7 +1,7 @@
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
 const RESEND_API_URL = "https://api.resend.com/emails";
-const EARLY_ACCESS_SUBJECT = "You're in \u2014 we saw you \uD83D\uDC41\uFE0F";
+const EARLY_ACCESS_SUBJECT = "We saw what you just did \uD83D\uDC41\uFE0F";
 const DEFAULT_FROM_NAME = "Socratic AI";
 const EARLY_ACCESS_LOGO_URL = resolveCloudinaryPublicAsset(
   "/brand/Logo_Dark_SVG.svg",
@@ -82,11 +82,11 @@ function buildEarlyAccessMessage(email: string) {
             <td style="padding:44px 52px 8px 52px;">
 
               <h1 style="margin:0 0 32px 0;font-size:26px;line-height:1.35;font-weight:400;color:#111111;font-style:italic;font-family:Georgia,'Times New Roman',serif;">
-                We saw what you just did.  
+                You’ve taken the first step toward a sharper perspective.  
               </h1>
 
               <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#333230;font-family:Georgia,'Times New Roman',serif;">
-                You just did something most people won't. You stopped, thought, and acted.
+                You just did something most people won't. You stopped, thought, and acted. In a world full of easy answers, you chose to sign up for a challenge.
               </p>
 
               <p style="margin:0 0 20px 0;font-size:16px;line-height:1.85;color:#333230;font-family:Georgia,'Times New Roman',serif;">
@@ -94,11 +94,12 @@ function buildEarlyAccessMessage(email: string) {
               </p>
 
               <p style="margin:0 0 40px 0;font-size:16px;line-height:1.85;color:#333230;font-family:Georgia,'Times New Roman',serif;">
-                Most waitlists forget you exist. We promise that we won't. We appreciate your patience and your interest in what we're building.
+                Most waitlists forget you exist the moment you hit "submit", but we are doing things differently. We are currently in the final stages of development, doing some touch ups. We appreciate your patience and your interest in what we're building.
               </p>
 
               <p style="margin:0 0 44px 0;font-size:16px;line-height:1.7;color:#333230;font-family:Georgia,'Times New Roman',serif;">
-                &mdash; Socratic AI Team
+                Talk soon,<br/>
+                <strong>The Socratic AI Team</strong>
               </p>
 
             </td>
@@ -108,7 +109,7 @@ function buildEarlyAccessMessage(email: string) {
           <tr>
             <td style="padding:24px 52px 32px 52px;border-top:1px solid #e8e5e0;">
               <p style="margin:0;font-size:12px;line-height:1.6;color:#aaa9a5;font-family:Georgia,'Times New Roman',serif;">
-                You received this email because you joined the Socratic AI early access list. We promise that you made a good choice. 
+                You received this email because you joined the Socratic AI early access list. You made a good choice. 
               </p>
             </td>
           </tr>
