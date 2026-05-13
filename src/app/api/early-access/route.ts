@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
+import { sendEarlyAccessThankYouEmail } from "src/server/email/resend";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -28,6 +29,13 @@ export async function POST(request: Request) {
         { message: "This email is already on the early access list." },
         { status: 409 },
       );
+    }
+
+    try {
+      await sendEarlyAccessThankYouEmail(email);
+    } catch (error) {
+      // Keep form success even if email delivery fails for any reason.
+      console.error("Failed to send early-access thank-you email", { error });
     }
 
     return NextResponse.json(
