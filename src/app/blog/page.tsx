@@ -182,25 +182,34 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             <div
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
-              <h1 className="hero-load-up hero-load-up-title-1 leading-[0.95] sm:text-[clamp(2.3rem,6vw,4rem)]">
-                <span className="block text-[clamp(2.55rem,10.2vw,4.55rem)] sm:inline sm:text-inherit [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(2.55rem,10.2vw,4.55rem)]">
+              <h1 className="hero-load-up hero-load-up-title-1 leading-[0.92] sm:leading-[0.9]">
+                <span className="block text-[clamp(3rem,11.2vw,5.2rem)] sm:inline sm:text-[clamp(3.2rem,7.2vw,5.2rem)] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(3rem,11.2vw,5.2rem)]">
                   Socratic AI
                 </span>{" "}
-                <span className="block text-[clamp(2.55rem,10.2vw,4.55rem)] text-[#a01717] italic sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(2.55rem,10.2vw,4.55rem)]">
+                <span className="block text-[clamp(3.25rem,12.2vw,5.6rem)] text-[#a01717] italic sm:inline sm:text-[clamp(3.45rem,7.9vw,5.6rem)] [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(3.25rem,12.2vw,5.6rem)]">
                   Blogs
                 </span>
               </h1>
+              <p
+                className={`${interClassName} hero-load-up hero-load-up-hero-copy mt-2.5 max-w-[36rem] px-2 text-[0.8rem] leading-relaxed text-black/68 sm:mt-3 sm:max-w-[44rem] sm:text-[0.9rem]`}
+              >
+                Ideas on philosophy, critical thinking, AI, learning, the future
+                of human intelligence, and us!
+              </p>
             </div>
           </div>
 
           <div className="hero-bottom-image-scroll pointer-events-none absolute inset-x-0 bottom-0 z-0">
             <div className="hero-load-up hero-load-up-image relative left-1/2 w-[102vw] max-w-none -translate-x-1/2">
               <Image
-                src={resolveOptimizedCloudinaryPublicAsset("/blog/blog_hero.webp", {
-                  width: 1400,
-                  crop: "limit",
-                  quality: "auto:good",
-                })}
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/blog/blog_bg_mobile.webp",
+                  {
+                    width: 1400,
+                    crop: "limit",
+                    quality: "auto:good",
+                  },
+                )}
                 alt="Socratic AI blog hero illustration about philosophy and deep thinking"
                 width={1400}
                 height={1400}
