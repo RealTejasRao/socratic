@@ -28,7 +28,7 @@ That gap is the most important thing nobody is talking about.
 
 - The ability to think clearly has no ceiling and never becomes obsolete. Every other skill does
 
-- [Socratic AI](https://usesocratic.com/) was built to make you a better thinker, not to think for you
+- [Socratic AI](https://www.usesocratic.com/) was built to make you a better thinker, not to think for you
 
 ---
 
@@ -146,7 +146,7 @@ Have conversations where you actually try to change your mind, not just defend y
 
 And use AI, absolutely use it, but use it the way a good athlete uses a training partner. To be pushed, to be challenged, to find the gaps in your thinking, not to do the thinking for you.
 
-That's the version of the AI age I'm trying to build toward. Not one where thinking becomes unnecessary. One where the people who take thinking seriously become genuinely extraordinary. And that's the reasson I built [Socratic AI](https://usesocratic.com/). 
+That's the version of the AI age I'm trying to build toward. Not one where thinking becomes unnecessary. One where the people who take thinking seriously become genuinely extraordinary. And that's the reasson I built [Socratic AI](https://www.usesocratic.com/). 
 
 The tools exist. The question is how you use them.
 

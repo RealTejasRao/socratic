@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE_URL = "https://usesocratic.com";
+const SITE_URL = "https://www.usesocratic.com";
 const SITE_NAME = "Socratic AI";
 const DEFAULT_OG_IMAGE = "/home/hero.webp";
 

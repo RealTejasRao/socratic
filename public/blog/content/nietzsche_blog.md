@@ -188,7 +188,7 @@ Nietzsche spent his whole life attempting that. It cost him everything he had.
 
 Whether it was worth it is, like all the best questions, something only you can answer.
 
-*[Think through Nietzsche and everything else at usesocratic.com](https://usesocratic.com)*
+*[Think through Nietzsche and everything else at usesocratic.com](https://www.usesocratic.com)*
 
 ---
 

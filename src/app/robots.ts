@@ -17,6 +17,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: absoluteUrl("/sitemap.xml"),
-    host: "usesocratic.com",
+    host: "www.usesocratic.com",
   };
 }

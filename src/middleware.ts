@@ -5,6 +5,8 @@ import type { NextRequest } from "next/server";
 const PUBLIC_FILE_REGEX =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|json|map|png|svg|txt|webm|webp|woff|woff2|xml)$/i;
 const APP_ROUTE_PREFIX = "/app";
+const NON_CANONICAL_HOST = "usesocratic.com";
+const CANONICAL_HOST = "www.usesocratic.com";
 
 function normalizePathname(pathname: string): string {
   return pathname.length > 1 && pathname.endsWith("/")
@@ -28,6 +30,17 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   if (!isProduction) {
     return NextResponse.next();
+  }
+
+  const requestHostHeader =
+    req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
+  const requestHost = requestHostHeader.split(",")[0]?.trim().split(":")[0]?.toLowerCase();
+
+  if (requestHost === NON_CANONICAL_HOST) {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.hostname = CANONICAL_HOST;
+    redirectUrl.protocol = "https";
+    return NextResponse.redirect(redirectUrl, 308);
   }
 
   const normalizedPathname = normalizePathname(pathname);

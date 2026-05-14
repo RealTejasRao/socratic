@@ -1,7 +1,7 @@
 const RESEND_API_URL = "https://api.resend.com/emails";
 const EARLY_ACCESS_SUBJECT = "Socratic AI: Your early access is confirmed";
 const DEFAULT_FROM_NAME = "Socratic";
-const EARLY_ACCESS_LOGO_URL = "https://usesocratic.com/brand/Logo_Dark.png";
+const EARLY_ACCESS_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Dark.png";
 
 type ResendConfig = {
   apiKey: string;
