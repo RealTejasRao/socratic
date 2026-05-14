@@ -4,6 +4,17 @@ import type { NextRequest } from "next/server";
 
 const PUBLIC_FILE_REGEX =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|json|map|png|svg|txt|webm|webp|woff|woff2|xml)$/i;
+const APP_ROUTE_PREFIX = "/app";
+
+function normalizePathname(pathname: string): string {
+  return pathname.length > 1 && pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+}
+
+function matchesRoutePrefix(pathname: string, routePrefix: string): boolean {
+  return pathname === routePrefix || pathname.startsWith(`${routePrefix}/`);
+}
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
@@ -19,10 +30,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
-  const normalizedPathname =
-    pathname.length > 1 && pathname.endsWith("/")
-      ? pathname.slice(0, -1)
-      : pathname;
+  const normalizedPathname = normalizePathname(pathname);
   const lowerPathname = normalizedPathname.toLowerCase();
   const canonicalStaticPath = staticCanonicalRouteMap[lowerPathname];
 
@@ -59,6 +67,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
+  if (!matchesRoutePrefix(normalizedPathname, APP_ROUTE_PREFIX)) {
+    return NextResponse.next();
+  }
+
   const { userId } = await auth();
 
   if (userId) {
@@ -66,7 +78,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   const redirectUrl = req.nextUrl.clone();
-  redirectUrl.pathname = "/";
+  redirectUrl.pathname = "/sign-in";
   redirectUrl.search = "";
   return NextResponse.redirect(redirectUrl);
 });
