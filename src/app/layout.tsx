@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
+import { TermlyConsent } from "@/src/components/termly-consent";
 import {
   absoluteUrl,
   organizationSchema,
@@ -125,6 +126,7 @@ export default function RootLayout({
             />
           ))}
           <ClickPulse />
+          <TermlyConsent />
           {children}
         </ClerkProvider>
       </body>

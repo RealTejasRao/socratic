@@ -106,7 +106,7 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
               </a>
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2 sm:gap-9">
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 sm:gap-9">
               <div>
                 <p
                   className={`${interClassName} text-[0.76rem] tracking-[0.12em] text-white/92 uppercase`}
@@ -140,6 +140,24 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
                       Early Access
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <p
+                  className={`${interClassName} text-[0.76rem] tracking-[0.12em] text-white/92 uppercase`}
+                >
+                  Preferences
+                </p>
+                <ul className="mt-4 space-y-2.5">
+                  <li>
+                    <a
+                      href="#"
+                      className={`termly-display-preferences ${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
+                    >
+                      Consent Preferences
                     </a>
                   </li>
                 </ul>
