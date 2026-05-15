@@ -14,7 +14,6 @@ export function TermlyConsent() {
       id="termly-embed"
       src="https://app.termly.io/embed.min.js"
       strategy="afterInteractive"
-      data-auto-block="on"
       data-website-uuid={TERMLY_WEBSITE_UUID}
     />
   );
