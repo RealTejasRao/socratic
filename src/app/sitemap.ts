@@ -20,8 +20,14 @@ const publicStaticRoutes: Array<{
     priority: 0.9,
   },
   {
-    path: "/cookie-policy",
-    filePath: "src/app/cookie-policy/page.tsx",
+    path: "/cookies",
+    filePath: "src/app/cookies/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    path: "/privacy",
+    filePath: "src/app/privacy/page.tsx",
     changeFrequency: "monthly",
     priority: 0.4,
   },
