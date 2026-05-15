@@ -8,13 +8,16 @@ export const seoConfig = {
   siteUrl: SITE_URL,
   siteName: SITE_NAME,
   applicationName: SITE_NAME,
-  defaultTitle: "Socratic AI | AI for Philosophy and Strategic Thinking",
-  titleTemplate: "%s | Socratic AI",
+  defaultTitle: "Socratic AI | Philosophy, Strategy & Deep Critical Thinking",
+  titleTemplate: "Socratic AI | %s",
   defaultDescription:
-    "Socratic AI is an AI thinking partner for philosophy, strategy, and deep reasoning. Build clearer thought with an intelligent learning assistant.",
+    "Socratic AI: An AI thinking partner for philosophy, critical thinking, and deep conversation. Built on Socratic dialogue, it challenges your reasoning, sharpens your arguments, and helps you think more clearly.",
   category: "education",
   keywords: [
     "Socratic AI",
+    "Socratic AI philosophy",
+    "Socratic AI critical thinking",
+    "Socratic AI strategy",
     "AI for philosophy",
     "ai thinking partner",
     "strategy AI",
@@ -64,10 +67,14 @@ export function createPageMetadata({
   ogImage = DEFAULT_OG_IMAGE,
 }: PageMetadataInput): Metadata {
   const canonical = absoluteUrl(path);
-  const fullTitle = title.includes("Socratic AI") ? title : `${title} | Socratic AI`;
+  const fullTitle = title.startsWith("Socratic AI")
+    ? title
+    : title.includes("Socratic AI")
+      ? title
+      : `Socratic AI | ${title}`;
 
   return {
-    title,
+    title: { absolute: fullTitle },
     description,
     keywords: keywords ?? [...seoConfig.keywords],
     alternates: { canonical },
@@ -113,6 +120,7 @@ export const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: seoConfig.siteName,
+  alternateName: "usesocratic.com",
   url: seoConfig.siteUrl,
   description: seoConfig.defaultDescription,
   publisher: {

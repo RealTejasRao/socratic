@@ -20,9 +20,9 @@ import { createPageMetadata } from "@/src/lib/seo";
 import { HOME_HERO_HASH, HOME_HERO_ID } from "@/src/lib/home-hero";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Socratic AI Homepage | AI for Philosophy, Strategy, and Deep Thinking",
+  title: "Socratic AI | Philosophy, Strategy & Deep Critical Thinking",
   description:
-    "Explore Socratic AI: an AI for philosophy and strategy built as an AI thinking partner and intelligent learning assistant for rigorous conversation.",
+    "Socratic AI: An AI thinking partner for philosophy, critical thinking, and deep conversation. Built on Socratic dialogue, it challenges your reasoning, sharpens your arguments, and helps you think more clearly.",
   path: "/",
 });
 
