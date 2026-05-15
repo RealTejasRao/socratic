@@ -154,6 +154,14 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
                 <ul className="mt-4 space-y-2.5">
                   <li>
                     <a
+                      href={ROUTES.COOKIE_POLICY}
+                      className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
+                    >
+                      Cookie Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       href="#"
                       className={`termly-display-preferences ${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >

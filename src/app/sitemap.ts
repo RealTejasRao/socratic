@@ -8,11 +8,23 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
 
 const publicStaticRoutes: Array<{
   path: string;
+  filePath: string;
   changeFrequency: SitemapEntry["changeFrequency"];
   priority: number;
 }> = [
-  { path: "/", changeFrequency: "weekly", priority: 1 },
-  { path: "/blog", changeFrequency: "daily", priority: 0.9 },
+  { path: "/", filePath: "src/app/page.tsx", changeFrequency: "weekly", priority: 1 },
+  {
+    path: "/blog",
+    filePath: "src/app/blog/page.tsx",
+    changeFrequency: "daily",
+    priority: 0.9,
+  },
+  {
+    path: "/cookie-policy",
+    filePath: "src/app/cookie-policy/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
 ];
 
 function getFileLastModified(relativePath: string) {
@@ -33,8 +45,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: absoluteUrl(route.path),
     lastModified:
       route.path === "/blog"
-        ? (latestBlogLastModified ?? getFileLastModified("src/app/blog/page.tsx"))
-        : getFileLastModified("src/app/page.tsx"),
+        ? (latestBlogLastModified ?? getFileLastModified(route.filePath))
+        : getFileLastModified(route.filePath),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
