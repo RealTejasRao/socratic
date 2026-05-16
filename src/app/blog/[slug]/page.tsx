@@ -57,14 +57,14 @@ export async function generateMetadata({
 
   if (!post) {
     return createPageMetadata({
-      title: "Blog Post Not Found | Socratic AI",
+      title: "Socratic AI: Blog Post Not Found",
       description: "This blog post could not be found.",
       path: `/blog/${slug}`,
     });
   }
 
   return createPageMetadata({
-    title: `${post.title} | Socratic AI Blog`,
+    title: `Socratic AI: ${post.title}`,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
     keywords: [

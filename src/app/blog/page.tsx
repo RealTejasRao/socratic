@@ -17,7 +17,7 @@ import {
 } from "@/src/server/blog/posts";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Socratic AI Blog | Essays for Deep Thinking",
+  title: "Socratic AI Blogs | Philosophy, AI & Critical Thinking",
   description:
     "Read the Socratic AI blog for essays on philosophy, strategy, and rigorous thinking.",
   path: "/blog",

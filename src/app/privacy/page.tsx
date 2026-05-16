@@ -591,7 +591,7 @@ export default async function PrivacyPolicyPage() {
                 ) : null}
               </div>
 
-              <article className="border-t border-black/10 pt-6">
+              <article className="border-t border-black/10 pt-6 [overflow-wrap:anywhere]">
                 {contentBlocks.map((block, index) => renderMarkdownBlock(block, index))}
               </article>
 
