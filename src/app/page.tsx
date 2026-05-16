@@ -130,13 +130,23 @@ export default function HomePage() {
               className={`${instrumentSerif.className} pointer-events-auto flex flex-col items-center text-black/90`}
             >
               <h1 className="hero-load-up hero-load-up-title-1 leading-[1.03] sm:leading-[0.96] sm:text-[clamp(1.45rem,4vw,2.35rem)]">
+                <span className="sr-only">
+                  Socratic AI: Your Personal AI For Philosophy, Deep Convos,
+                  Wisdom, and Growth.
+                </span>
                 <span className="block text-[clamp(1.95rem,7.6vw,2.7rem)] sm:inline sm:text-inherit [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:text-[clamp(1.95rem,7.6vw,2.7rem)]">
-                  Your Personal AI For
+                  Socratic AI: Your Personal AI For
                 </span>{" "}
-                <span className="mt-2.5 block text-[clamp(2.95rem,11.2vw,4.2rem)] sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block">
+                <span
+                  className="mt-2.5 block text-[clamp(2.95rem,11.2vw,4.2rem)] sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block"
+                  aria-hidden="true"
+                >
                   <HeroRotatingWord align="center" />
                 </span>
-                <span className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden">
+                <span
+                  className="hidden sm:inline [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden"
+                  aria-hidden="true"
+                >
                   <HeroRotatingWord />
                 </span>
               </h1>

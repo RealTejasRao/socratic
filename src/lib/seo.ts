@@ -112,6 +112,7 @@ export function createPageMetadata({
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": absoluteUrl("/#organization"),
   name: seoConfig.siteName,
   url: seoConfig.siteUrl,
   logo: absoluteUrl("/brand/Logo_Dark.png"),
@@ -121,13 +122,12 @@ export const organizationSchema = {
 export const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": absoluteUrl("/#website"),
   name: seoConfig.siteName,
-  alternateName: "usesocratic.com",
   url: seoConfig.siteUrl,
   description: seoConfig.defaultDescription,
   publisher: {
-    "@type": "Organization",
-    name: seoConfig.siteName,
+    "@id": absoluteUrl("/#organization"),
   },
   inLanguage: "en",
 };

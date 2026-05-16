@@ -2,6 +2,7 @@ import type { Metadata, Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Instrument_Serif, Inter } from "next/font/google";
+import { Footer } from "@/src/components/home/footer";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import {
@@ -357,6 +358,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             </div>
           </div>
         </section>
+
+        <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOME} />
       </main>
     </LoadGate>
   );

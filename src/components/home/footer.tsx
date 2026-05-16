@@ -32,7 +32,7 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
     },
     {
       label: "Email",
-      href: "mailto:usesocratic@gmail.com",
+      href: "mailto:contact@usesocratic.com",
       icon: <Mail size={15} />,
     },
     {
@@ -194,6 +194,16 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
               className={`${interClassName} text-center text-[0.74rem] text-white/56`}
             >
               © 2026 Socratic AI. All rights reserved.
+            </p>
+            <p
+              className={`${interClassName} mt-1.5 text-center text-[0.73rem] text-white/42`}
+            >
+              <a
+                href="mailto:contact@usesocratic.com"
+                className="transition-colors duration-200 hover:text-white/70"
+              >
+                contact@usesocratic.com
+              </a>
             </p>
           </div>
         </div>
