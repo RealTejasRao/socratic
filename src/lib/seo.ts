@@ -55,6 +55,7 @@ type PageMetadataInput = {
   path: string;
   keywords?: string[];
   index?: boolean;
+  follow?: boolean;
   ogImage?: string;
 };
 
@@ -64,6 +65,7 @@ export function createPageMetadata({
   path,
   keywords,
   index = true,
+  follow = index,
   ogImage = DEFAULT_OG_IMAGE,
 }: PageMetadataInput): Metadata {
   const canonical = absoluteUrl(path);
@@ -80,12 +82,12 @@ export function createPageMetadata({
     alternates: { canonical },
     robots: {
       index,
-      follow: index,
+      follow,
       noarchive: !index,
       nocache: !index,
       googleBot: {
         index,
-        follow: index,
+        follow,
         "max-image-preview": index ? "large" : "none",
         "max-snippet": index ? -1 : 0,
       },

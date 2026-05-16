@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { ROUTES } from "@/src/lib/routes";
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { TermlyPreferencesLink } from "@/src/components/termly-preferences-trigger";
 
 type FooterProps = {
   interClassName: string;
@@ -162,6 +163,14 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
                   </li>
                   <li>
                     <a
+                      href={ROUTES.TERMS}
+                      className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
+                    >
+                      Terms & Conditions
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       href={ROUTES.COOKIE_POLICY}
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
@@ -169,12 +178,11 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="#"
-                      className={`termly-display-preferences ${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
+                    <TermlyPreferencesLink
+                      className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
                       Consent Preferences
-                    </a>
+                    </TermlyPreferencesLink>
                   </li>
                 </ul>
               </div>

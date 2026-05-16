@@ -14,20 +14,20 @@ import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Cookie Policy",
+  title: "Terms & Conditions",
   description:
-    "Read Socratic AI's Cookie Policy to understand what cookies we use, why we use them, and how you can manage your preferences.",
-  path: "/cookies",
+    "Read Socratic AI's Terms & Conditions for the rules, responsibilities, and legal terms governing use of our services.",
+  path: "/terms",
   index: false,
   follow: true,
 });
 
-async function getCookiePolicyHtml() {
+async function getTermsMarkdown() {
   const policyPath = path.join(
     process.cwd(),
     "public",
     "legal",
-    "cookie-policy.md",
+    "terms-and-conditions.md",
   );
   return fs.readFile(policyPath, "utf8");
 }
@@ -53,7 +53,8 @@ const navLinks = [
 type MarkdownBlock =
   | { type: "hr" }
   | { type: "h1" | "h2" | "h3" | "p"; content: string }
-  | { type: "ul" | "ol"; items: string[] };
+  | { type: "ul" | "ol"; items: string[] }
+  | { type: "table"; headers: string[]; rows: string[][] };
 
 function extractLegalDocumentMeta(blocks: MarkdownBlock[]) {
   let index = 0;
@@ -76,6 +77,19 @@ function extractLegalDocumentMeta(blocks: MarkdownBlock[]) {
     lastUpdated,
     contentBlocks: blocks.slice(index),
   };
+}
+
+function splitMarkdownTableRow(line: string): string[] {
+  const normalized = line.trim().replace(/^\|/, "").replace(/\|$/, "");
+  return normalized.split("|").map((cell) => cell.trim());
+}
+
+function isTableSeparatorLine(line: string) {
+  const cells = splitMarkdownTableRow(line);
+  if (cells.length === 0) {
+    return false;
+  }
+  return cells.every((cell) => /^:?-{3,}:?$/.test(cell));
 }
 
 function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
@@ -109,12 +123,35 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
     listBuffer = null;
   };
 
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index]?.trim() ?? "";
 
     if (!line) {
       flushParagraph();
       flushList();
+      continue;
+    }
+
+    const nextLine = lines[index + 1]?.trim() ?? "";
+    if (line.startsWith("|") && nextLine.startsWith("|") && isTableSeparatorLine(nextLine)) {
+      flushParagraph();
+      flushList();
+
+      const headers = splitMarkdownTableRow(line);
+      const rows: string[][] = [];
+      index += 2;
+
+      while (index < lines.length) {
+        const rowLine = lines[index]?.trim() ?? "";
+        if (!rowLine.startsWith("|")) {
+          index -= 1;
+          break;
+        }
+        rows.push(splitMarkdownTableRow(rowLine));
+        index += 1;
+      }
+
+      blocks.push({ type: "table", headers, rows });
       continue;
     }
 
@@ -185,10 +222,19 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
   return blocks;
 }
 
+function toHeadingSlug(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 function renderInlineMarkdown(text: string) {
   const tokens: ReactNode[] = [];
   const pattern =
-    /(\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^\s)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`|([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}))/;
+    /(\[([^\]]+)\]\(((?:https?:\/\/|mailto:|#|\/)[^\s)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`|(https?:\/\/[^\s)]+)|([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}))/;
   let remaining = text;
   let tokenIndex = 0;
 
@@ -242,11 +288,23 @@ function renderInlineMarkdown(text: string) {
     } else if (match[7]) {
       tokens.push(
         <a
-          key={`email-${tokenIndex}`}
-          href={`mailto:${match[7]}`}
+          key={`url-${tokenIndex}`}
+          href={match[7]}
+          target="_blank"
+          rel="noreferrer"
           className="text-blue-600 underline decoration-blue-600 underline-offset-3 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-700"
         >
           {match[7]}
+        </a>,
+      );
+    } else if (match[8]) {
+      tokens.push(
+        <a
+          key={`email-${tokenIndex}`}
+          href={`mailto:${match[8]}`}
+          className="text-blue-600 underline decoration-blue-600 underline-offset-3 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-700"
+        >
+          {match[8]}
         </a>,
       );
     } else {
@@ -268,8 +326,9 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   if (block.type === "h1") {
     return (
       <h1
+        id={toHeadingSlug(block.content)}
         key={`h1-${index}`}
-        className={`${instrumentSerif.className} mt-2 text-[2.35rem] leading-[1.08] tracking-normal text-black sm:text-[3rem]`}
+        className={`${instrumentSerif.className} mt-2 text-[2.35rem] leading-[1.08] tracking-normal text-black sm:text-[3rem] scroll-mt-28`}
       >
         {renderInlineMarkdown(block.content)}
       </h1>
@@ -279,8 +338,9 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   if (block.type === "h2") {
     return (
       <h2
+        id={toHeadingSlug(block.content)}
         key={`h2-${index}`}
-        className={`${instrumentSerif.className} mt-12 text-[1.8rem] leading-[1.2] tracking-normal text-black/92 sm:text-[2.1rem]`}
+        className={`${instrumentSerif.className} mt-12 text-[1.8rem] leading-[1.2] tracking-normal text-black/92 sm:text-[2.1rem] scroll-mt-28`}
       >
         {renderInlineMarkdown(block.content)}
       </h2>
@@ -290,8 +350,9 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   if (block.type === "h3") {
     return (
       <h3
+        id={toHeadingSlug(block.content)}
         key={`h3-${index}`}
-        className={`${instrumentSerif.className} mt-9 text-[1.45rem] leading-[1.24] tracking-normal text-black/90 sm:text-[1.7rem]`}
+        className={`${instrumentSerif.className} mt-9 text-[1.45rem] leading-[1.24] tracking-normal text-black/90 sm:text-[1.7rem] scroll-mt-28`}
       >
         {renderInlineMarkdown(block.content)}
       </h3>
@@ -328,6 +389,47 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
     );
   }
 
+  if (block.type === "table") {
+    return (
+      <div
+        key={`table-${index}`}
+        className="mt-6 overflow-x-auto rounded-xl border border-black/12"
+      >
+        <table className="min-w-full border-collapse text-left">
+          <thead>
+            <tr className="bg-black/4">
+              {block.headers.map((header, headerIndex) => (
+                <th
+                  key={`th-${index}-${headerIndex}`}
+                  className={`${interClassName} border-b border-black/12 px-4 py-3 text-[0.88rem] font-semibold tracking-[0.02em] text-black/86`}
+                >
+                  {renderInlineMarkdown(header)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {block.rows.map((row, rowIndex) => (
+              <tr
+                key={`tr-${index}-${rowIndex}`}
+                className="align-top odd:bg-white even:bg-black/1.5"
+              >
+                {row.map((cell, cellIndex) => (
+                  <td
+                    key={`td-${index}-${rowIndex}-${cellIndex}`}
+                    className={`${interClassName} border-b border-black/8 px-4 py-3 text-[0.92rem] leading-[1.65] text-black/82`}
+                  >
+                    {renderInlineMarkdown(cell)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   if (block.type === "p") {
     return (
       <p
@@ -342,9 +444,9 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   return null;
 }
 
-export default async function CookiePolicyPage() {
-  const cookiePolicyMarkdown = await getCookiePolicyHtml();
-  const blocks = toMarkdownBlocks(cookiePolicyMarkdown);
+export default async function TermsPage() {
+  const termsMarkdown = await getTermsMarkdown();
+  const blocks = toMarkdownBlocks(termsMarkdown);
   const { lastUpdated, contentBlocks } = extractLegalDocumentMeta(blocks);
 
   const socialLinks = [
@@ -484,7 +586,7 @@ export default async function CookiePolicyPage() {
                   >
                     Socratic AI
                   </a>
-                  : Cookie policy
+                  : Terms and conditions
                 </h1>
                 {lastUpdated ? (
                   <p

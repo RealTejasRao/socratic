@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
 import ClickPulse from "@/src/components/ClickPulse";
 import { TermlyConsent } from "@/src/components/termly-consent";
 import {
@@ -125,8 +126,20 @@ export default function RootLayout({
               dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
             />
           ))}
+          <button
+            id="termly-pref-trigger"
+            type="button"
+            className="termly-display-preferences"
+            style={{ display: "none" }}
+            aria-hidden="true"
+            tabIndex={-1}
+          >
+            Consent Preferences
+          </button>
           <ClickPulse />
-          <TermlyConsent />
+          <Suspense fallback={null}>
+            <TermlyConsent />
+          </Suspense>
           {children}
         </ClerkProvider>
       </body>

@@ -124,5 +124,3 @@ The "Last updated" date at the top indicates the latest revision date.
 ## Where can I get further information?
 
 If you have questions about our use of cookies or related technologies, contact us at [contact@usesocratic.com](mailto:contact@usesocratic.com).
-
-## [Socratic AI](https://www.usesocratic.com/)

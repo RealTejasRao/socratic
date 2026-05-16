@@ -31,6 +31,12 @@ const publicStaticRoutes: Array<{
     changeFrequency: "monthly",
     priority: 0.4,
   },
+  {
+    path: "/terms",
+    filePath: "src/app/terms/page.tsx",
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
 ];
 
 function getFileLastModified(relativePath: string) {

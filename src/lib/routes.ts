@@ -5,6 +5,7 @@ export const ROUTES = {
   BLOG: "/blog" as Route,
   COOKIE_POLICY: "/cookies" as Route,
   PRIVACY_POLICY: "/privacy" as Route,
+  TERMS: "/terms" as Route,
   SIGN_IN: "/sign-in" as Route,
   SIGN_UP: "/sign-up" as Route,
   APP: "/app" as Route
