@@ -12,6 +12,11 @@ import {
   createRateLimitHeaders,
   getRequestIp,
 } from "src/server/security/rate-limit";
+import {
+  consumeDailyMessageQuota,
+  getUserBillingStateByClerkId,
+  normalizeSocraticToneForPlan,
+} from "src/server/billing/access";
 import type { ChatImageAttachment } from "src/types/chat";
 import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
@@ -111,6 +116,11 @@ export async function POST(req: Request) {
   const requestedSocraticTone = isSocraticTone(body?.socraticTone)
     ? (body.socraticTone as SocraticTone)
     : "SIMPLE_CLEAR";
+  const billing = await getUserBillingStateByClerkId(clerkUserId);
+
+  if (!billing) {
+    return new NextResponse("User not found in DB", { status: 404 });
+  }
 
   if (typeof content !== "string") {
     return new NextResponse("Invalid content", { status: 400 });
@@ -135,15 +145,6 @@ export async function POST(req: Request) {
   let activeUserId: string;
 
   if (!activeSessionId) {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkUserId },
-      select: { id: true },
-    });
-
-    if (!dbUser) {
-      return new NextResponse("User not found in DB", { status: 404 });
-    }
-
     const requestedMode = body?.mode;
     const roleplayPhilosopherId = body?.roleplayPhilosopherId;
     const roleplayPhilosopher =
@@ -157,7 +158,7 @@ export async function POST(req: Request) {
 
     const newSession = await prisma.chatSession.create({
       data: {
-        userId: dbUser.id,
+        userId: billing.userId,
         title: roleplayPhilosopher
           ? `Talk with ${roleplayPhilosopher.name}`
           : derivedTitle,
@@ -175,7 +176,7 @@ export async function POST(req: Request) {
     });
 
     activeSessionId = newSession.id;
-    activeUserId = dbUser.id;
+    activeUserId = billing.userId;
   } else {
     const existingSession = await prisma.chatSession.findFirst({
       where: {
@@ -235,13 +236,39 @@ export async function POST(req: Request) {
     activeUserId = existingSession.userId;
   }
 
+  const quota = await consumeDailyMessageQuota({
+    userId: activeUserId,
+    billing,
+    now,
+  });
+
+  if (!quota.allowed) {
+    return NextResponse.json(
+      {
+        reason:
+          "Daily free limit reached. Upgrade to Socratic+ for unlimited messages.",
+        dailyLimit: quota.limit,
+        used: quota.used,
+        resetsAt: quota.resetsAt?.toISOString() ?? null,
+      },
+      {
+        status: 402,
+      },
+    );
+  }
+
+  const toneForPlan = normalizeSocraticToneForPlan({
+    requestedTone: requestedSocraticTone,
+    billing,
+  });
+
   const generationResult = await generateAssistantReply({
     userId: activeUserId,
     sessionId: activeSessionId!,
     userContent: content,
     userAttachments: attachments,
     forceWebSearch,
-    socraticTone: requestedSocraticTone,
+    socraticTone: toneForPlan,
     now,
     expiresAt,
   });

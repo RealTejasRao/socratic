@@ -1,15 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { Instrument_Serif, Inter } from "next/font/google";
 import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { Footer } from "@/src/components/home/footer";
-import { StaggeredMenu } from "@/src/components/home/staggered-menu";
-import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
-import { HOME_HERO_URL } from "@/src/lib/home-hero";
+import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
+import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
 import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
 
@@ -41,14 +38,6 @@ const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin"],
 });
-
-const navLinks = [
-  { label: "Home", href: ROUTES.HOME },
-  { label: "Features", href: `${ROUTES.HOME}#features` },
-  { label: "Use Cases", href: `${ROUTES.HOME}#use-cases` },
-  { label: "Blog", href: ROUTES.BLOG },
-  { label: "Contact", href: `${ROUTES.HOME}#contact` },
-];
 
 type MarkdownBlock =
   | { type: "hr" }
@@ -477,71 +466,11 @@ export default async function PrivacyPolicyPage() {
 
   return (
     <main className="min-h-screen bg-white text-black">
-      <header className="fixed inset-x-0 top-0 z-50 flex flex-col border-b border-black/6 bg-white/60 px-5 py-0 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-7 sm:pt-1.5 sm:pb-0">
-        <nav className="relative mx-auto flex h-16 w-full max-w-365 items-center justify-between sm:h-auto">
-          <Link
-            href={ROUTES.HOME}
-            className="hero-load-up hero-load-up-nav-logo group relative flex h-11 w-fit items-center sm:h-8.5"
-          >
-            <div className="shrink-0 overflow-hidden">
-              <Image
-                src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
-                alt="Socratic AI logo"
-                width={50}
-                height={50}
-                className="h-12 w-12 object-contain transition duration-500 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.02] sm:h-10 sm:w-10"
-                priority
-              />
-            </div>
-
-            <div className="pointer-events-none absolute left-13 top-1/2 flex -translate-y-1/2 items-center overflow-hidden">
-              <span className="mr-3 h-4 w-px shrink-0 origin-center scale-y-0 bg-black/22 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-y-100 group-hover:opacity-100" />
-              <span
-                className={`${instrumentSerif.className} -translate-x-4.5 whitespace-nowrap text-[1.15rem] font-normal tracking-[0.01em] text-black/78 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:opacity-100`}
-              >
-                Socratic AI
-              </span>
-            </div>
-          </Link>
-
-          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
-            <div className="pointer-events-auto flex items-center justify-center gap-8">
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={`${interClassName} cursor-pointer text-[0.8rem] font-normal text-black/60 transition-colors duration-200 hover:text-black`}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-2">
-            <Link
-              href={HOME_HERO_URL}
-              className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex h-9 min-w-24 items-center justify-center rounded-full border border-black/18 bg-black px-5 text-[0.82rem] font-medium tracking-[0.02em] text-white transition-all duration-250 hover:-translate-y-0.5 hover:bg-black/92 sm:h-7.5 sm:min-w-22 sm:px-4.5 sm:text-[0.76rem]`}
-            >
-              Try Socratic AI
-            </Link>
-
-            <StaggeredMenu
-              className="hero-load-up hero-load-up-nav-menu lg:hidden"
-              triggerVariant="hamburger"
-              items={navLinks.map((link) => ({
-                label: link.label,
-                link: link.href,
-                ariaLabel: `Go to ${link.label}`,
-              }))}
-            />
-          </div>
-        </nav>
-
-        <div className="mx-auto mt-1.5 w-full max-w-365">
-          <div className="h-px w-full bg-[radial-gradient(circle,rgba(120,120,120,0.45)_1px,transparent_1.2px)] bg-position-[left_center] bg-size-[10px_1px] bg-repeat-x" />
-        </div>
-      </header>
+      <MarketingNavbar
+        interClassName={interClassName}
+        instrumentSerifClassName={instrumentSerif.className}
+        sectionPrefix={ROUTES.HOME}
+      />
 
       <section className="px-5 pt-30 pb-20 sm:px-7 sm:pt-34">
         <div className="mx-auto w-full max-w-365">
@@ -608,17 +537,17 @@ export default async function PrivacyPolicyPage() {
                     >
                       Socratic AI is built on the greatest philosophical texts ever
                       written. The thinking partner you never had, available even at 2
-                      AM when the questions won't stop. Ask anything. Debate
+                      AM when the questions won&apos;t stop. Ask anything. Debate
                       everything.
                     </p>
                   </div>
 
-                  <Link
-                    href={HOME_HERO_URL}
+                  <AuthAwareCtaLink
+                    signedOutHref={ROUTES.SIGN_UP}
                     className={`${interClassName} inline-flex w-full min-w-62 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-6 py-4 text-[1rem] font-semibold text-white transition-colors duration-220 hover:bg-[#8f1414] lg:w-auto`}
                   >
-                    Try Socratic AI
-                  </Link>
+                    Try Socratic AI Now
+                  </AuthAwareCtaLink>
                 </div>
               </div>
             </div>

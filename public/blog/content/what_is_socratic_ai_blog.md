@@ -12,19 +12,19 @@ So let's talk.
 
 ---
 
-## What is Socratic AI? Key Takeaways*:
+## What is Socratic AI? Key Takeaways:
 
-- Socratic AI is a philosophy AI trained on the greatest philosophical texts ever written. Not summaries. The actual texts, absorbed at depth
+- Socratic AI is a philosophy AI trained on the greatest philosophical texts ever written. Not summaries. The actual texts, absorbed at depth.
 
-- It is the most sophisticated AI built specifically for philosophy. Not a generalist with a philosophy mode. A specialist
+- It is the most sophisticated AI built specifically for philosophy. Not a generalist with a philosophy mode. A specialist.
 
-- Socratic Mode is the default. It challenges your assumptions, debates your positions, explains ideas at depth, and holds genuine intellectual conversation depending on what you need
+- Socratic Mode is the default. It challenges you, debates your positions, explains ideas at depth, and holds genuine intellectual conversation depending on what you need.
 
-- Debate Mode takes the opposite side of any position you hold and argues it relentlessly, without ego, until the argument is completely exhausted
+- Debate Mode takes the opposite side of any position you hold and argues it relentlessly, without ego, until the argument is completely exhausted.
 
-- There are three tones: Ruthless and Blunt, Simple and Clear, and Encouraging and Supportive. Same philosophical depth underneath all three
+- There are three tones: Ruthless and Blunt, Simple and Clear, and Encouraging and Supportive. Same philosophical depth underneath all three.
 
-- It was built because nothing like it existed. Every other AI gave Wikipedia summaries and called it philosophy
+- It was built because nothing like it existed. Every other AI gave Wikipedia summaries and called it philosophy.
 
 - Early access is open now at [usesocratic.com](https://www.usesocratic.com/)
 

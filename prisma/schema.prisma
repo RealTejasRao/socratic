@@ -10,13 +10,22 @@ model User {
   id           String   @id @default(cuid())
   clerkUserId  String   @unique
   email        String?  @db.VarChar(320)
+  dodoCustomerId String? @unique
   role         UserRole @default(USER)
+  planTier     PlanTier @default(FREE)
+  planStatus   BillingSubscriptionStatus @default(INACTIVE)
+  activeSubscriptionId String? @db.VarChar(80)
+  subscriptionCurrentPeriodEnd DateTime?
+  subscriptionCancelAtPeriodEnd Boolean @default(false)
+  subscriptionUpdatedAt DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   sessions     ChatSession[]
   beliefs      UserBelief[]
   insightLogs  InsightExtractionLog[]
   retrievalTraces RetrievalTrace[]
+  billingSubscriptions BillingSubscription[]
+  usageCounters UsageCounter[]
 }
 
 model EarlyAccess {
@@ -30,6 +39,22 @@ model EarlyAccess {
 enum UserRole {
   USER
   ADMIN
+}
+
+enum PlanTier {
+  FREE
+  PREMIUM_MONTHLY
+  PREMIUM_ANNUAL
+}
+
+enum BillingSubscriptionStatus {
+  INACTIVE
+  PENDING
+  ACTIVE
+  ON_HOLD
+  CANCELLED
+  FAILED
+  EXPIRED
 }
 
 model ChatSession {
@@ -278,4 +303,62 @@ model RetrievalTrace {
   @@index([userId, createdAt(sort: Desc)])
   @@index([sessionId, createdAt(sort: Desc)])
   @@index([sourceMessageId])
+}
+
+model BillingSubscription {
+  id                String                    @id @default(cuid())
+  userId            String
+  dodoSubscriptionId String                   @unique @db.VarChar(80)
+  dodoCustomerId    String                    @db.VarChar(80)
+  productId         String                    @db.VarChar(80)
+  status            BillingSubscriptionStatus @default(PENDING)
+  planTier          PlanTier                  @default(FREE)
+  currency          String?                   @db.VarChar(12)
+  recurringAmount   Int?
+  billingInterval   String?                   @db.VarChar(20)
+  cancelAtPeriodEnd Boolean                   @default(false)
+  currentPeriodStart DateTime?
+  currentPeriodEnd  DateTime?
+  cancelledAt       DateTime?
+  expiresAt         DateTime?
+  rawPayload        Json?
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+
+  user              User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([currentPeriodEnd])
+}
+
+model BillingWebhookEvent {
+  id            String   @id @default(cuid())
+  webhookId     String   @unique @db.VarChar(120)
+  eventType     String   @db.VarChar(80)
+  dodoBusinessId String? @db.VarChar(80)
+  payload       Json
+  processed     Boolean  @default(false)
+  processedAt   DateTime?
+  lastAttemptAt DateTime?
+  processingError String? @db.Text
+  attemptCount  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([eventType, createdAt(sort: Desc)])
+}
+
+model UsageCounter {
+  id          String   @id @default(cuid())
+  userId      String
+  usageKey    String   @db.VarChar(80)
+  periodStart DateTime
+  count       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, usageKey, periodStart])
+  @@index([usageKey, periodStart])
 }

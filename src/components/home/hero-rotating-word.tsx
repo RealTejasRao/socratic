@@ -25,7 +25,7 @@ export function HeroRotatingWord({
 
   return (
     <span
-      className={`relative inline-grid w-[10.5ch] align-baseline whitespace-nowrap ${
+      className={`relative inline-grid w-[11ch] align-baseline whitespace-nowrap text-[1.08em] ${
         align === "center" ? "text-center" : "text-left"
       }`}
     >

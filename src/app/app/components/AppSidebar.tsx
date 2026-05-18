@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Inter } from "next/font/google";
-import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CircleCheck,
+  Crown,
   ChevronDown,
   House,
   Mail,
@@ -45,6 +45,7 @@ interface Session {
 
 interface Props {
   sessions: Session[];
+  isPremium?: boolean;
 }
 
 const inter = Inter({
@@ -100,8 +101,7 @@ function readChatFontSizeSetting(): ChatFontSize {
   }
 }
 
-export default function AppSidebar({ sessions }: Props) {
-  const pathname = usePathname();
+export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -121,6 +121,8 @@ export default function AppSidebar({ sessions }: Props) {
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
+  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
+  const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
 
   useEffect(() => {
     const rafId = window.requestAnimationFrame(() => {
@@ -132,13 +134,18 @@ export default function AppSidebar({ sessions }: Props) {
       setCollapsed(persistedCollapseByDefault);
       setShowHoverPreviews(readBooleanSetting(SHOW_HOVER_PREVIEWS_KEY, true));
       setShowModeBadges(readBooleanSetting(SHOW_MODE_BADGES_KEY, true));
-      setSocraticTone(readSocraticToneSetting());
+      const storedTone = readSocraticToneSetting();
+      setSocraticTone(
+        !isPremium && storedTone === "RUTHLESS_BLUNT"
+          ? "SIMPLE_CLEAR"
+          : storedTone,
+      );
       setChatFontSize(readChatFontSizeSetting());
     });
     return () => {
       window.cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [isPremium]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -232,10 +239,6 @@ export default function AppSidebar({ sessions }: Props) {
     };
   }, []);
 
-  useEffect(() => {
-    setIsMobileSidebarOpen(false);
-  }, [pathname]);
-
   function handleCollapseDefaultChange(nextValue: boolean) {
     setCollapseByDefault(nextValue);
     setCollapsed(nextValue);
@@ -253,9 +256,18 @@ export default function AppSidebar({ sessions }: Props) {
   }
 
   function handleSocraticToneChange(nextTone: SocraticTone) {
+    if (!isPremium && nextTone === "RUTHLESS_BLUNT") {
+      setIsToneDropdownOpen(false);
+      return;
+    }
     setSocraticTone(nextTone);
     localStorage.setItem(SOCRATIC_TONE_KEY, nextTone);
     setIsToneDropdownOpen(false);
+  }
+
+  function openUpgradePrompt() {
+    setIsToneDropdownOpen(false);
+    window.dispatchEvent(new CustomEvent("socratic:upgrade-prompt:open"));
   }
 
   function handleThemePreference(nextTheme: "light" | "dark") {
@@ -417,6 +429,14 @@ export default function AppSidebar({ sessions }: Props) {
               >
                 <House size={17} />
               </Link>
+              <Link
+                href={billingCtaHref}
+                className="app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition"
+                aria-label={billingCtaLabel}
+                data-tooltip={billingCtaLabel}
+              >
+                <Crown size={17} />
+              </Link>
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
@@ -470,6 +490,19 @@ export default function AppSidebar({ sessions }: Props) {
                 className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
               >
                 <House size={16} /> Home
+              </Link>
+              <Link
+                href={billingCtaHref}
+                className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
+              >
+                <Crown size={16} className="shrink-0" />
+                {isPremium ? (
+                  <span className="text-[#CFA43A]">Socratic +</span>
+                ) : (
+                  <span>
+                    Upgrade to <span className="text-[#CFA43A]">Socratic Plus</span>
+                  </span>
+                )}
               </Link>
               <button
                 type="button"
@@ -587,6 +620,20 @@ export default function AppSidebar({ sessions }: Props) {
             className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
           >
             <House size={18} /> Home
+          </Link>
+          <Link
+            href={billingCtaHref}
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
+          >
+            <Crown size={16} className="shrink-0" />
+            {isPremium ? (
+              <span className="text-[#CFA43A]">Socratic +</span>
+            ) : (
+              <span>
+                Upgrade to <span className="text-[#CFA43A]">Socratic Plus</span>
+              </span>
+            )}
           </Link>
           <button
             type="button"
@@ -1050,37 +1097,52 @@ export default function AppSidebar({ sessions }: Props) {
                                       : "border-slate-200 bg-white"
                                   }`}
                                 >
-                                  {SOCRATIC_TONE_OPTIONS.map((option) => (
-                                    <button
-                                      key={option.value}
-                                      type="button"
-                                      onClick={() =>
-                                        handleSocraticToneChange(option.value)
-                                      }
-                                      className={`app-settings-dropdown-option w-full cursor-pointer rounded-[14px] px-2.5 py-2 text-left ${smoothUiClass} ${
-                                        socraticTone === option.value
-                                          ? isDarkMode
-                                            ? "bg-[#3a3b40] text-slate-100"
-                                            : "bg-slate-100 text-slate-900"
-                                          : isDarkMode
-                                            ? "text-slate-200 hover:bg-[#35363b]"
-                                            : "text-slate-700 hover:bg-slate-50"
-                                      }`}
-                                    >
-                                      <p className="text-[12px] font-medium">
-                                        {option.label}
-                                      </p>
-                                      <p
-                                        className={`mt-0.5 text-[11px] ${
-                                          isDarkMode
-                                            ? "text-slate-400"
-                                            : "text-slate-500"
-                                        }`}
+                                  {SOCRATIC_TONE_OPTIONS.map((option) => {
+                                    const isLockedTone =
+                                      !isPremium &&
+                                      option.value === "RUTHLESS_BLUNT";
+                                    return (
+                                      <button
+                                        key={option.value}
+                                        type="button"
+                                        onClick={() => {
+                                          if (isLockedTone) {
+                                            openUpgradePrompt();
+                                            return;
+                                          }
+                                          handleSocraticToneChange(option.value);
+                                        }}
+                                        className={`app-settings-dropdown-option w-full rounded-[14px] px-2.5 py-2 text-left ${smoothUiClass} ${
+                                          socraticTone === option.value
+                                            ? isDarkMode
+                                              ? "bg-[#3a3b40] text-slate-100"
+                                              : "bg-slate-100 text-slate-900"
+                                            : isDarkMode
+                                              ? "text-slate-200 hover:bg-[#35363b]"
+                                              : "text-slate-700 hover:bg-slate-50"
+                                        } cursor-pointer`}
                                       >
-                                        {option.description}
-                                      </p>
-                                    </button>
-                                  ))}
+                                        <p className="inline-flex items-center gap-1.5 text-[12px] font-medium">
+                                          <span>{option.label}</span>
+                                          {isLockedTone ? (
+                                            <Crown
+                                              size={12}
+                                              className="text-[#CFA43A]"
+                                            />
+                                          ) : null}
+                                        </p>
+                                        <p
+                                          className={`mt-0.5 text-[11px] ${
+                                            isDarkMode
+                                              ? "text-slate-400"
+                                              : "text-slate-500"
+                                          }`}
+                                        >
+                                          {option.description}
+                                        </p>
+                                      </button>
+                                    );
+                                  })}
                                 </motion.div>
                               )}
                             </AnimatePresence>

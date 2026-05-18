@@ -66,8 +66,12 @@ interface Props {
     attachments: ChatImageAttachment[];
     webSearch: boolean;
   }) => void;
+  onRestrictionReached?: (reason: string) => void;
   onStop?: () => void;
   isStreaming: boolean;
+  isPremium?: boolean;
+  dailyMessagesRemaining?: number | null;
+  dailyImageUploadsRemaining?: number | null;
   initialValue: string | undefined;
   variant?: "default" | "hero";
   placeholder?: string;
@@ -80,6 +84,7 @@ interface ComposerImageAttachment {
   previewUrl: string;
   name: string;
   status: "uploading" | "ready" | "error";
+  isLocalOnly?: boolean;
   attachment?: ChatImageAttachment;
 }
 
@@ -91,13 +96,25 @@ interface SignedUploadPayload {
   signature: string;
 }
 
+interface UploadSignErrorPayload {
+  reason?: string;
+}
+
 const MAX_ATTACHMENTS = 3;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const DAILY_MESSAGES_LIMIT_REASON =
+  "Daily free limit reached. Upgrade to Socratic+ for unlimited messages.";
+const DAILY_IMAGE_UPLOAD_LIMIT_REASON =
+  "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.";
 
 export default function MessageInput({
   onSend,
+  onRestrictionReached,
   onStop,
   isStreaming,
+  isPremium = false,
+  dailyMessagesRemaining = null,
+  dailyImageUploadsRemaining = null,
   initialValue,
   variant = "default",
   placeholder = "What's on your mind?",
@@ -155,6 +172,7 @@ export default function MessageInput({
   const attachments = composerAttachments
     .filter((item) => item.status === "ready" && item.attachment)
     .map((item) => item.attachment as ChatImageAttachment);
+  const hasAnyComposerAttachment = composerAttachments.length > 0;
   const isUploadingAttachments = composerAttachments.some(
     (item) => item.status === "uploading",
   );
@@ -352,12 +370,27 @@ export default function MessageInput({
 
   function handleSend() {
     if (
-      (!content.trim() && attachments.length === 0) ||
+      (!content.trim() && !hasAnyComposerAttachment) ||
       isStreaming ||
       isUploadingAttachments
     ) {
       return;
     }
+
+    if (!isPremium && (dailyMessagesRemaining ?? 0) <= 0) {
+      onRestrictionReached?.(DAILY_MESSAGES_LIMIT_REASON);
+      return;
+    }
+
+    if (
+      !isPremium &&
+      composerAttachments.length > 0 &&
+      (dailyImageUploadsRemaining ?? 0) <= 0
+    ) {
+      onRestrictionReached?.(DAILY_IMAGE_UPLOAD_LIMIT_REASON);
+      return;
+    }
+
     if (isListening) {
       recognitionRef.current?.stop();
     }
@@ -398,7 +431,26 @@ export default function MessageInput({
     });
 
     if (!signRes.ok) {
-      throw new Error("Could not initialize image upload.");
+      let errorMessage = "Could not initialize image upload.";
+      const contentType = signRes.headers.get("content-type") ?? "";
+
+      if (contentType.includes("application/json")) {
+        const payload = (await signRes.json()) as UploadSignErrorPayload;
+        if (typeof payload.reason === "string" && payload.reason.trim()) {
+          errorMessage = payload.reason.trim();
+        }
+      } else {
+        const text = await signRes.text();
+        if (text.trim()) {
+          errorMessage = text.trim();
+        }
+      }
+
+      if (signRes.status === 402) {
+        onRestrictionReached?.(errorMessage);
+      }
+
+      throw new Error(errorMessage);
     }
 
     const signPayload = (await signRes.json()) as SignedUploadPayload;
@@ -502,6 +554,24 @@ export default function MessageInput({
           : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       const previewUrl = URL.createObjectURL(file);
 
+      if (
+        !isPremium &&
+        ((dailyMessagesRemaining ?? 0) <= 0 ||
+          (dailyImageUploadsRemaining ?? 0) <= 0)
+      ) {
+        setComposerAttachments((current) => [
+          ...current,
+          {
+            id: attachmentId,
+            previewUrl,
+            name: file.name,
+            status: "ready",
+            isLocalOnly: true,
+          },
+        ]);
+        continue;
+      }
+
       setComposerAttachments((current) => [
         ...current,
         {
@@ -526,7 +596,7 @@ export default function MessageInput({
               : attachment,
           ),
         );
-      } catch {
+      } catch (error) {
         setComposerAttachments((current) =>
           current.map((attachment) =>
             attachment.id === attachmentId
@@ -537,7 +607,16 @@ export default function MessageInput({
               : attachment,
           ),
         );
-        setAttachmentError("One or more images failed to upload.");
+
+        const fallbackMessage = "One or more images failed to upload.";
+        const detail =
+          error instanceof Error && error.message.trim()
+            ? error.message.trim()
+            : fallbackMessage;
+        const isFreeUploadLimit =
+          detail.toLowerCase().includes("daily free image upload limit") ||
+          detail.toLowerCase().includes("unlimited image uploads");
+        setAttachmentError(isFreeUploadLimit ? "" : detail);
       }
     }
 
@@ -613,14 +692,14 @@ export default function MessageInput({
                   onClick={() => {
                     if (
                       attachment.status !== "ready" ||
-                      !attachment.attachment
+                      (!attachment.attachment && !attachment.isLocalOnly)
                     ) {
                       return;
                     }
 
                     setPreviewImage({
                       name: attachment.name,
-                      dataUrl: attachment.attachment.dataUrl,
+                      dataUrl: attachment.attachment?.dataUrl ?? attachment.previewUrl,
                     });
                   }}
                   disabled={attachment.status !== "ready"}
@@ -888,14 +967,14 @@ export default function MessageInput({
               onClick={isStreaming ? () => onStop?.() : handleSend}
               disabled={
                 isUploadingAttachments ||
-                (!isStreaming && !content.trim() && attachments.length === 0)
+                (!isStreaming && !content.trim() && !hasAnyComposerAttachment)
               }
               className={cn(
                 variant === "hero"
                   ? "app-send-button inline-flex h-9 w-9 items-center justify-center rounded-full bg-black text-white md:h-9 md:w-9"
                   : "app-send-button inline-flex h-9 w-9 items-center justify-center rounded-full bg-black text-white md:h-7 md:w-7",
                 isUploadingAttachments ||
-                  (!isStreaming && !content.trim() && attachments.length === 0)
+                  (!isStreaming && !content.trim() && !hasAnyComposerAttachment)
                   ? "cursor-not-allowed opacity-45"
                   : isStreaming
                     ? "cursor-pointer transition hover:bg-rose-700"

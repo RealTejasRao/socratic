@@ -13,8 +13,11 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/src/components",
-    "ui": "@/src/components/ui",
     "utils": "@/src/lib/utils",
+    "ui": "@/src/components/ui",
     "hooks": "@/src/hooks"
+  },
+  "registries": {
+    "@billingsdk": "https://billingsdk.com/r/{name}.json"
   }
 }

@@ -178,7 +178,7 @@ export default function EarlyAccessForm({
 
       setStatus({
         tone: "success",
-        message: data.message ?? "You are on the early access list.",
+        message: data.message ?? "Try Socratic AI now.",
       });
       setEmail("");
       setShowGiftPopup(true);
@@ -297,7 +297,7 @@ export default function EarlyAccessForm({
                   </span>
                 </span>
               ) : (
-                "Get Early Access"
+                "Try Socratic AI Now"
               )}
             </button>
           </div>
@@ -386,7 +386,7 @@ export default function EarlyAccessForm({
                 You&apos;re on the list
               </h3>
               <p className={popupCopyClassName}>
-                Tap the gift to open your surprise while you wait for early access.
+                Tap the gift to open your surprise and start using Socratic AI now.
               </p>
               <a
                 href="https://youtu.be/QDia3e12czc?si=VmG8elzvdKkMvZT4"

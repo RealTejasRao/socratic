@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
+  Crown,
   ArrowRight,
   Check,
   Clock3,
@@ -23,12 +24,17 @@ import {
   type DebateTone,
 } from "src/lib/debate";
 import type { DebateTopicSource } from "src/types/chat";
+import { ROUTES } from "@/src/lib/routes";
 
 type Step = "tone" | "duration" | "topic" | "side" | "ready";
 
 const stepOrder: Step[] = ["tone", "duration", "topic", "side", "ready"];
 
-export default function DebateModeSetup() {
+interface Props {
+  canAccessDebate?: boolean;
+}
+
+export default function DebateModeSetup({ canAccessDebate = false }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("tone");
   const [tone, setTone] = useState<DebateTone>("RUTHLESS_BLUNT");
@@ -242,6 +248,31 @@ export default function DebateModeSetup() {
       setError("Could not start the debate.");
       setIsBusy(false);
     }
+  }
+
+  if (!canAccessDebate) {
+    return (
+      <div className="mx-auto w-full max-w-100 rounded-3xl border border-[#d7c39d] bg-[linear-gradient(165deg,#22180e_0%,#2a1f12_55%,#19120a_100%)] px-5 py-5 text-[#f2e6ce] shadow-[0_20px_60px_rgba(0,0,0,0.42)]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#d8c59f] bg-[#f5e2bc] px-3 py-1 text-[11px] uppercase tracking-[0.13em] text-[#2e2215]">
+          <Crown size={12} />
+          Socratic+ Feature
+        </div>
+        <h2 className="mt-4 text-[31px] leading-[1.02] tracking-[-0.04em] font-[Georgia,serif]">
+          Debate Mode is premium.
+        </h2>
+        <p className="mt-3 text-[14px] leading-7 text-[#d5c39f]">
+          Free accounts keep full core chat access. Upgrade to Socratic+ for
+          timed debates, ruthless sparring, and detailed post-debate feedback.
+        </p>
+        <a
+          href={ROUTES.PRICING}
+          className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#f5dfb5] bg-[#f5dfb5] px-4 py-2 text-[13px] text-[#271a0f] transition hover:bg-[#eace98]"
+        >
+          View plans
+          <ArrowRight size={13} />
+        </a>
+      </div>
+    );
   }
 
   return (

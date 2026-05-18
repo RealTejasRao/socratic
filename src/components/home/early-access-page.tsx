@@ -230,11 +230,10 @@ export default function EarlyAccessPage() {
             <div className={cardGlowBottomClassName} />
             <div className={cardHighlightClassName} />
 
-            <h1 className={heroTitleClassName}>Get Priority Access</h1>
+            <h1 className={heroTitleClassName}>Try Socratic AI Now</h1>
             <p className={heroCopyClassName}>
-              Socratic AI is in private beta. Early access is currently being
-              granted to limited founding members at no cost. Reserve your spot
-              now!
+              Socratic AI is live. Sign in and start thinking, debating, and
+              exploring ideas right now.
             </p>
 
             <EarlyAccessForm theme={theme} />

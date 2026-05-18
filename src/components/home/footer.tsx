@@ -1,25 +1,60 @@
 import Image from "next/image";
+import { auth } from "@clerk/nextjs/server";
 import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { ROUTES } from "@/src/lib/routes";
 import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { TermlyPreferencesLink } from "@/src/components/termly-preferences-trigger";
+import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
+import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
 type FooterProps = {
   interClassName: string;
   sectionPrefix?: string;
 };
 
-export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
+export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
+  const { userId: clerkUserId } = await auth();
+  const billing = clerkUserId
+    ? await getUserBillingStateByClerkId(clerkUserId)
+    : null;
+  const isSignedIn = Boolean(clerkUserId);
+  const isPremium = Boolean(billing?.isPremium);
   const withPrefix = (hash: string) =>
     sectionPrefix ? `${sectionPrefix}${hash}` : hash;
   const siteMapLinks = [
     { label: "Home", href: withPrefix("#home") },
     { label: "Features", href: withPrefix("#features") },
-    { label: "Use Cases", href: withPrefix("#use-cases") },
     { label: "Blog", href: ROUTES.BLOG },
     { label: "Contact", href: withPrefix("#contact") },
   ];
-  const topAnchorLink = withPrefix("#home");
+  const accountLinks = !isSignedIn
+    ? [
+        { label: "Sign Up", href: ROUTES.SIGN_UP, className: "text-white/76 hover:text-white" },
+        { label: "Sign In", href: ROUTES.SIGN_IN, className: "text-white/76 hover:text-white" },
+        { label: "Pricing", href: ROUTES.PRICING, className: "text-white/76 hover:text-white" },
+      ]
+    : isPremium
+      ? [
+          { label: "Go to App", href: ROUTES.APP, className: "text-white/76 hover:text-white" },
+          {
+            label: "Socratic +",
+            href: ROUTES.APP_BILLING,
+            className: "text-[#d4a63d] hover:text-[#f3d27f]",
+          },
+          {
+            label: "Manage Subscription",
+            href: ROUTES.APP_BILLING,
+            className: "text-white/76 hover:text-white",
+          },
+        ]
+      : [
+          { label: "Go to App", href: ROUTES.APP, className: "text-white/76 hover:text-white" },
+          {
+            label: "Get Socratic +",
+            href: ROUTES.PRICING,
+            className: "text-[#d4a63d] hover:text-[#f3d27f]",
+          },
+        ];
   const socialLinks = [
     {
       label: "X",
@@ -99,12 +134,12 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
                 ))}
               </ul>
 
-              <a
-                href={topAnchorLink}
+              <AuthAwareCtaLink
+                signedOutHref={ROUTES.SIGN_UP}
                 className={`${interClassName} mt-6 inline-flex min-h-12 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-7 text-[0.86rem] font-semibold tracking-[0.04em] text-white uppercase transition-colors duration-200 hover:bg-[#871313]`}
               >
-                Get Early Access
-              </a>
+                Try Socratic AI Now
+              </AuthAwareCtaLink>
             </div>
 
             <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 sm:gap-9">
@@ -135,14 +170,16 @@ export function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
                   Account
                 </p>
                 <ul className="mt-4 space-y-2.5">
-                  <li>
-                    <a
-                      href={topAnchorLink}
-                      className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
-                    >
-                      Early Access
-                    </a>
-                  </li>
+                  {accountLinks.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className={`${interClassName} text-[0.92rem] transition-colors duration-200 ${link.className}`}
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
 

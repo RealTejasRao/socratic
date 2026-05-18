@@ -18,6 +18,11 @@ import {
   createRateLimitHeaders,
   getRequestIp,
 } from "src/server/security/rate-limit";
+import { PREMIUM_FEATURES } from "src/lib/billing";
+import {
+  getUserBillingStateByClerkId,
+  hasPremiumFeature,
+} from "src/server/billing/access";
 
 export async function POST(req: Request) {
   const { userId: clerkUserId } = await auth();
@@ -47,18 +52,23 @@ export async function POST(req: Request) {
     );
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { clerkUserId },
-    select: { id: true },
-  });
-
-  if (!dbUser) {
+  const billing = await getUserBillingStateByClerkId(clerkUserId);
+  if (!billing) {
     return new NextResponse("User not found", { status: 404 });
+  }
+
+  if (!hasPremiumFeature(billing, PREMIUM_FEATURES.debateMode)) {
+    return NextResponse.json(
+      {
+        reason: "Debate mode is available on Socratic+ only.",
+      },
+      { status: 402 },
+    );
   }
 
   const activeDebates = await prisma.chatSession.findMany({
     where: {
-      userId: dbUser.id,
+      userId: billing.userId,
       mode: "DEBATE",
       debateStatus: "ACTIVE",
     },
@@ -131,7 +141,7 @@ export async function POST(req: Request) {
   }
 
   const session = await createDebateSession({
-    userId: dbUser.id,
+    userId: billing.userId,
     tone: tone as DebateTone,
     durationPreset: durationPreset as DebateDurationPreset,
     topic: topicValidation.normalizedTopic,

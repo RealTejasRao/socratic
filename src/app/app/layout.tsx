@@ -6,6 +6,10 @@ import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import { serializeSessionMeta } from "src/server/chat/session-meta";
 import { absoluteUrl } from "src/lib/seo";
+import {
+  getUserBillingStateByUserId,
+  getVisibleSessionsLimit,
+} from "src/server/billing/access";
 import AppSidebar from "./components/AppSidebar";
 import AppTopBar from "./components/AppTopBar";
 
@@ -36,17 +40,7 @@ export const metadata: Metadata = {
 export default async function AppLayout({ children }: Props) {
   const { userId: clerkUserId } = await auth();
 
-  console.log("CLERK USER ID:", clerkUserId);
-
-  const allowedEmails = (process.env["APP_ALLOWED_EMAILS"] ?? "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
-    console.log("ALLOWED EMAILS:", allowedEmails);
-
   if (!clerkUserId) {
-    console.log("❌ No clerk user ID — redirecting");
     redirect(ROUTES.SIGN_IN);
   }
 
@@ -56,28 +50,17 @@ export default async function AppLayout({ children }: Props) {
   });
 
   if (!dbUser) {
-    console.log("❌ No DB user found — redirecting");
     redirect(ROUTES.HOME);
   }
-
-  const normalizedDbEmail = dbUser.email?.trim().toLowerCase() ?? "";
-
-  console.log("DB EMAIL:", normalizedDbEmail);
-
-  if (
-    allowedEmails.length === 0 ||
-    !normalizedDbEmail ||
-    !allowedEmails.includes(normalizedDbEmail)
-  ) {
-    console.log("❌ Email not allowed — redirecting");
-    redirect(ROUTES.HOME);
-  }
-
-  console.log("✅ Access granted");
+  const billing = await getUserBillingStateByUserId(dbUser.id);
+  const visibleSessionsLimit = getVisibleSessionsLimit({
+    isPremium: billing?.isPremium ?? false,
+  });
   
   const sessions = await prisma.chatSession.findMany({
     where: { userId: dbUser.id },
     orderBy: { lastActivityAt: "desc" },
+    take: visibleSessionsLimit,
     select: {
       id: true,
       title: true,
@@ -121,10 +104,16 @@ export default async function AppLayout({ children }: Props) {
     <div className="app-layout h-svh bg-[#fefefc]">
       <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-[#fefefc]">
         <div className="flex min-h-0 flex-1">
-          <AppSidebar sessions={sidebarSessions} />
+          <AppSidebar
+            sessions={sidebarSessions}
+            isPremium={billing?.isPremium ?? false}
+          />
 
           <section className="app-chat-section relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#fefefc]">
-            <AppTopBar sessions={sidebarSessions} />
+            <AppTopBar
+              sessions={sidebarSessions}
+              isPremium={billing?.isPremium ?? false}
+            />
             <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
               {children}
             </main>

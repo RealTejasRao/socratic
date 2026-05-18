@@ -15,7 +15,7 @@ import "./globals.css";
 const THEME_INIT_SCRIPT = `(() => {
   try {
     const savedTheme = localStorage.getItem("socratic:theme");
-    const useDark = savedTheme ? savedTheme === "dark" : true;
+    const useDark = savedTheme ? savedTheme === "dark" : false;
     document.documentElement.classList.toggle("app-dark", useDark);
   } catch {}
 })();`;

@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "src/server/db/client";
 import { serializeSessionMeta } from "src/server/chat/session-meta";
+import {
+  getUserBillingStateByClerkId,
+  getVisibleSessionsLimit,
+} from "src/server/billing/access";
 
 export async function GET() {
   const { userId: clerkUserId } = await auth();
@@ -19,9 +23,15 @@ export async function GET() {
     return new NextResponse("User not found in DB", { status: 404 });
   }
 
+  const billing = await getUserBillingStateByClerkId(clerkUserId);
+  const visibleSessionsLimit = getVisibleSessionsLimit({
+    isPremium: billing?.isPremium ?? false,
+  });
+
   const sessions = await prisma.chatSession.findMany({
     where: { userId: dbUser.id },
     orderBy: { lastActivityAt: "desc" },
+    take: visibleSessionsLimit,
     select: {
       id: true,
       title: true,

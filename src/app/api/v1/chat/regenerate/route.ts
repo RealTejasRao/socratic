@@ -11,6 +11,10 @@ import {
   createRateLimitHeaders,
   getRequestIp,
 } from "src/server/security/rate-limit";
+import {
+  getUserBillingStateByClerkId,
+  normalizeSocraticToneForPlan,
+} from "src/server/billing/access";
 import type { ChatImageAttachment } from "src/types/chat";
 import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 
@@ -96,6 +100,11 @@ export async function POST(req: Request) {
   const requestedSocraticTone = isSocraticTone(body?.socraticTone)
     ? (body.socraticTone as SocraticTone)
     : "SIMPLE_CLEAR";
+  const billing = await getUserBillingStateByClerkId(userId);
+
+  if (!billing) {
+    return new NextResponse("User not found in DB", { status: 404 });
+  }
 
   if (typeof sessionId !== "string" || !sessionId.trim()) {
     return new NextResponse("Invalid sessionId", { status: 400 });
@@ -184,7 +193,10 @@ export async function POST(req: Request) {
     sourceUserMessageId: lastUserMessage.id,
     appendUserMessageToPrompt: false,
     runInsightExtraction: false,
-    socraticTone: requestedSocraticTone,
+    socraticTone: normalizeSocraticToneForPlan({
+      requestedTone: requestedSocraticTone,
+      billing,
+    }),
   });
 
   return new Response(generationResult.readable, {

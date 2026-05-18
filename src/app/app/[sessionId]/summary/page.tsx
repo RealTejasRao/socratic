@@ -13,6 +13,11 @@ import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
 import { getDebateDurationMeta, getDebateToneMeta } from "src/lib/debate";
 import { getOrCreateDebateDashboard } from "src/server/debate/service";
+import { PREMIUM_FEATURES } from "src/lib/billing";
+import {
+  getUserBillingStateByUserId,
+  hasPremiumFeature,
+} from "src/server/billing/access";
 
 interface Props {
   params: Promise<{ sessionId: string }>;
@@ -74,6 +79,10 @@ export default async function DebateSummaryPage({ params }: Props) {
   }
 
   const { session, dashboard } = result;
+  const billing = await getUserBillingStateByUserId(dbUser.id);
+  const hasDetailedFeedback = billing
+    ? hasPremiumFeature(billing, PREMIUM_FEATURES.detailedDebateFeedback)
+    : false;
   const toneMeta = getDebateToneMeta(session.debateTone!);
   const durationMeta = getDebateDurationMeta(session.debateDurationPreset!);
   const winnerLabel =
@@ -196,36 +205,50 @@ export default async function DebateSummaryPage({ params }: Props) {
           title="What to keep, what to fix"
           body="Good feedback should tell you exactly what worked, exactly what failed, and exactly what to practice next."
         />
+        {hasDetailedFeedback ? (
+          <div className="mt-8 grid gap-10 lg:grid-cols-2">
+            <div>
+              <h3 className="summary-subheading text-[15px] font-medium uppercase tracking-[0.12em] text-emerald-700">
+                Where you were strong
+              </h3>
+              <ul className="summary-list mt-4 space-y-4 text-[14px] leading-7 text-slate-800">
+                {dashboard.userStrengths.map((item) => (
+                  <li key={item} className="relative pl-5">
+                    <span className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-        <div className="mt-8 grid gap-10 lg:grid-cols-2">
-          <div>
-            <h3 className="summary-subheading text-[15px] font-medium uppercase tracking-[0.12em] text-emerald-700">
-              Where you were strong
-            </h3>
-            <ul className="summary-list mt-4 space-y-4 text-[14px] leading-7 text-slate-800">
-              {dashboard.userStrengths.map((item) => (
-                <li key={item} className="relative pl-5">
-                  <span className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div>
+              <h3 className="summary-subheading text-[15px] font-medium uppercase tracking-[0.12em] text-amber-700">
+                Where your case weakened
+              </h3>
+              <ul className="summary-list mt-4 space-y-4 text-[14px] leading-7 text-slate-800">
+                {dashboard.userWeaknesses.map((item) => (
+                  <li key={item} className="relative pl-5">
+                    <span className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-
-          <div>
-            <h3 className="summary-subheading text-[15px] font-medium uppercase tracking-[0.12em] text-amber-700">
-              Where your case weakened
-            </h3>
-            <ul className="summary-list mt-4 space-y-4 text-[14px] leading-7 text-slate-800">
-              {dashboard.userWeaknesses.map((item) => (
-                <li key={item} className="relative pl-5">
-                  <span className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full bg-amber-500" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+        ) : (
+          <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-900">
+            <p className="text-[14px] leading-7">
+              Detailed feedback and personalized improvement plans are available
+              on Socratic+.
+            </p>
+            <Link
+              href={ROUTES.PRICING}
+              className="mt-3 inline-flex rounded-full border border-amber-300 bg-amber-100 px-3 py-1.5 text-[12px] text-amber-900 transition hover:bg-amber-200"
+            >
+              Upgrade to Socratic+
+            </Link>
           </div>
-        </div>
+        )}
       </section>
 
       <section id="next-steps" className="summary-section mt-10 pb-8">
@@ -236,16 +259,18 @@ export default async function DebateSummaryPage({ params }: Props) {
           body="The goal is not to memorize a script. It is to sharpen the habits that make your case clearer, harder to attack, and easier to defend under pressure."
         />
 
-        <div className="mt-8 max-w-[820px] space-y-5">
-          {dashboard.improvementSuggestions.map((item) => (
-            <p
-              key={item}
-              className="summary-advice text-[15px] leading-8 text-slate-800 [font-family:Georgia,serif]"
-            >
-              {item}
-            </p>
-          ))}
-        </div>
+        {hasDetailedFeedback ? (
+          <div className="mt-8 max-w-[820px] space-y-5">
+            {dashboard.improvementSuggestions.map((item) => (
+              <p
+                key={item}
+                className="summary-advice text-[15px] leading-8 text-slate-800 [font-family:Georgia,serif]"
+              >
+                {item}
+              </p>
+            ))}
+          </div>
+        ) : null}
 
         <details className="summary-details mt-10 border-t border-slate-200 pt-6">
           <summary className="cursor-pointer list-none text-[14px] font-medium text-slate-900">

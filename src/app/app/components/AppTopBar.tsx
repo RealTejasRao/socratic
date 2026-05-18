@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -21,7 +22,9 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { formatDebateCountdown, getDebateDurationMeta } from "src/lib/debate";
+import { ROUTES } from "src/lib/routes";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import AppUserButton from "./AppUserButton";
 
@@ -36,6 +39,7 @@ interface Session {
 
 interface Props {
   sessions: Session[];
+  isPremium?: boolean;
 }
 
 type ActionDialog =
@@ -55,7 +59,7 @@ const inter = Inter({
   weight: ["400", "500", "600"],
 });
 
-export default function AppTopBar({ sessions }: Props) {
+export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -70,7 +74,7 @@ export default function AppTopBar({ sessions }: Props) {
   const [isPreparingShare, setIsPreparingShare] = useState(false);
   const [shareError, setShareError] = useState("");
   const [copied, setCopied] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isThemeReady, setIsThemeReady] = useState(false);
   const [isEndingDebate, setIsEndingDebate] = useState(false);
   const [themeSweep, setThemeSweep] = useState<{
@@ -118,10 +122,11 @@ export default function AppTopBar({ sessions }: Props) {
       ? `Check out this Socratic AI chat: ${shareTitle}`
       : "Check out this Socratic AI chat",
   );
+  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("socratic:theme");
-    const useDark = savedTheme ? savedTheme === "dark" : true;
+    const useDark = savedTheme ? savedTheme === "dark" : false;
     setIsDarkMode(useDark);
     document.documentElement.classList.toggle("app-dark", useDark);
     setIsThemeReady(true);
@@ -823,11 +828,36 @@ export default function AppTopBar({ sessions }: Props) {
             </AnimatePresence>
           </button>
 
-          <div className="hidden lg:block">
+          <Link
+            href={billingCtaHref}
+            className="hidden cursor-pointer items-center justify-center rounded-full p-0 transition-transform duration-250 hover:-translate-y-0.5 lg:inline-flex lg:h-12 lg:w-12"
+            aria-label={isPremium ? "Open billing" : "Upgrade to Socratic Plus"}
+            data-tooltip={isPremium ? "Socratic +" : "Upgrade to Socratic Plus"}
+          >
+            <PremiumCrownIcon
+              className="h-[2.15rem] w-[2.15rem] lg:h-[2.25rem] lg:w-[2.25rem]"
+              crownClassName="h-[1em] w-[1em]"
+            />
+          </Link>
+
+          <div className="hidden items-center lg:flex">
             <AppUserButton size="md" />
           </div>
 
-          <div className="lg:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
+            {isPremium ? (
+              <Link
+                href={billingCtaHref}
+                className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full p-0"
+                aria-label="Open billing"
+                data-tooltip="Socratic +"
+              >
+                <PremiumCrownIcon
+                  className="h-9 w-9"
+                  crownClassName="h-[1em] w-[1em]"
+                />
+              </Link>
+            ) : null}
             <AppUserButton size="md" />
           </div>
         </div>

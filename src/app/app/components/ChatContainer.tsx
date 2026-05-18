@@ -9,6 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
+  ArrowUpRight,
   ArrowLeft,
   Check,
   ChevronDown,
@@ -30,9 +31,13 @@ import type {
   ChatMessage,
   ChatSessionMeta,
 } from "src/types/chat";
+import type { BillingStateResponse } from "src/types/billing";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
 import { SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { ROUTES } from "@/src/lib/routes";
+import { PLAN_LIMITS } from "@/src/lib/billing";
+import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import DebateModeSetup from "./DebateModeSetup";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
@@ -42,6 +47,7 @@ interface Props {
   initialMessages: ChatMessage[];
   sessionId?: string;
   sessionMeta?: ChatSessionMeta;
+  initialBilling?: Pick<BillingStateResponse, "isPremium" | "usage" | "features">;
 }
 
 const MORNING_GREETINGS = [
@@ -84,6 +90,17 @@ type ErrorToastState = {
   message: string;
   isLeaving: boolean;
 } | null;
+
+const DEFAULT_UPGRADE_PROMPT_TEXT =
+  "Fellow human, this feature requires a premium plan.";
+const DAILY_MESSAGES_UPGRADE_PROMPT_TEXT =
+  `Fellow human, you've reached the free limit of ${PLAN_LIMITS.FREE_DAILY_MESSAGES} messages for today.`;
+const DAILY_UPLOADS_UPGRADE_PROMPT_TEXT =
+  `Fellow human, you've reached the free limit of ${PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS} image uploads for today.`;
+const DAILY_MESSAGES_LIMIT_REASON =
+  "Daily free limit reached. Upgrade to Socratic+ for unlimited messages.";
+const DAILY_IMAGE_UPLOAD_LIMIT_REASON =
+  "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.";
 
 let greetingSeedStore = 0;
 const greetingSeedListeners = new Set<() => void>();
@@ -187,6 +204,25 @@ export default function ChatContainer({
   initialMessages,
   sessionId,
   sessionMeta = { mode: "SOCRATIC" },
+  initialBilling = {
+    isPremium: false,
+    usage: {
+      dailyMessageLimit: PLAN_LIMITS.FREE_DAILY_MESSAGES,
+      dailyMessagesUsed: 0,
+      dailyMessagesRemaining: PLAN_LIMITS.FREE_DAILY_MESSAGES,
+      dailyImageUploadLimit: PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS,
+      dailyImageUploadsUsed: 0,
+      dailyImageUploadsRemaining: PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS,
+      resetsAt: null,
+    },
+    features: {
+      debateMode: false,
+      detailedDebateFeedback: false,
+      ruthlessTone: false,
+      globalMemory: false,
+      earlyAccess: false,
+    },
+  },
 }: Props) {
   const { user } = useUser();
   const greetingSeed = useSyncExternalStore(
@@ -214,6 +250,11 @@ export default function ChatContainer({
   const [debateNowMs, setDebateNowMs] = useState<number | null>(null);
   const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
   const [errorToast, setErrorToast] = useState<ErrorToastState>(null);
+  const [billing, setBilling] = useState(initialBilling);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [upgradePromptSmallText, setUpgradePromptSmallText] = useState(
+    DEFAULT_UPGRADE_PROMPT_TEXT,
+  );
   const [activeSessionId, setActiveSessionId] = useState(sessionId);
   const tempIdRef = useRef(0);
   const activeStreamControllerRef = useRef<AbortController | null>(null);
@@ -295,9 +336,34 @@ export default function ChatContainer({
     return template.replace("{name}", name);
   })();
 
+  async function refreshBillingState() {
+    try {
+      const response = await fetch("/api/v1/billing/state", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as BillingStateResponse;
+      setBilling({
+        isPremium: payload.isPremium,
+        usage: payload.usage,
+        features: payload.features,
+      });
+    } catch {
+      // best effort
+    }
+  }
+
   useEffect(() => {
     setActiveSessionMeta(sessionMeta);
   }, [sessionMeta]);
+
+  useEffect(() => {
+    void refreshBillingState();
+  }, []);
 
   useEffect(() => {
     setActiveSessionId(sessionId);
@@ -403,6 +469,27 @@ export default function ChatContainer({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isModeMenuOpen]);
+
+  useEffect(() => {
+    const handleUpgradePromptOpen = (event: Event) => {
+      const detail = (event as CustomEvent<
+        { reason?: string; smallText?: string } | undefined
+      >).detail;
+      openUpgradePrompt(detail);
+    };
+
+    window.addEventListener(
+      "socratic:upgrade-prompt:open",
+      handleUpgradePromptOpen,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "socratic:upgrade-prompt:open",
+        handleUpgradePromptOpen,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     const debate = activeSessionMeta.debate;
@@ -580,6 +667,108 @@ export default function ChatContainer({
     });
   }
 
+  function resolveUpgradePromptSmallText(reason?: string) {
+    if (!reason) {
+      return DEFAULT_UPGRADE_PROMPT_TEXT;
+    }
+
+    const normalized = reason.toLowerCase();
+
+    if (
+      normalized.includes("image upload limit") ||
+      normalized.includes("unlimited image uploads")
+    ) {
+      return DAILY_UPLOADS_UPGRADE_PROMPT_TEXT;
+    }
+
+    if (
+      normalized.includes("daily free limit reached") ||
+      normalized.includes("unlimited messages")
+    ) {
+      return DAILY_MESSAGES_UPGRADE_PROMPT_TEXT;
+    }
+
+    return DEFAULT_UPGRADE_PROMPT_TEXT;
+  }
+
+  async function readUpgradeReason(response: Response) {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+      const payload = (await response.json().catch(() => null)) as
+        | { reason?: string }
+        | null;
+      if (typeof payload?.reason === "string" && payload.reason.trim()) {
+        return payload.reason.trim();
+      }
+      return undefined;
+    }
+
+    const text = await response.text().catch(() => "");
+    const trimmed = text.trim();
+    return trimmed ? trimmed : undefined;
+  }
+
+  function openUpgradePrompt(detail?: { reason?: string; smallText?: string }) {
+    const smallText =
+      typeof detail?.smallText === "string" && detail.smallText.trim()
+        ? detail.smallText.trim()
+        : resolveUpgradePromptSmallText(detail?.reason);
+    setUpgradePromptSmallText(smallText);
+    setShowUpgradePrompt(true);
+  }
+
+  function renderUpgradePromptModal() {
+    if (!showUpgradePrompt) {
+      return null;
+    }
+
+    return (
+      <motion.div
+        className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setShowUpgradePrompt(false)}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 16, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+          className="app-card w-full max-w-[540px] rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <h3 className="inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
+            <span>
+              Go Unlimited with <span className="text-[#CFA43A]">Socratic Plus</span>
+            </span>
+            <PremiumCrownIcon className="text-[36px]" />
+          </h3>
+          <p className="mt-2 text-[13px] leading-6 text-[#746758]">
+            {upgradePromptSmallText}
+          </p>
+          <div className="mt-5 flex items-center gap-2.5">
+            <Link
+              href={ROUTES.PRICING}
+              className="inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]"
+            >
+              View Pricing
+              <ArrowUpRight size={13} />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setShowUpgradePrompt(false)}
+              className="inline-flex rounded-[14px] border border-[#d8ccbc] bg-[#fdf9f2] px-4 py-2 text-[13px] text-[#5f5344] transition hover:bg-[#f4ece0]"
+            >
+              Keep exploring free
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
+
   async function readRateLimitMessage(response: Response) {
     if (response.status !== 429) {
       return null;
@@ -654,6 +843,19 @@ export default function ChatContainer({
     webSearch: boolean;
   }) {
     if (isStreaming || isDebateCompleted) return;
+    if (!billing.isPremium && (billing.usage.dailyMessagesRemaining ?? 0) <= 0) {
+      openUpgradePrompt({ reason: DAILY_MESSAGES_LIMIT_REASON });
+      return;
+    }
+    if (
+      !billing.isPremium &&
+      payload.attachments.length > 0 &&
+      (billing.usage.dailyImageUploadsRemaining ?? 0) <= 0
+    ) {
+      openUpgradePrompt({ reason: DAILY_IMAGE_UPLOAD_LIMIT_REASON });
+      return;
+    }
+
     const tempId = createTempId("temp");
     let assistantMessageId: string | null = null;
     const { content, attachments, webSearch } = payload;
@@ -710,9 +912,15 @@ export default function ChatContainer({
       });
 
       if (!res.ok || !res.body) {
-        const rateLimitMessage = await readRateLimitMessage(res);
-        if (rateLimitMessage) {
-          showErrorToast(rateLimitMessage);
+        let rateLimitMessage: string | null = null;
+        if (res.status === 402) {
+          const reason = await readUpgradeReason(res);
+          openUpgradePrompt(reason ? { reason } : undefined);
+        } else {
+          rateLimitMessage = await readRateLimitMessage(res);
+          if (rateLimitMessage) {
+            showErrorToast(rateLimitMessage);
+          }
         }
 
         setMessages((prev) =>
@@ -722,9 +930,10 @@ export default function ChatContainer({
               message.id !== optimisticMessage.id,
           ),
         );
-        if (!rateLimitMessage) {
+        if (res.status !== 402 && !rateLimitMessage) {
           router.refresh();
         }
+        void refreshBillingState();
         return;
       }
 
@@ -765,6 +974,7 @@ export default function ChatContainer({
       }
 
       router.refresh();
+      void refreshBillingState();
     } catch (error) {
       if (!isAbortError(error)) {
         setMessages((prev) =>
@@ -834,12 +1044,18 @@ export default function ChatContainer({
       });
 
       if (!res.ok || !res.body) {
-        const rateLimitMessage = await readRateLimitMessage(res);
-        if (rateLimitMessage) {
-          showErrorToast(rateLimitMessage);
+        let rateLimitMessage: string | null = null;
+        if (res.status === 402) {
+          const reason = await readUpgradeReason(res);
+          openUpgradePrompt(reason ? { reason } : undefined);
+        } else {
+          rateLimitMessage = await readRateLimitMessage(res);
+          if (rateLimitMessage) {
+            showErrorToast(rateLimitMessage);
+          }
         }
 
-        if (!rateLimitMessage) {
+        if (res.status !== 402 && !rateLimitMessage) {
           router.refresh();
         }
         return;
@@ -952,12 +1168,18 @@ export default function ChatContainer({
       });
 
       if (!res.ok || !res.body) {
-        const rateLimitMessage = await readRateLimitMessage(res);
-        if (rateLimitMessage) {
-          showErrorToast(rateLimitMessage);
+        let rateLimitMessage: string | null = null;
+        if (res.status === 402) {
+          const reason = await readUpgradeReason(res);
+          openUpgradePrompt(reason ? { reason } : undefined);
+        } else {
+          rateLimitMessage = await readRateLimitMessage(res);
+          if (rateLimitMessage) {
+            showErrorToast(rateLimitMessage);
+          }
         }
 
-        if (!rateLimitMessage) {
+        if (res.status !== 402 && !rateLimitMessage) {
           router.refresh();
         }
         return;
@@ -1063,6 +1285,11 @@ export default function ChatContainer({
                     <button
                       type="button"
                       onClick={() => {
+                        if (!billing.features.debateMode) {
+                          openUpgradePrompt();
+                          setIsModeMenuOpen(false);
+                          return;
+                        }
                         setModeSelection("DEBATE");
                         setIsModeMenuOpen(false);
                       }}
@@ -1072,6 +1299,9 @@ export default function ChatContainer({
                       <span className="inline-flex items-center gap-2">
                         <Swords size={15} />
                         Debate
+                        {!billing.features.debateMode ? (
+                          <Crown size={12} className="text-[#CFA43A]" />
+                        ) : null}
                       </span>
                       {modeSelection === "DEBATE" ? <Check size={14} /> : null}
                     </button>
@@ -1130,8 +1360,16 @@ export default function ChatContainer({
                   <MessageInput
                     key={activeSessionId ?? "new-chat"}
                     onSend={handleSend}
+                    onRestrictionReached={(reason) =>
+                      openUpgradePrompt({ reason })
+                    }
                     onStop={handleStopStreaming}
                     isStreaming={isStreaming}
+                    isPremium={billing.isPremium}
+                    dailyMessagesRemaining={billing.usage.dailyMessagesRemaining}
+                    dailyImageUploadsRemaining={
+                      billing.usage.dailyImageUploadsRemaining
+                    }
                     initialValue={undefined}
                     variant="hero"
                     placeholder={inputPlaceholder}
@@ -1189,7 +1427,7 @@ export default function ChatContainer({
                 transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
                 className="flex w-full justify-center"
               >
-                <DebateModeSetup />
+                <DebateModeSetup canAccessDebate={billing.features.debateMode} />
               </motion.div>
             ) : pendingRoleplayPhilosopher ? (
               <motion.div
@@ -1214,8 +1452,16 @@ export default function ChatContainer({
                   <MessageInput
                     key={`roleplay-${pendingRoleplayPhilosopher.id}`}
                     onSend={handleSend}
+                    onRestrictionReached={(reason) =>
+                      openUpgradePrompt({ reason })
+                    }
                     onStop={handleStopStreaming}
                     isStreaming={isStreaming}
+                    isPremium={billing.isPremium}
+                    dailyMessagesRemaining={billing.usage.dailyMessagesRemaining}
+                    dailyImageUploadsRemaining={
+                      billing.usage.dailyImageUploadsRemaining
+                    }
                     initialValue={undefined}
                     variant="hero"
                     placeholder={inputPlaceholder}
@@ -1236,6 +1482,7 @@ export default function ChatContainer({
             )}
           </AnimatePresence>
         </div>
+        <AnimatePresence>{renderUpgradePromptModal()}</AnimatePresence>
       </div>
     );
   }
@@ -1278,8 +1525,12 @@ export default function ChatContainer({
           <MessageInput
             key={activeSessionId ?? "new-chat"}
             onSend={handleSend}
+            onRestrictionReached={(reason) => openUpgradePrompt({ reason })}
             onStop={handleStopStreaming}
             isStreaming={isStreaming}
+            isPremium={billing.isPremium}
+            dailyMessagesRemaining={billing.usage.dailyMessagesRemaining}
+            dailyImageUploadsRemaining={billing.usage.dailyImageUploadsRemaining}
             initialValue={undefined}
             variant="hero"
             placeholder={inputPlaceholder}
@@ -1334,6 +1585,8 @@ export default function ChatContainer({
       )}
 
       <AnimatePresence>
+        {renderUpgradePromptModal()}
+
         {showWinnerReveal && completedDebate && (
           <motion.div
             className="app-debate-winner-backdrop fixed inset-0 z-50 flex items-center justify-center p-4"

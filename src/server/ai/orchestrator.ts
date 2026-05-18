@@ -46,8 +46,12 @@ import {
   isRoleplayPhilosopherId,
 } from "src/lib/roleplay";
 import type { SocraticTone } from "src/lib/socratic";
-
-const WINDOW_SIZE = 30; // 15 turns
+import { PREMIUM_FEATURES } from "src/lib/billing";
+import {
+  getConversationHistoryWindow,
+  getUserBillingStateByUserId,
+  hasPremiumFeature,
+} from "src/server/billing/access";
 
 function getDebateGenerationModel(params: {
   durationPreset: "MIN_15" | "MIN_20" | "MIN_30" | "HOUR_1" | "NO_TIMER";
@@ -157,6 +161,13 @@ export async function generateReply(params: {
     maxTokens = 500,
     socraticTone = "SIMPLE_CLEAR",
   } = params;
+  const userBilling = await getUserBillingStateByUserId(userId);
+  const windowSize = getConversationHistoryWindow({
+    isPremium: userBilling?.isPremium ?? false,
+  });
+  const allowGlobalMemory = userBilling
+    ? hasPremiumFeature(userBilling, PREMIUM_FEATURES.globalMemory)
+    : false;
 
   let effectiveSourceMessageId = sourceUserMessageId;
   const retrievalRewriteStartedAtMs = Date.now();
@@ -287,17 +298,17 @@ export async function generateReply(params: {
       prisma.message.findMany({
         where: { sessionId },
         orderBy: { createdAt: "desc" },
-        take: WINDOW_SIZE,
+        take: windowSize,
         select: { role: true, content: true, attachments: true },
       }),
       prisma.userBelief.findMany({
         where: {
           userId,
-          sessionId,
+          ...(allowGlobalMemory ? {} : { sessionId }),
           status: "ACTIVE",
         },
         orderBy: [{ updatedAt: "desc" }, { confidence: "desc" }],
-        take: 20,
+        take: allowGlobalMemory ? 40 : 20,
         select: {
           type: true,
           belief: true,

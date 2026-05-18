@@ -2,6 +2,10 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { createCloudinaryUploadSignature } from "src/server/cloudinary";
 import {
+  consumeDailyImageUploadQuota,
+  getUserBillingStateByClerkId,
+} from "src/server/billing/access";
+import {
   consumeUserRateLimit,
   createRateLimitHeaders,
   getRequestIp,
@@ -10,15 +14,15 @@ import {
 const DEFAULT_UPLOAD_FOLDER = "socratic/chat-images";
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
+  const { userId: clerkUserId } = await auth();
 
-  if (!userId) {
+  if (!clerkUserId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   const rateLimit = await consumeUserRateLimit({
     scope: "uploads:images:sign",
-    userId,
+    userId: clerkUserId,
     ip: getRequestIp(req),
     limit: 120,
     windowMs: 60_000,
@@ -31,6 +35,29 @@ export async function POST(req: Request) {
         status: 429,
         headers: createRateLimitHeaders(rateLimit),
       },
+    );
+  }
+
+  const billing = await getUserBillingStateByClerkId(clerkUserId);
+  if (!billing) {
+    return new NextResponse("User not found in DB", { status: 404 });
+  }
+
+  const quota = await consumeDailyImageUploadQuota({
+    userId: billing.userId,
+    billing,
+  });
+
+  if (!quota.allowed) {
+    return NextResponse.json(
+      {
+        reason:
+          "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.",
+        dailyLimit: quota.limit,
+        used: quota.used,
+        resetsAt: quota.resetsAt?.toISOString() ?? null,
+      },
+      { status: 402 },
     );
   }
 

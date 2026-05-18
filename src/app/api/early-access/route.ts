@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
-import { sendEarlyAccessThankYouEmail } from "src/server/email/resend";
+import { sendLaunchThankYouEmail } from "src/server/email/resend";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,16 +26,16 @@ export async function POST(request: Request) {
 
     if (inserted.length === 0) {
       return NextResponse.json(
-        { message: "This email is already on the early access list." },
+        { message: "Socratic AI is available now. Please sign in to continue." },
         { status: 409 },
       );
     }
 
     try {
-      await sendEarlyAccessThankYouEmail(email);
+      await sendLaunchThankYouEmail(email);
     } catch (error) {
       // Keep form success even if email delivery fails for any reason.
-      console.error("Failed to send early-access thank-you email", { error });
+      console.error("Failed to send launch email", { error });
     }
 
     return NextResponse.json(
