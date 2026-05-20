@@ -5,7 +5,6 @@ import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { MarketingNavAvatar } from "@/src/components/navigation/marketing-nav-avatar";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
-import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
@@ -41,7 +40,7 @@ export async function MarketingNavbar({
     <>
       <div className="shrink-0 overflow-hidden">
         <Image
-          src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
+          src="/brand/Logo_Dark_SVG.svg"
           alt="Socratic AI logo"
           width={50}
           height={50}
@@ -96,10 +95,12 @@ export async function MarketingNavbar({
           {isPremium ? (
             <Link
               href={ROUTES.APP_BILLING}
+              aria-label="Manage your billing"
               className="hero-load-up hero-load-up-nav-cta inline-flex h-11 w-11 items-center justify-center rounded-full p-0 transition-transform duration-250 hover:-translate-y-0.5 lg:h-12 lg:w-12"
             >
+              <span className="sr-only">Manage your billing</span>
               <PremiumCrownIcon
-                className="h-[2.15rem] w-[2.15rem] lg:h-[2.25rem] lg:w-[2.25rem]"
+                className="h-[2.15rem] w-[2.15rem] lg:h-9 lg:w-9"
                 crownClassName="h-[1em] w-[1em]"
               />
             </Link>

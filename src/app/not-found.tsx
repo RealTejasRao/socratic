@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Instrument_Serif, Inter } from "next/font/google";
-import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 
 const inter = Inter({
@@ -24,7 +23,7 @@ export default function NotFound() {
           className="inline-flex items-center gap-3 text-black/86 transition-opacity hover:opacity-90"
         >
           <Image
-            src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
+            src="/brand/Logo_Dark_SVG.svg"
             alt="Socratic AI logo"
             width={44}
             height={44}

@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
+import { CookiePreferencesLink } from "@/src/components/cookie-consent/cookie-preferences-link";
 import { ROUTES } from "@/src/lib/routes";
-import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
-import { TermlyPreferencesLink } from "@/src/components/termly-preferences-trigger";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
@@ -95,7 +94,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
             <div>
               <div className="flex items-center gap-2.5">
                 <Image
-                  src={resolveCloudinaryPublicAsset("/brand/Logo_Dark_SVG.svg")}
+                  src="/brand/Logo_Dark_SVG.svg"
                   alt="Socratic AI logo"
                   width={40}
                   height={40}
@@ -215,11 +214,11 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                     </a>
                   </li>
                   <li>
-                    <TermlyPreferencesLink
+                    <CookiePreferencesLink
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
                       Consent Preferences
-                    </TermlyPreferencesLink>
+                    </CookiePreferencesLink>
                   </li>
                 </ul>
               </div>
