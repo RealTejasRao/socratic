@@ -114,18 +114,17 @@ export default function HomePage() {
                 src={resolveOptimizedCloudinaryPublicAsset(
                   "/home/hero_m_final.webp",
                   {
-                    width: 640,
+                    width: 750,
                     crop: "limit",
                     quality: "auto:good",
                   },
                 )}
                 alt="Socratic AI hero illustration for philosophy and strategic thinking"
-                width={640}
+                width={750}
                 height={50}
                 sizes="(max-width: 639px) 100vw, (max-width: 1023px) and (orientation: portrait) 100vw, 0px"
                 className="home-hero-mobile-image block h-auto w-full object-contain object-bottom sm:hidden [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:block"
                 preload
-                fetchPriority="high"
               />
               <Image
                 src={resolveOptimizedCloudinaryPublicAsset("/home/hero.webp", {
@@ -139,7 +138,6 @@ export default function HomePage() {
                 sizes="(max-width: 639px) 0px, (max-width: 1023px) and (orientation: portrait) 0px, 100vw"
                 className="hidden h-auto w-full object-contain object-bottom sm:block [@media(orientation:portrait)_and_(min-width:640px)_and_(max-width:1023px)]:hidden"
                 preload
-                fetchPriority="high"
               />
             </div>
           </div>
