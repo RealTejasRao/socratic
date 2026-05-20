@@ -129,6 +129,14 @@ export const websiteSchema = {
   publisher: {
     "@id": absoluteUrl("/#organization"),
   },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${seoConfig.siteUrl}/blog?query={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
   inLanguage: "en",
 };
 
