@@ -84,13 +84,23 @@ export default function HomePage() {
               </h1>
               <div className="hero-load-up hero-load-up-hero-cta mt-8 w-full px-1 sm:mt-7 sm:px-4">
                 <AuthAwareCtaLink
-                  signedOutHref={ROUTES.SIGN_UP}
+                  signedOutHref={ROUTES.APP}
                   className={`${interClassName} group inline-flex min-h-12 min-w-[15.5rem] items-center justify-center gap-2 rounded-full outline outline-[#a01717] bg-transparent px-6 py-2 text-[0.82rem] font-semibold tracking-[0.06em] text-[#a01717] transition-all duration-250 hover:bg-[#a01717] hover:text-white sm:min-h-10.5 sm:min-w-[14.25rem] sm:text-[0.79rem]`}
+                  signedOutChildren={
+                    <>
+                      <span>Try Socratic AI</span>
+                      <ArrowRight
+                        aria-hidden="true"
+                        className="hero-cta-arrow-loop h-[0.9rem] w-[0.9rem]"
+                        strokeWidth={2.3}
+                      />
+                    </>
+                  }
                 >
                   <span>Enter Socratic AI</span>
                   <ArrowRight
                     aria-hidden="true"
-                    className="h-[0.9rem] w-[0.9rem] transition-transform duration-250 group-hover:translate-x-0.5"
+                    className="hero-cta-arrow-loop h-[0.9rem] w-[0.9rem]"
                     strokeWidth={2.3}
                   />
                 </AuthAwareCtaLink>
