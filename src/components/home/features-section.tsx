@@ -4,22 +4,25 @@ import { motion, type Variants, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Instrument_Serif } from "next/font/google";
 import Image from "next/image";
-import Script from "next/script";
+import {
+  MessageSquareWarning,
+  BookOpen,
+  BrainCircuit,
+  Lightbulb,
+  type LucideIcon,
+} from "lucide-react";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+
+type FeatureId = "argues-back" | "corpus" | "model-of-you" | "clarity";
 
 type FeaturesSectionProps = {
   interClassName: string;
 };
 
 type FeatureCard = {
-  id: string;
+  id: FeatureId;
   title: string;
   description: string;
-  icon: {
-    src: string;
-    colors: string;
-    state?: string;
-  };
 };
 
 const featureCards: FeatureCard[] = [
@@ -28,44 +31,33 @@ const featureCards: FeatureCard[] = [
     title: "It Argues Back.\nBy Design.",
     description:
       "Most AI tells you what you want to hear. This one is wired to push back readily.",
-    icon: {
-      src: "https://cdn.lordicon.com/fozsorqm.json",
-      colors: "primary:#121331,secondary:#a01717",
-      state: "in-reveal",
-    },
   },
   {
     id: "corpus",
     title: "A Corpus Built for\nPhilosophers",
     description:
       "Responses based on original writings, not skimmed Reddit summaries.",
-    icon: {
-      src: "https://cdn.lordicon.com/rrbmabsx.json",
-      colors: "primary:#121331,secondary:#a01717",
-      state: "morph-open",
-    },
   },
   {
     id: "model-of-you",
     title: "It Builds a Model,\nof You",
     description:
       "Actively tracks your beliefs and assumptions, connects them into a living model of your thinking.",
-    icon: {
-      src: "https://cdn.lordicon.com/vgwutnhw.json",
-      colors: "primary:#121331,secondary:#a01717",
-    },
   },
   {
     id: "clarity",
     title: "Clarity You Can Take\nWith You",
     description:
       "Discover positions you didn't know you held, gaps you didn't know were there.",
-    icon: {
-      src: "https://cdn.lordicon.com/ebvizisb.json",
-      colors: "primary:#a01717,secondary:#000000",
-    },
   },
 ];
+
+const featureIconsById: Record<FeatureId, LucideIcon> = {
+  "argues-back": MessageSquareWarning,
+  corpus: BookOpen,
+  "model-of-you": BrainCircuit,
+  clarity: Lightbulb,
+};
 
 const SECTION_HEADING_TEXT = "Built Different.\nBuilt For Philosophy";
 const DIFFERENT_WORD = "Different";
@@ -195,7 +187,6 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
       id="features"
       className="relative -scroll-mt-10 overflow-hidden bg-transparent px-5 py-9 sm:px-7 sm:py-10 lg:h-[calc(100svh-4.25rem)] lg:min-h-160 lg:py-7"
     >
-      <Script src="https://cdn.lordicon.com/lordicon.js" strategy="afterInteractive" />
       <div className="relative mx-auto flex h-full w-full max-w-544 flex-col justify-center">
         <motion.div
           className="mx-auto max-w-210 text-center"
@@ -274,6 +265,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {featureCards.map((card, index) => {
+              const Icon = featureIconsById[card.id];
               return (
                 <motion.article
                   key={card.id}
@@ -294,16 +286,10 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                     <div className="flex items-start gap-5 sm:block">
                       <div className="min-w-0">
                         <div className="h-8 w-8 sm:h-7.5 sm:w-7.5">
-                          <lord-icon
-                            src={card.icon.src}
-                            trigger="loop"
-                            delay="2000"
-                            stroke="bold"
-                            colors={card.icon.colors}
-                            {...(card.icon.state
-                              ? { state: card.icon.state }
-                              : {})}
-                            style={{ width: "100%", height: "100%" }}
+                          <Icon
+                            className="h-full w-full text-[#a01717]"
+                            strokeWidth={2.1}
+                            aria-hidden="true"
                           />
                         </div>
                         <h3
