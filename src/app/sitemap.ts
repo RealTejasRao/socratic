@@ -20,6 +20,12 @@ const publicStaticRoutes: Array<{
     priority: 0.9,
   },
   {
+    path: "/pricing",
+    filePath: "src/app/pricing/page.tsx",
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
     path: "/cookies",
     filePath: "src/app/cookies/page.tsx",
     changeFrequency: "monthly",
