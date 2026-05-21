@@ -177,7 +177,7 @@ export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
           title={
             <span className={`${instrumentSerif.className} text-[clamp(2.8rem,6.4vw,4.6rem)] font-normal tracking-[-0.022em] text-[#1f1b1b]`}>
               Go Further With{" "}
-              <span className="text-[#b8860b]">
+              <span className="pwa-mobile-standalone-next-line text-[#b8860b]">
                 Socratic Plus <PremiumCrownIcon className="ml-1" />
               </span>
             </span>

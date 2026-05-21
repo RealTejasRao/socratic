@@ -177,6 +177,15 @@ html.pwa-standalone .app-composer-dock {
   }
 }
 
+@media (max-width: 640px) {
+  html.pwa-standalone .pwa-mobile-standalone-next-line {
+    display: inline-flex !important;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.08em;
+  }
+}
+
 svg {
   transition:
     fill 460ms cubic-bezier(0.16, 1, 0.3, 1),

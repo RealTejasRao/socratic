@@ -171,7 +171,7 @@ export function SocraticPlusBillingExperience({
         >
           <motion.span variants={itemVariants}>Welcome to</motion.span>
           <motion.span
-            className="inline-flex items-center gap-2 text-[#b8860b]"
+            className="pwa-mobile-standalone-next-line inline-flex items-center gap-2 text-[#b8860b]"
             variants={itemVariants}
           >
             <span>Socratic Plus</span>
