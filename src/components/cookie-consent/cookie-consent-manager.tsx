@@ -14,6 +14,7 @@ import {
   persistCookieConsent,
   readStoredCookieConsent,
 } from "@/src/lib/cookie-consent";
+import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { ROUTES } from "@/src/lib/routes";
 
 type CookieEntry = {
@@ -210,6 +211,7 @@ function CookieCategoryRow({
 
 export function CookieConsentManager() {
   const pathname = usePathname();
+  const isStandalone = useStandaloneMode();
   const [isReady, setIsReady] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [hasDecision, setHasDecision] = useState(false);
@@ -286,6 +288,10 @@ export function CookieConsentManager() {
   }, [isPreferencesOpen]);
 
   const showBanner = isReady && !hasDecision && !isPreferencesOpen && !isPolicyPage;
+
+  if (isStandalone) {
+    return null;
+  }
 
   const toggleCategory = (category: CookieConsentCategory, value: boolean) => {
     if (!COOKIE_CONSENT_OPTIONAL_CATEGORIES.includes(category)) {

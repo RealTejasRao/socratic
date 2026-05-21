@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
 import { CookieConsentManager } from "@/src/components/cookie-consent/cookie-consent-manager";
+import { PwaBottomNav } from "@/src/components/pwa/pwa-bottom-nav";
 import {
   absoluteUrl,
   organizationSchema,
@@ -9,6 +10,7 @@ import {
   softwareApplicationSchema,
   websiteSchema,
 } from "@/src/lib/seo";
+import { STANDALONE_MODE_INIT_SCRIPT } from "@/src/lib/pwa-standalone";
 import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(() => {
@@ -109,6 +111,11 @@ export default function RootLayout({
             __html: THEME_INIT_SCRIPT,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: STANDALONE_MODE_INIT_SCRIPT,
+          }}
+        />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link
           rel="preconnect"
@@ -127,6 +134,7 @@ export default function RootLayout({
           ))}
           <ClickPulse />
           <CookieConsentManager />
+          <PwaBottomNav />
           {children}
         </ClerkProvider>
       </body>

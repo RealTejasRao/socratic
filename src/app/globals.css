@@ -127,6 +127,56 @@ body {
     color 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.pwa-bottom-nav {
+  display: none;
+}
+
+.pwa-standalone-only {
+  display: none;
+}
+
+html.pwa-standalone .pwa-bottom-nav {
+  display: block;
+}
+
+html.pwa-standalone .pwa-browser-only {
+  display: none !important;
+}
+
+html.pwa-standalone .pwa-standalone-only {
+  display: contents;
+}
+
+body.pwa-bottom-nav-active {
+  padding-bottom: calc(4.8rem + env(safe-area-inset-bottom));
+}
+
+html.pwa-standalone .app-composer-dock {
+  padding-bottom: calc(4.6rem + env(safe-area-inset-bottom));
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .pwa-bottom-nav {
+    display: block;
+  }
+
+  .pwa-browser-only {
+    display: none !important;
+  }
+
+  .pwa-standalone-only {
+    display: contents;
+  }
+
+  body.pwa-bottom-nav-active {
+    padding-bottom: calc(4.8rem + env(safe-area-inset-bottom));
+  }
+
+  .app-composer-dock {
+    padding-bottom: calc(4.6rem + env(safe-area-inset-bottom));
+  }
+}
+
 svg {
   transition:
     fill 460ms cubic-bezier(0.16, 1, 0.3, 1),

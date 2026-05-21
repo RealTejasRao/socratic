@@ -5,6 +5,7 @@ import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { MarketingNavAvatar } from "@/src/components/navigation/marketing-nav-avatar";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
+import { StandaloneModeGate } from "@/src/components/pwa/standalone-mode-gate";
 import { ROUTES } from "@/src/lib/routes";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
@@ -60,7 +61,7 @@ export async function MarketingNavbar({
     </>
   );
 
-  return (
+  const browserNavbar = (
     <header className="fixed inset-x-0 top-0 z-50 flex flex-col border-b border-black/6 bg-white/60 px-5 py-0 backdrop-blur-md supports-backdrop-filter:bg-white/50 sm:px-7 sm:pt-1.5 sm:pb-0">
       <nav className="relative mx-auto flex h-16 w-full max-w-365 items-center justify-between sm:h-auto">
         <a
@@ -124,5 +125,37 @@ export async function MarketingNavbar({
         <div className="h-px w-full bg-[radial-gradient(circle,rgba(120,120,120,0.45)_1px,transparent_1.2px)] bg-position-[left_center] bg-size-[10px_1px] bg-repeat-x" />
       </div>
     </header>
+  );
+
+  const standaloneNavbar = (
+    <header className="fixed inset-x-0 top-0 z-60 border-b border-black/8 bg-white/94 px-3 pt-[calc(0.35rem+env(safe-area-inset-top))] pb-1.5 backdrop-blur-md sm:px-4">
+      <nav className="relative mx-auto flex h-12 w-full max-w-105 items-center justify-between">
+        <MarketingNavAvatar />
+        <a
+          href={homeHref}
+          aria-label="Socratic AI home"
+          className="absolute left-1/2 flex h-10 -translate-x-1/2 items-center justify-center"
+        >
+          <Image
+            src="/brand/Logo_Dark_SVG.svg"
+            alt="Socratic AI logo"
+            width={42}
+            height={42}
+            className="h-9 w-9 object-contain"
+            priority
+          />
+        </a>
+        <a
+          href={pricingHref}
+          className={`${interClassName} inline-flex h-9 min-w-14 items-center justify-center rounded-full px-3 text-[0.84rem] font-semibold tracking-[0.01em] text-[#a01717] transition-colors hover:bg-[#a01717]/8`}
+        >
+          Upgrade
+        </a>
+      </nav>
+    </header>
+  );
+
+  return (
+    <StandaloneModeGate browser={browserNavbar} standalone={standaloneNavbar} />
   );
 }

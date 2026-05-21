@@ -12,6 +12,7 @@ import { Footer } from "@/src/components/home/footer";
 import { HeroRotatingWord } from "@/src/components/home/hero-rotating-word";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
+import { StandaloneModeGate } from "@/src/components/pwa/standalone-mode-gate";
 import {
   resolveOptimizedCloudinaryPublicAsset,
 } from "@/src/lib/cloudinary-public-assets";
@@ -143,11 +144,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        <FeaturesSection interClassName={interClassName} />
-        <SecuritySeparator interClassName={interClassName} />
-        <UseCasesSection interClassName={interClassName} />
-        <ContactSection interClassName={interClassName} />
-        <Footer interClassName={interClassName} />
+        <StandaloneModeGate
+          browser={
+            <>
+              <FeaturesSection interClassName={interClassName} />
+              <SecuritySeparator interClassName={interClassName} />
+              <UseCasesSection interClassName={interClassName} />
+              <ContactSection interClassName={interClassName} />
+              <Footer interClassName={interClassName} />
+            </>
+          }
+          standalone={null}
+        />
       </main>
     </LoadGate>
   );
