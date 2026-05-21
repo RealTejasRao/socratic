@@ -3,16 +3,60 @@ import ChatContainer from "./components/ChatContainer";
 import { getUserBillingStateByClerkId } from "src/server/billing/access";
 import { BILLING_KEYS, PLAN_LIMITS } from "src/lib/billing";
 import { prisma } from "src/server/db/client";
+import type { SessionMode } from "src/types/chat";
 
 function getUtcDayStart(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-export default async function AppHomePage() {
+type AppHomePageProps = {
+  searchParams?:
+    | Promise<{
+        mode?: string | string[];
+        topic?: string | string[];
+        autosend?: string | string[];
+      }>
+    | {
+        mode?: string | string[];
+        topic?: string | string[];
+        autosend?: string | string[];
+      };
+};
+
+function getFirstSearchParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function resolveMode(value: string | undefined): SessionMode {
+  const normalized = value?.toLowerCase().trim();
+
+  if (normalized === "debate") {
+    return "DEBATE";
+  }
+
+  if (normalized === "roleplay") {
+    return "ROLEPLAY";
+  }
+
+  return "SOCRATIC";
+}
+
+export default async function AppHomePage({ searchParams }: AppHomePageProps) {
   const { userId: clerkUserId } = await auth();
   const billing = clerkUserId
     ? await getUserBillingStateByClerkId(clerkUserId)
     : null;
+  const resolvedSearchParams =
+    searchParams && "then" in searchParams ? await searchParams : searchParams;
+  const requestedMode = resolveMode(
+    getFirstSearchParam(resolvedSearchParams?.mode),
+  );
+  const requestedTopic =
+    getFirstSearchParam(resolvedSearchParams?.topic)?.trim() ?? "";
+  const shouldAutoSend =
+    getFirstSearchParam(resolvedSearchParams?.autosend) === "1";
+  const initialAutoSendMessage =
+    shouldAutoSend && requestedTopic ? requestedTopic.slice(0, 3000) : null;
 
   const now = new Date();
   const periodStart = getUtcDayStart(now);
@@ -44,7 +88,8 @@ export default async function AppHomePage() {
   return (
     <ChatContainer
       initialMessages={[]}
-      sessionMeta={{ mode: "SOCRATIC" }}
+      sessionMeta={{ mode: requestedMode }}
+      initialAutoSendMessage={initialAutoSendMessage}
       initialBilling={{
         isPremium: billing?.isPremium ?? false,
         usage: {

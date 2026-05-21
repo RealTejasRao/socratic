@@ -47,6 +47,7 @@ interface Props {
   initialMessages: ChatMessage[];
   sessionId?: string;
   sessionMeta?: ChatSessionMeta;
+  initialAutoSendMessage?: string | null;
   initialBilling?: Pick<BillingStateResponse, "isPremium" | "usage" | "features">;
 }
 
@@ -204,6 +205,7 @@ export default function ChatContainer({
   initialMessages,
   sessionId,
   sessionMeta = { mode: "SOCRATIC" },
+  initialAutoSendMessage = null,
   initialBilling = {
     isPremium: false,
     usage: {
@@ -257,6 +259,7 @@ export default function ChatContainer({
   );
   const [activeSessionId, setActiveSessionId] = useState(sessionId);
   const tempIdRef = useRef(0);
+  const autoSendTriggeredRef = useRef(false);
   const activeStreamControllerRef = useRef<AbortController | null>(null);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
@@ -368,6 +371,10 @@ export default function ChatContainer({
   useEffect(() => {
     setActiveSessionId(sessionId);
   }, [sessionId]);
+
+  useEffect(() => {
+    autoSendTriggeredRef.current = false;
+  }, [sessionId, initialAutoSendMessage]);
 
   useEffect(() => {
     if (sessionMeta.mode === "ROLEPLAY" && sessionMeta.roleplay) {
@@ -1215,6 +1222,41 @@ export default function ChatContainer({
       setIsStreaming(false);
     }
   }
+
+  useEffect(() => {
+    const nextPrompt = initialAutoSendMessage?.trim();
+
+    if (!nextPrompt || autoSendTriggeredRef.current) {
+      return;
+    }
+
+    if (
+      activeSessionId ||
+      isStreaming ||
+      isDebateCompleted ||
+      messages.length > 0
+    ) {
+      return;
+    }
+
+    autoSendTriggeredRef.current = true;
+    setModeSelection("SOCRATIC");
+    setActiveSessionMeta({ mode: "SOCRATIC" });
+
+    void handleSend({
+      content: nextPrompt,
+      attachments: [],
+      webSearch: false,
+    });
+  // We intentionally avoid adding handleSend to deps to prevent auto-send replay loops.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    activeSessionId,
+    initialAutoSendMessage,
+    isDebateCompleted,
+    isStreaming,
+    messages.length,
+  ]);
 
   if (!hasMessages) {
     return (

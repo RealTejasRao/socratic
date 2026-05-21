@@ -41,9 +41,9 @@ function SettingRow({
   showChevron = Boolean(href || onClick),
 }: SettingRowProps) {
   const content = (
-    <div className="flex min-h-12 items-center justify-between rounded-xl px-1 py-0.5 text-[0.96rem] text-black/82 transition-colors hover:bg-black/[0.035]">
+    <div className="flex min-h-12 items-center justify-between rounded-xl px-1 py-0.5 text-[0.96rem] text-white/86 transition-colors hover:bg-white/[0.04]">
       <span>{label}</span>
-      <span className="inline-flex items-center gap-2 text-[0.88rem] text-black/54">
+      <span className="inline-flex items-center gap-2 text-[0.88rem] text-white/52">
         {right ? <span>{right}</span> : null}
         {showChevron ? <ChevronRight size={17} /> : null}
       </span>
@@ -131,7 +131,8 @@ export function SettingsAppClient() {
     user?.primaryEmailAddress?.emailAddress ??
     user?.emailAddresses?.[0]?.emailAddress ??
     "Sign in to view your email";
-  const appUrl = typeof window !== "undefined" ? window.location.origin : "https://usesocratic.com";
+  const appUrl =
+    typeof window !== "undefined" ? window.location.origin : "https://usesocratic.com";
 
   const inviteMessage = useMemo(
     () =>
@@ -174,42 +175,42 @@ export function SettingsAppClient() {
     : `${effectiveBillingState.tierLabel} 🙁`;
 
   return (
-    <main className="min-h-svh bg-[#f7f7f5] text-black">
+    <main className="min-h-svh bg-[#050609] text-white">
       <PwaPageHeader title="Settings" />
-      <section className="mx-auto flex w-full max-w-120 flex-col gap-4 px-4 py-4">
+      <section className="mx-auto flex w-full max-w-120 flex-col gap-4 px-4 py-4 pb-[calc(5.8rem+env(safe-area-inset-bottom))]">
         {!effectiveBillingState.isPremium ? (
-          <div className="rounded-2xl border border-[#dcb65f]/46 bg-gradient-to-br from-[#fff6dc] to-[#fff1cf] px-4.5 py-4">
-            <p className="text-[1.02rem] font-semibold text-[#a37417]">
+          <div className="rounded-2xl border border-[#6d4d1f] bg-[linear-gradient(140deg,#201307_0%,#2b1a0a_56%,#191106_100%)] px-4.5 py-4">
+            <p className="text-[1.02rem] font-semibold text-[#e5be66]">
               Get Socratic+
             </p>
-            <p className="mt-1 text-[0.86rem] leading-relaxed text-[#704f11]/86">
-              Get access to unlimited messages, debate mode, and more...
+            <p className="mt-1 text-[0.86rem] leading-relaxed text-[#cfb077]/88">
+              Unlimited messages, Debate Mode, premium tones, and full access.
             </p>
             <a
               href="/pricing"
-              className="mt-3 inline-flex min-h-10 items-center justify-center rounded-full bg-[#181818] px-5 text-[0.83rem] font-semibold tracking-[0.03em] text-white"
+              className="mt-3 inline-flex min-h-10 items-center justify-center rounded-full border border-[#e2c27d] bg-[#e2c27d] px-5 text-[0.83rem] font-semibold tracking-[0.03em] text-[#201406]"
             >
               Upgrade
             </a>
           </div>
         ) : (
-          <div className="rounded-2xl border border-emerald-600/14 bg-emerald-50/80 px-4.5 py-4">
-            <p className="text-[1rem] font-semibold text-emerald-700">
-              Thank you for being Socratic+
+          <div className="rounded-2xl border border-[#3f3322] bg-[#151009] px-4.5 py-4">
+            <p className="text-[1rem] font-semibold text-[#e7c270]">
+              Socratic+ active
             </p>
-            <p className="mt-1 text-[0.84rem] leading-relaxed text-emerald-700/72">
-              You have access to unlimited messages, debate mode and more.
+            <p className="mt-1 text-[0.84rem] leading-relaxed text-[#c8b281]/75">
+              Premium features are unlocked for your account.
             </p>
           </div>
         )}
 
-        <div className="rounded-2xl border border-black/8 bg-white px-4 py-3">
-          <p className="text-[0.74rem] font-semibold tracking-[0.08em] text-black/45 uppercase">
+        <div className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-3">
+          <p className="text-[0.74rem] font-semibold tracking-[0.08em] text-white/45 uppercase">
             Account
           </p>
           <div className="mt-3 flex items-center gap-3.5">
             {isSignedIn ? (
-              <div className="inline-flex h-13.5 w-13.5 items-center justify-center rounded-full border border-black/10">
+              <div className="inline-flex h-13.5 w-13.5 items-center justify-center rounded-full border border-white/12">
                 <UserButton
                   appearance={{
                     elements: {
@@ -222,33 +223,30 @@ export function SettingsAppClient() {
                 />
               </div>
             ) : (
-              <div className="flex h-13.5 w-13.5 items-center justify-center rounded-full border border-black/12 bg-black/[0.03] text-black/66">
+              <div className="flex h-13.5 w-13.5 items-center justify-center rounded-full border border-white/12 bg-white/[0.03] text-white/66">
                 <UserRound size={23} />
               </div>
             )}
             <div className="min-w-0">
-              <p className="truncate text-[0.98rem] font-semibold text-black/86">
+              <p className="truncate text-[0.98rem] font-semibold text-white/88">
                 {name}
               </p>
-              <p className="truncate text-[0.82rem] text-black/56">{email}</p>
+              <p className="truncate text-[0.82rem] text-white/56">{email}</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-black/8 bg-white px-4 py-2">
-          <SettingRow
-            label="Invite a Friend"
-            onClick={() => void shareInvite()}
-          />
+        <div className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-2">
+          <SettingRow label="Invite a Friend" onClick={() => void shareInvite()} />
           <SettingRow label="Current Plan" right={planLabel} showChevron={false} />
           <SettingRow label="Blog" href="/blog" />
           <SettingRow label="About" href="/blog/what-is-socratic-ai" />
         </div>
 
-        <div className="h-px bg-black/10" />
+        <div className="h-px bg-white/10" />
 
-        <div className="rounded-2xl border border-black/8 bg-white px-4 py-3">
-          <p className="text-[0.74rem] font-semibold tracking-[0.08em] text-black/45 uppercase">
+        <div className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-3">
+          <p className="text-[0.74rem] font-semibold tracking-[0.08em] text-white/45 uppercase">
             Connect With Us
           </p>
           <div className="mt-3 flex items-center gap-2.5">
@@ -284,17 +282,17 @@ export function SettingsAppClient() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="X"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/10 text-black"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white"
             >
               <XIcon />
             </a>
           </div>
         </div>
 
-        <div className="h-px bg-black/10" />
+        <div className="h-px bg-white/10" />
 
-        <div className="rounded-2xl border border-black/8 bg-white px-4 py-2">
-          <p className="px-1 py-2 text-[0.74rem] font-semibold tracking-[0.08em] text-black/45 uppercase">
+        <div className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-2">
+          <p className="px-1 py-2 text-[0.74rem] font-semibold tracking-[0.08em] text-white/45 uppercase">
             Legal
           </p>
           <SettingRow label="Privacy Policy" href="/privacy-policy" />
@@ -302,7 +300,7 @@ export function SettingsAppClient() {
           <SettingRow label="Contact Us" href="mailto:contact@usesocratic.com" />
         </div>
 
-        <p className="pb-3 text-center text-[0.72rem] text-black/34">
+        <p className="pb-3 text-center text-[0.72rem] text-white/34">
           © 2026 Socratic AI
         </p>
       </section>
