@@ -2839,6 +2839,23 @@ html.app-dark .app-greeting-heading .hero-caret {
   background: #8b361c;
 }
 
+/* Hide scrollbars only when app is installed/running in standalone PWA/TWA mode. */
+html.pwa-standalone,
+html.pwa-standalone body,
+html.pwa-standalone * {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+html.pwa-standalone::-webkit-scrollbar,
+html.pwa-standalone body::-webkit-scrollbar,
+html.pwa-standalone *::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
+}
+
 @supports not (zoom: 1) {
   .auth-sign-in-zoom {
     transform: scale(0.78);
