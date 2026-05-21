@@ -87,7 +87,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
   ];
 
   return (
-    <footer className="border-t border-white/16 bg-[#171717] px-5 pt-12 pb-7 sm:px-7 sm:pt-14 sm:pb-8">
+    <footer className="pwa-browser-only border-t border-white/16 bg-[#171717] px-5 pt-12 pb-7 sm:px-7 sm:pt-14 sm:pb-8">
       <div className="relative">
         <div className="mx-auto w-full max-w-330">
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
