@@ -69,7 +69,7 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
                   >
                     Your mind was meant for more
                   </h1>
-                  <p className="mt-4 max-w-[calc(100%-0.5rem)] text-[0.9rem] leading-[1.65] text-white/80 sm:max-w-[calc(100%-0.75rem)] sm:text-[0.8rem]">
+                  <p className="mt-4 max-w-[calc(100%-0.5rem)] text-[0.8rem] leading-[1.65] text-white/80 sm:max-w-[calc(100%-0.75rem)] sm:text-[0.8rem]">
                     Your secret place for deep thought and conversations that
                     change you, away from the distractions of the world.
                   </p>
