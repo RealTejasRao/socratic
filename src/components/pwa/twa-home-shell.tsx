@@ -39,60 +39,55 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
   return (
     <div className="pwa-standalone-only">
       <main
-        className={`min-h-svh bg-[#1e1d1b] px-4 py-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] text-[#f6efe5] ${poppins.className}`}
+        className={`relative min-h-svh overflow-hidden bg-[#1e1d1b] text-[#f6efe5] ${poppins.className}`}
       >
-        <div className="mx-auto flex min-h-[calc(100svh-2rem)] w-full max-w-120 flex-col items-start justify-center">
+        <Image
+          src="/twa/intro/first.webp"
+          alt="Books and sculpture surrounded by flowers"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(180deg,rgba(8,9,10,0)_0%,rgba(8,9,10,0.18)_35%,rgba(8,9,10,0.62)_100%)]" />
+        <div className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10">
           <Image
             src="/brand/Logo_Light_SVG.svg"
             alt="Socratic AI"
             width={28}
             height={28}
-            className="mb-4 h-7 w-7"
+            className="h-7 w-7"
             priority
           />
-          <section className="intro-shell-card relative w-full overflow-hidden rounded-4xl border border-white/8 bg-[#12110f] shadow-[0_24px_70px_rgba(0,0,0,0.42)]">
-            <div className="relative aspect-7/12 min-h-152 w-full sm:min-h-184">
-              <Image
-                src="/twa/intro/first.webp"
-                alt="Books and sculpture surrounded by flowers"
-                fill
-                priority
-                sizes="(max-width: 640px) 100vw, 30rem"
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(8,9,10,0)_0%,rgba(8,9,10,0.16)_38%,rgba(8,9,10,0.5)_100%)]" />
-
-              <div className="relative flex h-full flex-col justify-between p-6 sm:p-7">
-                <div className="max-w-[calc(100%-1.25rem)] sm:max-w-[calc(100%-1.75rem)]">
-                  <h1
-                    className={`${instrumentSerif.className} text-[1.78rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2rem]`}
-                  >
-                    Your mind was meant for more
-                  </h1>
-                  <p className="mt-4 max-w-[calc(100%-0.5rem)] text-[0.8rem] leading-[1.65] text-white/80 sm:max-w-[calc(100%-0.75rem)] sm:text-[0.8rem]">
-                    Your secret place for deep thought and conversations that
-                    change you, away from the distractions of the world.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <Link
-                    href={ROUTES.SIGN_UP}
-                    className="inline-flex min-h-15 w-full items-center justify-center rounded-full bg-[#f6f2ea] px-6 text-[1rem] font-medium text-[#122638] shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform duration-200 active:scale-[0.985]"
-                  >
-                    Create Account
-                  </Link>
-                  <Link
-                    href={ROUTES.SIGN_IN}
-                    className="inline-flex min-h-15 w-full items-center justify-center rounded-full border border-white/18 bg-black/14 px-6 text-[1rem] font-medium text-white/94 backdrop-blur-sm transition-colors duration-200 hover:bg-black/20 active:scale-[0.985]"
-                  >
-                    Login
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
+        <section className="relative z-10 flex min-h-svh flex-col justify-end px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:px-7">
+          <div className="mb-6 max-w-[calc(100%-0.75rem)] sm:max-w-[calc(100%-1.25rem)]">
+            <h1
+              className={`${instrumentSerif.className} text-[1.78rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2rem]`}
+            >
+              Your mind was meant for more
+            </h1>
+            <p className="mt-4 text-[0.8rem] leading-[1.65] text-white/80 sm:text-[0.8rem]">
+              Your secret place for deep thoughts and conversations that change
+              you, away from the distractions of the world.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <Link
+              href={ROUTES.SIGN_UP}
+              className="inline-flex min-h-15 w-full items-center justify-center rounded-full bg-[#f6f2ea] px-6 text-[1rem] font-medium text-[#122638] shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform duration-200 active:scale-[0.985]"
+            >
+              Create Account
+            </Link>
+            <Link
+              href={ROUTES.SIGN_IN}
+              className="inline-flex min-h-15 w-full items-center justify-center rounded-full border border-white/18 bg-black/14 px-6 text-[1rem] font-medium text-white/94 backdrop-blur-sm transition-colors duration-200 hover:bg-black/20 active:scale-[0.985]"
+            >
+              Login
+            </Link>
+          </div>
+        </section>
       </main>
     </div>
   );
