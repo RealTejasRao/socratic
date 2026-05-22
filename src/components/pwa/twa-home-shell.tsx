@@ -539,76 +539,80 @@ function DashboardScreen({
 
         <div className="mt-7 flex items-center justify-between">
           <h2
-            className={`inline-flex items-center gap-2 text-[1.85rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}
+            className={`inline-flex items-center gap-2 text-[1.58rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}
           >
             <Sparkles size={17} className="text-[#f35f67]" />
             Continue
           </h2>
-          <a href={ROUTES.APP} className="inline-flex items-center gap-1 text-[0.82rem] text-[#8f9096]">
+          <a href={ROUTES.APP} className="inline-flex items-center gap-1 text-[0.76rem] text-[#8f9096]">
             View all <ChevronRight size={14} />
           </a>
         </div>
 
-        <section className="relative mt-3 overflow-hidden rounded-[1.35rem] border border-[#482126] bg-[linear-gradient(130deg,#2a0d11_0%,#271218_45%,#130d12_100%)] p-3.5">
+        <section className="relative mt-3 overflow-hidden rounded-[1.35rem] border border-[#482126] bg-[linear-gradient(130deg,#2a0d11_0%,#271218_45%,#130d12_100%)] p-4">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_50%,rgba(120,18,28,0.26),transparent_60%)]" />
           {latestSession ? (
-            <div className="relative z-10 flex items-center gap-3">
-              <div className="inline-flex h-[4.6rem] w-[4.6rem] shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20">
-                <ModeIcon mode={latestSession.mode} />
-              </div>
+            <div className="relative z-10 flex min-h-[11rem] items-start gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-[0.84rem] text-[#f06066]">{modeLabel(latestSession.mode)}</p>
                 <h3
-                  className={`${instrumentSerif.className} mt-0.5 truncate text-[1.06rem] leading-none tracking-[-0.015em]`}
+                  className={`${instrumentSerif.className} mt-0.5 text-[1.08rem] leading-[1.22] tracking-[-0.01em]`}
                 >
                   {latestSession.title ?? "Untitled conversation"}
                 </h3>
-                <p className="mt-1 line-clamp-2 text-[0.76rem] leading-[1.45] text-[#c5c0be]">
-                  {truncatePreview(latestSession.firstUserMessage, 58)}
+                <p className="mt-1 line-clamp-3 text-[0.78rem] leading-[1.45] text-[#c5c0be]">
+                  {truncatePreview(latestSession.firstUserMessage, 76)}
                 </p>
               </div>
-              <a
-                href={`/app/${latestSession.id}`}
-                className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[1rem] border border-[#bf3d43] bg-[#bf3d43] px-3.5 text-[0.95rem] font-medium text-white"
-              >
-                Resume
-                <ChevronRight size={16} />
-              </a>
+              <div className="flex w-[5.1rem] shrink-0 flex-col items-center gap-2">
+                <div className="inline-flex h-[4.3rem] w-[4.3rem] items-center justify-center rounded-full border border-white/10 bg-black/20">
+                  <ModeIcon mode={latestSession.mode} />
+                </div>
+                <a
+                  href={`/app/${latestSession.id}`}
+                  className="inline-flex h-8 w-full items-center justify-center gap-1 rounded-[0.85rem] border border-[#bf3d43] bg-[#bf3d43] px-2 text-[0.76rem] font-medium text-white"
+                >
+                  Resume
+                  <ChevronRight size={13} />
+                </a>
+              </div>
             </div>
           ) : (
-            <div className="relative z-10 flex items-center justify-between gap-3">
-              <div className="min-w-0">
+            <div className="relative z-10 flex min-h-[11rem] items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
                 <p className="text-[0.84rem] text-[#f06066]">Socratic Chat</p>
                 <h3
-                  className={`${instrumentSerif.className} mt-1 text-[1.06rem] leading-none tracking-[-0.015em]`}
+                  className={`${instrumentSerif.className} mt-1 text-[1.08rem] leading-[1.22] tracking-[-0.01em]`}
                 >
                   Start a new thread
                 </h3>
-                <p className="mt-1 text-[0.76rem] text-[#c3c0be]">
+                <p className="mt-1 text-[0.78rem] leading-[1.45] text-[#c3c0be]">
                   Ask anything and keep your thinking moving.
                 </p>
               </div>
-              <div className="inline-flex h-[4.6rem] w-[4.6rem] shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20">
-                <ModeIcon mode="SOCRATIC" />
+              <div className="flex w-[5.1rem] shrink-0 flex-col items-center gap-2">
+                <div className="inline-flex h-[4.3rem] w-[4.3rem] items-center justify-center rounded-full border border-white/10 bg-black/20">
+                  <ModeIcon mode="SOCRATIC" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openMode("socratic")}
+                  className="inline-flex h-8 w-full items-center justify-center gap-1 rounded-[0.85rem] border border-[#bf3d43] bg-[#bf3d43] px-2 text-[0.76rem] font-medium text-white"
+                >
+                  Open
+                  <ChevronRight size={13} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => openMode("socratic")}
-                className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[1rem] border border-[#bf3d43] bg-[#bf3d43] px-3.5 text-[0.95rem] font-medium text-white"
-              >
-                Open
-                <ChevronRight size={16} />
-              </button>
             </div>
           )}
         </section>
 
         <section className="mt-6">
-          <h2 className={`text-[1.85rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}>
+          <h2 className={`text-[1.58rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}>
             Quick Actions
           </h2>
 
-          <div className="mt-3 grid grid-cols-3 gap-2.5">
+          <div className="mt-3 grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => openMode("socratic")}
@@ -683,18 +687,18 @@ function DashboardScreen({
           </div>
         </section>
 
-        <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#26221a] bg-[linear-gradient(125deg,#090a0b_0%,#111214_62%,#090a0b_100%)] px-4 py-3.5">
+        <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#dcdee3] bg-[linear-gradient(125deg,#f3f4f7_0%,#ebedf1_62%,#f6f7f9_100%)] px-4 py-3.5">
           <div className="relative z-10 max-w-[66%]">
-            <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#d7ac4f]">
+            <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#7b6950]">
               <Sun size={15} />
               Daily Thought
             </p>
             <p
-              className={`${instrumentSerif.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em]`}
+              className={`${instrumentSerif.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em] text-[#16181e]`}
             >
               “{activeThought?.quote ?? "The unexamined life is not worth living."}”
             </p>
-            <p className="mt-2 text-[0.78rem] text-[#9a9a9d]">
+            <p className="mt-2 text-[0.78rem] text-[#575c67]">
               — {activeThought?.philosopher ?? "Socrates"}
             </p>
           </div>
@@ -713,16 +717,16 @@ function DashboardScreen({
               sizes="42vw"
               className="object-cover object-right"
             />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#090a0b]/40 to-[#090a0b]" />
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#eceff3]/70 to-[#f2f4f7]" />
           </div>
         </section>
 
         <section className="mt-6">
           <div className="flex items-center justify-between">
-            <h2 className={`text-[1.85rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}>
+            <h2 className={`text-[1.58rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}>
               From the Blog
             </h2>
-            <a href={ROUTES.BLOG} className="inline-flex items-center gap-1 text-[0.82rem] text-[#8f9096]">
+            <a href={ROUTES.BLOG} className="inline-flex items-center gap-1 text-[0.76rem] text-[#8f9096]">
               View all <ChevronRight size={14} />
             </a>
           </div>
