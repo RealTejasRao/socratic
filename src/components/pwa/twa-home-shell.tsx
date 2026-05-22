@@ -495,50 +495,44 @@ function DashboardScreen({
     {
       key: "debate",
       title: "Debate an idea",
-      description: "Take a position and let Socratic push back on every weak spot.",
+      description: "Pick a side and test how well it holds up.",
       icon: Swords,
       iconClassName: "text-[#ff6b72]",
-      iconShellClassName: "bg-[#3a1519] ring-[#5a232a]/60",
-      cardClassName:
-        "bg-[radial-gradient(circle_at_top_right,rgba(255,107,114,0.16),transparent_52%),linear-gradient(180deg,rgba(16,18,24,0.98),rgba(10,12,16,0.98))]",
+      iconShellClassName: "bg-[#231317] border-[#3d2026]",
+      cardClassName: "bg-[#0d1015]",
       badge: !isPremium ? "Plus" : null,
       onClick: () => openMode("debate"),
     },
     {
       key: "roleplay",
       title: "Talk with philosophers",
-      description:
-        "Chat with sharp, life-like thinkers when you want perspective from another mind.",
+      description: "Borrow perspective from life-like thinkers.",
       icon: BookOpen,
       iconClassName: "text-[#e5be64]",
-      iconShellClassName: "bg-[#372b10] ring-[#5a4517]/60",
-      cardClassName:
-        "bg-[radial-gradient(circle_at_top_right,rgba(229,190,100,0.15),transparent_54%),linear-gradient(180deg,rgba(16,18,24,0.98),rgba(10,12,16,0.98))]",
+      iconShellClassName: "bg-[#211b0f] border-[#3f3216]",
+      cardClassName: "bg-[#0d1015]",
       badge: null,
       onClick: () => openMode("roleplay"),
     },
     {
       key: "tone",
       title: "Set your tone",
-      description: `Right now: ${toneLabel}. Choose how gentle, clear, or sharp the conversation feels.`,
+      description: `Now: ${toneLabel}. Choose how direct Socratic feels.`,
       icon: SlidersHorizontal,
       iconClassName: "text-[#aa89ff]",
-      iconShellClassName: "bg-[#24173e] ring-[#3c2863]/60",
-      cardClassName:
-        "bg-[radial-gradient(circle_at_top_right,rgba(170,137,255,0.17),transparent_52%),linear-gradient(180deg,rgba(16,18,24,0.98),rgba(10,12,16,0.98))]",
+      iconShellClassName: "bg-[#1d1730] border-[#342755]",
+      cardClassName: "bg-[#0d1015]",
       badge: null,
       onClick: () => setShowToneModal(true),
     },
     {
       key: "topic",
       title: "Try today's prompt",
-      description:
-        "Jump into a fresh idea when you want something worthwhile to think through.",
+      description: "Open a fresh question when you want a starting point.",
       icon: Compass,
       iconClassName: "text-[#7fda93]",
-      iconShellClassName: "bg-[#133320] ring-[#245338]/60",
-      cardClassName:
-        "bg-[radial-gradient(circle_at_top_right,rgba(127,218,147,0.15),transparent_52%),linear-gradient(180deg,rgba(16,18,24,0.98),rgba(10,12,16,0.98))]",
+      iconShellClassName: "bg-[#132418] border-[#25422d]",
+      cardClassName: "bg-[#0d1015]",
       badge: null,
       onClick: () => setShowTopicModal(true),
     },
@@ -639,53 +633,39 @@ function DashboardScreen({
           </section>
 
           <section className="mt-6">
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <p className="text-[0.68rem] font-medium uppercase tracking-[0.18em] text-[#7e838d]">
-                  Jump back in
-                </p>
-                <h2
-                  className={`mt-1 text-[1.42rem] font-semibold leading-none tracking-[-0.03em] text-white ${inter.className}`}
-                >
-                  Quick Actions
-                </h2>
-              </div>
-              <p className="max-w-34 text-right text-[0.72rem] leading-[1.45] text-[#8f9096]">
-                Start in one tap.
-              </p>
-            </div>
+            <h2
+              className={`text-[1.42rem] font-semibold leading-none tracking-[-0.03em] text-white ${inter.className}`}
+            >
+              Quick Actions
+            </h2>
 
-            <div className="mt-3.5 rounded-[1.55rem] border border-white/8 bg-[#090b0f] p-2.5 shadow-[0_24px_64px_rgba(0,0,0,0.34)]">
+            <div className="mt-3.5">
               <button
                 type="button"
                 onClick={() => openMode("socratic")}
-                className="group relative w-full overflow-hidden rounded-[1.3rem] border border-[#263244] bg-[radial-gradient(circle_at_top_right,rgba(82,120,182,0.2),transparent_46%),linear-gradient(135deg,rgba(20,29,42,0.98),rgba(10,14,20,0.98))] p-4 text-left"
+                className="group w-full rounded-[1.25rem] border border-white/8 bg-[#0d1015] p-4 text-left"
               >
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(4,8,14,0.2))]" />
-                <div className="relative z-10 flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <span className="inline-flex items-center rounded-full border border-[#33425b] bg-[#111926] px-2.5 py-1 text-[0.62rem] font-medium uppercase tracking-[0.16em] text-[#9fb4d2]">
-                      Start here
-                    </span>
                     <h3
-                      className={`mt-3 text-[1.08rem] font-semibold leading-[1.15] tracking-[-0.03em] text-white ${inter.className}`}
+                      className={`text-[1.08rem] font-semibold leading-[1.15] tracking-[-0.03em] text-white ${inter.className}`}
                     >
                       Start a new chat
                     </h3>
-                    <p className="mt-1.5 max-w-58 text-[0.78rem] leading-[1.55] text-[#b8c4d3]">
-                      Bring a question, a doubt, or a problem and think it through with Socratic.
+                    <p className="mt-1.5 max-w-58 text-[0.78rem] leading-[1.55] text-[#b2b8c2]">
+                      Ask anything and work through it with Socratic.
                     </p>
                   </div>
-                  <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#33425b] bg-[#121c29] text-[#d7e6ff] shadow-[0_10px_24px_rgba(8,14,24,0.38)]">
-                    <MessageCircle size={20} />
+                  <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-[#252c37] bg-[#12161d] text-[#d9e2f2]">
+                    <MessageCircle size={19} />
                   </div>
                 </div>
 
-                <div className="relative z-10 mt-4 flex items-center justify-between">
-                  <span className="text-[0.76rem] font-medium text-[#dce8f9]">
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-[0.76rem] font-medium text-[#d9e2f2]">
                     Open Socratic mode
                   </span>
-                  <span className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#33425b] bg-[#111926] text-[#dce8f9] transition group-active:scale-95">
+                  <span className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#252c37] bg-[#12161d] text-[#d9e2f2] transition group-active:scale-95">
                     <ChevronRight size={16} />
                   </span>
                 </div>
@@ -700,12 +680,12 @@ function DashboardScreen({
                       key={action.key}
                       type="button"
                       onClick={action.onClick}
-                      className={`relative min-h-[8.9rem] overflow-hidden rounded-[1.18rem] border border-white/9 p-3.5 text-left ${action.cardClassName}`}
+                      className={`min-h-[9.8rem] rounded-[1.18rem] border border-white/8 p-3.5 text-left ${action.cardClassName}`}
                     >
-                      <div className="relative z-10 flex h-full flex-col">
+                      <div className="flex h-full flex-col">
                         <div className="flex items-start justify-between gap-2">
                           <div
-                            className={`inline-flex h-9.5 w-9.5 items-center justify-center rounded-[1rem] ring-1 ${action.iconShellClassName}`}
+                            className={`inline-flex h-9.5 w-9.5 items-center justify-center rounded-[1rem] border ${action.iconShellClassName}`}
                           >
                             <Icon size={18} className={action.iconClassName} />
                           </div>
@@ -722,7 +702,7 @@ function DashboardScreen({
                           >
                             {action.title}
                           </h3>
-                          <p className="mt-1.5 line-clamp-3 text-[0.75rem] leading-[1.48] text-[#aab1bd]">
+                          <p className="mt-1.5 text-[0.75rem] leading-[1.48] text-[#aab1bd]">
                             {action.description}
                           </p>
                         </div>
@@ -740,10 +720,10 @@ function DashboardScreen({
                       "noopener,noreferrer",
                     )
                   }
-                  className="relative col-span-2 overflow-hidden rounded-[1.18rem] border border-white/9 bg-[radial-gradient(circle_at_top_right,rgba(106,164,255,0.16),transparent_48%),linear-gradient(180deg,rgba(16,18,24,0.98),rgba(10,12,16,0.98))] p-3.5 text-left"
+                  className="col-span-2 rounded-[1.18rem] border border-white/8 bg-[#0d1015] p-3.5 text-left"
                 >
-                  <div className="relative z-10 flex items-center gap-3">
-                    <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-[#12223b] ring-1 ring-[#243d66]/60">
+                  <div className="flex items-center gap-3">
+                    <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] border border-[#21324b] bg-[#12161d]">
                       <Globe size={18} className="text-[#7db0ff]" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -756,7 +736,7 @@ function DashboardScreen({
                         Browse essays, updates, and everything beyond the app.
                       </p>
                     </div>
-                    <span className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#284062] bg-[#101827] text-[#dce8f9]">
+                    <span className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#252c37] bg-[#12161d] text-[#d9e2f2]">
                       <ChevronRight size={16} />
                     </span>
                   </div>
