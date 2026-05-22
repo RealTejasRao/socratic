@@ -153,133 +153,142 @@ function IntroScreen() {
   }, []);
 
   return (
-    <main className="pwa-standalone-only relative h-[100svh] max-h-[100svh] overflow-hidden bg-[#030507] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_14%,rgba(210,54,54,0.2),transparent_36%),radial-gradient(circle_at_88%_80%,rgba(145,88,26,0.2),transparent_42%)]" />
+    <div className="pwa-standalone-only">
+      <main className="relative h-[100svh] overflow-hidden bg-[#040507] text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(192,48,48,0.2),transparent_34%),radial-gradient(circle_at_88%_82%,rgba(151,92,35,0.16),transparent_46%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_30%,rgba(255,255,255,0)_100%)]" />
 
-      <section className="relative z-10 flex h-full flex-col px-4 pb-[calc(0.8rem+env(safe-area-inset-bottom))] pt-[calc(0.7rem+env(safe-area-inset-top))]">
-        <div className="flex items-center justify-between">
-          <Image
-            src="/brand/Logo_Light_SVG.svg"
-            alt="Socratic AI"
-            width={38}
-            height={38}
-            className="h-9 w-9 opacity-95"
-            priority
-          />
-          <Link
-            href={ABOUT_BLOG_HREF}
-            className="inline-flex items-center gap-1 text-[0.95rem] text-white/82 transition hover:text-white"
-          >
-            Learn more
-            <ChevronRight size={16} />
-          </Link>
-        </div>
+        <section className="relative z-10 h-full px-4 pt-[calc(0.7rem+env(safe-area-inset-top))]">
+          <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between">
+              <Image
+                src="/brand/Logo_Light_SVG.svg"
+                alt="Socratic AI"
+                width={34}
+                height={34}
+                className="h-[2.125rem] w-[2.125rem] opacity-95"
+                priority
+              />
+              <Link
+                href={ABOUT_BLOG_HREF}
+                className="inline-flex items-center gap-1 text-[0.86rem] text-white/82 transition hover:text-white"
+              >
+                Learn more
+                <ChevronRight size={14} />
+              </Link>
+            </div>
 
-        <div className="relative mt-1.5 min-h-50">
-          <div className="relative z-10 max-w-56 pt-2">
-            <h1 className="text-[2.72rem] leading-[0.9] tracking-[-0.035em] font-[Georgia,serif]">
-              Socratic AI
-            </h1>
-            <p className="mt-1.5 text-[1.72rem] leading-[0.95] tracking-[-0.03em] font-[Georgia,serif]">
-              Sharpen your <span className="text-[#d34f4f]">thinking.</span>
-            </p>
-            <p className="mt-2 max-w-52 text-[0.93rem] leading-relaxed text-white/72">
-              Your AI companion for deeper conversations, debates, and timeless
-              wisdom.
-            </p>
-          </div>
+            <div className="mt-3 min-h-0 flex-1 overflow-y-auto pb-[15.4rem]">
+              <div className="relative min-h-52">
+                <div className="relative z-10 max-w-[12.25rem] pt-2">
+                  <h1 className="text-[2.34rem] leading-[0.92] tracking-[-0.03em] font-[Georgia,serif]">
+                    Socratic AI
+                  </h1>
+                  <p className="mt-1.5 text-[1.08rem] leading-[1.16] tracking-[-0.01em] font-[Georgia,serif]">
+                    Sharpen your <span className="text-[#d44b51]">thinking.</span>
+                  </p>
+                  <p className="mt-2.5 max-w-48 text-[0.84rem] leading-[1.62] text-white/66">
+                    Your AI companion for deeper conversations, debates, and
+                    timeless wisdom.
+                  </p>
+                </div>
 
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-[57%]">
-            <Image
-              src={resolveOptimizedCloudinaryPublicAsset(
-                "/twa/intro/socrates.webp",
-                { width: 920, crop: "fill", quality: "auto:good" },
-              )}
-              alt="Socrates statue"
-              fill
-              sizes="52vw"
-              className="object-contain object-right-top"
-              priority
-            />
-            <div className="absolute inset-x-0 bottom-0 h-34 bg-gradient-to-b from-transparent via-[#030507]/76 to-[#030507]" />
-          </div>
-        </div>
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-[58%]">
+                  <Image
+                    src={resolveOptimizedCloudinaryPublicAsset(
+                      "/twa/intro/socrates.webp",
+                      { width: 920, crop: "fill", quality: "auto:good" },
+                    )}
+                    alt="Socrates statue"
+                    fill
+                    sizes="52vw"
+                    className="object-contain object-right-top"
+                    priority
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-34 bg-gradient-to-b from-transparent via-[#040507]/70 to-[#040507]" />
+                </div>
+              </div>
 
-        <div className="mt-0.5 overflow-hidden">
-          <div
-            className="flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(calc(-${activeIndex * 100}% + ${activeIndex * -0.7}rem))` }}
-          >
-            {INTRO_CARDS.map((card) => {
-              const Icon = card.icon;
-              return (
-                <article
-                  key={card.id}
-                  className="relative mr-3 min-h-52 w-[88%] shrink-0 overflow-hidden rounded-2xl border border-white/16 bg-[#07090c]"
+              <div className="mt-2 overflow-hidden">
+                <div
+                  className="flex transition-transform duration-500 ease-out"
+                  style={{ transform: `translateX(calc(-${activeIndex * 100}% + ${activeIndex * -0.7}rem))` }}
                 >
-                  <div className="absolute inset-0">
-                    <Image
-                      src={resolveOptimizedCloudinaryPublicAsset(card.image, {
-                        width: 960,
-                        crop: "fill",
-                        quality: "auto:good",
-                      })}
-                      alt={card.title}
-                      fill
-                      sizes="80vw"
-                      className="object-cover object-right"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-l from-[#000]/8 via-[#020406]/38 to-[#020406]" />
-                  </div>
+                  {INTRO_CARDS.map((card) => {
+                    const Icon = card.icon;
+                    return (
+                      <article
+                        key={card.id}
+                        className="relative mr-3 min-h-[16.75rem] w-[88%] shrink-0 overflow-hidden rounded-3xl border border-white/16 bg-[#07090c]"
+                      >
+                        <div className="absolute inset-0">
+                          <Image
+                            src={resolveOptimizedCloudinaryPublicAsset(card.image, {
+                              width: 960,
+                              crop: "fill",
+                              quality: "auto:good",
+                            })}
+                            alt={card.title}
+                            fill
+                            sizes="80vw"
+                            className="object-cover object-right"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-l from-[#000]/10 via-[#020406]/44 to-[#020406]" />
+                        </div>
 
-                  <div className="relative z-10 flex h-full flex-col p-4.5">
-                    <span className="text-[0.98rem] tracking-[0.08em] text-[#d84545]">
-                      {card.id}
-                    </span>
-                    <div className="mt-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#9f1a24]/26 text-[#ff5e5e]">
-                      <Icon size={21} />
-                    </div>
-                    <h2 className="mt-3.5 max-w-44 text-[1.74rem] leading-[0.95] tracking-[-0.022em] font-[Georgia,serif]">
-                      {card.title}
-                    </h2>
-                    <p className="mt-auto max-w-47 text-[0.85rem] leading-relaxed text-white/74">
-                      {card.body}
-                    </p>
-                  </div>
-                </article>
-              );
-            })}
+                        <div className="relative z-10 flex h-full flex-col p-4">
+                          <span className="text-[0.84rem] tracking-[0.08em] text-[#d84545]">
+                            {card.id}
+                          </span>
+                          <div className="mt-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#9f1a24]/26 text-[#ff5e5e]">
+                            <Icon size={20} />
+                          </div>
+                          <h2 className="mt-3 max-w-[11.5rem] text-[0.82rem] leading-[1.24] text-white/72">
+                            {card.body}
+                          </h2>
+                          <h3 className="mt-auto max-w-44 text-[1.06rem] leading-[1.14] tracking-[-0.016em] font-[Georgia,serif] text-white/95">
+                            {card.title}
+                          </h3>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-2.5 flex items-center justify-center gap-2">
+                {INTRO_CARDS.map((card, index) => (
+                  <button
+                    key={card.id}
+                    type="button"
+                    onClick={() => setActiveIndex(index)}
+                    aria-label={`Go to slide ${index + 1}`}
+                    className={`h-1.5 rounded-full transition-all ${
+                      index === activeIndex ? "w-5 bg-[#df434d]" : "w-2 bg-white/28"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="mt-1.5 flex items-center justify-center gap-2">
-          {INTRO_CARDS.map((card, index) => (
-            <button
-              key={card.id}
-              type="button"
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Go to slide ${index + 1}`}
-              className={`h-1.5 rounded-full transition-all ${
-                index === activeIndex ? "w-5 bg-[#df434d]" : "w-2 bg-white/28"
-              }`}
-            />
-          ))}
-        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#040507] via-[#040507]/96 to-transparent" />
 
-        <div className="mt-auto space-y-1.5">
+        <div className="absolute inset-x-4 bottom-[calc(0.72rem+env(safe-area-inset-bottom))] z-30 space-y-2">
           <a
             href={ROUTES.SIGN_UP}
-            className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-[#a71d26] bg-[linear-gradient(120deg,#7f1218_0%,#b1262e_60%,#9e1f27_100%)] text-[1rem] font-medium text-white"
+            className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-[#b63038] bg-[linear-gradient(118deg,#871a21_0%,#b72d36_56%,#9d212a_100%)] text-[0.98rem] font-medium text-white"
           >
             Create Account
           </a>
           <a
             href={ROUTES.SIGN_IN}
-            className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-white/16 bg-transparent text-[1rem] font-medium text-white/92"
+            className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-white/16 bg-transparent text-[0.98rem] font-medium text-white/92"
           >
             Log In
           </a>
-          <p className="pt-1 text-center text-[0.75rem] text-white/44">
+          <p className="pt-0.5 text-center text-[0.72rem] leading-relaxed text-white/48">
             By continuing, you agree to our{" "}
             <a href={ROUTES.TERMS} className="text-[#d24a4a]">
               Terms
@@ -291,8 +300,8 @@ function IntroScreen() {
             .
           </p>
         </div>
-      </section>
-    </main>
+      </main>
+    </div>
   );
 }
 
@@ -421,7 +430,8 @@ function DashboardScreen({
   };
 
   return (
-    <main className="pwa-standalone-only min-h-svh bg-[#020305] text-[#f2f0eb]">
+    <div className="pwa-standalone-only">
+      <main className="min-h-svh bg-[#020305] text-[#f2f0eb]">
       <section className="mx-auto w-full max-w-115 px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-[calc(0.95rem+env(safe-area-inset-top))]">
         <header className="flex items-start justify-between gap-3">
           <div>
@@ -752,7 +762,8 @@ function DashboardScreen({
           </div>
         </div>
       ) : null}
-    </main>
+      </main>
+    </div>
   );
 }
 

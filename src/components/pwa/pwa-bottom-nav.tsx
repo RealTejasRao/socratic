@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { Route } from "next";
+import { useAuth } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { Bell, House, MessageCircle, Settings } from "lucide-react";
 import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
@@ -25,11 +26,14 @@ function matchPath(pathname: string, href: string) {
 }
 
 export function PwaBottomNav() {
+  const { isSignedIn } = useAuth();
   const pathname = usePathname();
   const isStandalone = useStandaloneMode();
+  const hideOnSignedOutHome = pathname === ROUTES.HOME && isSignedIn === false;
+  const shouldShowNav = isStandalone && !hideOnSignedOutHome;
 
   useEffect(() => {
-    if (!isStandalone) {
+    if (!shouldShowNav) {
       document.body.classList.remove("pwa-bottom-nav-active");
       return;
     }
@@ -38,9 +42,9 @@ export function PwaBottomNav() {
     return () => {
       document.body.classList.remove("pwa-bottom-nav-active");
     };
-  }, [isStandalone]);
+  }, [shouldShowNav]);
 
-  if (!isStandalone) {
+  if (!shouldShowNav) {
     return null;
   }
 
