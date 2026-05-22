@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import {
   ChevronRight,
   MessagesSquare,
-  Quote,
   ScrollText,
   SlidersHorizontal,
   Sparkles,
@@ -23,7 +22,6 @@ import {
 } from "lucide-react";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
-import { getDailyIndex } from "@/src/lib/twa-daily";
 import { ROUTES } from "@/src/lib/routes";
 import type { SessionMode } from "@/src/types/chat";
 
@@ -42,11 +40,6 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
-
-type DailyThoughtEntry = {
-  quote: string;
-  philosopher: string;
-};
 
 type LatestSessionSummary = {
   id: string;
@@ -68,15 +61,15 @@ type TwaHomeShellProps = {
   isPremium: boolean;
   latestSession: LatestSessionSummary | null;
   blogPosts: BlogPreview[];
-  thoughts: DailyThoughtEntry[];
+  thoughts: { quote: string; philosopher: string }[];
   topics: string[];
-  todayThought: DailyThoughtEntry | null;
+  todayThought: { quote: string; philosopher: string } | null;
   todayTopic: string | null;
 };
 
 type DashboardScreenProps = Pick<
   TwaHomeShellProps,
-  "isPremium" | "latestSession" | "blogPosts" | "thoughts" | "todayThought"
+  "isPremium" | "latestSession" | "blogPosts"
 >;
 
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
@@ -137,18 +130,6 @@ function modeLabel(mode: SessionMode) {
   if (mode === "DEBATE") return "Debate Mode";
   if (mode === "ROLEPLAY") return "Role Play Mode";
   return "Socratic Mode";
-}
-
-function getSessionArtwork(mode: SessionMode | null | undefined) {
-  if (mode === "DEBATE") {
-    return "/blog/images/Free will vs Determinism.webp";
-  }
-
-  if (mode === "ROLEPLAY") {
-    return "/blog/images/Aurelius.webp";
-  }
-
-  return "/blog/images/socratic-method.webp";
 }
 
 function getBlogCategoryAccent(category: string) {
@@ -222,9 +203,9 @@ function IntroScreen() {
               <Image
                 src="/brand/Logo_Light_SVG.svg"
                 alt="Socratic AI"
-                width={34}
-                height={34}
-                className="h-8.5 w-8.5 opacity-95"
+                width={38}
+                height={38}
+                className="h-8.9 w-8.9 opacity-95"
                 priority
               />
               <Link
@@ -390,8 +371,6 @@ function DashboardScreen({
   isPremium,
   latestSession,
   blogPosts,
-  thoughts,
-  todayThought,
 }: DashboardScreenProps) {
   const router = useRouter();
   const [selectedTone, setSelectedTone] = useState<ToneValue>(() => {
@@ -416,52 +395,6 @@ function DashboardScreen({
   });
   const [showToneModal, setShowToneModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [activeThought, setActiveThought] = useState<DailyThoughtEntry | null>(
-    todayThought,
-  );
-
-  useEffect(() => {
-    const refreshDaily = () => {
-      const now = new Date();
-
-      if (thoughts.length > 0) {
-        setActiveThought(thoughts[getDailyIndex(now, thoughts.length)] ?? null);
-      }
-    };
-
-    const scheduleNextRefresh = () => {
-      const now = new Date();
-      const nextMidnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0,
-        0,
-        1,
-      );
-      return window.setTimeout(() => {
-        refreshDaily();
-        timeoutId = scheduleNextRefresh();
-      }, nextMidnight.getTime() - now.getTime());
-    };
-
-    let timeoutId = scheduleNextRefresh();
-
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") {
-        refreshDaily();
-      }
-    };
-
-    window.addEventListener("focus", refreshDaily);
-    document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      window.removeEventListener("focus", refreshDaily);
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [thoughts]);
 
   const activeTone = useMemo(
     () =>
@@ -495,18 +428,13 @@ function DashboardScreen({
   };
   const sessionTitle =
     latestSession?.title ?? latestSession?.firstUserMessage ?? "Fresh thread";
-  const sessionPreview =
-    latestSession?.firstUserMessage &&
-    latestSession.firstUserMessage !== latestSession.title
-      ? latestSession.firstUserMessage
-      : null;
   const sessionHref = latestSession
     ? `/app/${latestSession.id}`
     : "/app?mode=socratic";
   const sessionMode = latestSession
     ? modeLabel(latestSession.mode)
     : "Socratic Mode";
-  const sessionArtwork = getSessionArtwork(latestSession?.mode);
+  const sessionArtwork = "/twa/home/daily_thought_image.webp";
   const heroPills = [
     {
       key: "debate",
@@ -604,9 +532,6 @@ function DashboardScreen({
                 >
                   What are you thinking about?
                 </h2>
-                <p className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.045] px-2.5 py-1 text-[0.63rem] text-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md">
-                  Ask anything. Challenge ideas.
-                </p>
               </div>
               <span className="inline-flex h-13 w-13 shrink-0 items-center justify-center rounded-full border border-[#ccb8ff]/28 bg-[radial-gradient(circle_at_32%_28%,#fcf8ff_0%,#c9b6ff_26%,#9a7aff_58%,#7250f0_100%)] text-white shadow-[0_0_28px_rgba(147,108,255,0.52)] transition duration-300 group-active:scale-95">
                 <Sparkles size={16} fill="currentColor" />
@@ -666,57 +591,12 @@ function DashboardScreen({
                 >
                   {sessionTitle}
                 </h3>
-                {sessionPreview ? (
-                  <p className="mt-1.5 line-clamp-2 text-[0.72rem] leading-[1.46] text-white/58">
-                    {sessionPreview}
-                  </p>
-                ) : null}
               </div>
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/[0.05] text-white/88 backdrop-blur-sm transition group-active:scale-95">
                 <ChevronRight size={17} />
               </span>
             </div>
           </a>
-
-          <section className="relative mt-5 overflow-hidden rounded-[1.45rem] border border-[#5b4227] bg-[linear-gradient(135deg,rgba(45,31,16,0.96)_0%,rgba(23,17,12,0.98)_100%)] px-4 py-4 shadow-[0_22px_60px_rgba(0,0,0,0.3)]">
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-[42%]">
-              <Image
-                src={resolveOptimizedCloudinaryPublicAsset(
-                  "/twa/home/daily_thought_image.webp",
-                  {
-                    width: 760,
-                    crop: "fill",
-                    quality: "auto:good",
-                  },
-                )}
-                alt="Quote of the day"
-                fill
-                sizes="40vw"
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(22,15,10,0.96)_0%,rgba(22,15,10,0.58)_42%,rgba(22,15,10,0.18)_100%)]" />
-            </div>
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(245,180,82,0.16),transparent_32%)]" />
-            <div className="relative z-10 max-w-[64%]">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#a06d2e]/30 bg-[#f1aa52]/10 text-[#f3ba69]">
-                <Quote size={15} />
-              </span>
-              <p className="mt-3 text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[#dfb069]">
-                Quote of the day
-              </p>
-              <p
-                className={`${cormorantGaramond.className} mt-2 text-[1.08rem] leading-[1.28] tracking-[-0.01em] text-[#f7f0e5]`}
-              >
-                “
-                {activeThought?.quote ??
-                  "The unexamined life is not worth living."}
-                ”
-              </p>
-              <p className="mt-2.5 text-[0.76rem] text-[#d8ae79]">
-                {activeThought?.philosopher ?? "Socrates"}
-              </p>
-            </div>
-          </section>
 
           <section className="mt-6">
             <div className="flex items-center justify-between">
@@ -856,7 +736,11 @@ function DashboardScreen({
                                   : "border-white/10 bg-white/[0.04] text-white/68"
                             }`}
                           >
-                            {isSelected ? "Active" : isLocked ? "Plus" : "Choose"}
+                            {isSelected
+                              ? "Active"
+                              : isLocked
+                                ? "Plus"
+                                : "Choose"}
                           </span>
                         </div>
                       </button>
@@ -913,8 +797,6 @@ export function TwaHomeShell(props: TwaHomeShellProps) {
       isPremium={props.isPremium}
       latestSession={props.latestSession}
       blogPosts={props.blogPosts}
-      thoughts={props.thoughts}
-      todayThought={props.todayThought}
     />
   );
 }
