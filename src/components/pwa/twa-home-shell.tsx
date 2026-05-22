@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { Inter, Public_Sans } from "next/font/google";
+import { Instrument_Serif, Inter } from "next/font/google";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import {
   Compass,
   Globe,
   MessageCircle,
+  MessagesSquare,
   ScrollText,
   SlidersHorizontal,
   Sparkles,
@@ -24,10 +25,7 @@ import { getDailyIndex } from "@/src/lib/twa-daily";
 import { ROUTES } from "@/src/lib/routes";
 import type { SessionMode } from "@/src/types/chat";
 
-const publicSans = Public_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+const instrumentSerif = Instrument_Serif({ subsets: ["latin"], weight: "400" });
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,7 +71,7 @@ const INTRO_CARDS = [
     title: "Ask anything. Think deeper.",
     body: "Socratic AI guides you with questions that unlock clarity and understanding.",
     image: "/twa/intro/card1.webp",
-    icon: MessageCircle,
+    icon: MessagesSquare,
   },
   {
     id: "02",
@@ -229,12 +227,12 @@ function IntroScreen() {
               <div className="relative min-h-52">
                 <div className="relative z-10 max-w-[12.25rem] pt-2">
                   <h1
-                    className={`${publicSans.className} text-[2.35rem] leading-[0.92] tracking-[-0.025em] font-semibold`}
+                    className={`${instrumentSerif.className} text-[2.35rem] leading-[0.92] tracking-[-0.025em]`}
                   >
                     Socratic AI
                   </h1>
                   <p
-                    className={`${publicSans.className} mt-1.5 text-[1rem] leading-[1.16] tracking-[-0.005em] font-medium`}
+                    className={`${instrumentSerif.className} mt-1.5 text-[1.02rem] leading-[1.16] tracking-[-0.005em]`}
                   >
                     Sharpen your <span className="text-[#d44b51]">thinking.</span>
                   </p>
@@ -247,7 +245,7 @@ function IntroScreen() {
                 <div className="pointer-events-none absolute inset-y-0 right-0 w-[58%]">
                   <Image
                     src={resolveOptimizedCloudinaryPublicAsset(
-                      "/twa/intro/socrates.webp",
+                      "/twa/intro/socrates2.webp",
                       { width: 920, crop: "fill", quality: "auto:good" },
                     )}
                     alt="Socrates statue"
@@ -302,11 +300,11 @@ function IntroScreen() {
                             <Icon size={20} />
                           </div>
                           <h3
-                            className={`${publicSans.className} mt-5 max-w-[10.8rem] text-[0.93rem] leading-[1.22] tracking-[-0.006em] font-semibold text-white/95`}
+                            className={`${instrumentSerif.className} mt-5 max-w-[10.8rem] text-[1.04rem] leading-[1.24] tracking-[-0.004em] text-white/95`}
                           >
                             {card.title}
                           </h3>
-                          <h2 className="mt-4 max-w-[10.9rem] text-[0.7rem] leading-[1.62] text-white/58">
+                          <h2 className="mt-4 max-w-[10.9rem] text-[0.76rem] leading-[1.66] text-white/60">
                             {card.body}
                           </h2>
                         </div>
