@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import { useEffect, useMemo, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,16 @@ import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-publ
 import { getDailyIndex } from "@/src/lib/twa-daily";
 import { ROUTES } from "@/src/lib/routes";
 import type { SessionMode } from "@/src/types/chat";
+
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 type DailyThoughtEntry = {
   quote: string;
@@ -154,10 +165,7 @@ function IntroScreen() {
 
   return (
     <div className="pwa-standalone-only">
-      <main className="relative h-[100svh] overflow-hidden bg-[#040507] text-white">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(192,48,48,0.2),transparent_34%),radial-gradient(circle_at_88%_82%,rgba(151,92,35,0.16),transparent_46%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.03)_0%,rgba(255,255,255,0)_30%,rgba(255,255,255,0)_100%)]" />
-
+      <main className={`relative h-[100svh] overflow-hidden bg-black text-white ${inter.className}`}>
         <section className="relative z-10 h-full px-4 pt-[calc(0.7rem+env(safe-area-inset-top))]">
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between">
@@ -181,13 +189,17 @@ function IntroScreen() {
             <div className="mt-3 min-h-0 flex-1 overflow-y-auto pb-[15.4rem]">
               <div className="relative min-h-52">
                 <div className="relative z-10 max-w-[12.25rem] pt-2">
-                  <h1 className="text-[2.34rem] leading-[0.92] tracking-[-0.03em] font-[Georgia,serif]">
+                  <h1
+                    className={`${cormorantGaramond.className} text-[2.5rem] leading-[0.92] tracking-[-0.02em]`}
+                  >
                     Socratic AI
                   </h1>
-                  <p className="mt-1.5 text-[1.08rem] leading-[1.16] tracking-[-0.01em] font-[Georgia,serif]">
+                  <p
+                    className={`${cormorantGaramond.className} mt-1.5 text-[1.04rem] leading-[1.16] tracking-[-0.005em]`}
+                  >
                     Sharpen your <span className="text-[#d44b51]">thinking.</span>
                   </p>
-                  <p className="mt-2.5 max-w-48 text-[0.84rem] leading-[1.62] text-white/66">
+                  <p className="mt-2.5 max-w-48 text-[0.84rem] leading-[1.62] text-white/62">
                     Your AI companion for deeper conversations, debates, and
                     timeless wisdom.
                   </p>
@@ -205,7 +217,7 @@ function IntroScreen() {
                     className="object-contain object-right-top"
                     priority
                   />
-                  <div className="absolute inset-x-0 bottom-0 h-34 bg-gradient-to-b from-transparent via-[#040507]/70 to-[#040507]" />
+                  <div className="absolute inset-0 bg-black/38" />
                 </div>
               </div>
 
@@ -219,9 +231,9 @@ function IntroScreen() {
                     return (
                       <article
                         key={card.id}
-                        className="relative mr-3 min-h-[16.75rem] w-[88%] shrink-0 overflow-hidden rounded-3xl border border-white/16 bg-[#07090c]"
+                        className="relative mr-3 min-h-[26.5rem] w-[88%] shrink-0 overflow-hidden rounded-3xl border border-white/20 bg-black"
                       >
-                        <div className="absolute inset-0">
+                        <div className="pointer-events-none absolute -right-[5%] top-0 h-[56%] w-[72%]">
                           <Image
                             src={resolveOptimizedCloudinaryPublicAsset(card.image, {
                               width: 960,
@@ -231,24 +243,27 @@ function IntroScreen() {
                             alt={card.title}
                             fill
                             sizes="80vw"
-                            className="object-cover object-right"
+                            className="object-cover object-top opacity-[0.23]"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-l from-[#000]/10 via-[#020406]/44 to-[#020406]" />
+                          <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-black/72 to-black" />
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/6 via-black/74 to-black" />
                         </div>
 
-                        <div className="relative z-10 flex h-full flex-col p-4">
-                          <span className="text-[0.84rem] tracking-[0.08em] text-[#d84545]">
+                        <div className="relative z-10 flex h-full flex-col p-5">
+                          <span className="text-[0.82rem] tracking-[0.08em] text-[#d84545]">
                             {card.id}
                           </span>
-                          <div className="mt-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#9f1a24]/26 text-[#ff5e5e]">
-                            <Icon size={20} />
+                          <div className="mt-7 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#8c1a22]/30 text-[#ff5a5a]">
+                            <Icon size={23} />
                           </div>
-                          <h2 className="mt-3 max-w-[11.5rem] text-[0.82rem] leading-[1.24] text-white/72">
-                            {card.body}
-                          </h2>
-                          <h3 className="mt-auto max-w-44 text-[1.06rem] leading-[1.14] tracking-[-0.016em] font-[Georgia,serif] text-white/95">
+                          <h3
+                            className={`${cormorantGaramond.className} mt-7 max-w-[13.4rem] text-[2.05rem] leading-[0.95] tracking-[-0.01em] text-white/95`}
+                          >
                             {card.title}
                           </h3>
+                          <h2 className="mt-6 max-w-[13.7rem] text-[0.74rem] leading-[1.72] text-white/62">
+                            {card.body}
+                          </h2>
                         </div>
                       </article>
                     );
@@ -272,8 +287,6 @@ function IntroScreen() {
             </div>
           </div>
         </section>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#040507] via-[#040507]/96 to-transparent" />
 
         <div className="absolute inset-x-4 bottom-[calc(0.72rem+env(safe-area-inset-bottom))] z-30 space-y-2">
           <a
