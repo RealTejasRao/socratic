@@ -150,12 +150,6 @@ function ModeIcon({ mode }: { mode: SessionMode }) {
   return <MessageCircle size={34} className="text-[#ff6464]" />;
 }
 
-function modeArtwork(mode: SessionMode) {
-  if (mode === "DEBATE") return "/twa/intro/card2.webp";
-  if (mode === "ROLEPLAY") return "/twa/intro/card3.webp";
-  return "/twa/intro/card1.webp";
-}
-
 function IntroScreen() {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -504,7 +498,7 @@ function DashboardScreen({
   return (
     <div className="pwa-standalone-only">
       <main
-        className={`min-h-svh bg-[radial-gradient(circle_at_50%_-15%,rgba(104,32,38,0.12),transparent_55%),#010205] text-[#f2f0eb] ${inter.className}`}
+        className={`min-h-svh bg-black text-[#f2f0eb] ${inter.className}`}
       >
       <section className="mx-auto w-full max-w-[29rem] px-4 pb-[calc(6.65rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
         <header className="flex items-start justify-between gap-3">
@@ -522,13 +516,13 @@ function DashboardScreen({
           <div className="flex items-center gap-2 pt-1.5">
             <a
               href={isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING}
-              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#3d2d19] bg-[#0f0b06] px-3.5 text-[0.72rem] font-medium text-[#e3bb5d]"
+              aria-label="Premium"
+              className="inline-flex h-8 w-8 items-center justify-center text-[#e3bb5d]"
             >
               <PremiumCrownIcon
-                className="h-[1.15rem] w-[1.15rem]"
+                className="h-[1.35rem] w-[1.35rem]"
                 crownClassName="h-[1em] w-[1em]"
               />
-              Premium
             </a>
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/[0.04]">
               <UserButton
@@ -559,19 +553,8 @@ function DashboardScreen({
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_50%,rgba(120,18,28,0.26),transparent_60%)]" />
           {latestSession ? (
             <div className="relative z-10 flex items-center gap-3">
-              <div className="relative h-[5.2rem] w-[5.2rem] shrink-0 overflow-hidden rounded-full border border-white/10">
-                <Image
-                  src={resolveOptimizedCloudinaryPublicAsset(modeArtwork(latestSession.mode), {
-                    width: 320,
-                    crop: "fill",
-                    quality: "auto:good",
-                  })}
-                  alt={modeLabel(latestSession.mode)}
-                  fill
-                  sizes="120px"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/22" />
+              <div className="inline-flex h-[4.6rem] w-[4.6rem] shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20">
+                <ModeIcon mode={latestSession.mode} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[0.84rem] text-[#f06066]">{modeLabel(latestSession.mode)}</p>
@@ -618,40 +601,6 @@ function DashboardScreen({
               </button>
             </div>
           )}
-        </section>
-
-        <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#26221a] bg-[linear-gradient(125deg,#090a0b_0%,#111214_62%,#090a0b_100%)] px-4 py-3.5">
-          <div className="relative z-10 max-w-[66%]">
-            <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#d7ac4f]">
-              <Sun size={15} />
-              Daily Thought
-            </p>
-            <p
-              className={`${instrumentSerif.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em]`}
-            >
-              “{activeThought?.quote ?? "The unexamined life is not worth living."}”
-            </p>
-            <p className="mt-2 text-[0.78rem] text-[#9a9a9d]">
-              — {activeThought?.philosopher ?? "Socrates"}
-            </p>
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-[43%]">
-            <Image
-              src={resolveOptimizedCloudinaryPublicAsset(
-                "/twa/home/daily_thought_image.webp",
-                {
-                  width: 760,
-                  crop: "fill",
-                  quality: "auto:good",
-                },
-              )}
-              alt="Philosopher portrait"
-              fill
-              sizes="42vw"
-              className="object-cover object-right"
-            />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#090a0b]/40 to-[#090a0b]" />
-          </div>
         </section>
 
         <section className="mt-6">
@@ -731,6 +680,40 @@ function DashboardScreen({
               </p>
               <p className="mt-1 text-[0.72rem] leading-snug text-[#a8a9ad]">Learn more online</p>
             </button>
+          </div>
+        </section>
+
+        <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#26221a] bg-[linear-gradient(125deg,#090a0b_0%,#111214_62%,#090a0b_100%)] px-4 py-3.5">
+          <div className="relative z-10 max-w-[66%]">
+            <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#d7ac4f]">
+              <Sun size={15} />
+              Daily Thought
+            </p>
+            <p
+              className={`${instrumentSerif.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em]`}
+            >
+              “{activeThought?.quote ?? "The unexamined life is not worth living."}”
+            </p>
+            <p className="mt-2 text-[0.78rem] text-[#9a9a9d]">
+              — {activeThought?.philosopher ?? "Socrates"}
+            </p>
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-[43%]">
+            <Image
+              src={resolveOptimizedCloudinaryPublicAsset(
+                "/twa/home/daily_thought_image.webp",
+                {
+                  width: 760,
+                  crop: "fill",
+                  quality: "auto:good",
+                },
+              )}
+              alt="Philosopher portrait"
+              fill
+              sizes="42vw"
+              className="object-cover object-right"
+            />
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#090a0b]/40 to-[#090a0b]" />
           </div>
         </section>
 
