@@ -30,7 +30,8 @@ export function PwaBottomNav() {
   const pathname = usePathname();
   const isStandalone = useStandaloneMode();
   const hideOnSignedOutHome = pathname === ROUTES.HOME && isSignedIn === false;
-  const shouldShowNav = isStandalone && !hideOnSignedOutHome;
+  const hideOnAppRoute = matchPath(pathname, ROUTES.APP);
+  const shouldShowNav = isStandalone && !hideOnSignedOutHome && !hideOnAppRoute;
 
   useEffect(() => {
     if (!shouldShowNav) {
