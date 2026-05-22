@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import ClickPulse from "@/src/components/ClickPulse";
 import { CookieConsentManager } from "@/src/components/cookie-consent/cookie-consent-manager";
-import { PwaBottomNav } from "@/src/components/pwa/pwa-bottom-nav";
 import {
   absoluteUrl,
   organizationSchema,
@@ -134,7 +133,6 @@ export default function RootLayout({
           ))}
           <ClickPulse />
           <CookieConsentManager />
-          <PwaBottomNav />
           {children}
         </ClerkProvider>
       </body>

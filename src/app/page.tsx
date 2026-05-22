@@ -20,10 +20,6 @@ import {
 import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
 import { HOME_HERO_ID } from "@/src/lib/home-hero";
-import { prisma } from "@/src/server/db/client";
-import { getAllBlogPostSummaries } from "@/src/server/blog/posts";
-import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
-import { getTwaDailyContent } from "@/src/server/twa/content";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Socratic AI | Philosophy, Strategy & Deep Critical Thinking",
@@ -45,36 +41,6 @@ const instrumentSerif = Instrument_Serif({
 
 export default async function HomePage() {
   const { userId: clerkUserId } = await auth();
-  const billing = clerkUserId
-    ? await getUserBillingStateByClerkId(clerkUserId)
-    : null;
-  const dbUser = clerkUserId
-    ? await prisma.user.findUnique({
-        where: { clerkUserId },
-        select: { id: true },
-      })
-    : null;
-
-  const latestSession = dbUser
-    ? await prisma.chatSession.findFirst({
-        where: { userId: dbUser.id },
-        orderBy: { lastActivityAt: "desc" },
-        select: {
-          id: true,
-          mode: true,
-          title: true,
-          messages: {
-            where: { role: "USER" },
-            orderBy: { createdAt: "asc" },
-            take: 1,
-            select: { content: true },
-          },
-        },
-      })
-    : null;
-
-  const blogPosts = getAllBlogPostSummaries("newest").slice(0, 6);
-  const dailyContent = getTwaDailyContent();
 
   return (
     <LoadGate
@@ -191,22 +157,6 @@ export default async function HomePage() {
 
         <TwaHomeShell
           isSignedIn={Boolean(clerkUserId)}
-          isPremium={Boolean(billing?.isPremium)}
-          latestSession={
-            latestSession
-              ? {
-                  id: latestSession.id,
-                  mode: latestSession.mode,
-                  title: latestSession.title,
-                  firstUserMessage: latestSession.messages[0]?.content ?? null,
-                }
-              : null
-          }
-          blogPosts={blogPosts}
-          thoughts={dailyContent.thoughts}
-          topics={dailyContent.topics}
-          todayThought={dailyContent.todayThought}
-          todayTopic={dailyContent.todayTopic}
         />
       </main>
     </LoadGate>

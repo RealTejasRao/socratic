@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { SignUp } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { ROUTES } from "@/src/lib/routes";
 import { createPageMetadata } from "@/src/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
@@ -12,7 +15,13 @@ export const metadata: Metadata = createPageMetadata({
   index: false,
 });
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect(ROUTES.APP);
+  }
+
   const clerkGlassAppearance = {
     elements: {
       rootBox: "auth-card-rise w-full justify-center",
@@ -65,7 +74,11 @@ export default function SignUpPage() {
         <div className="relative z-10 grid min-h-svh grid-cols-1 lg:h-svh lg:grid-cols-2">
           <section className="relative z-20 flex items-center justify-center px-4 py-6 lg:px-10 lg:py-8">
             <div className="auth-sign-up-zoom w-full max-w-md">
-              <SignUp appearance={clerkGlassAppearance} />
+              <SignUp
+                appearance={clerkGlassAppearance}
+                fallbackRedirectUrl={ROUTES.APP}
+                forceRedirectUrl={ROUTES.APP}
+              />
             </div>
           </section>
 

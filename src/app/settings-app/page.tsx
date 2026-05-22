@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
-import { SettingsAppClient } from "./settings-app-client";
-import { createPageMetadata } from "@/src/lib/seo";
-
-export const metadata: Metadata = createPageMetadata({
-  title: "Settings",
-  description: "Manage your Socratic AI app settings.",
-  path: "/settings-app",
-  index: false,
-});
+import { redirect } from "next/navigation";
+import { ROUTES } from "@/src/lib/routes";
 
 export default function SettingsAppPage() {
-  return <SettingsAppClient />;
+  redirect(ROUTES.APP);
 }
