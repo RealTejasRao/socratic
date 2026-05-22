@@ -65,11 +65,11 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
               <div className="relative flex h-full flex-col justify-between p-6 sm:p-7">
                 <div className="max-w-[calc(100%-1.25rem)] sm:max-w-[calc(100%-1.75rem)]">
                   <h1
-                    className={`${instrumentSerif.className} text-[1.95rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2rem]`}
+                    className={`${instrumentSerif.className} text-[1.5rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2rem]`}
                   >
                     Your mind was meant for more
                   </h1>
-                  <p className="mt-4 max-w-[calc(100%-0.5rem)] text-[0.8rem] leading-[1.65] text-white/80 sm:max-w-[calc(100%-0.75rem)] sm:text-[0.8rem]">
+                  <p className="mt-4 max-w-[calc(100%-0.5rem)] text-[0.6rem] leading-[1.65] text-white/80 sm:max-w-[calc(100%-0.75rem)] sm:text-[0.8rem]">
                     Your secret place for deep thought and conversations that
                     change you, away from the distractions of the world.
                   </p>
