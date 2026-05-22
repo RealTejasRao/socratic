@@ -61,7 +61,7 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
           />
         </div>
         <section className="relative z-10 flex min-h-svh flex-col justify-between px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:px-7">
-          <div className="max-w-[calc(100%-0.75rem)] pt-16 sm:max-w-[calc(100%-1.25rem)] sm:pt-18">
+          <div className="max-w-[calc(100%-3.75rem)] pt-1 sm:max-w-[calc(100%-4.25rem)]">
             <h1
               className={`${instrumentSerif.className} text-[1.78rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2rem]`}
             >
