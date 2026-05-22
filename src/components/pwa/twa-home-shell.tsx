@@ -543,7 +543,7 @@ function DashboardScreen({
 
         <div className="mt-7 flex items-center justify-between">
           <h2
-            className={`inline-flex items-center gap-2 text-[1.42rem] leading-none tracking-[-0.01em] ${cormorantGaramond.className}`}
+            className={`inline-flex items-center gap-2 text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}
           >
             <Sparkles size={17} className="text-[#f35f67]" />
             Continue
@@ -557,8 +557,8 @@ function DashboardScreen({
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,rgba(67,92,142,0.24),transparent_58%)]" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_88%,rgba(79,55,110,0.2),transparent_60%)]" />
           {latestSession ? (
-            <div className="relative z-10 flex min-h-[11rem] items-start gap-3">
-              <div className="min-w-0 flex-1">
+            <div className="relative z-10 flex min-h-[12.6rem] items-stretch gap-4">
+              <div className="min-w-0 flex-1 py-1">
                 <p
                   className={`text-[#9eb6db] ${
                     latestSession.mode === "DEBATE"
@@ -569,15 +569,15 @@ function DashboardScreen({
                   {modeLabel(latestSession.mode)}
                 </p>
                 <h3
-                  className={`${cormorantGaramond.className} mt-0.5 text-[1.2rem] leading-[1.18] tracking-[-0.01em] text-white`}
+                  className={`${cormorantGaramond.className} mt-1.5 text-[1.2rem] leading-[1.2] tracking-[-0.01em] text-white`}
                 >
                   {latestSession.title ?? "Untitled conversation"}
                 </h3>
-                <p className="mt-1 line-clamp-2 text-[0.82rem] leading-[1.45] text-[#bac3d2]">
+                <p className="mt-3 line-clamp-2 text-[0.82rem] leading-[1.5] text-[#bac3d2]">
                   {truncatePreview(latestSession.firstUserMessage, 76)}
                 </p>
               </div>
-              <div className="flex w-[5.1rem] shrink-0 flex-col items-center gap-2">
+              <div className="flex w-[5.4rem] shrink-0 flex-col items-center justify-between py-1">
                 <div className="inline-flex h-[4.4rem] w-[4.4rem] items-center justify-center rounded-full border border-[#2d3a4f] bg-[#131b2a]">
                   <ModeIcon mode={latestSession.mode} />
                 </div>
@@ -591,19 +591,19 @@ function DashboardScreen({
               </div>
             </div>
           ) : (
-            <div className="relative z-10 flex min-h-[11rem] items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
+            <div className="relative z-10 flex min-h-[12.6rem] items-stretch justify-between gap-4">
+              <div className="min-w-0 flex-1 py-1">
                 <p className="text-[0.84rem] font-medium text-[#9eb6db]">Socratic Chat</p>
                 <h3
-                  className={`${cormorantGaramond.className} mt-1 text-[1.2rem] leading-[1.18] tracking-[-0.01em] text-white`}
+                  className={`${cormorantGaramond.className} mt-1.5 text-[1.2rem] leading-[1.2] tracking-[-0.01em] text-white`}
                 >
                   Start a new thread
                 </h3>
-                <p className="mt-1 text-[0.82rem] leading-[1.45] text-[#bac3d2]">
+                <p className="mt-3 text-[0.82rem] leading-[1.5] text-[#bac3d2]">
                   Ask anything and keep your thinking moving.
                 </p>
               </div>
-              <div className="flex w-[5.1rem] shrink-0 flex-col items-center gap-2">
+              <div className="flex w-[5.4rem] shrink-0 flex-col items-center justify-between py-1">
                 <div className="inline-flex h-[4.4rem] w-[4.4rem] items-center justify-center rounded-full border border-[#2d3a4f] bg-[#131b2a]">
                   <ModeIcon mode="SOCRATIC" />
                 </div>
@@ -621,7 +621,7 @@ function DashboardScreen({
         </section>
 
         <section className="mt-6">
-          <h2 className={`text-[1.42rem] leading-none tracking-[-0.01em] ${cormorantGaramond.className}`}>
+          <h2 className={`text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}>
             Quick Actions
           </h2>
 
@@ -632,10 +632,10 @@ function DashboardScreen({
               className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
               <MessageCircle size={18} className="text-[#ff6267]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[0.84rem] leading-none`}>
+              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
                 Socratic Chat
               </p>
-              <p className="mt-1 text-[0.82rem] leading-snug text-[#a8a9ad]">Ask anything</p>
+              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Ask anything</p>
             </button>
 
             <button
@@ -644,10 +644,10 @@ function DashboardScreen({
               className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
               <Swords size={18} className="text-[#ff5d66]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[0.84rem] leading-none`}>
+              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
                 Debate
               </p>
-              <p className="mt-1 text-[0.82rem] leading-snug text-[#a8a9ad]">Challenge ideas</p>
+              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Challenge ideas</p>
             </button>
 
             <button
@@ -656,10 +656,10 @@ function DashboardScreen({
               className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
               <BookOpen size={18} className="text-[#d7ac4f]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[0.84rem] leading-none`}>
+              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
                 Philosophers
               </p>
-              <p className="mt-1 text-[0.82rem] leading-snug text-[#a8a9ad]">Talk to thinkers</p>
+              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Talk to thinkers</p>
             </button>
 
             <button
@@ -668,10 +668,10 @@ function DashboardScreen({
               className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
               <SlidersHorizontal size={18} className="text-[#9a78f2]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[0.84rem] leading-none`}>
+              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
                 Choose Tone
               </p>
-              <p className="mt-1 line-clamp-2 text-[0.82rem] leading-snug text-[#a8a9ad]">{toneLabel}</p>
+              <p className="mt-1 line-clamp-2 text-[0.75rem] leading-snug text-[#a8a9ad]">{toneLabel}</p>
             </button>
 
             <button
@@ -680,10 +680,10 @@ function DashboardScreen({
               className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
               <Compass size={18} className="text-[#76c983]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[0.84rem] leading-none`}>
+              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
                 Daily Topic
               </p>
-              <p className="mt-1 text-[0.82rem] leading-snug text-[#a8a9ad]">Think deeper</p>
+              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Think deeper</p>
             </button>
 
             <button
@@ -692,10 +692,10 @@ function DashboardScreen({
               className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
               <Globe size={18} className="text-[#6aa4ff]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[0.84rem] leading-none`}>
+              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
                 Visit Website
               </p>
-              <p className="mt-1 text-[0.82rem] leading-snug text-[#a8a9ad]">Learn more online</p>
+              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Learn more online</p>
             </button>
           </div>
         </section>
@@ -736,7 +736,7 @@ function DashboardScreen({
 
         <section className="mt-6">
           <div className="flex items-center justify-between">
-            <h2 className={`text-[1.42rem] leading-none tracking-[-0.01em] ${cormorantGaramond.className}`}>
+            <h2 className={`text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}>
               From the Blog
             </h2>
             <a href={ROUTES.BLOG} className="inline-flex items-center gap-1 text-[0.76rem] text-[#8f9096]">
