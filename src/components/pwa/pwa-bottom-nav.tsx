@@ -76,13 +76,13 @@ export function PwaBottomNav() {
   ];
 
   return (
-    <nav className="pwa-bottom-nav fixed inset-x-0 bottom-0 z-120 border-t border-white/12 bg-[#060709]/96 backdrop-blur-md">
-      <ul className="mx-auto grid h-18 max-w-96 grid-cols-4 items-end px-3 pb-[calc(0.4rem+env(safe-area-inset-bottom))] pt-2">
+    <nav className="pwa-bottom-nav fixed inset-x-4 bottom-[calc(0.45rem+env(safe-area-inset-bottom))] z-120 rounded-[1rem] border border-white/12 bg-[#060709]/95 shadow-[0_14px_36px_rgba(0,0,0,0.48)] backdrop-blur-md">
+      <ul className="mx-auto grid h-[4.35rem] max-w-[28rem] grid-cols-4 items-end px-2.5 pb-2 pt-2">
         {items.map((item) => (
           <li key={item.href} className="flex justify-center">
             <Link
               href={item.href}
-              className={`inline-flex w-full max-w-18 flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-1.5 transition-colors ${
+              className={`inline-flex w-full max-w-[5rem] flex-col items-center justify-center gap-0.5 rounded-[0.7rem] px-1.5 py-1.5 transition-colors ${
                 item.isActive
                   ? "text-[#ff5f69]"
                   : "text-white/52 hover:bg-white/6 hover:text-white/82"
@@ -90,7 +90,7 @@ export function PwaBottomNav() {
               aria-label={item.label}
             >
               <span>{item.icon}</span>
-              <span className="text-[0.7rem] font-medium tracking-[0.02em]">
+              <span className="text-[0.72rem] font-medium tracking-[0.01em]">
                 {item.label}
               </span>
             </Link>

@@ -148,11 +148,11 @@ html.pwa-standalone .pwa-standalone-only {
 }
 
 body.pwa-bottom-nav-active {
-  padding-bottom: calc(4.8rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
 }
 
 html.pwa-standalone .app-composer-dock {
-  padding-bottom: calc(4.6rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
@@ -169,11 +169,11 @@ html.pwa-standalone .app-composer-dock {
   }
 
   body.pwa-bottom-nav-active {
-    padding-bottom: calc(4.8rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
   }
 
   .app-composer-dock {
-    padding-bottom: calc(4.6rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
   }
 }
 

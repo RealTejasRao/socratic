@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import {
+  Clock3,
   BookOpen,
   ChevronRight,
   Compass,
@@ -17,6 +18,7 @@ import {
   ScrollText,
   SlidersHorizontal,
   Sparkles,
+  Sun,
   Swords,
 } from "lucide-react";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
@@ -146,6 +148,12 @@ function ModeIcon({ mode }: { mode: SessionMode }) {
   }
 
   return <MessageCircle size={34} className="text-[#ff6464]" />;
+}
+
+function modeArtwork(mode: SessionMode) {
+  if (mode === "DEBATE") return "/twa/intro/card2.webp";
+  if (mode === "ROLEPLAY") return "/twa/intro/card3.webp";
+  return "/twa/intro/card1.webp";
 }
 
 function IntroScreen() {
@@ -495,32 +503,39 @@ function DashboardScreen({
 
   return (
     <div className="pwa-standalone-only">
-      <main className="min-h-svh bg-[#020305] text-[#f2f0eb]">
-      <section className="mx-auto w-full max-w-115 px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-[calc(0.95rem+env(safe-area-inset-top))]">
+      <main
+        className={`min-h-svh bg-[radial-gradient(circle_at_50%_-15%,rgba(104,32,38,0.12),transparent_55%),#010205] text-[#f2f0eb] ${inter.className}`}
+      >
+      <section className="mx-auto w-full max-w-[29rem] px-4 pb-[calc(6.65rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
         <header className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-[3.2rem] leading-[0.88] tracking-[-0.04em] font-[Georgia,serif]">
+          <div className="pt-1">
+            <h1
+              className={`${instrumentSerif.className} text-[2.05rem] leading-[0.92] tracking-[-0.015em]`}
+            >
               Socratic AI
             </h1>
-            <p className="mt-1 text-[2rem] leading-none tracking-[-0.03em] text-[#8f8f93]">
-              Think Better.
+            <p className="mt-1 text-[0.82rem] leading-none tracking-[0.01em] text-[#84848a]">
+              Sharpen your thinking.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pt-1.5">
             <a
               href={isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING}
-              className="inline-flex h-11 items-center gap-1.5 rounded-full border border-[#43351f] bg-[#120d06] px-3.5 text-[0.94rem] text-[#e0bb57]"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#3d2d19] bg-[#0f0b06] px-3.5 text-[0.72rem] font-medium text-[#e3bb5d]"
             >
-              <PremiumCrownIcon className="h-6 w-6" crownClassName="h-[1em] w-[1em]" />
+              <PremiumCrownIcon
+                className="h-[1.15rem] w-[1.15rem]"
+                crownClassName="h-[1em] w-[1em]"
+              />
               Premium
             </a>
-            <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/[0.04]">
               <UserButton
                 appearance={{
                   elements: {
                     userButtonAvatarBox:
-                      "!h-9 !w-9 !border-0 !ring-0 !shadow-none",
+                      "!h-8 !w-8 !border-0 !ring-0 !shadow-none",
                   },
                 }}
               />
@@ -529,53 +544,74 @@ function DashboardScreen({
         </header>
 
         <div className="mt-7 flex items-center justify-between">
-          <h2 className="inline-flex items-center gap-2 text-[2.08rem] leading-none tracking-[-0.02em] font-[Georgia,serif]">
-            <Sparkles size={18} className="text-[#ff5f69]" />
+          <h2
+            className={`inline-flex items-center gap-2 text-[1.85rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}
+          >
+            <Sparkles size={17} className="text-[#f35f67]" />
             Continue
           </h2>
-          <a href={ROUTES.APP} className="text-[1.35rem] text-[#8f9096]">
-            View all
+          <a href={ROUTES.APP} className="inline-flex items-center gap-1 text-[0.82rem] text-[#8f9096]">
+            View all <ChevronRight size={14} />
           </a>
         </div>
 
-        <section className="mt-3 overflow-hidden rounded-3xl border border-[#4b2024] bg-[linear-gradient(130deg,#2d0e12_0%,#291319_45%,#160f15_100%)] p-4">
+        <section className="relative mt-3 overflow-hidden rounded-[1.35rem] border border-[#482126] bg-[linear-gradient(130deg,#2a0d11_0%,#271218_45%,#130d12_100%)] p-3.5">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_50%,rgba(120,18,28,0.26),transparent_60%)]" />
           {latestSession ? (
-            <div className="flex items-center gap-3">
-              <div className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-white/12 bg-black/24">
-                <ModeIcon mode={latestSession.mode} />
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="relative h-[5.2rem] w-[5.2rem] shrink-0 overflow-hidden rounded-full border border-white/10">
+                <Image
+                  src={resolveOptimizedCloudinaryPublicAsset(modeArtwork(latestSession.mode), {
+                    width: 320,
+                    crop: "fill",
+                    quality: "auto:good",
+                  })}
+                  alt={modeLabel(latestSession.mode)}
+                  fill
+                  sizes="120px"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/22" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[1.2rem] text-[#ff6167]">{modeLabel(latestSession.mode)}</p>
-                <h3 className="mt-0.5 truncate text-[2rem] leading-none tracking-[-0.024em] font-[Georgia,serif]">
+                <p className="text-[0.84rem] text-[#f06066]">{modeLabel(latestSession.mode)}</p>
+                <h3
+                  className={`${instrumentSerif.className} mt-0.5 truncate text-[1.06rem] leading-none tracking-[-0.015em]`}
+                >
                   {latestSession.title ?? "Untitled conversation"}
                 </h3>
-                <p className="mt-1 text-[1.2rem] text-[#c3c0be]">
-                  {truncatePreview(latestSession.firstUserMessage)}
+                <p className="mt-1 line-clamp-2 text-[0.76rem] leading-[1.45] text-[#c5c0be]">
+                  {truncatePreview(latestSession.firstUserMessage, 58)}
                 </p>
               </div>
               <a
                 href={`/app/${latestSession.id}`}
-                className="inline-flex h-11 shrink-0 items-center gap-1 rounded-2xl border border-[#b9373d] bg-[#b9373d] px-3 text-[1.3rem] text-white"
+                className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[1rem] border border-[#bf3d43] bg-[#bf3d43] px-3.5 text-[0.95rem] font-medium text-white"
               >
                 Resume
                 <ChevronRight size={16} />
               </a>
             </div>
           ) : (
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[1.2rem] text-[#ff6167]">Socratic Chat</p>
-                <h3 className="mt-1 text-[2rem] leading-none tracking-[-0.024em] font-[Georgia,serif]">
+            <div className="relative z-10 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[0.84rem] text-[#f06066]">Socratic Chat</p>
+                <h3
+                  className={`${instrumentSerif.className} mt-1 text-[1.06rem] leading-none tracking-[-0.015em]`}
+                >
                   Start a new thread
                 </h3>
-                <p className="mt-1 text-[1.2rem] text-[#c3c0be]">
+                <p className="mt-1 text-[0.76rem] text-[#c3c0be]">
                   Ask anything and keep your thinking moving.
                 </p>
+              </div>
+              <div className="inline-flex h-[4.6rem] w-[4.6rem] shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20">
+                <ModeIcon mode="SOCRATIC" />
               </div>
               <button
                 type="button"
                 onClick={() => openMode("socratic")}
-                className="inline-flex h-11 shrink-0 items-center gap-1 rounded-2xl border border-[#b9373d] bg-[#b9373d] px-3 text-[1.3rem] text-white"
+                className="inline-flex h-10 shrink-0 items-center gap-1 rounded-[1rem] border border-[#bf3d43] bg-[#bf3d43] px-3.5 text-[0.95rem] font-medium text-white"
               >
                 Open
                 <ChevronRight size={16} />
@@ -584,20 +620,22 @@ function DashboardScreen({
           )}
         </section>
 
-        <section className="relative mt-4 overflow-hidden rounded-3xl border border-[#2d2a23] bg-[linear-gradient(130deg,#090a0b_0%,#0f1012_50%,#0a0b0d_100%)] px-4 py-3.5">
-          <div className="relative z-10 max-w-71">
-            <p className="inline-flex items-center gap-1.5 text-[1.48rem] text-[#d7ac4f]">
-              <Sparkles size={16} />
+        <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#26221a] bg-[linear-gradient(125deg,#090a0b_0%,#111214_62%,#090a0b_100%)] px-4 py-3.5">
+          <div className="relative z-10 max-w-[66%]">
+            <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#d7ac4f]">
+              <Sun size={15} />
               Daily Thought
             </p>
-            <p className="mt-2 text-[2rem] leading-tight tracking-[-0.02em] font-[Georgia,serif]">
+            <p
+              className={`${instrumentSerif.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em]`}
+            >
               “{activeThought?.quote ?? "The unexamined life is not worth living."}”
             </p>
-            <p className="mt-2 text-[1.34rem] text-[#9a9a9d]">
+            <p className="mt-2 text-[0.78rem] text-[#9a9a9d]">
               — {activeThought?.philosopher ?? "Socrates"}
             </p>
           </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-[39%]">
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-[43%]">
             <Image
               src={resolveOptimizedCloudinaryPublicAsset(
                 "/twa/home/daily_thought_image.webp",
@@ -609,7 +647,7 @@ function DashboardScreen({
               )}
               alt="Philosopher portrait"
               fill
-              sizes="36vw"
+              sizes="42vw"
               className="object-cover object-right"
             />
             <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#090a0b]/40 to-[#090a0b]" />
@@ -617,7 +655,7 @@ function DashboardScreen({
         </section>
 
         <section className="mt-6">
-          <h2 className="text-[2.08rem] leading-none tracking-[-0.02em] font-[Georgia,serif]">
+          <h2 className={`text-[1.85rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}>
             Quick Actions
           </h2>
 
@@ -625,84 +663,84 @@ function DashboardScreen({
             <button
               type="button"
               onClick={() => openMode("socratic")}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 text-left"
+              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
-              <MessageCircle size={20} className="text-[#ff6267]" />
-              <p className="mt-2 text-[1.34rem] leading-none font-[Georgia,serif]">
+              <MessageCircle size={18} className="text-[#ff6267]" />
+              <p className={`${instrumentSerif.className} mt-2 text-[0.84rem] leading-none`}>
                 Socratic Chat
               </p>
-              <p className="mt-1 text-[1.08rem] text-[#a8a9ad]">Ask anything</p>
+              <p className="mt-1 text-[0.72rem] leading-snug text-[#a8a9ad]">Ask anything</p>
             </button>
 
             <button
               type="button"
               onClick={() => openMode("debate")}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 text-left"
+              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
-              <Swords size={20} className="text-[#ff5d66]" />
-              <p className="mt-2 text-[1.34rem] leading-none font-[Georgia,serif]">
+              <Swords size={18} className="text-[#ff5d66]" />
+              <p className={`${instrumentSerif.className} mt-2 text-[0.84rem] leading-none`}>
                 Debate
               </p>
-              <p className="mt-1 text-[1.08rem] text-[#a8a9ad]">Challenge ideas</p>
+              <p className="mt-1 text-[0.72rem] leading-snug text-[#a8a9ad]">Challenge ideas</p>
             </button>
 
             <button
               type="button"
               onClick={() => openMode("roleplay")}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 text-left"
+              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
-              <BookOpen size={20} className="text-[#d7ac4f]" />
-              <p className="mt-2 text-[1.34rem] leading-none font-[Georgia,serif]">
+              <BookOpen size={18} className="text-[#d7ac4f]" />
+              <p className={`${instrumentSerif.className} mt-2 text-[0.84rem] leading-none`}>
                 Philosophers
               </p>
-              <p className="mt-1 text-[1.08rem] text-[#a8a9ad]">Talk to thinkers</p>
+              <p className="mt-1 text-[0.72rem] leading-snug text-[#a8a9ad]">Talk to thinkers</p>
             </button>
 
             <button
               type="button"
               onClick={() => setShowToneModal(true)}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 text-left"
+              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
-              <SlidersHorizontal size={20} className="text-[#9a78f2]" />
-              <p className="mt-2 text-[1.34rem] leading-none font-[Georgia,serif]">
+              <SlidersHorizontal size={18} className="text-[#9a78f2]" />
+              <p className={`${instrumentSerif.className} mt-2 text-[0.84rem] leading-none`}>
                 Choose Tone
               </p>
-              <p className="mt-1 text-[1.08rem] text-[#a8a9ad]">{toneLabel}</p>
+              <p className="mt-1 line-clamp-2 text-[0.72rem] leading-snug text-[#a8a9ad]">{toneLabel}</p>
             </button>
 
             <button
               type="button"
               onClick={() => setShowTopicModal(true)}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 text-left"
+              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
-              <Compass size={20} className="text-[#76c983]" />
-              <p className="mt-2 text-[1.34rem] leading-none font-[Georgia,serif]">
+              <Compass size={18} className="text-[#76c983]" />
+              <p className={`${instrumentSerif.className} mt-2 text-[0.84rem] leading-none`}>
                 Daily Topic
               </p>
-              <p className="mt-1 text-[1.08rem] text-[#a8a9ad]">Think deeper</p>
+              <p className="mt-1 text-[0.72rem] leading-snug text-[#a8a9ad]">Think deeper</p>
             </button>
 
             <button
               type="button"
               onClick={() => window.open("https://usesocratic.com", "_blank", "noopener,noreferrer")}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-3 text-left"
+              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
             >
-              <Globe size={20} className="text-[#6aa4ff]" />
-              <p className="mt-2 text-[1.34rem] leading-none font-[Georgia,serif]">
+              <Globe size={18} className="text-[#6aa4ff]" />
+              <p className={`${instrumentSerif.className} mt-2 text-[0.84rem] leading-none`}>
                 Visit Website
               </p>
-              <p className="mt-1 text-[1.08rem] text-[#a8a9ad]">Learn more online</p>
+              <p className="mt-1 text-[0.72rem] leading-snug text-[#a8a9ad]">Learn more online</p>
             </button>
           </div>
         </section>
 
         <section className="mt-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-[2.08rem] leading-none tracking-[-0.02em] font-[Georgia,serif]">
+            <h2 className={`text-[1.85rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}>
               From the Blog
             </h2>
-            <a href={ROUTES.BLOG} className="text-[1.35rem] text-[#8f9096]">
-              View all
+            <a href={ROUTES.BLOG} className="inline-flex items-center gap-1 text-[0.82rem] text-[#8f9096]">
+              View all <ChevronRight size={14} />
             </a>
           </div>
 
@@ -711,7 +749,7 @@ function DashboardScreen({
               <a
                 key={post.slug}
                 href={`${ROUTES.BLOG}/${post.slug}`}
-                className="group relative h-52 w-50 shrink-0 snap-start overflow-hidden rounded-2xl border border-white/12"
+                className="group relative h-56 w-[15.5rem] shrink-0 snap-start overflow-hidden rounded-[1.15rem] border border-white/12"
               >
                 <Image
                   src={resolveOptimizedCloudinaryPublicAsset(post.coverImagePath, {
@@ -726,11 +764,16 @@ function DashboardScreen({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050607] via-[#050607]/42 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-3">
-                  <p className="text-[1.1rem] text-[#e4b255]">{post.category}</p>
-                  <h3 className="mt-1 text-[1.7rem] leading-[0.95] tracking-[-0.02em] font-[Georgia,serif]">
+                  <p className="text-[0.78rem] text-[#e4b255]">{post.category}</p>
+                  <h3
+                    className={`${instrumentSerif.className} mt-1 text-[1.02rem] leading-[1.2] tracking-[-0.01em]`}
+                  >
                     {post.title}
                   </h3>
-                  <p className="mt-1 text-[1.08rem] text-white/72">{post.readTimeLabel}</p>
+                  <p className="mt-1 inline-flex items-center gap-1 text-[0.76rem] text-white/72">
+                    <Clock3 size={13} />
+                    {post.readTimeLabel}
+                  </p>
                 </div>
               </a>
             ))}
@@ -745,28 +788,28 @@ function DashboardScreen({
           onClick={() => setShowToneModal(false)}
         >
           <div
-            className="w-full rounded-3xl border border-white/14 bg-[#0c0d10] p-4"
+            className="w-full rounded-[1.25rem] border border-white/14 bg-[#0c0d10] p-4"
             onClick={(event) => event.stopPropagation()}
           >
-            <h3 className="text-[2rem] leading-none tracking-[-0.02em] font-[Georgia,serif]">
+            <h3 className={`${instrumentSerif.className} text-[1.15rem] leading-none tracking-[-0.01em]`}>
               Choose Tone
             </h3>
-            <div className="mt-3 space-y-2.5">
+            <div className="mt-3 space-y-2">
               {TONE_OPTIONS.map((tone) => (
                 <button
                   key={tone.value}
                   type="button"
                   onClick={() => chooseTone(tone.value)}
-                  className={`w-full rounded-2xl border p-3 text-left ${
+                  className={`w-full rounded-[0.95rem] border p-3 text-left ${
                     selectedTone === tone.value
                       ? "border-[#af3238] bg-[#240f12]"
                       : "border-white/12 bg-white/[0.02]"
                   }`}
                 >
-                  <p className="text-[1.35rem] leading-none font-[Georgia,serif]">
+                  <p className={`${instrumentSerif.className} text-[0.92rem] leading-none`}>
                     {tone.label}
                   </p>
-                  <p className="mt-1 text-[1.08rem] text-white/62">{tone.subtitle}</p>
+                  <p className="mt-1 text-[0.76rem] text-white/62">{tone.subtitle}</p>
                 </button>
               ))}
             </div>
@@ -780,20 +823,20 @@ function DashboardScreen({
           onClick={() => setShowTopicModal(false)}
         >
           <div
-            className="w-full rounded-3xl border border-white/14 bg-[#0c0d10] p-4"
+            className="w-full rounded-[1.25rem] border border-white/14 bg-[#0c0d10] p-4"
             onClick={(event) => event.stopPropagation()}
           >
-            <h3 className="text-[2rem] leading-none tracking-[-0.02em] font-[Georgia,serif]">
+            <h3 className={`${instrumentSerif.className} text-[1.15rem] leading-none tracking-[-0.01em]`}>
               Daily Topic
             </h3>
-            <p className="mt-2 text-[1.24rem] leading-relaxed text-white/86">
+            <p className="mt-2 text-[0.88rem] leading-relaxed text-white/86">
               {activeTopic ?? "Topic unavailable right now."}
             </p>
             <button
               type="button"
               onClick={startDailyTopic}
               disabled={!activeTopic}
-              className="mt-4 inline-flex h-11 items-center justify-center rounded-xl border border-[#af3238] bg-[#af3238] px-4 text-[1.15rem] text-white disabled:opacity-55"
+              className="mt-4 inline-flex h-10 items-center justify-center rounded-[0.85rem] border border-[#af3238] bg-[#af3238] px-4 text-[0.82rem] font-medium text-white disabled:opacity-55"
             >
               Start Conversation
             </button>
@@ -807,19 +850,21 @@ function DashboardScreen({
           onClick={() => setShowUpgradeModal(false)}
         >
           <div
-            className="w-full max-w-96 rounded-3xl border border-[#d3b271] bg-[#16110a] p-5 text-[#f4e6c8]"
+            className="w-full max-w-[22rem] rounded-[1.25rem] border border-[#d3b271] bg-[#16110a] p-4 text-[#f4e6c8]"
             onClick={(event) => event.stopPropagation()}
           >
-            <h3 className="inline-flex items-center gap-2 text-[2.05rem] leading-none tracking-[-0.02em] font-[Georgia,serif]">
+            <h3
+              className={`inline-flex items-center gap-1.5 text-[1.18rem] leading-none tracking-[-0.01em] ${instrumentSerif.className}`}
+            >
               Go Unlimited
-              <PremiumCrownIcon className="h-8 w-8" crownClassName="h-[1em] w-[1em]" />
+              <PremiumCrownIcon className="h-5 w-5" crownClassName="h-[1em] w-[1em]" />
             </h3>
-            <p className="mt-2 text-[1.12rem] text-[#d7c5a0]">
+            <p className="mt-2 text-[0.82rem] text-[#d7c5a0]">
               This option is part of Socratic Plus.
             </p>
             <a
               href={ROUTES.PRICING}
-              className="mt-4 inline-flex h-11 items-center rounded-xl border border-[#d8bb81] bg-[#d8bb81] px-4 text-[1.1rem] text-[#1d1408]"
+              className="mt-4 inline-flex h-10 items-center rounded-[0.85rem] border border-[#d8bb81] bg-[#d8bb81] px-4 text-[0.82rem] font-medium text-[#1d1408]"
             >
               View Pricing
             </a>
