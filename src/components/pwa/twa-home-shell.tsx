@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
-import { useEffect, useMemo, useState } from "react";
+import { Inter, Public_Sans } from "next/font/google";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import {
@@ -24,7 +24,7 @@ import { getDailyIndex } from "@/src/lib/twa-daily";
 import { ROUTES } from "@/src/lib/routes";
 import type { SessionMode } from "@/src/types/chat";
 
-const cormorantGaramond = Cormorant_Garamond({
+const publicSans = Public_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -151,6 +151,8 @@ function ModeIcon({ mode }: { mode: SessionMode }) {
 }
 
 function IntroScreen() {
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<Array<HTMLElement | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -162,6 +164,43 @@ function IntroScreen() {
       window.clearInterval(id);
     };
   }, []);
+
+  useEffect(() => {
+    const activeCard = cardRefs.current[activeIndex];
+    if (!activeCard) {
+      return;
+    }
+
+    activeCard.scrollIntoView({
+      behavior: "smooth",
+      inline: "start",
+      block: "nearest",
+    });
+  }, [activeIndex]);
+
+  const syncActiveSlideToScroll = () => {
+    const slider = sliderRef.current;
+    if (!slider) {
+      return;
+    }
+
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    cardRefs.current.forEach((card, index) => {
+      if (!card) {
+        return;
+      }
+
+      const distance = Math.abs(card.offsetLeft - slider.scrollLeft);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    setActiveIndex((current) => (current === closestIndex ? current : closestIndex));
+  };
 
   return (
     <div className="pwa-standalone-only">
@@ -190,12 +229,12 @@ function IntroScreen() {
               <div className="relative min-h-52">
                 <div className="relative z-10 max-w-[12.25rem] pt-2">
                   <h1
-                    className={`${cormorantGaramond.className} text-[2.5rem] leading-[0.92] tracking-[-0.02em]`}
+                    className={`${publicSans.className} text-[2.35rem] leading-[0.92] tracking-[-0.025em] font-semibold`}
                   >
                     Socratic AI
                   </h1>
                   <p
-                    className={`${cormorantGaramond.className} mt-1.5 text-[1.04rem] leading-[1.16] tracking-[-0.005em]`}
+                    className={`${publicSans.className} mt-1.5 text-[1rem] leading-[1.16] tracking-[-0.005em] font-medium`}
                   >
                     Sharpen your <span className="text-[#d44b51]">thinking.</span>
                   </p>
@@ -221,17 +260,23 @@ function IntroScreen() {
                 </div>
               </div>
 
-              <div className="mt-2 overflow-hidden">
+              <div
+                ref={sliderRef}
+                onScroll={syncActiveSlideToScroll}
+                className="mt-2 flex snap-x snap-mandatory gap-3 overflow-x-auto pr-2"
+              >
                 <div
-                  className="flex transition-transform duration-500 ease-out"
-                  style={{ transform: `translateX(calc(-${activeIndex * 100}% + ${activeIndex * -0.7}rem))` }}
+                  className="contents"
                 >
                   {INTRO_CARDS.map((card) => {
                     const Icon = card.icon;
                     return (
                       <article
                         key={card.id}
-                        className="relative mr-3 min-h-[26.5rem] w-[88%] shrink-0 overflow-hidden rounded-3xl border border-white/20 bg-black"
+                        ref={(element) => {
+                          cardRefs.current[Number(card.id) - 1] = element;
+                        }}
+                        className="relative min-h-[24.25rem] w-[72%] shrink-0 snap-start overflow-hidden rounded-3xl border border-white/20 bg-black"
                       >
                         <div className="pointer-events-none absolute -right-[5%] top-0 h-[56%] w-[72%]">
                           <Image
@@ -243,25 +288,25 @@ function IntroScreen() {
                             alt={card.title}
                             fill
                             sizes="80vw"
-                            className="object-cover object-top opacity-[0.23]"
+                            className="object-cover object-top opacity-[0.3]"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-l from-black/30 via-black/72 to-black" />
-                          <div className="absolute inset-0 bg-gradient-to-b from-black/6 via-black/74 to-black" />
+                          <div className="absolute inset-0 bg-gradient-to-l from-black/22 via-black/60 to-black" />
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/67 to-black" />
                         </div>
 
-                        <div className="relative z-10 flex h-full flex-col p-5">
-                          <span className="text-[0.82rem] tracking-[0.08em] text-[#d84545]">
+                        <div className="relative z-10 flex h-full flex-col p-[1.125rem]">
+                          <span className="text-[0.78rem] tracking-[0.08em] text-[#d84545]">
                             {card.id}
                           </span>
-                          <div className="mt-7 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#8c1a22]/30 text-[#ff5a5a]">
-                            <Icon size={23} />
+                          <div className="mt-5 inline-flex h-[2.625rem] w-[2.625rem] items-center justify-center rounded-full bg-[#8c1a22]/30 text-[#ff5a5a]">
+                            <Icon size={20} />
                           </div>
                           <h3
-                            className={`${cormorantGaramond.className} mt-7 max-w-[13.4rem] text-[2.05rem] leading-[0.95] tracking-[-0.01em] text-white/95`}
+                            className={`${publicSans.className} mt-5 max-w-[10.8rem] text-[0.93rem] leading-[1.22] tracking-[-0.006em] font-semibold text-white/95`}
                           >
                             {card.title}
                           </h3>
-                          <h2 className="mt-6 max-w-[13.7rem] text-[0.74rem] leading-[1.72] text-white/62">
+                          <h2 className="mt-4 max-w-[10.9rem] text-[0.7rem] leading-[1.62] text-white/58">
                             {card.body}
                           </h2>
                         </div>
@@ -276,7 +321,15 @@ function IntroScreen() {
                   <button
                     key={card.id}
                     type="button"
-                    onClick={() => setActiveIndex(index)}
+                    onClick={() => {
+                      setActiveIndex(index);
+                      const targetCard = cardRefs.current[index];
+                      targetCard?.scrollIntoView({
+                        behavior: "smooth",
+                        inline: "start",
+                        block: "nearest",
+                      });
+                    }}
                     aria-label={`Go to slide ${index + 1}`}
                     className={`h-1.5 rounded-full transition-all ${
                       index === activeIndex ? "w-5 bg-[#df434d]" : "w-2 bg-white/28"
