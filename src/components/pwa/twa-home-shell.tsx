@@ -462,23 +462,17 @@ function DashboardScreen({
   return (
     <div className="pwa-standalone-only">
       <main
-        className={`relative min-h-svh overflow-hidden bg-[#05060a] text-[#f2f0eb] ${poppins.className}`}
+        className={`min-h-svh bg-black text-[#f2f0eb] ${poppins.className}`}
       >
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(87,104,193,0.15),transparent_28%),radial-gradient(circle_at_88%_9%,rgba(248,177,91,0.14),transparent_22%),linear-gradient(180deg,#070910_0%,#05060a_100%)]" />
-          <div className="absolute -left-14 top-34 h-42 w-42 rounded-full bg-[#7f62ff]/10 blur-3xl" />
-          <div className="absolute -right-10 top-18 h-36 w-36 rounded-full bg-[#f0a54f]/10 blur-3xl" />
-        </div>
-
-        <section className="relative mx-auto w-full max-w-116 px-4 pb-[calc(6.4rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
+        <section className="mx-auto w-full max-w-116 px-4 pb-[calc(6.4rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
           <header className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <Image
                 src="/brand/Logo_Light_SVG.svg"
                 alt="Socratic AI"
-                width={48}
-                height={48}
-                className="h-12 w-12 shrink-0 opacity-95"
+                width={56}
+                height={56}
+                className="h-14 w-14 shrink-0 opacity-95"
                 priority
               />
               <div className="min-w-0">
@@ -561,9 +555,9 @@ function DashboardScreen({
 
           <a
             href={sessionHref}
-            className="group relative mt-5 block overflow-hidden rounded-[1.45rem] border border-white/10 bg-[linear-gradient(140deg,rgba(18,20,28,0.96)_0%,rgba(9,10,16,0.98)_100%)] shadow-[0_22px_60px_rgba(0,0,0,0.32)]"
+            className="group relative mt-5 block overflow-hidden rounded-[1.45rem] border border-white/10 bg-[#0c0d12] shadow-[0_22px_60px_rgba(0,0,0,0.32)]"
           >
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-[44%]">
+            <div className="pointer-events-none absolute bottom-4 right-4 top-4 w-[29%] overflow-hidden rounded-[1rem]">
               <Image
                 src={resolveOptimizedCloudinaryPublicAsset(sessionArtwork, {
                   width: 820,
@@ -575,15 +569,13 @@ function DashboardScreen({
                 sizes="40vw"
                 className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,10,16,0.96)_0%,rgba(9,10,16,0.42)_40%,rgba(9,10,16,0.14)_100%)]" />
             </div>
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(118,145,255,0.12),transparent_28%)]" />
-            <div className="relative z-10 flex min-h-[9rem] items-end justify-between gap-3 p-4">
-              <div className="min-w-0 max-w-[64%]">
+            <div className="relative z-10 flex min-h-[9rem] justify-between gap-3 p-4">
+              <div className="min-w-0 max-w-[63%]">
                 <p className="text-[0.72rem] text-white/55">
                   Continue where you left off
                 </p>
-                <span className="mt-2 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[0.62rem] font-medium uppercase tracking-[0.16em] text-[#c3cae3]">
+                <span className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[0.62rem] font-medium uppercase tracking-[0.16em] text-[#c3cae3]">
                   {sessionMode}
                 </span>
                 <h3
@@ -592,7 +584,7 @@ function DashboardScreen({
                   {sessionTitle}
                 </h3>
               </div>
-              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/[0.05] text-white/88 backdrop-blur-sm transition group-active:scale-95">
+              <span className="inline-flex h-10 w-10 shrink-0 self-center items-center justify-center rounded-full border border-white/12 bg-white/[0.05] text-white/88 backdrop-blur-sm transition group-active:scale-95">
                 <ChevronRight size={17} />
               </span>
             </div>
