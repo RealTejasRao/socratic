@@ -3,7 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
-import { Cormorant_Garamond, Instrument_Serif, Inter } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Instrument_Serif,
+  Inter,
+  Poppins,
+} from "next/font/google";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -17,7 +22,6 @@ import {
   MessagesSquare,
   ScrollText,
   SlidersHorizontal,
-  Sparkles,
   Sun,
   Swords,
 } from "lucide-react";
@@ -34,6 +38,11 @@ const cormorantGaramond = Cormorant_Garamond({
 });
 
 const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
@@ -123,35 +132,10 @@ const TONE_OPTIONS = [
 type ToneValue = (typeof TONE_OPTIONS)[number]["value"];
 const ABOUT_BLOG_HREF = "/blog/what-is-socratic-ai" as Route;
 
-function truncatePreview(value: string | null, max = 80) {
-  if (!value) {
-    return "Continue your last line of thinking.";
-  }
-
-  const trimmed = value.replace(/\s+/g, " ").trim();
-  if (trimmed.length <= max) {
-    return trimmed;
-  }
-
-  return `${trimmed.slice(0, max - 1).trimEnd()}...`;
-}
-
 function modeLabel(mode: SessionMode) {
-  if (mode === "DEBATE") return "Debate Mode";
-  if (mode === "ROLEPLAY") return "Roleplay Mode";
-  return "Socratic Chat";
-}
-
-function ModeIcon({ mode }: { mode: SessionMode }) {
-  if (mode === "DEBATE") {
-    return <Swords size={34} className="text-[#e24b4b]" />;
-  }
-
-  if (mode === "ROLEPLAY") {
-    return <ScrollText size={34} className="text-[#d2a33b]" />;
-  }
-
-  return <MessageCircle size={34} className="text-[#ff6464]" />;
+  if (mode === "DEBATE") return "Debate";
+  if (mode === "ROLEPLAY") return "Role Play";
+  return "Socratic";
 }
 
 function IntroScreen() {
@@ -203,12 +187,16 @@ function IntroScreen() {
       }
     });
 
-    setActiveIndex((current) => (current === closestIndex ? current : closestIndex));
+    setActiveIndex((current) =>
+      current === closestIndex ? current : closestIndex,
+    );
   };
 
   return (
     <div className="pwa-standalone-only">
-      <main className={`relative h-svh overflow-hidden bg-black text-white ${inter.className}`}>
+      <main
+        className={`relative h-svh overflow-hidden bg-black text-white ${inter.className}`}
+      >
         <section className="relative z-10 h-full px-4 pt-[calc(0.7rem+env(safe-area-inset-top))]">
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between">
@@ -240,7 +228,8 @@ function IntroScreen() {
                   <p
                     className={`${instrumentSerif.className} mt-1.5 text-[1.02rem] leading-[1.16] tracking-[-0.005em]`}
                   >
-                    Sharpen your <span className="text-[#d44b51]">thinking.</span>
+                    Sharpen your{" "}
+                    <span className="text-[#d44b51]">thinking.</span>
                   </p>
                   <p className="mt-2.5 max-w-48 text-[0.84rem] leading-[1.62] text-white/62">
                     Your AI companion for deeper conversations, debates, and
@@ -269,9 +258,7 @@ function IntroScreen() {
                 onScroll={syncActiveSlideToScroll}
                 className="mt-2 flex snap-x snap-mandatory gap-3 overflow-x-auto pr-2"
               >
-                <div
-                  className="contents"
-                >
+                <div className="contents">
                   {INTRO_CARDS.map((card) => {
                     const Icon = card.icon;
                     return (
@@ -280,29 +267,32 @@ function IntroScreen() {
                         ref={(element) => {
                           cardRefs.current[Number(card.id) - 1] = element;
                         }}
-                        className="relative min-h-[24.25rem] w-[72%] shrink-0 snap-start overflow-hidden rounded-3xl border border-white/20 bg-black"
+                        className="relative min-h-97 w-[72%] shrink-0 snap-start overflow-hidden rounded-3xl border border-white/20 bg-black"
                       >
                         <div className="pointer-events-none absolute -right-[5%] top-0 h-[56%] w-[72%]">
                           <Image
-                            src={resolveOptimizedCloudinaryPublicAsset(card.image, {
-                              width: 960,
-                              crop: "fill",
-                              quality: "auto:good",
-                            })}
+                            src={resolveOptimizedCloudinaryPublicAsset(
+                              card.image,
+                              {
+                                width: 960,
+                                crop: "fill",
+                                quality: "auto:good",
+                              },
+                            )}
                             alt={card.title}
                             fill
                             sizes="80vw"
                             className="object-cover object-top opacity-[0.3]"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-l from-black/22 via-black/60 to-black" />
-                          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/67 to-black" />
+                          <div className="absolute inset-0 bg-linear-to-l from-black/22 via-black/60 to-black" />
+                          <div className="absolute inset-0 bg-linear-to-b from-black/5 via-black/67 to-black" />
                         </div>
 
-                        <div className="relative z-10 flex h-full flex-col p-[1.125rem]">
+                        <div className="relative z-10 flex h-full flex-col p-4.5">
                           <span className="text-[0.78rem] tracking-[0.08em] text-[#d84545]">
                             {card.id}
                           </span>
-                          <div className="mt-5 inline-flex h-[2.625rem] w-[2.625rem] items-center justify-center rounded-full bg-[#8c1a22]/30 text-[#ff5a5a]">
+                          <div className="mt-5 inline-flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#8c1a22]/30 text-[#ff5a5a]">
                             <Icon size={20} />
                           </div>
                           <h3
@@ -336,7 +326,9 @@ function IntroScreen() {
                     }}
                     aria-label={`Go to slide ${index + 1}`}
                     className={`h-1.5 rounded-full transition-all ${
-                      index === activeIndex ? "w-5 bg-[#df434d]" : "w-2 bg-white/28"
+                      index === activeIndex
+                        ? "w-5 bg-[#df434d]"
+                        : "w-2 bg-white/28"
                     }`}
                   />
                 ))}
@@ -501,376 +493,413 @@ function DashboardScreen({
 
   return (
     <div className="pwa-standalone-only">
-      <main
-        className={`min-h-svh bg-black text-[#f2f0eb] ${inter.className}`}
-      >
-      <section className="mx-auto w-full max-w-[29rem] px-4 pb-[calc(6.65rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
-        <header className="flex items-start justify-between gap-3">
-          <div className="pt-1">
-            <h1
-              className={`${cormorantGaramond.className} text-[2.05rem] leading-[0.92] tracking-[-0.015em]`}
-            >
-              Socratic AI
-            </h1>
-            <p className="mt-1 text-[0.82rem] leading-none tracking-[0.01em] text-[#84848a]">
-              Sharpen your thinking.
-            </p>
-          </div>
+      <main className={`min-h-svh bg-black text-[#f2f0eb] ${poppins.className}`}>
+        <section className="mx-auto w-full max-w-116 px-4 pb-[calc(6.65rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
+          <header className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <Image
+                src="/brand/Logo_Light_SVG.svg"
+                alt="Socratic AI"
+                width={42}
+                height={42}
+                className="h-10.5 w-10.5 shrink-0 opacity-95"
+                priority
+              />
+              <div className="min-w-0">
+                <h1
+                  className={`${inter.className} text-[1.72rem] font-semibold leading-none tracking-[-0.03em] text-white`}
+                >
+                  Socratic AI
+                </h1>
+                <p className="mt-1 text-[0.76rem] font-medium tracking-[0.01em] text-[#8f9097]">
+                  Think Better.
+                </p>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-2 pt-1.5">
+            <div className="flex items-center gap-2">
+              <a
+                href={isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING}
+                aria-label="Premium"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/4 text-[#e3bb5d]"
+              >
+                <PremiumCrownIcon
+                  className="h-9 w-9"
+                  crownClassName="h-[1em] w-[1em]"
+                />
+              </a>
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/4">
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox:
+                        "!h-9 !w-9 !border-0 !ring-0 !shadow-none",
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          </header>
+
+          <div className="mt-6 flex justify-end">
             <a
-              href={isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING}
-              aria-label="Premium"
-              className="inline-flex h-8 w-8 items-center justify-center text-[#e3bb5d]"
+              href={ROUTES.APP}
+              className="inline-flex items-center gap-1 text-[0.75rem] font-medium text-[#8f9096]"
             >
-              <PremiumCrownIcon
-                className="h-[1.35rem] w-[1.35rem]"
-                crownClassName="h-[1em] w-[1em]"
-              />
-            </a>
-            <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/[0.04]">
-              <UserButton
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox:
-                      "!h-8 !w-8 !border-0 !ring-0 !shadow-none",
-                  },
-                }}
-              />
-            </div>
-          </div>
-        </header>
-
-        <div className="mt-7 flex items-center justify-between">
-          <h2
-            className={`inline-flex items-center gap-2 text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}
-          >
-            <Sparkles size={17} className="text-[#f35f67]" />
-            Continue
-          </h2>
-          <a href={ROUTES.APP} className="inline-flex items-center gap-1 text-[0.76rem] text-[#8f9096]">
-            View all <ChevronRight size={14} />
-          </a>
-        </div>
-
-        <section className="relative mt-3 overflow-hidden rounded-[1.35rem] border border-[#242933] bg-[linear-gradient(135deg,#0e1117_0%,#121723_48%,#0b0f16_100%)] p-4">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,rgba(67,92,142,0.24),transparent_58%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_88%,rgba(79,55,110,0.2),transparent_60%)]" />
-          {latestSession ? (
-            <div className="relative z-10 flex min-h-[12.6rem] items-stretch gap-4">
-              <div className="min-w-0 flex-1 py-1">
-                <p
-                  className={`text-[#9eb6db] ${
-                    latestSession.mode === "DEBATE"
-                      ? "text-[1rem] font-semibold"
-                      : "text-[0.84rem] font-medium"
-                  }`}
-                >
-                  {modeLabel(latestSession.mode)}
-                </p>
-                <h3
-                  className={`${cormorantGaramond.className} mt-1.5 text-[1.2rem] leading-[1.2] tracking-[-0.01em] text-white`}
-                >
-                  {latestSession.title ?? "Untitled conversation"}
-                </h3>
-                <p className="mt-3 line-clamp-2 text-[0.82rem] leading-[1.5] text-[#bac3d2]">
-                  {truncatePreview(latestSession.firstUserMessage, 76)}
-                </p>
-              </div>
-              <div className="flex w-[5.4rem] shrink-0 flex-col items-center justify-between py-1">
-                <div className="inline-flex h-[4.4rem] w-[4.4rem] items-center justify-center rounded-full border border-[#2d3a4f] bg-[#131b2a]">
-                  <ModeIcon mode={latestSession.mode} />
-                </div>
-                <a
-                  href={`/app/${latestSession.id}`}
-                  className="inline-flex h-8 w-full items-center justify-center gap-1 rounded-[0.85rem] border border-[#355371] bg-[#1f3a55] px-2 text-[0.76rem] font-medium text-[#e8f1ff]"
-                >
-                  Resume
-                  <ChevronRight size={13} />
-                </a>
-              </div>
-            </div>
-          ) : (
-            <div className="relative z-10 flex min-h-[12.6rem] items-stretch justify-between gap-4">
-              <div className="min-w-0 flex-1 py-1">
-                <p className="text-[0.84rem] font-medium text-[#9eb6db]">Socratic Chat</p>
-                <h3
-                  className={`${cormorantGaramond.className} mt-1.5 text-[1.2rem] leading-[1.2] tracking-[-0.01em] text-white`}
-                >
-                  Start a new thread
-                </h3>
-                <p className="mt-3 text-[0.82rem] leading-[1.5] text-[#bac3d2]">
-                  Ask anything and keep your thinking moving.
-                </p>
-              </div>
-              <div className="flex w-[5.4rem] shrink-0 flex-col items-center justify-between py-1">
-                <div className="inline-flex h-[4.4rem] w-[4.4rem] items-center justify-center rounded-full border border-[#2d3a4f] bg-[#131b2a]">
-                  <ModeIcon mode="SOCRATIC" />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => openMode("socratic")}
-                  className="inline-flex h-8 w-full items-center justify-center gap-1 rounded-[0.85rem] border border-[#355371] bg-[#1f3a55] px-2 text-[0.76rem] font-medium text-[#e8f1ff]"
-                >
-                  Open
-                  <ChevronRight size={13} />
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="mt-6">
-          <h2 className={`text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}>
-            Quick Actions
-          </h2>
-
-          <div className="mt-3 grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={() => openMode("socratic")}
-              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
-            >
-              <MessageCircle size={18} className="text-[#ff6267]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
-                Socratic Chat
-              </p>
-              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Ask anything</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => openMode("debate")}
-              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
-            >
-              <Swords size={18} className="text-[#ff5d66]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
-                Debate
-              </p>
-              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Challenge ideas</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => openMode("roleplay")}
-              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
-            >
-              <BookOpen size={18} className="text-[#d7ac4f]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
-                Philosophers
-              </p>
-              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Talk to thinkers</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowToneModal(true)}
-              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
-            >
-              <SlidersHorizontal size={18} className="text-[#9a78f2]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
-                Choose Tone
-              </p>
-              <p className="mt-1 line-clamp-2 text-[0.75rem] leading-snug text-[#a8a9ad]">{toneLabel}</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowTopicModal(true)}
-              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
-            >
-              <Compass size={18} className="text-[#76c983]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
-                Daily Topic
-              </p>
-              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Think deeper</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => window.open("https://usesocratic.com", "_blank", "noopener,noreferrer")}
-              className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
-            >
-              <Globe size={18} className="text-[#6aa4ff]" />
-              <p className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}>
-                Visit Website
-              </p>
-              <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">Learn more online</p>
-            </button>
-          </div>
-        </section>
-
-        <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#272b33] bg-[linear-gradient(125deg,#11141a_0%,#171c25_62%,#12161d_100%)] px-4 py-3.5">
-          <div className="relative z-10 max-w-[66%]">
-            <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#baa26d]">
-              <Sun size={15} />
-              Daily Thought
-            </p>
-            <p
-              className={`${cormorantGaramond.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em] text-[#f1f2f5]`}
-            >
-              “{activeThought?.quote ?? "The unexamined life is not worth living."}”
-            </p>
-            <p className="mt-2 text-[0.78rem] text-[#a9adb7]">
-              — {activeThought?.philosopher ?? "Socrates"}
-            </p>
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-[43%]">
-            <Image
-              src={resolveOptimizedCloudinaryPublicAsset(
-                "/twa/home/daily_thought_image.webp",
-                {
-                  width: 760,
-                  crop: "fill",
-                  quality: "auto:good",
-                },
-              )}
-              alt="Philosopher portrait"
-              fill
-              sizes="42vw"
-              className="object-cover object-right"
-            />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#151a21]/55 to-[#12161d]" />
-          </div>
-        </section>
-
-        <section className="mt-6">
-          <div className="flex items-center justify-between">
-            <h2 className={`text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}>
-              From the Blog
-            </h2>
-            <a href={ROUTES.BLOG} className="inline-flex items-center gap-1 text-[0.76rem] text-[#8f9096]">
               View all <ChevronRight size={14} />
             </a>
           </div>
 
-          <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
-            {blogPosts.map((post) => (
-              <a
-                key={post.slug}
-                href={`${ROUTES.BLOG}/${post.slug}`}
-                className="group relative h-56 w-[15.5rem] shrink-0 snap-start overflow-hidden rounded-[1.15rem] border border-white/12"
+          <section className="relative mt-2.5 overflow-hidden rounded-[1.15rem] border border-white/8 bg-[linear-gradient(180deg,rgba(18,22,29,0.98)_0%,rgba(12,15,20,0.98)_100%)] px-3.5 py-3.5">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(55,76,118,0.18),transparent_42%)]" />
+            {latestSession ? (
+              <div className="relative z-10 flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[0.64rem] font-medium uppercase tracking-[0.16em] text-[#8f9ab0]">
+                    {modeLabel(latestSession.mode)}
+                  </p>
+                  <h3
+                    className={`${inter.className} mt-1 truncate text-[0.98rem] font-medium leading-tight tracking-[-0.02em] text-white`}
+                  >
+                    {latestSession.title ?? "Untitled conversation"}
+                  </h3>
+                </div>
+                <a
+                  href={`/app/${latestSession.id}`}
+                  className="inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-[#314765] bg-[#1c3148] px-3.5 text-[0.74rem] font-medium text-[#edf4ff]"
+                >
+                  Resume
+                </a>
+              </div>
+            ) : (
+              <div className="relative z-10 flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[0.64rem] font-medium uppercase tracking-[0.16em] text-[#8f9ab0]">
+                    Socratic
+                  </p>
+                  <h3
+                    className={`${inter.className} mt-1 truncate text-[0.98rem] font-medium leading-tight tracking-[-0.02em] text-white`}
+                  >
+                    Start a new thread
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openMode("socratic")}
+                  className="inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-[#314765] bg-[#1c3148] px-3.5 text-[0.74rem] font-medium text-[#edf4ff]"
+                >
+                  Start
+                </button>
+              </div>
+            )}
+          </section>
+
+          <section className="mt-6">
+            <h2
+              className={`text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}
+            >
+              Quick Actions
+            </h2>
+
+            <div className="mt-3 grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={() => openMode("socratic")}
+                className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
               >
-                <Image
-                  src={resolveOptimizedCloudinaryPublicAsset(post.coverImagePath, {
-                    width: 720,
+                <MessageCircle size={18} className="text-[#ff6267]" />
+                <p
+                  className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}
+                >
+                  Socratic Chat
+                </p>
+                <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">
+                  Ask anything
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => openMode("debate")}
+                className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
+              >
+                <Swords size={18} className="text-[#ff5d66]" />
+                <p
+                  className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}
+                >
+                  Debate
+                </p>
+                <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">
+                  Challenge ideas
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => openMode("roleplay")}
+                className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
+              >
+                <BookOpen size={18} className="text-[#d7ac4f]" />
+                <p
+                  className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}
+                >
+                  Philosophers
+                </p>
+                <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">
+                  Talk to thinkers
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowToneModal(true)}
+                className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
+              >
+                <SlidersHorizontal size={18} className="text-[#9a78f2]" />
+                <p
+                  className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}
+                >
+                  Choose Tone
+                </p>
+                <p className="mt-1 line-clamp-2 text-[0.75rem] leading-snug text-[#a8a9ad]">
+                  {toneLabel}
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowTopicModal(true)}
+                className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
+              >
+                <Compass size={18} className="text-[#76c983]" />
+                <p
+                  className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}
+                >
+                  Daily Topic
+                </p>
+                <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">
+                  Think deeper
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  window.open(
+                    "https://usesocratic.com",
+                    "_blank",
+                    "noopener,noreferrer",
+                  )
+                }
+                className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(140deg,rgba(255,255,255,0.05),rgba(255,255,255,0.01))] p-3 text-left"
+              >
+                <Globe size={18} className="text-[#6aa4ff]" />
+                <p
+                  className={`${cormorantGaramond.className} mt-2 text-[1.02rem] leading-none`}
+                >
+                  Visit Website
+                </p>
+                <p className="mt-1 text-[0.75rem] leading-snug text-[#a8a9ad]">
+                  Learn more online
+                </p>
+              </button>
+            </div>
+          </section>
+
+          <section className="relative mt-4 overflow-hidden rounded-[1.35rem] border border-[#272b33] bg-[linear-gradient(125deg,#11141a_0%,#171c25_62%,#12161d_100%)] px-4 py-3.5">
+            <div className="relative z-10 max-w-[66%]">
+              <p className="inline-flex items-center gap-1.5 text-[0.84rem] text-[#baa26d]">
+                <Sun size={15} />
+                Daily Thought
+              </p>
+              <p
+                className={`${cormorantGaramond.className} mt-2 text-[1.12rem] leading-[1.38] tracking-[-0.01em] text-[#f1f2f5]`}
+              >
+                “
+                {activeThought?.quote ??
+                  "The unexamined life is not worth living."}
+                ”
+              </p>
+              <p className="mt-2 text-[0.78rem] text-[#a9adb7]">
+                — {activeThought?.philosopher ?? "Socrates"}
+              </p>
+            </div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-[43%]">
+              <Image
+                src={resolveOptimizedCloudinaryPublicAsset(
+                  "/twa/home/daily_thought_image.webp",
+                  {
+                    width: 760,
                     crop: "fill",
                     quality: "auto:good",
-                  })}
-                  alt={post.title}
-                  fill
-                  sizes="42vw"
-                  className="object-cover transition-transform duration-400 group-hover:scale-[1.03]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050607] via-[#050607]/42 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-3">
-                  <p className="text-[0.78rem] text-[#e4b255]">{post.category}</p>
-                  <h3
-                    className={`${cormorantGaramond.className} mt-1 text-[1.02rem] leading-[1.2] tracking-[-0.01em]`}
-                  >
-                    {post.title}
-                  </h3>
-                  <p className="mt-1 inline-flex items-center gap-1 text-[0.76rem] text-white/72">
-                    <Clock3 size={13} />
-                    {post.readTimeLabel}
-                  </p>
-                </div>
+                  },
+                )}
+                alt="Philosopher portrait"
+                fill
+                sizes="42vw"
+                className="object-cover object-right"
+              />
+              <div className="absolute inset-0 bg-linear-to-l from-transparent via-[#151a21]/55 to-[#12161d]" />
+            </div>
+          </section>
+
+          <section className="mt-6">
+            <div className="flex items-center justify-between">
+              <h2
+                className={`text-[1.42rem] leading-none tracking-[-0.01em] ${inter.className}`}
+              >
+                From the Blog
+              </h2>
+              <a
+                href={ROUTES.BLOG}
+                className="inline-flex items-center gap-1 text-[0.76rem] text-[#8f9096]"
+              >
+                View all <ChevronRight size={14} />
               </a>
-            ))}
-          </div>
-        </section>
+            </div>
 
-      </section>
-
-      {showToneModal ? (
-        <div
-          className="fixed inset-0 z-[1000] flex items-end bg-black/60 p-3"
-          onClick={() => setShowToneModal(false)}
-        >
-          <div
-            className="w-full rounded-[1.25rem] border border-white/14 bg-[#0c0d10] p-4"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <h3 className={`${cormorantGaramond.className} text-[1.15rem] leading-none tracking-[-0.01em]`}>
-              Choose Tone
-            </h3>
-            <div className="mt-3 space-y-2">
-              {TONE_OPTIONS.map((tone) => (
-                <button
-                  key={tone.value}
-                  type="button"
-                  onClick={() => chooseTone(tone.value)}
-                  className={`w-full rounded-[0.95rem] border p-3 text-left ${
-                    selectedTone === tone.value
-                      ? "border-[#af3238] bg-[#240f12]"
-                      : "border-white/12 bg-white/[0.02]"
-                  }`}
+            <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+              {blogPosts.map((post) => (
+                <a
+                  key={post.slug}
+                  href={`${ROUTES.BLOG}/${post.slug}`}
+                  className="group relative h-56 w-62 shrink-0 snap-start overflow-hidden rounded-[1.15rem] border border-white/12"
                 >
-                  <p className={`${cormorantGaramond.className} text-[0.92rem] leading-none`}>
-                    {tone.label}
-                  </p>
-                  <p className="mt-1 text-[0.76rem] text-white/62">{tone.subtitle}</p>
-                </button>
+                  <Image
+                    src={resolveOptimizedCloudinaryPublicAsset(
+                      post.coverImagePath,
+                      {
+                        width: 720,
+                        crop: "fill",
+                        quality: "auto:good",
+                      },
+                    )}
+                    alt={post.title}
+                    fill
+                    sizes="42vw"
+                    className="object-cover transition-transform duration-400 group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-[#050607] via-[#050607]/42 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-3">
+                    <p className="text-[0.78rem] text-[#e4b255]">
+                      {post.category}
+                    </p>
+                    <h3
+                      className={`${cormorantGaramond.className} mt-1 text-[1.02rem] leading-[1.2] tracking-[-0.01em]`}
+                    >
+                      {post.title}
+                    </h3>
+                    <p className="mt-1 inline-flex items-center gap-1 text-[0.76rem] text-white/72">
+                      <Clock3 size={13} />
+                      {post.readTimeLabel}
+                    </p>
+                  </div>
+                </a>
               ))}
             </div>
-          </div>
-        </div>
-      ) : null}
+          </section>
+        </section>
 
-      {showTopicModal ? (
-        <div
-          className="fixed inset-0 z-[1000] flex items-end bg-black/60 p-3"
-          onClick={() => setShowTopicModal(false)}
-        >
+        {showToneModal ? (
           <div
-            className="w-full rounded-[1.25rem] border border-white/14 bg-[#0c0d10] p-4"
-            onClick={(event) => event.stopPropagation()}
+            className="fixed inset-0 z-1000 flex items-end bg-black/60 p-3"
+            onClick={() => setShowToneModal(false)}
           >
-            <h3 className={`${cormorantGaramond.className} text-[1.15rem] leading-none tracking-[-0.01em]`}>
-              Daily Topic
-            </h3>
-            <p className="mt-2 text-[0.88rem] leading-relaxed text-white/86">
-              {activeTopic ?? "Topic unavailable right now."}
-            </p>
-            <button
-              type="button"
-              onClick={startDailyTopic}
-              disabled={!activeTopic}
-              className="mt-4 inline-flex h-10 items-center justify-center rounded-[0.85rem] border border-[#af3238] bg-[#af3238] px-4 text-[0.82rem] font-medium text-white disabled:opacity-55"
+            <div
+              className="w-full rounded-[1.25rem] border border-white/14 bg-[#0c0d10] p-4"
+              onClick={(event) => event.stopPropagation()}
             >
-              Start Conversation
-            </button>
+              <h3
+                className={`${cormorantGaramond.className} text-[1.15rem] leading-none tracking-[-0.01em]`}
+              >
+                Choose Tone
+              </h3>
+              <div className="mt-3 space-y-2">
+                {TONE_OPTIONS.map((tone) => (
+                  <button
+                    key={tone.value}
+                    type="button"
+                    onClick={() => chooseTone(tone.value)}
+                    className={`w-full rounded-[0.95rem] border p-3 text-left ${
+                      selectedTone === tone.value
+                        ? "border-[#af3238] bg-[#240f12]"
+                        : "border-white/12 bg-white/2"
+                    }`}
+                  >
+                    <p
+                      className={`${cormorantGaramond.className} text-[0.92rem] leading-none`}
+                    >
+                      {tone.label}
+                    </p>
+                    <p className="mt-1 text-[0.76rem] text-white/62">
+                      {tone.subtitle}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      {showUpgradeModal ? (
-        <div
-          className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/62 px-4"
-          onClick={() => setShowUpgradeModal(false)}
-        >
+        {showTopicModal ? (
           <div
-            className="w-full max-w-[22rem] rounded-[1.25rem] border border-[#d3b271] bg-[#16110a] p-4 text-[#f4e6c8]"
-            onClick={(event) => event.stopPropagation()}
+            className="fixed inset-0 z-1000 flex items-end bg-black/60 p-3"
+            onClick={() => setShowTopicModal(false)}
           >
-            <h3
-              className={`inline-flex items-center gap-1.5 text-[1.18rem] leading-none tracking-[-0.01em] ${cormorantGaramond.className}`}
+            <div
+              className="w-full rounded-[1.25rem] border border-white/14 bg-[#0c0d10] p-4"
+              onClick={(event) => event.stopPropagation()}
             >
-              Go Unlimited
-              <PremiumCrownIcon className="h-5 w-5" crownClassName="h-[1em] w-[1em]" />
-            </h3>
-            <p className="mt-2 text-[0.82rem] text-[#d7c5a0]">
-              This option is part of Socratic Plus.
-            </p>
-            <a
-              href={ROUTES.PRICING}
-              className="mt-4 inline-flex h-10 items-center rounded-[0.85rem] border border-[#d8bb81] bg-[#d8bb81] px-4 text-[0.82rem] font-medium text-[#1d1408]"
-            >
-              View Pricing
-            </a>
+              <h3
+                className={`${cormorantGaramond.className} text-[1.15rem] leading-none tracking-[-0.01em]`}
+              >
+                Daily Topic
+              </h3>
+              <p className="mt-2 text-[0.88rem] leading-relaxed text-white/86">
+                {activeTopic ?? "Topic unavailable right now."}
+              </p>
+              <button
+                type="button"
+                onClick={startDailyTopic}
+                disabled={!activeTopic}
+                className="mt-4 inline-flex h-10 items-center justify-center rounded-[0.85rem] border border-[#af3238] bg-[#af3238] px-4 text-[0.82rem] font-medium text-white disabled:opacity-55"
+              >
+                Start Conversation
+              </button>
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+
+        {showUpgradeModal ? (
+          <div
+            className="fixed inset-0 z-1100 flex items-center justify-center bg-black/62 px-4"
+            onClick={() => setShowUpgradeModal(false)}
+          >
+            <div
+              className="w-full max-w-88 rounded-[1.25rem] border border-[#d3b271] bg-[#16110a] p-4 text-[#f4e6c8]"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <h3
+                className={`inline-flex items-center gap-1.5 text-[1.18rem] leading-none tracking-[-0.01em] ${cormorantGaramond.className}`}
+              >
+                Go Unlimited
+                <PremiumCrownIcon
+                  className="h-5 w-5"
+                  crownClassName="h-[1em] w-[1em]"
+                />
+              </h3>
+              <p className="mt-2 text-[0.82rem] text-[#d7c5a0]">
+                This option is part of Socratic Plus.
+              </p>
+              <a
+                href={ROUTES.PRICING}
+                className="mt-4 inline-flex h-10 items-center rounded-[0.85rem] border border-[#d8bb81] bg-[#d8bb81] px-4 text-[0.82rem] font-medium text-[#1d1408]"
+              >
+                View Pricing
+              </a>
+            </div>
+          </div>
+        ) : null}
       </main>
     </div>
   );
