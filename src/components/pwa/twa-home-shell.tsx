@@ -3,14 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Cormorant_Garamond, Poppins } from "next/font/google";
+import { Instrument_Serif, Poppins } from "next/font/google";
 import { useEffect } from "react";
 import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { ROUTES } from "@/src/lib/routes";
 
-const cormorantGaramond = Cormorant_Garamond({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: "400",
 });
 
 const poppins = Poppins({
@@ -41,7 +41,12 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
       <main
         className={`min-h-svh bg-[#1e1d1b] px-4 py-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] text-[#f6efe5] ${poppins.className}`}
       >
-        <div className="mx-auto flex min-h-[calc(100svh-2rem)] w-full max-w-[30rem] items-center justify-center">
+        <div className="mx-auto flex min-h-[calc(100svh-2rem)] w-full max-w-[30rem] flex-col items-start justify-center">
+          <p
+            className={`${instrumentSerif.className} mb-4 text-[2.15rem] leading-none tracking-[-0.04em] text-[#fbf4eb]`}
+          >
+            Get started
+          </p>
           <section className="intro-shell-card relative w-full overflow-hidden rounded-[2rem] border border-white/8 bg-[#12110f] shadow-[0_24px_70px_rgba(0,0,0,0.42)]">
             <div className="relative aspect-[7/12] min-h-[38rem] w-full sm:min-h-[46rem]">
               <Image
@@ -52,13 +57,12 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
                 sizes="(max-width: 640px) 100vw, 30rem"
                 className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,9,10,0.12)_0%,rgba(8,9,10,0.34)_28%,rgba(8,9,10,0.6)_60%,rgba(8,9,10,0.88)_100%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,244,230,0.2),transparent_28%)]" />
+              <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(8,9,10,0)_0%,rgba(8,9,10,0.16)_38%,rgba(8,9,10,0.5)_100%)]" />
 
               <div className="relative flex h-full flex-col justify-between p-6 sm:p-7">
                 <div className="max-w-[15rem] sm:max-w-[18rem]">
                   <h1
-                    className={`${cormorantGaramond.className} text-[3.2rem] leading-[0.88] tracking-[-0.045em] text-[#fbf4eb] sm:text-[4rem]`}
+                    className={`${instrumentSerif.className} text-[2.15rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2.55rem]`}
                   >
                     Your mind was meant for more
                   </h1>
