@@ -14,11 +14,11 @@ import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import {
   ChevronRight,
-  MessageCircle,
   MessagesSquare,
   Quote,
   ScrollText,
   SlidersHorizontal,
+  Sparkles,
   Swords,
 } from "lucide-react";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
@@ -592,26 +592,24 @@ function DashboardScreen({
           <button
             type="button"
             onClick={() => openMode("socratic")}
-            className="group relative mt-6 w-full overflow-hidden rounded-[1.6rem] border border-white/12 bg-[linear-gradient(145deg,rgba(20,22,32,0.96)_0%,rgba(10,11,18,0.98)_100%)] px-4 py-4.5 text-left shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl"
+            className="group relative mt-6 w-full overflow-hidden rounded-[1.45rem] border border-[#8f72ff]/38 bg-[linear-gradient(135deg,rgba(18,21,36,0.98)_0%,rgba(12,13,24,0.98)_56%,rgba(28,22,52,0.96)_100%)] px-4 py-4 text-left shadow-[0_20px_55px_rgba(0,0,0,0.42),0_0_0_1px_rgba(160,128,255,0.08)] backdrop-blur-xl"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(164,127,255,0.28),transparent_34%),radial-gradient(circle_at_8%_100%,rgba(91,137,255,0.12),transparent_30%)]" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,rgba(141,108,255,0),rgba(141,108,255,0.95),rgba(141,108,255,0))]" />
-            <div className="relative z-10 flex items-end gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-[0.64rem] font-medium uppercase tracking-[0.18em] text-white/38">
-                  Start here
-                </p>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(170,136,255,0.24),transparent_36%),radial-gradient(circle_at_0%_100%,rgba(73,102,198,0.18),transparent_28%)]" />
+            <div className="pointer-events-none absolute inset-[1px] rounded-[1.4rem] border border-white/6" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,rgba(170,136,255,0),rgba(170,136,255,0.95),rgba(170,136,255,0))]" />
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="min-w-0 flex-1 pr-1">
                 <h2
-                  className={`${inter.className} mt-2 max-w-54 text-[1.72rem] font-medium leading-[1.02] tracking-[-0.05em] text-white`}
+                  className={`${inter.className} whitespace-nowrap bg-[linear-gradient(90deg,#f4f2ff_0%,#ded5ff_58%,#9a82ff_100%)] bg-clip-text text-[1.04rem] font-medium leading-none tracking-[-0.035em] text-transparent`}
                 >
                   What are you thinking about?
                 </h2>
-                <p className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[0.72rem] text-white/66 backdrop-blur-md">
+                <p className="mt-3 inline-flex rounded-full border border-white/10 bg-white/[0.045] px-2.5 py-1 text-[0.63rem] text-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md">
                   Ask anything. Challenge ideas.
                 </p>
               </div>
-              <span className="inline-flex h-15 w-15 shrink-0 items-center justify-center rounded-full border border-[#b497ff]/28 bg-[radial-gradient(circle_at_30%_30%,#ddd5ff_0%,#a985ff_38%,#7d5ff4_68%,#5d42d3_100%)] text-white shadow-[0_0_26px_rgba(141,108,255,0.48)] transition duration-300 group-active:scale-95">
-                <MessageCircle size={18} />
+              <span className="inline-flex h-13 w-13 shrink-0 items-center justify-center rounded-full border border-[#ccb8ff]/28 bg-[radial-gradient(circle_at_32%_28%,#fcf8ff_0%,#c9b6ff_26%,#9a7aff_58%,#7250f0_100%)] text-white shadow-[0_0_28px_rgba(147,108,255,0.52)] transition duration-300 group-active:scale-95">
+                <Sparkles size={16} fill="currentColor" />
               </span>
             </div>
           </button>
@@ -625,9 +623,9 @@ function DashboardScreen({
                   key={pill.key}
                   type="button"
                   onClick={pill.onClick}
-                  className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 text-[0.79rem] font-medium text-white/84 backdrop-blur-md transition active:scale-[0.98]"
+                  className="inline-flex h-10.5 shrink-0 items-center gap-2 rounded-full border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.055)_0%,rgba(255,255,255,0.025)_100%)] px-4 text-[0.77rem] font-medium text-white/88 shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_10px_24px_rgba(0,0,0,0.18)] backdrop-blur-xl transition active:scale-[0.98]"
                 >
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.045]">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)] shadow-[0_0_18px_rgba(255,255,255,0.03)]">
                     <Icon size={15} className={pill.iconClassName} />
                   </span>
                   {pill.label}
