@@ -208,7 +208,7 @@ function IntroScreen() {
 
   return (
     <div className="pwa-standalone-only">
-      <main className={`relative h-[100svh] overflow-hidden bg-black text-white ${inter.className}`}>
+      <main className={`relative h-svh overflow-hidden bg-black text-white ${inter.className}`}>
         <section className="relative z-10 h-full px-4 pt-[calc(0.7rem+env(safe-area-inset-top))]">
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between">
@@ -217,7 +217,7 @@ function IntroScreen() {
                 alt="Socratic AI"
                 width={34}
                 height={34}
-                className="h-[2.125rem] w-[2.125rem] opacity-95"
+                className="h-8.5 w-8.5 opacity-95"
                 priority
               />
               <Link
@@ -231,7 +231,7 @@ function IntroScreen() {
 
             <div className="mt-3 min-h-0 flex-1 overflow-y-auto pb-[15.4rem]">
               <div className="relative min-h-52">
-                <div className="relative z-10 max-w-[12.25rem] pt-2">
+                <div className="relative z-10 max-w-49 pt-2">
                   <h1
                     className={`${instrumentSerif.className} text-[2.35rem] leading-[0.92] tracking-[-0.025em]`}
                   >
@@ -257,7 +257,7 @@ function IntroScreen() {
                     alt="Socrates statue"
                     fill
                     sizes="52vw"
-                    className="object-contain object-right-top"
+                    className="object-contain object-top-right"
                     priority
                   />
                   <div className="absolute inset-0 bg-black/38" />

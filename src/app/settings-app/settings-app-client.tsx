@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useUser, UserButton } from "@clerk/nextjs";
+import type { ReactNode } from "react";
+import { useClerk, useUser } from "@clerk/nextjs";
 import {
   ChevronRight,
   Instagram,
   Linkedin,
+  Mail,
   UserRound,
   Youtube,
 } from "lucide-react";
@@ -23,6 +25,7 @@ type SettingRowProps = {
   href?: string;
   onClick?: () => void;
   showChevron?: boolean;
+  leftSlot?: ReactNode;
 };
 
 function XIcon() {
@@ -39,10 +42,14 @@ function SettingRow({
   href,
   onClick,
   showChevron = Boolean(href || onClick),
+  leftSlot,
 }: SettingRowProps) {
   const content = (
     <div className="flex min-h-12 items-center justify-between rounded-xl px-1 py-0.5 text-[0.96rem] text-white/86 transition-colors hover:bg-white/[0.04]">
-      <span>{label}</span>
+      <span className="inline-flex items-center gap-3">
+        {leftSlot}
+        <span>{label}</span>
+      </span>
       <span className="inline-flex items-center gap-2 text-[0.88rem] text-white/52">
         {right ? <span>{right}</span> : null}
         {showChevron ? <ChevronRight size={17} /> : null}
@@ -56,6 +63,7 @@ function SettingRow({
         href={href}
         target={href.startsWith("http") ? "_blank" : undefined}
         rel={href.startsWith("http") ? "noreferrer noopener" : undefined}
+        className="block"
       >
         {content}
       </a>
@@ -75,6 +83,7 @@ function SettingRow({
 }
 
 export function SettingsAppClient() {
+  const clerk = useClerk();
   const { user, isSignedIn } = useUser();
   const [billingState, setBillingState] = useState<BillingViewState>({
     isPremium: false,
@@ -174,9 +183,32 @@ export function SettingsAppClient() {
     ? `${effectiveBillingState.tierLabel} 🙂`
     : `${effectiveBillingState.tierLabel} 🙁`;
 
+  const socialLinks = [
+    {
+      label: "Instagram",
+      href: "https://www.instagram.com/usesocratic/",
+      icon: <Instagram size={18} className="text-[#ff4d8d]" />,
+    },
+    {
+      label: "YouTube",
+      href: "https://www.youtube.com/@useSocraticAI",
+      icon: <Youtube size={18} className="text-[#ff2f2f]" />,
+    },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/company/usesocratic/",
+      icon: <Linkedin size={18} className="text-[#0a66c2]" />,
+    },
+    {
+      label: "X",
+      href: "https://x.com/useSocraticAI",
+      icon: <XIcon />,
+    },
+  ] as const;
+
   return (
     <main className="min-h-svh bg-[#050609] text-white">
-      <PwaPageHeader title="Settings" />
+      <PwaPageHeader title="Settings" theme="dark" />
       <section className="mx-auto flex w-full max-w-120 flex-col gap-4 px-4 py-4 pb-[calc(5.8rem+env(safe-area-inset-bottom))]">
         {!effectiveBillingState.isPremium ? (
           <div className="rounded-2xl border border-[#6d4d1f] bg-[linear-gradient(140deg,#201307_0%,#2b1a0a_56%,#191106_100%)] px-4.5 py-4">
@@ -208,32 +240,47 @@ export function SettingsAppClient() {
           <p className="text-[0.74rem] font-semibold tracking-[0.08em] text-white/45 uppercase">
             Account
           </p>
-          <div className="mt-3 flex items-center gap-3.5">
-            {isSignedIn ? (
+          {isSignedIn ? (
+            <button
+              type="button"
+              onClick={() => clerk.openUserProfile()}
+              className="mt-3 flex w-full items-center gap-3.5 rounded-2xl px-1 py-1 text-left transition-colors hover:bg-white/[0.04]"
+              aria-label="Open account settings"
+            >
               <div className="inline-flex h-13.5 w-13.5 items-center justify-center rounded-full border border-white/12">
-                <UserButton
-                  appearance={{
-                    elements: {
-                      userButtonAvatarBox:
-                        "!h-12 !w-12 !border-0 !outline-none !ring-0 !shadow-none",
-                      userButtonTrigger:
-                        "inline-flex !h-12 !w-12 items-center justify-center rounded-full",
-                    },
-                  }}
-                />
+                {user?.imageUrl ? (
+                  <div
+                    className="h-12 w-12 rounded-full bg-cover bg-center"
+                    style={{ backgroundImage: `url("${user.imageUrl}")` }}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.03] text-white/66">
+                    <UserRound size={21} />
+                  </div>
+                )}
               </div>
-            ) : (
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[0.98rem] font-semibold text-white/88">
+                  {name}
+                </p>
+                <p className="truncate text-[0.82rem] text-white/56">{email}</p>
+              </div>
+              <ChevronRight size={18} className="shrink-0 text-white/44" />
+            </button>
+          ) : (
+            <div className="mt-3 flex items-center gap-3.5">
               <div className="flex h-13.5 w-13.5 items-center justify-center rounded-full border border-white/12 bg-white/[0.03] text-white/66">
                 <UserRound size={23} />
               </div>
-            )}
-            <div className="min-w-0">
-              <p className="truncate text-[0.98rem] font-semibold text-white/88">
-                {name}
-              </p>
-              <p className="truncate text-[0.82rem] text-white/56">{email}</p>
+              <div className="min-w-0">
+                <p className="truncate text-[0.98rem] font-semibold text-white/88">
+                  {name}
+                </p>
+                <p className="truncate text-[0.82rem] text-white/56">{email}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-2">
@@ -249,43 +296,19 @@ export function SettingsAppClient() {
           <p className="text-[0.74rem] font-semibold tracking-[0.08em] text-white/45 uppercase">
             Connect With Us
           </p>
-          <div className="mt-3 flex items-center gap-2.5">
-            <a
-              href="https://www.instagram.com/usesocratic/"
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="Instagram"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff4d8d]/12 text-[#ff4d8d]"
-            >
-              <Instagram size={18} />
-            </a>
-            <a
-              href="https://www.youtube.com/@useSocraticAI"
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="YouTube"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff2f2f]/12 text-[#ff2f2f]"
-            >
-              <Youtube size={18} />
-            </a>
-            <a
-              href="https://www.linkedin.com/company/usesocratic/"
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="LinkedIn"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#0a66c2]/12 text-[#0a66c2]"
-            >
-              <Linkedin size={18} />
-            </a>
-            <a
-              href="https://x.com/useSocraticAI"
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="X"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white"
-            >
-              <XIcon />
-            </a>
+          <div className="mt-3">
+            {socialLinks.map((link) => (
+              <SettingRow
+                key={link.label}
+                label={link.label}
+                href={link.href}
+                leftSlot={
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white">
+                    {link.icon}
+                  </span>
+                }
+              />
+            ))}
           </div>
         </div>
 
@@ -297,7 +320,15 @@ export function SettingsAppClient() {
           </p>
           <SettingRow label="Privacy Policy" href="/privacy-policy" />
           <SettingRow label="Terms of Service" href="/terms" />
-          <SettingRow label="Contact Us" href="mailto:contact@usesocratic.com" />
+          <SettingRow
+            label="Contact Us"
+            href="mailto:contact@usesocratic.com"
+            leftSlot={
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white/78">
+                <Mail size={17} />
+              </span>
+            }
+          />
         </div>
 
         <p className="pb-3 text-center text-[0.72rem] text-white/34">
