@@ -41,16 +41,19 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
       <main
         className={`min-h-svh bg-[#1e1d1b] px-4 py-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] text-[#f6efe5] ${poppins.className}`}
       >
-        <div className="mx-auto flex min-h-[calc(100svh-2rem)] w-full max-w-[30rem] flex-col items-start justify-center">
-          <p
-            className={`${instrumentSerif.className} mb-4 text-[2.15rem] leading-none tracking-[-0.04em] text-[#fbf4eb]`}
-          >
-            Get started
-          </p>
-          <section className="intro-shell-card relative w-full overflow-hidden rounded-[2rem] border border-white/8 bg-[#12110f] shadow-[0_24px_70px_rgba(0,0,0,0.42)]">
-            <div className="relative aspect-[7/12] min-h-[38rem] w-full sm:min-h-[46rem]">
+        <div className="mx-auto flex min-h-[calc(100svh-2rem)] w-full max-w-120 flex-col items-start justify-center">
+          <Image
+            src="/brand/Logo_Light_SVG.svg"
+            alt="Socratic AI"
+            width={28}
+            height={28}
+            className="mb-4 h-7 w-7"
+            priority
+          />
+          <section className="intro-shell-card relative w-full overflow-hidden rounded-4xl border border-white/8 bg-[#12110f] shadow-[0_24px_70px_rgba(0,0,0,0.42)]">
+            <div className="relative aspect-7/12 min-h-152 w-full sm:min-h-184">
               <Image
-                src="/twa/intro/sign.webp"
+                src="/twa/intro/first.webp"
                 alt="Books and sculpture surrounded by flowers"
                 fill
                 priority
@@ -60,13 +63,13 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
               <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(8,9,10,0)_0%,rgba(8,9,10,0.16)_38%,rgba(8,9,10,0.5)_100%)]" />
 
               <div className="relative flex h-full flex-col justify-between p-6 sm:p-7">
-                <div className="max-w-[15rem] sm:max-w-[18rem]">
+                <div className="max-w-[calc(100%-1.25rem)] sm:max-w-[calc(100%-1.75rem)]">
                   <h1
                     className={`${instrumentSerif.className} text-[2.15rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2.55rem]`}
                   >
                     Your mind was meant for more
                   </h1>
-                  <p className="mt-4 max-w-[16.5rem] text-[0.96rem] leading-[1.65] text-white/80 sm:max-w-[18rem] sm:text-[1rem]">
+                  <p className="mt-4 max-w-[calc(100%-0.5rem)] text-[0.96rem] leading-[1.65] text-white/80 sm:max-w-[calc(100%-0.75rem)] sm:text-[1rem]">
                     Your secret place for deep thought and conversations that
                     change you, away from the distractions of the world.
                   </p>
