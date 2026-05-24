@@ -1,3 +1,5 @@
+import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+
 const RESEND_API_URL = "https://api.resend.com/emails";
 const LAUNCH_SUBJECT = "Socratic AI: Try Socratic AI now";
 const SIGNUP_WELCOME_SUBJECT = "We saw what you did 👁️";
@@ -6,8 +8,9 @@ const SOCRATIC_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Dark.png";
 const SOCRATIC_SITE_URL =
   process.env["NEXT_PUBLIC_APP_URL"]?.trim() || "https://www.usesocratic.com";
 const SOCRATIC_CONTACT_EMAIL = "contact@usesocratic.com";
-const SOCRATIC_LIGHT_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Light.png";
-const SOCRATIC_MAIL_HERO_IMAGE_URL = "https://www.usesocratic.com/mail/mail.jpg";
+const SOCRATIC_LIGHT_LOGO_URL = resolveCloudinaryPublicAsset("/mail/Logo.webp");
+const SOCRATIC_MAIL_HERO_IMAGE_URL =
+  resolveCloudinaryPublicAsset("/mail/mail.webp");
 
 type ResendConfig = {
   apiKey: string;
@@ -168,7 +171,7 @@ function buildSignupWelcomeMessage(email: string): ResendMessage {
             >
               <table role="presentation" width="100%" height="300" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td align="center" valign="middle" style="padding:24px;background:rgba(10,8,6,0.2);">
+                  <td align="center" valign="middle" style="padding:24px;">
                     <img src="${SOCRATIC_LIGHT_LOGO_URL}" alt="Socratic AI logo" width="172" class="sa-logo" style="display:block;width:172px;height:auto;border:0;margin:0 auto;" />
                   </td>
                 </tr>
