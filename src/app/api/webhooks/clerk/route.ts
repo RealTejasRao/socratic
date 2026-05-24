@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { Webhook } from "svix";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
+import { sendSignupWelcomeEmail } from "src/server/email/resend";
 
 type ClerkWebhookEvent = {
   type: string;
@@ -73,6 +74,37 @@ export async function POST(req: Request) {
         email: primaryEmail
       }
     });
+
+    if (primaryEmail) {
+      const welcomeEmailClaim = await prisma.user.updateMany({
+        where: {
+          clerkUserId: id,
+          welcomeEmailSentAt: null
+        },
+        data: {
+          welcomeEmailSentAt: new Date()
+        }
+      });
+
+      if (welcomeEmailClaim.count === 1) {
+        const sendResult = await sendSignupWelcomeEmail(primaryEmail);
+
+        if (!sendResult.ok) {
+          await prisma.user.update({
+            where: { clerkUserId: id },
+            data: {
+              welcomeEmailSentAt: null
+            }
+          });
+
+          console.error("Failed to send signup welcome email", {
+            clerkUserId: id,
+            email: primaryEmail,
+            reason: sendResult.reason
+          });
+        }
+      }
+    }
   }
 
   if (eventType === "user.deleted") {
