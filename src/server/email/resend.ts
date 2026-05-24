@@ -1,11 +1,13 @@
 const RESEND_API_URL = "https://api.resend.com/emails";
 const LAUNCH_SUBJECT = "Socratic AI: Try Socratic AI now";
-const SIGNUP_WELCOME_SUBJECT = "Welcome to Socratic AI";
+const SIGNUP_WELCOME_SUBJECT = "We saw what you did 👁️";
 const DEFAULT_FROM_NAME = "Socratic";
 const SOCRATIC_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Dark.png";
 const SOCRATIC_SITE_URL =
   process.env["NEXT_PUBLIC_APP_URL"]?.trim() || "https://www.usesocratic.com";
 const SOCRATIC_CONTACT_EMAIL = "contact@usesocratic.com";
+const SOCRATIC_LIGHT_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Light.png";
+const SOCRATIC_MAIL_HERO_IMAGE_URL = "https://www.usesocratic.com/mail/mail.jpg";
 
 type ResendConfig = {
   apiKey: string;
@@ -141,83 +143,64 @@ function buildSignupWelcomeMessage(email: string): ResendMessage {
     to: [email],
     subject: SIGNUP_WELCOME_SUBJECT,
     html: `
-<div style="margin:0;padding:32px 16px;background-color:#f4efe8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1f1d1a;">
+<div style="margin:0;padding:32px 16px;background-color:#f8f6f1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#181512;">
   <style>
     @media only screen and (max-width: 640px) {
       .sa-shell { width: 100% !important; }
       .sa-pad { padding-left: 24px !important; padding-right: 24px !important; }
-      .sa-hero { padding: 32px 24px 28px 24px !important; }
-      .sa-body { padding: 32px 24px !important; }
-      .sa-title { font-size: 28px !important; line-height: 1.2 !important; }
-      .sa-copy { font-size: 15px !important; line-height: 1.75 !important; }
-      .sa-button { display: block !important; width: 100% !important; box-sizing: border-box !important; }
-      .sa-logo { width: 150px !important; }
+      .sa-hero { height: 260px !important; }
+      .sa-body { padding: 34px 24px 24px 24px !important; }
+      .sa-copy { font-size: 15px !important; line-height: 1.85 !important; }
+      .sa-logo { width: 154px !important; }
     }
   </style>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
       <td align="center">
-        <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" class="sa-shell" style="width:640px;max-width:640px;background:#ffffff;border-collapse:collapse;border:1px solid #ddd3c8;border-radius:24px;overflow:hidden;">
+        <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" class="sa-shell" style="width:640px;max-width:640px;background:#fffdf8;border-collapse:collapse;border:1px solid #e6e0d6;border-radius:24px;overflow:hidden;">
           <tr>
-            <td class="sa-hero" style="padding:40px 44px 34px 44px;background:linear-gradient(135deg,#171411 0%,#2e2923 52%,#8f775a 100%);text-align:left;">
-              <img src="${SOCRATIC_LOGO_URL}" alt="Socratic AI logo" width="164" class="sa-logo" style="display:block;width:164px;height:auto;border:0;" />
-              <div style="height:28px;line-height:28px;font-size:0;">&nbsp;</div>
-              <p style="margin:0 0 12px 0;font-size:11px;line-height:1.4;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,245,232,0.74);">
-                Welcome to Socratic AI
-              </p>
-              <h1 class="sa-title" style="margin:0;font-size:34px;line-height:1.16;font-weight:700;letter-spacing:-0.03em;color:#fff7ec;">
-                Thank you for signing up.
-              </h1>
-              <p class="sa-copy" style="margin:18px 0 0 0;max-width:472px;font-size:16px;line-height:1.75;color:rgba(255,245,232,0.86);">
-                You are now part of a platform built for people who want sharper thinking, harder questions, and better conversations with ideas that matter.
-              </p>
+            <td
+              class="sa-hero"
+              align="center"
+              valign="middle"
+              background="${SOCRATIC_MAIL_HERO_IMAGE_URL}"
+              style="height:300px;background-color:#1a1612;background-image:url('${SOCRATIC_MAIL_HERO_IMAGE_URL}');background-position:center center;background-size:cover;background-repeat:no-repeat;text-align:center;"
+            >
+              <table role="presentation" width="100%" height="300" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" valign="middle" style="padding:24px;background:rgba(10,8,6,0.2);">
+                    <img src="${SOCRATIC_LIGHT_LOGO_URL}" alt="Socratic AI logo" width="172" class="sa-logo" style="display:block;width:172px;height:auto;border:0;margin:0 auto;" />
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
-            <td class="sa-body sa-pad" style="padding:40px 44px 18px 44px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px 0;">
-                <tr>
-                  <td style="padding:22px 24px;background:#f8f4ee;border:1px solid #e7ddd1;border-radius:18px;">
-                    <p style="margin:0 0 8px 0;font-size:12px;line-height:1.5;letter-spacing:0.16em;text-transform:uppercase;color:#8b735c;">
-                      Who we are
-                    </p>
-                    <p class="sa-copy" style="margin:0;font-size:16px;line-height:1.8;color:#342e28;">
-                      Socratic AI is a thinking partner designed to challenge shallow conclusions. We help you examine assumptions, test arguments, and develop clearer judgment through rigorous dialogue instead of passive answer consumption.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-              <p class="sa-copy" style="margin:0 0 18px 0;font-size:16px;line-height:1.8;color:#342e28;">
-                Inside Socratic AI, you can explore difficult questions, pressure-test your beliefs, and work through philosophy, psychology, strategy, and personal decision-making with an experience designed to make your reasoning stronger.
+            <td class="sa-body sa-pad" style="padding:40px 44px 26px 44px;">
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:17px;line-height:1.9;color:#201c18;font-weight:600;">
+                Account confirmed.
               </p>
-              <p class="sa-copy" style="margin:0 0 18px 0;font-size:16px;line-height:1.8;color:#342e28;">
-                Our goal is simple: build software that makes people think better. Not faster. Not lazier. Better.
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                On an unrelated note, people who sign up for Socratic AI have been known to be 80% smarter, 63% more curious, and 100% awesome.
               </p>
-              <p class="sa-copy" style="margin:0 0 32px 0;font-size:16px;line-height:1.8;color:#342e28;">
-                We’re glad you’re here, and we’re excited to have you with us from the beginning.
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                We made those stats up. But you get the idea. You're cool!
               </p>
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px 0;">
-                <tr>
-                  <td align="center" style="border-radius:999px;background:#171411;">
-                    <a
-                      href="${SOCRATIC_SITE_URL}"
-                      class="sa-button"
-                      style="display:inline-block;padding:14px 24px;border-radius:999px;font-size:14px;font-weight:700;letter-spacing:0.02em;color:#fff7ec;text-decoration:none;background:#171411;"
-                    >
-                      Open Socratic AI
-                    </a>
-                  </td>
-                </tr>
-              </table>
-              <p class="sa-copy" style="margin:0;font-size:15px;line-height:1.8;color:#5f564c;">
-                If you have questions, just reach us at
-                <a href="mailto:${SOCRATIC_CONTACT_EMAIL}" style="color:#5f564c;text-decoration:underline;">${SOCRATIC_CONTACT_EMAIL}</a>.
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                A bit about our AI: it’s not another generic chatbot. It's trained on the works of one of the greatest thinkers in history. Just use it for a week, and you'll love it.
+              </p>
+              <p class="sa-copy" style="margin:0 0 30px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                Welcome.
+              </p>
+              <p class="sa-copy" style="margin:0;font-size:15px;line-height:1.9;color:#5f564c;">
+                Socratic AI<br />
+                <a href="${SOCRATIC_SITE_URL}" style="color:#5f564c;text-decoration:none;">usesocratic.com</a>
               </p>
             </td>
           </tr>
           <tr>
             <td class="sa-pad" style="padding:0 44px 34px 44px;">
-              <div style="height:1px;background:#ece2d7;margin:0 0 18px 0;">&nbsp;</div>
+              <div style="height:1px;background:#ece7dd;margin:0 0 18px 0;">&nbsp;</div>
               <p style="margin:0;font-size:12px;line-height:1.7;color:#8d8479;">
                 You received this email because you created an account at Socratic AI.
               </p>
@@ -230,18 +213,18 @@ function buildSignupWelcomeMessage(email: string): ResendMessage {
 </div>
 `,
     text: [
-      "WELCOME TO SOCRATIC AI",
+      "Account confirmed.",
       "",
-      "Thank you for signing up.",
+      "On an unrelated note, people who sign up for Socratic AI have been known to be 80% smarter, 63% more curious, and 100% awesome.",
       "",
-      "Socratic AI is a thinking partner designed to challenge shallow conclusions. We help you examine assumptions, test arguments, and develop clearer judgment through rigorous dialogue instead of passive answer consumption.",
+      "We made those stats up. But you get the idea. You're cool!",
       "",
-      "Inside Socratic AI, you can explore difficult questions, pressure-test your beliefs, and work through philosophy, psychology, strategy, and personal decision-making with an experience designed to make your reasoning stronger.",
+      "A bit about our AI: it’s not another generic chatbot. It's trained on the works of one of the greatest thinkers in history. Just use it for a week, and you'll love it.",
       "",
-      "Our goal is simple: build software that makes people think better. Not faster. Not lazier. Better.",
+      "Welcome.",
       "",
-      `Open Socratic AI: ${SOCRATIC_SITE_URL}`,
-      `Questions: ${SOCRATIC_CONTACT_EMAIL}`,
+      "Socratic AI",
+      "usesocratic.com",
       "",
       "You received this email because you created an account at Socratic AI.",
     ].join("\n"),
