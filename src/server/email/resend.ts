@@ -8,9 +8,11 @@ const SOCRATIC_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Dark.png";
 const SOCRATIC_SITE_URL =
   process.env["NEXT_PUBLIC_APP_URL"]?.trim() || "https://www.usesocratic.com";
 const SOCRATIC_CONTACT_EMAIL = "contact@usesocratic.com";
-const SOCRATIC_LIGHT_LOGO_URL = resolveCloudinaryPublicAsset("/mail/Logo.webp");
+const SOCRATIC_LIGHT_LOGO_URL = resolveCloudinaryPublicAsset(
+  "/brand/Logo_Light.png",
+);
 const SOCRATIC_MAIL_HERO_IMAGE_URL =
-  resolveCloudinaryPublicAsset("/mail/mail.webp");
+  "https://res.cloudinary.com/dz0v0p86u/image/upload/v1779654052/mail_mc3r5p.jpg";
 
 type ResendConfig = {
   apiKey: string;
@@ -195,9 +197,9 @@ function buildSignupWelcomeMessage(email: string): ResendMessage {
               <p class="sa-copy" style="margin:0 0 30px 0;font-size:16px;line-height:1.9;color:#342e28;">
                 Welcome.
               </p>
-              <p class="sa-copy" style="margin:0;font-size:15px;line-height:1.9;color:#5f564c;">
-                Socratic AI<br />
-                <a href="${SOCRATIC_SITE_URL}" style="color:#5f564c;text-decoration:none;">usesocratic.com</a>
+              <p class="sa-copy" style="margin:0;font-size:15px;line-height:1.9;color:#5f564c;font-weight:700;">
+                <strong>Socratic AI</strong><br />
+                <a href="${SOCRATIC_SITE_URL}" style="color:#5f564c;text-decoration:none;font-weight:700;"><strong>usesocratic.com</strong></a>
               </p>
             </td>
           </tr>
