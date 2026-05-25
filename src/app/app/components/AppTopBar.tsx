@@ -830,12 +830,14 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
 
           <Link
             href={billingCtaHref}
+            target="_blank"
+            rel="noreferrer noopener"
             className="hidden cursor-pointer items-center justify-center rounded-full p-0 transition-transform duration-250 hover:-translate-y-0.5 lg:inline-flex lg:h-12 lg:w-12"
             aria-label={isPremium ? "Open billing" : "Upgrade to Socratic Plus"}
             data-tooltip={isPremium ? "Socratic +" : "Upgrade to Socratic Plus"}
           >
             <PremiumCrownIcon
-              className="h-[2.15rem] w-[2.15rem] lg:h-[2.25rem] lg:w-[2.25rem]"
+              className="h-[2.15rem] w-[2.15rem] lg:h-9 lg:w-9"
               crownClassName="h-[1em] w-[1em]"
             />
           </Link>
@@ -848,6 +850,8 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
             {isPremium ? (
               <Link
                 href={billingCtaHref}
+                target="_blank"
+                rel="noreferrer noopener"
                 className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full p-0"
                 aria-label="Open billing"
                 data-tooltip="Socratic +"
@@ -873,7 +877,7 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
           }}
         >
           <div
-            className="app-card app-session-dialog w-full max-w-[380px] rounded-2xl border border-[#C8C8C2] bg-white px-5 py-4.5"
+            className="app-card app-session-dialog w-full max-w-95 rounded-2xl border border-[#C8C8C2] bg-white px-5 py-4.5"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">

@@ -178,7 +178,7 @@ html.pwa-standalone .app-composer-dock {
 }
 
 @media (max-width: 640px) {
-  html.pwa-standalone .pwa-mobile-standalone-next-line {
+  .pwa-mobile-standalone-next-line {
     display: inline-flex !important;
     width: 100%;
     justify-content: center;

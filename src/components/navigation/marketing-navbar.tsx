@@ -88,7 +88,9 @@ export async function MarketingNavbar({
         <div className="flex items-center justify-end gap-2">
           <AuthAwareCtaLink
             signedOutHref={ROUTES.SIGN_UP}
-            className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 items-center justify-center rounded-full bg-black px-4 text-[0.72rem] font-medium tracking-[0.03em] text-white transition-all duration-200 hover:bg-[#a01717] sm:px-5 sm:text-[0.76rem]`}
+            showPendingStateOnNavigate
+            pendingIndicator="roseCurve"
+            className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-black px-4 text-[0.72rem] font-medium tracking-[0.03em] text-white transition-all duration-200 hover:bg-[#a01717] sm:px-5 sm:text-[0.76rem]`}
           >
             Open App
           </AuthAwareCtaLink>

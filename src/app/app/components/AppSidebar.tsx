@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Inter } from "next/font/google";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowUpRight,
   CircleCheck,
   Crown,
   ChevronDown,
   House,
+  Instagram,
+  Linkedin,
   Mail,
   PanelLeftClose,
   PanelLeftOpen,
@@ -17,9 +20,11 @@ import {
   Search,
   Settings,
   X,
+  Youtube,
 } from "lucide-react";
 import { ROUTES } from "src/lib/routes";
 import { Switch } from "@/src/components/ui/switch";
+import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
   SOCRATIC_TONE_OPTIONS,
   isSocraticTone,
@@ -48,6 +53,8 @@ interface Props {
   isPremium?: boolean;
 }
 
+type SettingsTab = "GENERAL" | "SOCIAL";
+
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -61,6 +68,83 @@ const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const THEME_KEY = "socratic:theme";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
+
+const SETTINGS_TABS: Array<{
+  value: SettingsTab;
+  label: string;
+}> = [
+  {
+    value: "GENERAL",
+    label: "General",
+  },
+  {
+    value: "SOCIAL",
+    label: "Social",
+  },
+];
+
+const SETTINGS_TAB_META: Record<
+  SettingsTab,
+  { title: string; description: string; serif?: boolean }
+> = {
+  GENERAL: {
+    title: "General",
+    description: "Display and workspace preferences for your daily flow.",
+    serif: true,
+  },
+  SOCIAL: {
+    title: "Social",
+    description:
+      "Follow Socratic AI across platforms for news, updates & Special offers.",
+  },
+};
+
+type SocialLink = {
+  label: string;
+  href: string;
+  icon: ReactNode;
+  lightIconColor: string;
+  darkIconColor: string;
+};
+
+function XIcon({ className = "h-4 w-4 fill-current" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path d="M18.9 2H21l-6.55 7.49L22 22h-5.94l-4.65-7.6L4.76 22H2.64l7.01-8.01L2 2h6.09l4.2 6.92L18.9 2Zm-1.04 18h1.64L7.2 3.9H5.44Z" />
+    </svg>
+  );
+}
+
+const SOCIAL_LINKS: SocialLink[] = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/usesocratic/",
+    icon: <Instagram size={16} />,
+    lightIconColor: "#db2777",
+    darkIconColor: "#f472b6",
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/@useSocraticAI",
+    icon: <Youtube size={16} />,
+    lightIconColor: "#dc2626",
+    darkIconColor: "#f87171",
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/usesocratic/",
+    icon: <Linkedin size={16} />,
+    lightIconColor: "#0369a1",
+    darkIconColor: "#38bdf8",
+  },
+  {
+    label: "X",
+    href: "https://x.com/useSocraticAI",
+    icon: <XIcon />,
+    lightIconColor: "#334155",
+    darkIconColor: "#f8fafc",
+  },
+];
 
 function readBooleanSetting(key: string, fallback: boolean): boolean {
   if (typeof window === "undefined") {
@@ -112,17 +196,18 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [socraticTone, setSocraticTone] =
     useState<SocraticTone>("SIMPLE_CLEAR");
   const [chatFontSize, setChatFontSize] = useState<ChatFontSize>("MEDIUM");
-  const [activeSettingsTab, setActiveSettingsTab] = useState<
-    "GENERAL" | "SOCRATIC"
-  >("GENERAL");
+  const [activeSettingsTab, setActiveSettingsTab] =
+    useState<SettingsTab>("GENERAL");
   const [isToneDropdownOpen, setIsToneDropdownOpen] = useState(false);
   const [isResetDefaultsConfirmOpen, setIsResetDefaultsConfirmOpen] =
     useState(false);
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
+  const [isHomeNavigating, setIsHomeNavigating] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
+  const activeSettingsMeta = SETTINGS_TAB_META[activeSettingsTab];
 
   useEffect(() => {
     const rafId = window.requestAnimationFrame(() => {
@@ -219,6 +304,20 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   }, []);
 
   useEffect(() => {
+    if (!isHomeNavigating) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsHomeNavigating(false);
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isHomeNavigating]);
+
+  useEffect(() => {
     const handleOpen = () => setIsMobileSidebarOpen(true);
     const handleClose = () => setIsMobileSidebarOpen(false);
     const handleToggle = () => {
@@ -270,6 +369,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     window.dispatchEvent(new CustomEvent("socratic:upgrade-prompt:open"));
   }
 
+  function handleSettingsTabChange(nextTab: SettingsTab) {
+    setActiveSettingsTab(nextTab);
+    setIsToneDropdownOpen(false);
+  }
+
   function handleThemePreference(nextTheme: "light" | "dark") {
     const root = document.documentElement;
     const useDark = nextTheme === "dark";
@@ -313,6 +417,24 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
   function handleNewChatClick() {
     window.dispatchEvent(new CustomEvent("socratic:new-chat:requested"));
+  }
+
+  function handleHomeClick(event: ReactMouseEvent<HTMLAnchorElement>) {
+    if (event.defaultPrevented || isHomeNavigating) {
+      return;
+    }
+
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    setIsHomeNavigating(true);
   }
 
   return (
@@ -424,13 +546,20 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
               <Link
                 href={ROUTES.HOME}
-                className="app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition"
+                onClick={handleHomeClick}
+                className={`app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
                 aria-label="Home"
               >
-                <House size={17} />
+                {isHomeNavigating ? (
+                  <RoseCurveLoader className="h-8 w-8" />
+                ) : (
+                  <House size={17} />
+                )}
               </Link>
               <Link
                 href={billingCtaHref}
+                target="_blank"
+                rel="noreferrer noopener"
                 className="app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition"
                 aria-label={billingCtaLabel}
                 data-tooltip={billingCtaLabel}
@@ -487,20 +616,28 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             <div className="mt-3 space-y-0.5 border-t border-slate-200 pt-2">
               <Link
                 href={ROUTES.HOME}
-                className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
+                onClick={handleHomeClick}
+                className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
               >
-                <House size={16} /> Home
+                {isHomeNavigating ? (
+                  <RoseCurveLoader className="h-6 w-6" />
+                ) : (
+                  <House size={16} />
+                )}{" "}
+                Home
               </Link>
               <Link
                 href={billingCtaHref}
+                target="_blank"
+                rel="noreferrer noopener"
                 className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
               >
                 <Crown size={16} className="shrink-0" />
                 {isPremium ? (
-                  <span className="text-[#CFA43A]">Socratic +</span>
+                  <span style={{ color: "#CFA43A" }}>Socratic +</span>
                 ) : (
                   <span>
-                    Upgrade to <span className="text-[#CFA43A]">Socratic Plus</span>
+                    Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
                   </span>
                 )}
               </Link>
@@ -616,22 +753,32 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         <div className="mt-3 space-y-1 border-t border-slate-200 pt-2.5">
           <Link
             href={ROUTES.HOME}
-            onClick={() => setIsMobileSidebarOpen(false)}
-            className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
+            onClick={(event) => {
+              handleHomeClick(event);
+              setIsMobileSidebarOpen(false);
+            }}
+            className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
           >
-            <House size={18} /> Home
+            {isHomeNavigating ? (
+              <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
+            ) : (
+              <House size={18} />
+            )}{" "}
+            Home
           </Link>
           <Link
             href={billingCtaHref}
+            target="_blank"
+            rel="noreferrer noopener"
             onClick={() => setIsMobileSidebarOpen(false)}
             className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
           >
             <Crown size={16} className="shrink-0" />
             {isPremium ? (
-              <span className="text-[#CFA43A]">Socratic +</span>
+              <span style={{ color: "#CFA43A" }}>Socratic +</span>
             ) : (
               <span>
-                Upgrade to <span className="text-[#CFA43A]">Socratic Plus</span>
+                Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
               </span>
             )}
           </Link>
@@ -696,47 +843,38 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                     ? "border-[#3d3d42] bg-[#242321]"
                     : "border-slate-200 bg-slate-50/65"
                 }`}
-              >
-                <p
-                  className={`px-2 pb-2 text-[11px] uppercase tracking-[0.12em] ${
-                    isDarkMode ? "text-slate-500" : "text-slate-400"
-                  }`}
                 >
-                  Settings
-                </p>
-                <div className="space-y-1">
-                  <button
-                    type="button"
-                    onClick={() => setActiveSettingsTab("GENERAL")}
-                    className={`app-settings-tab-btn w-full cursor-pointer rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
-                      activeSettingsTab === "GENERAL"
-                        ? isDarkMode
-                          ? "bg-[#35363a] text-slate-100"
-                          : "bg-slate-200 text-slate-900"
-                        : isDarkMode
-                          ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
+                  <p
+                    className={`px-2 pb-2 text-[11px] uppercase tracking-[0.12em] ${
+                      isDarkMode ? "text-slate-500" : "text-slate-400"
+                  }`}
                   >
-                    General
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSettingsTab("SOCRATIC")}
-                    className={`app-settings-tab-btn w-full cursor-pointer rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
-                      activeSettingsTab === "SOCRATIC"
-                        ? isDarkMode
-                          ? "bg-[#35363a] text-slate-100"
-                          : "bg-slate-200 text-slate-900"
-                        : isDarkMode
-                          ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
-                  >
-                    Socratic
-                  </button>
-                </div>
-              </aside>
+                    Settings
+                  </p>
+                  <div className="space-y-1">
+                    {SETTINGS_TABS.map((tab) => {
+                      const isActive = activeSettingsTab === tab.value;
+                      return (
+                        <button
+                          key={tab.value}
+                          type="button"
+                          onClick={() => handleSettingsTabChange(tab.value)}
+                          className={`app-settings-tab-btn w-full cursor-pointer rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
+                            isActive
+                              ? isDarkMode
+                                ? "bg-[#35363a] text-slate-100"
+                                : "bg-slate-200 text-slate-900"
+                              : isDarkMode
+                                ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
+                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                          }`}
+                        >
+                          <span className="block">{tab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </aside>
 
               <section
                 className={`app-settings-content flex min-w-0 flex-1 flex-col px-5 py-5 md:px-7 md:py-6 ${
@@ -747,52 +885,41 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   <p
                     className={`text-[20px] font-medium ${
                       isDarkMode ? "text-slate-100" : "text-slate-900"
-                    } ${activeSettingsTab === "GENERAL" ? "font-[Georgia,serif]" : ""}`}
+                    } ${activeSettingsMeta.serif ? "font-[Georgia,serif]" : ""}`}
                   >
-                    {activeSettingsTab === "GENERAL" ? "General" : "Socratic"}
+                    {activeSettingsMeta.title}
                   </p>
-                  {activeSettingsTab === "SOCRATIC" && (
-                    <p
-                      className={`mt-1 text-[12px] ${
-                        isDarkMode ? "text-slate-400" : "text-slate-500"
-                      }`}
-                    >
-                      Tone controls that apply only to Socratic mode.
-                    </p>
-                  )}
+                  <p
+                    className={`mt-1 max-w-[44ch] text-[12px] ${
+                      isDarkMode ? "text-slate-400" : "text-slate-500"
+                    }`}
+                  >
+                    {activeSettingsMeta.description}
+                  </p>
                 </div>
 
-                <div className="mt-3 flex items-center gap-1.5 md:hidden">
-                  <button
-                    type="button"
-                    onClick={() => setActiveSettingsTab("GENERAL")}
-                    className={`app-settings-tab-btn rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
-                      activeSettingsTab === "GENERAL"
-                        ? isDarkMode
-                          ? "bg-[#35363a] text-slate-100"
-                          : "bg-slate-200 text-slate-900"
-                        : isDarkMode
-                          ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
-                  >
-                    General
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveSettingsTab("SOCRATIC")}
-                    className={`app-settings-tab-btn rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
-                      activeSettingsTab === "SOCRATIC"
-                        ? isDarkMode
-                          ? "bg-[#35363a] text-slate-100"
-                          : "bg-slate-200 text-slate-900"
-                        : isDarkMode
-                          ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
-                  >
-                    Socratic
-                  </button>
+                <div className="mt-3 flex flex-wrap items-center gap-1.5 md:hidden">
+                  {SETTINGS_TABS.map((tab) => {
+                    const isActive = activeSettingsTab === tab.value;
+                    return (
+                      <button
+                        key={tab.value}
+                        type="button"
+                        onClick={() => handleSettingsTabChange(tab.value)}
+                        className={`app-settings-tab-btn rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
+                          isActive
+                            ? isDarkMode
+                              ? "bg-[#35363a] text-slate-100"
+                              : "bg-slate-200 text-slate-900"
+                            : isDarkMode
+                              ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
+                              : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <button
@@ -962,7 +1089,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                           />
                         </label>
 
-                        <div className="flex items-center justify-between gap-4 py-3">
+                        <div
+                          className={`flex items-center justify-between gap-4 border-b py-3 ${
+                            isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
+                          }`}
+                        >
                           <div>
                             <p
                               className={`text-[14px] ${
@@ -1022,23 +1153,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             })}
                           </div>
                         </div>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="settings-socratic-tab"
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className={`border-t ${
-                          isDarkMode ? "border-[#444444]" : "border-[#d0d7e2]"
-                        }`}
-                      >
-                        <div
-                          className={`border-b py-3 ${
-                            isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
-                          }`}
-                        >
+
+                        <div className="py-3">
                           <p
                             className={`text-[14px] ${
                               isDarkMode ? "text-slate-100" : "text-slate-800"
@@ -1161,6 +1277,61 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                           </p>
                         </div>
                       </motion.div>
+                    ) : (
+                      <motion.div
+                        key="settings-social-tab"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        className={`border-t ${
+                          isDarkMode ? "border-[#444444]" : "border-[#d0d7e2]"
+                        }`}
+                      >
+                        <div className="grid gap-2 py-3">
+                          {SOCIAL_LINKS.map((link) => (
+                            <a
+                              key={link.label}
+                              href={link.href}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                              className={`group flex items-center justify-between rounded-[14px] border px-3 py-2.5 ${smoothUiClass} ${
+                                isDarkMode
+                                  ? "border-[#3b3c40] bg-[#242529] hover:border-[#4a4b50] hover:bg-[#2b2c30]"
+                                  : "border-[#d8dee7] bg-white hover:border-[#cbd4df] hover:bg-[#f8fafc]"
+                              }`}
+                            >
+                              <span className="inline-flex items-center gap-2.5">
+                                <span
+                                  className="inline-flex h-8.5 w-8.5 items-center justify-center"
+                                  style={{
+                                    color: isDarkMode
+                                      ? link.darkIconColor
+                                      : link.lightIconColor,
+                                  }}
+                                >
+                                  {link.icon}
+                                </span>
+                                <span
+                                  className={`text-[13px] font-medium ${
+                                    isDarkMode ? "text-slate-100" : "text-slate-900"
+                                  }`}
+                                >
+                                  {link.label}
+                                </span>
+                              </span>
+                              <ArrowUpRight
+                                size={15}
+                                className={`shrink-0 ${smoothUiClass} ${
+                                  isDarkMode
+                                    ? "text-slate-500 group-hover:text-slate-200"
+                                    : "text-slate-400 group-hover:text-slate-700"
+                                }`}
+                              />
+                            </a>
+                          ))}
+                        </div>
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
@@ -1226,7 +1397,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             isDarkMode ? "text-slate-100" : "text-slate-900"
                           }`}
                         >
-                          Reset all General settings to default?
+                          Reset all settings to default?
                         </p>
 
                         <div className="mt-4 flex justify-end gap-2">

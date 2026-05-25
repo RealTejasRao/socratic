@@ -135,7 +135,9 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
 
               <AuthAwareCtaLink
                 signedOutHref={ROUTES.SIGN_UP}
-                className={`${interClassName} mt-6 inline-flex min-h-12 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-7 text-[0.86rem] font-semibold tracking-[0.04em] text-white uppercase transition-colors duration-200 hover:bg-[#871313]`}
+                showPendingStateOnNavigate
+                pendingIndicator="roseCurve"
+                className={`${interClassName} mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] border border-[#a01717] bg-[#a01717] px-7 text-[0.86rem] font-semibold tracking-[0.04em] text-white uppercase transition-colors duration-200 hover:bg-[#871313]`}
               >
                 Try Socratic AI Now
               </AuthAwareCtaLink>

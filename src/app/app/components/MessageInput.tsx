@@ -154,6 +154,7 @@ export default function MessageInput({
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceBaseContentRef = useRef("");
   const isStoppingRecognitionRef = useRef(false);
+  const hasVerifiedMicrophoneAccessRef = useRef(false);
   const supportsWebSpeech = useSyncExternalStore(
     subscribeToClientSnapshot,
     () => {
@@ -319,13 +320,22 @@ export default function MessageInput({
       setVoiceError("");
     };
     recognition.onerror = (event) => {
+      if (event.error === "aborted" && isStoppingRecognitionRef.current) {
+        return;
+      }
+
       const nextError =
         event.error === "not-allowed"
           ? "Microphone permission was denied."
+          : event.error === "audio-capture"
+            ? "No microphone was detected."
           : event.error === "no-speech"
             ? "I couldn't hear anything. Try again."
             : "Voice dictation ran into a problem.";
 
+      if (event.error === "not-allowed") {
+        hasVerifiedMicrophoneAccessRef.current = false;
+      }
       setVoiceError(nextError);
       setIsListening(false);
     };
@@ -338,7 +348,59 @@ export default function MessageInput({
     return recognition;
   }
 
-  function handleVoiceToggle() {
+  async function ensureMicrophoneAccess() {
+    if (hasVerifiedMicrophoneAccessRef.current) {
+      return true;
+    }
+
+    if (!window.isSecureContext) {
+      setVoiceError("Voice input needs HTTPS or localhost.");
+      return false;
+    }
+
+    const mediaDevices = navigator.mediaDevices;
+    if (!mediaDevices?.getUserMedia) {
+      setVoiceError("Microphone access is not available in this browser.");
+      return false;
+    }
+
+    if ("permissions" in navigator && typeof navigator.permissions.query === "function") {
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: "microphone" as PermissionName,
+        });
+
+        if (permissionStatus.state === "denied") {
+          setVoiceError("Microphone permission was denied.");
+          return false;
+        }
+      } catch {
+        // Ignore Permissions API errors and continue with a direct audio request.
+      }
+    }
+
+    try {
+      const stream = await mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((track) => track.stop());
+      hasVerifiedMicrophoneAccessRef.current = true;
+      return true;
+    } catch (error) {
+      const errorName = error instanceof DOMException ? error.name : "";
+      const nextError =
+        errorName === "NotAllowedError" || errorName === "SecurityError"
+          ? "Microphone permission was denied."
+          : errorName === "NotFoundError" || errorName === "DevicesNotFoundError"
+            ? "No microphone was detected."
+            : errorName === "NotReadableError" || errorName === "TrackStartError"
+              ? "Microphone is busy in another app."
+              : "Voice input couldn't access your microphone.";
+
+      setVoiceError(nextError);
+      return false;
+    }
+  }
+
+  async function handleVoiceToggle() {
     if (!supportsWebSpeech || isStreaming) {
       return;
     }
@@ -356,13 +418,23 @@ export default function MessageInput({
       return;
     }
 
+    const canUseMicrophone = await ensureMicrophoneAccess();
+    if (!canUseMicrophone) {
+      return;
+    }
+
     try {
       voiceBaseContentRef.current = content;
       setVoiceError("");
       recognition.start();
       setIsListening(true);
       textareaRef.current?.focus();
-    } catch {
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "InvalidStateError") {
+        setIsListening(true);
+        return;
+      }
+
       setIsListening(false);
       setVoiceError("Voice dictation could not start.");
     }
@@ -915,7 +987,7 @@ export default function MessageInput({
             ) : (
               <button
                 type="button"
-                onClick={handleVoiceToggle}
+                onClick={() => void handleVoiceToggle()}
                 disabled={isStreaming}
                 className={cn(
                   "app-input-action-btn inline-flex cursor-pointer items-center hover:bg-slate-100 disabled:cursor-not-allowed",
