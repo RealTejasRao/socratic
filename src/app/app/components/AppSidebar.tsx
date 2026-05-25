@@ -207,6 +207,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [isHomeNavigating, setIsHomeNavigating] = useState(false);
   const [isNewChatNavigating, setIsNewChatNavigating] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
+  const toneDropdownMenuRef = useRef<HTMLDivElement | null>(null);
+  const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
@@ -297,6 +299,36 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       document.removeEventListener("mousedown", handlePointerDown);
     };
   }, [isSettingsOpen, isToneDropdownOpen]);
+
+  useEffect(() => {
+    if (!isSettingsOpen || !isToneDropdownOpen || activeSettingsTab !== "GENERAL") {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const scrollArea = settingsScrollAreaRef.current;
+      const dropdownMenu = toneDropdownMenuRef.current;
+      if (!scrollArea || !dropdownMenu) {
+        return;
+      }
+
+      const scrollAreaRect = scrollArea.getBoundingClientRect();
+      const dropdownRect = dropdownMenu.getBoundingClientRect();
+      const visibilityPadding = 12;
+      const overflowBottom =
+        dropdownRect.bottom - scrollAreaRect.bottom + visibilityPadding;
+      if (overflowBottom > 0) {
+        scrollArea.scrollBy({
+          top: overflowBottom,
+          behavior: "smooth",
+        });
+      }
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [activeSettingsTab, isSettingsOpen, isToneDropdownOpen]);
 
   useEffect(() => {
     return () => {
@@ -576,7 +608,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 aria-label="New chat"
               >
                 {isNewChatNavigating ? (
-                  <RoseCurveLoader className="h-6 w-6" />
+                  <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
                 ) : (
                   <PenSquare size={17} />
                 )}
@@ -644,7 +676,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
               >
                 {isNewChatNavigating ? (
-                  <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
+                  <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
                 ) : (
                   <PenSquare size={16} />
                 )}
@@ -785,7 +817,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
           >
             {isNewChatNavigating ? (
-              <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
+              <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
             ) : (
               <PenSquare size={18} />
             )}
@@ -991,7 +1023,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   <X size={15} />
                 </button>
 
-                <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
+                <div
+                  ref={settingsScrollAreaRef}
+                  className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1"
+                >
                   <AnimatePresence mode="wait" initial={false}>
                     {activeSettingsTab === "GENERAL" ? (
                       <motion.div
@@ -1256,6 +1291,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             <AnimatePresence>
                               {isToneDropdownOpen && (
                                 <motion.div
+                                  ref={toneDropdownMenuRef}
                                   initial={{ opacity: 0, y: -4, scale: 0.99 }}
                                   animate={{ opacity: 1, y: 0, scale: 1 }}
                                   exit={{ opacity: 0, y: -4, scale: 0.99 }}

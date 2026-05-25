@@ -1907,10 +1907,6 @@ html.app-dark .app-upgrade-title {
   color: var(--text-primary) !important;
 }
 
-html.app-dark .app-upgrade-brand-accent {
-  color: var(--accent-primary) !important;
-}
-
 html.app-dark .app-upgrade-copy {
   color: var(--text-secondary) !important;
 }

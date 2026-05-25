@@ -749,7 +749,7 @@ export default function ChatContainer({
           <h3 className="app-upgrade-title inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
             <span>
               Go Unlimited with{" "}
-              <span className="app-upgrade-brand-accent text-[#CFA43A]">
+              <span style={{ color: "#CFA43A" }}>
                 Socratic Plus
               </span>
             </span>
