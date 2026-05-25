@@ -155,12 +155,12 @@ export function validatePhilosophyTopicLightweight(
     };
   }
 
-  if (wordCount < 3) {
+  if (wordCount < 5) {
     return {
       isValid: false,
       normalizedTopic,
       reason:
-        "Make the topic a full debatable claim or question (at least 3 words), not a single keyword.",
+        "Make the topic a full debatable claim or question (at least 5 words), not a single keyword.",
       reframingSuggestions: [],
     };
   }

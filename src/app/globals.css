@@ -1558,17 +1558,9 @@ html.app-dark .app-session-opening-chip {
 }
 
 html.app-dark .app-session-mode-icon {
-  color: var(--text-secondary) !important;
-}
-
-html.app-dark .app-session-row .app-session-mode-icon.border-slate-300,
-html.app-dark .app-session-row .app-session-mode-icon.border-slate-200 {
-  border-color: var(--border-strong) !important;
-}
-
-html.app-dark .app-session-row .app-session-mode-icon.bg-slate-50,
-html.app-dark .app-session-row .app-session-mode-icon.bg-white {
-  background: var(--surface-active) !important;
+  border-color: var(--app-light-button-primary-bg) !important;
+  background: var(--app-light-button-primary-bg) !important;
+  color: var(--app-light-button-primary-text) !important;
 }
 
 html.app-dark .app-session-success-toast {

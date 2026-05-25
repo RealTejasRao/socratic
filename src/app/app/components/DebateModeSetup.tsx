@@ -10,12 +10,12 @@ import {
   Check,
   Clock3,
   Info,
-  LoaderCircle,
   Sparkles,
   Swords,
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
   DEBATE_DURATION_OPTIONS,
   DEBATE_TOPIC_MAX_CHARS,
@@ -48,7 +48,6 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
   const [userSide, setUserSide] = useState<"AFFIRM" | "REJECT">("AFFIRM");
   const [error, setError] = useState("");
   const [isBusy, setIsBusy] = useState(false);
-  const [showTimingInfo, setShowTimingInfo] = useState(false);
   const [showTopicSuggestionsDialog, setShowTopicSuggestionsDialog] =
     useState(false);
   const [pendingSuggestedTopic, setPendingSuggestedTopic] = useState("");
@@ -317,7 +316,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   headingClass,
                 )}
               >
-                Choose your opponent.
+                Choose your opponent&apos;s tone.
               </h2>
               <p
                 className={cn(
@@ -325,7 +324,8 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   mutedClass,
                 )}
               >
-                Choose how hard Socratic AI should come at your argument.
+                Choose how Socratic AI should sound while challenging your
+                argument.
               </p>
 
               <div className="mt-4 space-y-2">
@@ -368,25 +368,22 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowTimingInfo((current) => !current)}
                   className={cn(
-                    "relative inline-flex h-5 w-5 items-center justify-center rounded-full border transition",
+                    "group relative inline-flex h-5 w-5 items-center justify-center rounded-full border transition",
                     infoButtonClass,
                   )}
                   aria-label="Explain timing options"
                 >
                   <Info size={11} />
-                  {showTimingInfo && (
-                    <div
-                      className={cn(
-                        "absolute top-full left-0 z-10 mt-2 w-62 rounded-xl border px-3 py-2.5 text-left text-[12px] leading-5 shadow-xl",
-                        infoPopoverClass,
-                      )}
-                    >
-                      Short formats are faster and sharper. Longer formats go
-                      deeper and become more layered.
-                    </div>
-                  )}
+                  <div
+                    className={cn(
+                      "pointer-events-none absolute top-full left-0 z-10 mt-2 w-62 translate-y-1 rounded-xl border px-3 py-2.5 text-left text-[12px] leading-5 opacity-0 shadow-xl transition-all duration-150 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:pointer-events-auto group-focus-visible:translate-y-0 group-focus-visible:opacity-100",
+                      infoPopoverClass,
+                    )}
+                  >
+                    Short formats are faster and sharper. Longer formats go
+                    deeper and become more layered.
+                  </div>
                 </button>
               </div>
               <h2
@@ -503,7 +500,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   )}
                 >
                   {isBusy ? (
-                    <LoaderCircle size={13} className="animate-spin" />
+                    <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
                   ) : (
                     <ArrowRight size={13} />
                   )}
@@ -556,7 +553,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                     labelClass,
                   )}
                 >
-                  Confirmed thesis
+                  Confirmed topic
                 </p>
                 <p
                   className={cn(
@@ -631,6 +628,9 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                 )}
               >
                 Timed debates end permanently when the clock runs out.
+                <br />
+                After the debate ends, you&apos;ll be able to view your debate
+                summary and feedback.
               </p>
 
               <div
@@ -818,7 +818,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
             )}
           >
             {isBusy ? (
-              <LoaderCircle size={13} className="animate-spin" />
+              <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
             ) : (
               <Swords size={13} />
             )}

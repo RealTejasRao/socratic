@@ -423,10 +423,7 @@ export default function SidebarSessions({
                     showModeBadges && (
                       <span
                         className={cn(
-                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border text-slate-500 transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:h-6 lg:w-6",
-                          isActive
-                            ? "border-slate-300 bg-slate-50"
-                            : "border-slate-200 bg-white",
+                          "app-session-mode-icon hidden h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--app-light-button-primary-bg)] bg-[var(--app-light-button-primary-bg)] text-[var(--app-light-button-primary-text)] transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:h-6 lg:w-6",
                         )}
                       >
                         {session.mode === "DEBATE" ? (

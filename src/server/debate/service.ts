@@ -348,7 +348,7 @@ export async function validateDebateTopic(topic: string) {
   if (
     lightweight.isValid ||
     !lightweight.normalizedTopic ||
-    topicWordCount < 3
+    topicWordCount < 5
   ) {
     return lightweight;
   }

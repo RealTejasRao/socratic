@@ -153,6 +153,7 @@ export default function MessageInput({
   const attachmentsRef = useRef<ComposerImageAttachment[]>([]);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceBaseContentRef = useRef("");
+  const voiceCommittedTranscriptRef = useRef("");
   const isStoppingRecognitionRef = useRef(false);
   const hasVerifiedMicrophoneAccessRef = useRef(false);
   const supportsWebSpeech = useSyncExternalStore(
@@ -279,6 +280,21 @@ export default function MessageInput({
     return merged.slice(0, 3000);
   }
 
+  function appendVoiceTranscript(current: string, next: string) {
+    const normalizedCurrent = current.trim();
+    const normalizedNext = next.trim();
+
+    if (!normalizedNext) {
+      return normalizedCurrent;
+    }
+
+    if (!normalizedCurrent) {
+      return normalizedNext;
+    }
+
+    return `${normalizedCurrent} ${normalizedNext}`;
+  }
+
   function getRecognition() {
     if (recognitionRef.current) {
       return recognitionRef.current;
@@ -300,7 +316,7 @@ export default function MessageInput({
     recognition.interimResults = true;
     recognition.lang = navigator.language || "en-US";
     recognition.onresult = (event) => {
-      let transcript = "";
+      let interimTranscript = "";
 
       for (
         let index = event.resultIndex;
@@ -311,11 +327,27 @@ export default function MessageInput({
         if (!result) {
           continue;
         }
-        transcript += result[0]?.transcript ?? "";
+        const segment = result[0]?.transcript ?? "";
+        if (!segment.trim()) {
+          continue;
+        }
+
+        if (result.isFinal) {
+          voiceCommittedTranscriptRef.current = appendVoiceTranscript(
+            voiceCommittedTranscriptRef.current,
+            segment,
+          );
+        } else {
+          interimTranscript += segment;
+        }
       }
 
+      const spokenTranscript = appendVoiceTranscript(
+        voiceCommittedTranscriptRef.current,
+        interimTranscript,
+      );
       setContentOverride(
-        mergeVoiceTranscript(voiceBaseContentRef.current, transcript),
+        mergeVoiceTranscript(voiceBaseContentRef.current, spokenTranscript),
       );
       setVoiceError("");
     };
@@ -425,6 +457,7 @@ export default function MessageInput({
 
     try {
       voiceBaseContentRef.current = content;
+      voiceCommittedTranscriptRef.current = "";
       setVoiceError("");
       recognition.start();
       setIsListening(true);

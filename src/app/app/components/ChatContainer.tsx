@@ -980,10 +980,11 @@ export default function ChatContainer({
         }
 
         setActiveSessionId(returnedSessionId);
-        router.replace(`/app/${returnedSessionId}`);
+        router.replace(`/app/${returnedSessionId}`, { scroll: false });
+      } else {
+        router.refresh();
       }
 
-      router.refresh();
       void refreshBillingState();
     } catch (error) {
       if (!isAbortError(error)) {
