@@ -732,7 +732,7 @@ export default function ChatContainer({
 
     return (
       <motion.div
-        className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4"
+        className="app-upgrade-backdrop fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -743,22 +743,25 @@ export default function ChatContainer({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.98 }}
           transition={{ duration: 0.2 }}
-          className="app-card w-full max-w-[540px] rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]"
+          className="app-card app-upgrade-modal w-full max-w-[540px] rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]"
           onClick={(event) => event.stopPropagation()}
         >
-          <h3 className="inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
+          <h3 className="app-upgrade-title inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
             <span>
-              Go Unlimited with <span className="text-[#CFA43A]">Socratic Plus</span>
+              Go Unlimited with{" "}
+              <span className="app-upgrade-brand-accent text-[#CFA43A]">
+                Socratic Plus
+              </span>
             </span>
             <PremiumCrownIcon className="text-[36px]" />
           </h3>
-          <p className="mt-2 text-[13px] leading-6 text-[#746758]">
+          <p className="app-upgrade-copy mt-2 text-[13px] leading-6 text-[#746758]">
             {upgradePromptSmallText}
           </p>
           <div className="mt-5 flex items-center gap-2.5">
             <Link
               href={ROUTES.PRICING}
-              className="inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]"
+              className="app-upgrade-primary inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]"
             >
               View Pricing
               <ArrowUpRight size={13} />
@@ -766,7 +769,7 @@ export default function ChatContainer({
             <button
               type="button"
               onClick={() => setShowUpgradePrompt(false)}
-              className="inline-flex rounded-[14px] border border-[#d8ccbc] bg-[#fdf9f2] px-4 py-2 text-[13px] text-[#5f5344] transition hover:bg-[#f4ece0]"
+              className="app-upgrade-secondary inline-flex rounded-[14px] border border-[#d8ccbc] bg-[#fdf9f2] px-4 py-2 text-[13px] text-[#5f5344] transition hover:bg-[#f4ece0]"
             >
               Keep exploring free
             </button>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Inter } from "next/font/google";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -186,6 +187,7 @@ function readChatFontSizeSetting(): ChatFontSize {
 }
 
 export default function AppSidebar({ sessions, isPremium = false }: Props) {
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -203,6 +205,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     useState(false);
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
   const [isHomeNavigating, setIsHomeNavigating] = useState(false);
+  const [isNewChatNavigating, setIsNewChatNavigating] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
@@ -318,6 +321,26 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   }, [isHomeNavigating]);
 
   useEffect(() => {
+    if (!isNewChatNavigating) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsNewChatNavigating(false);
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isNewChatNavigating]);
+
+  useEffect(() => {
+    if (pathname === ROUTES.APP) {
+      setIsNewChatNavigating(false);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
     const handleOpen = () => setIsMobileSidebarOpen(true);
     const handleClose = () => setIsMobileSidebarOpen(false);
     const handleToggle = () => {
@@ -415,7 +438,28 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     }, 1900);
   }
 
-  function handleNewChatClick() {
+  function handleNewChatClick(event: ReactMouseEvent<HTMLAnchorElement>) {
+    if (event.defaultPrevented || isNewChatNavigating) {
+      return;
+    }
+
+    const isPrimaryNavigationClick =
+      event.button === 0 &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey;
+
+    if (pathname !== ROUTES.APP) {
+      if (!isPrimaryNavigationClick) {
+        return;
+      }
+      setIsNewChatNavigating(true);
+      return;
+    }
+
+    event.preventDefault();
+    setIsNewChatNavigating(false);
     window.dispatchEvent(new CustomEvent("socratic:new-chat:requested"));
   }
 
@@ -528,10 +572,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               <Link
                 href={ROUTES.APP}
                 onClick={handleNewChatClick}
-                className="app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition"
+                className={`app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
                 aria-label="New chat"
               >
-                <PenSquare size={17} />
+                {isNewChatNavigating ? (
+                  <RoseCurveLoader className="h-6 w-6" />
+                ) : (
+                  <PenSquare size={17} />
+                )}
               </Link>
               <button
                 type="button"
@@ -593,9 +641,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               <Link
                 href={ROUTES.APP}
                 onClick={handleNewChatClick}
-                className="app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition"
+                className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
               >
-                <PenSquare size={16} />
+                {isNewChatNavigating ? (
+                  <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
+                ) : (
+                  <PenSquare size={16} />
+                )}
                 <span>New Chat</span>
               </Link>
             </div>
@@ -726,13 +778,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         <div className="mb-1.5">
           <Link
             href={ROUTES.APP}
-            onClick={() => {
-              handleNewChatClick();
+            onClick={(event) => {
+              handleNewChatClick(event);
               setIsMobileSidebarOpen(false);
             }}
-            className="app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition"
+            className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
           >
-            <PenSquare size={18} />
+            {isNewChatNavigating ? (
+              <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
+            ) : (
+              <PenSquare size={18} />
+            )}
             <span>New Chat</span>
           </Link>
         </div>
