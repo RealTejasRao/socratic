@@ -732,7 +732,7 @@ export default function ChatContainer({
 
     return (
       <motion.div
-        className="app-upgrade-backdrop fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4"
+        className="app-upgrade-backdrop fixed inset-0 z-1000 flex items-center justify-center bg-black/45 px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -743,7 +743,7 @@ export default function ChatContainer({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.98 }}
           transition={{ duration: 0.2 }}
-          className="app-card app-upgrade-modal w-full max-w-[540px] rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]"
+          className="app-card app-upgrade-modal w-full max-w-135 rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]"
           onClick={(event) => event.stopPropagation()}
         >
           <h3 className="app-upgrade-title inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
@@ -1588,7 +1588,7 @@ export default function ChatContainer({
         <div className="px-3 pb-10 md:px-4 md:pb-14">
           <div className="mx-auto max-w-170">
             <div className="app-card app-debate-card app-debate-ended-card rounded-3xl border border-[#ddd5c7] bg-[#f7f4ee] px-5 py-5 text-center shadow-[0_16px_42px_rgba(31,27,21,0.08)]">
-              <div className="app-debate-status-chip inline-flex items-center gap-2 rounded-full border border-[#d6cec0] bg-[#efe9dd] px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-[#756d60]">
+              <div className="app-debate-status-chip inline-flex items-center gap-2 rounded-md border border-[#d6cec0] bg-transparent px-3 py-1 text-[13px] font-medium text-[#756d60]">
                 <Swords size={12} />
                 Debate Closed
               </div>

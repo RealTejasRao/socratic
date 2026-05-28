@@ -438,7 +438,7 @@ export default function SidebarSessions({
                     {session.title || "Untitled Session"}
                   </p>
                   {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (
-                    <span className="hidden rounded-full border border-slate-200 bg-white px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex lg:text-[10px]">
+                    <span className="hidden rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-medium text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex">
                       {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
                     </span>
                   )}

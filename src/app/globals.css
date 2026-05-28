@@ -820,7 +820,7 @@ html:not(.app-dark) .app-debate-option-selected .app-debate-option-meta {
 
 html:not(.app-dark) .app-debate-status-chip {
   border-color: #d6cec0 !important;
-  background: #efe9dd !important;
+  background: transparent !important;
   color: #756d60 !important;
 }
 
@@ -1704,7 +1704,7 @@ html.app-dark .app-debate-winner-copy {
 }
 
 html.app-dark .app-debate-status-chip {
-  background: var(--bg-elevated) !important;
+  background: transparent !important;
   border-color: var(--border-subtle) !important;
   color: var(--text-secondary) !important;
 }
