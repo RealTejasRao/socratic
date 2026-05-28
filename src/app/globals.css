@@ -47,6 +47,10 @@
   --app-light-button-primary-bg: #2c3a4b;
   --app-light-button-primary-hover-bg: #243140;
   --app-light-button-primary-text: #fefefc;
+  --app-light-scrollbar-thumb: #b87333;
+  --app-light-scrollbar-thumb-hover: #9f5f2c;
+  --app-dark-scrollbar-thumb: #a8d1ff;
+  --app-dark-scrollbar-thumb-hover: #c7e2ff;
   --radius: 1rem;
 }
 
@@ -3100,7 +3104,7 @@ html.app-dark .app-greeting-heading .hero-caret {
 
 .app-layout,
 .app-layout * {
-  scrollbar-color: #7a2f17 transparent;
+  scrollbar-color: var(--app-light-scrollbar-thumb) transparent;
 }
 
 .app-layout::-webkit-scrollbar,
@@ -3115,37 +3119,37 @@ html.app-dark .app-greeting-heading .hero-caret {
 
 .app-layout::-webkit-scrollbar-thumb,
 .app-layout *::-webkit-scrollbar-thumb {
-  background: #7a2f17;
+  background: var(--app-light-scrollbar-thumb);
 }
 
 .app-layout::-webkit-scrollbar-thumb:hover,
 .app-layout *::-webkit-scrollbar-thumb:hover {
-  background: #8b361c;
+  background: var(--app-light-scrollbar-thumb-hover);
 }
 
-html.app-dark .app-layout .app-sidebar,
-html.app-dark .app-layout .app-sidebar * {
-  scrollbar-color: #a8d1ff transparent !important;
+html.app-dark .app-layout,
+html.app-dark .app-layout * {
+  scrollbar-color: var(--app-dark-scrollbar-thumb) transparent !important;
 }
 
-html.app-dark .app-layout .app-sidebar::-webkit-scrollbar,
-html.app-dark .app-layout .app-sidebar *::-webkit-scrollbar {
+html.app-dark .app-layout::-webkit-scrollbar,
+html.app-dark .app-layout *::-webkit-scrollbar {
   background: transparent !important;
 }
 
-html.app-dark .app-layout .app-sidebar::-webkit-scrollbar-track,
-html.app-dark .app-layout .app-sidebar *::-webkit-scrollbar-track {
+html.app-dark .app-layout::-webkit-scrollbar-track,
+html.app-dark .app-layout *::-webkit-scrollbar-track {
   background: transparent !important;
 }
 
-html.app-dark .app-layout .app-sidebar::-webkit-scrollbar-thumb,
-html.app-dark .app-layout .app-sidebar *::-webkit-scrollbar-thumb {
-  background: #a8d1ff !important;
+html.app-dark .app-layout::-webkit-scrollbar-thumb,
+html.app-dark .app-layout *::-webkit-scrollbar-thumb {
+  background: var(--app-dark-scrollbar-thumb) !important;
 }
 
-html.app-dark .app-layout .app-sidebar::-webkit-scrollbar-thumb:hover,
-html.app-dark .app-layout .app-sidebar *::-webkit-scrollbar-thumb:hover {
-  background: #c7e2ff !important;
+html.app-dark .app-layout::-webkit-scrollbar-thumb:hover,
+html.app-dark .app-layout *::-webkit-scrollbar-thumb:hover {
+  background: var(--app-dark-scrollbar-thumb-hover) !important;
 }
 
 /* Hide scrollbars only when app is installed/running in standalone PWA/TWA mode. */
