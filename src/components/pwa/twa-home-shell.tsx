@@ -61,7 +61,7 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
               priority
             />
             <h1
-              className={`${instrumentSerif.className} text-[2rem] leading-[1.02] tracking-[0.018em] text-[#fbf4eb] sm:text-[2.2rem]`}
+              className={`${instrumentSerif.className} text-[1.78rem] leading-[1.02] tracking-[0.018em] text-[#fbf4eb] sm:text-[2rem]`}
             >
               Your mind was meant for more
             </h1>
