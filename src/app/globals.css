@@ -198,7 +198,7 @@ svg {
 
 html.theme-wave-transition::view-transition-group(root) {
   animation-duration: 1500ms;
-  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  animation-timing-function: linear;
 }
 
 html.theme-wave-transition::view-transition-old(root),
@@ -210,14 +210,16 @@ html.theme-wave-transition::view-transition-new(root) {
 }
 
 html.theme-wave-transition::view-transition-new(root) {
+  backface-visibility: hidden;
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 260' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 120 C8 108 16 108 24 120 S40 132 48 120 S64 108 72 120 S88 132 100 120 V260 H0 Z'/%3E%3C/svg%3E");
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100% 260%;
-  animation: themeWaveReveal 1500ms cubic-bezier(0.2, 0, 0, 1) both;
+  animation: themeWaveReveal 1500ms linear both;
   filter: saturate(1.02);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 260' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 120 C8 108 16 108 24 120 S40 132 48 120 S64 108 72 120 S88 132 100 120 V260 H0 Z'/%3E%3C/svg%3E");
   mask-repeat: no-repeat;
   mask-size: 100% 260%;
+  will-change: mask-position, -webkit-mask-position;
 }
 
 html.theme-wave-transition::view-transition-old(root) {
