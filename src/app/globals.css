@@ -1793,6 +1793,43 @@ html.app-dark .summary-topbar {
   border-color: var(--surface-active) !important;
 }
 
+html.app-dark .summary-page .bg-\[\#fefefc\],
+html.app-dark .summary-page .bg-\[\#fffdf8\],
+html.app-dark .summary-page .bg-\[\#fbfaf6\],
+html.app-dark .summary-page .bg-\[\#f7f4ed\] {
+  background: var(--bg-elevated) !important;
+}
+
+html.app-dark .summary-page .bg-\[\#fefefc\]\/90 {
+  background: color-mix(in srgb, var(--bg-main) 88%, transparent) !important;
+}
+
+html.app-dark .summary-page .bg-\[\#ebe8df\] {
+  background: var(--surface-active) !important;
+}
+
+html.app-dark .summary-page .hover\:bg-\[\#f2f0e9\]:hover {
+  background: var(--surface-hover) !important;
+}
+
+html.app-dark .summary-page .text-\[\#171916\],
+html.app-dark .summary-page .text-\[\#20211f\],
+html.app-dark .summary-page .text-\[\#30342f\],
+html.app-dark .summary-page .text-\[\#3f4340\] {
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .summary-page .text-\[\#555a54\],
+html.app-dark .summary-page .text-\[\#666a63\] {
+  color: var(--text-secondary) !important;
+}
+
+html.app-dark .summary-page .border-\[\#e3e1d8\],
+html.app-dark .summary-page .border-\[\#ddd8cd\],
+html.app-dark .summary-page .border-\[\#d8d4ca\] {
+  border-color: var(--surface-active) !important;
+}
+
 html.app-dark .summary-hero,
 html.app-dark .summary-section,
 html.app-dark .summary-graph-stage,
@@ -1818,6 +1855,9 @@ html.app-dark .summary-metrics .divide-\[\#e3e1d8\] > :not(:last-child) {
 html.app-dark .summary-verdict-card,
 html.app-dark .summary-stat-card,
 html.app-dark .summary-drill-callout,
+html.app-dark .summary-feedback-table,
+html.app-dark .summary-metrics > div > div:last-child,
+html.app-dark .summary-practice > div,
 html.app-dark .summary-chart-empty,
 html.app-dark .summary-chart-tooltip {
   background: var(--bg-elevated) !important;
@@ -1867,19 +1907,43 @@ html.app-dark .summary-ratio .bg-\[\#ebe8df\] {
   background: var(--surface-active) !important;
 }
 
+html.app-dark .summary-feedback-table thead tr,
+html.app-dark .summary-feedback-table th,
+html.app-dark .summary-metrics th {
+  background: var(--surface-hover) !important;
+  border-color: var(--surface-active) !important;
+  color: var(--text-secondary) !important;
+}
+
+html.app-dark .summary-feedback-table tr,
+html.app-dark .summary-feedback-table td,
+html.app-dark .summary-metrics tr,
+html.app-dark .summary-metrics td {
+  border-color: var(--surface-active) !important;
+}
+
+html.app-dark .summary-feedback-table td,
+html.app-dark .summary-metrics td {
+  color: var(--text-primary) !important;
+}
+
 html.app-dark .summary-ratio .text-\[\#285f53\],
 html.app-dark .summary-feedback .text-\[\#285f53\],
-html.app-dark .summary-metrics .text-\[\#285f53\] {
+html.app-dark .summary-metrics .text-\[\#285f53\],
+html.app-dark .summary-page .text-\[\#243f36\] {
   color: #6ee7b7 !important;
 }
 
 html.app-dark .summary-ratio .text-\[\#a33c32\],
 html.app-dark .summary-feedback .text-\[\#a33c32\],
-html.app-dark .summary-metrics .text-\[\#a33c32\] {
+html.app-dark .summary-metrics .text-\[\#a33c32\],
+html.app-dark .summary-page .text-\[\#55302c\],
+html.app-dark .summary-page .text-\[\#8f3d34\] {
   color: #fca5a5 !important;
 }
 
-html.app-dark .summary-ratio .text-\[\#955b25\] {
+html.app-dark .summary-ratio .text-\[\#955b25\],
+html.app-dark .summary-page .text-\[\#b98216\] {
   color: #fbbf24 !important;
 }
 
@@ -1893,6 +1957,14 @@ html.app-dark .summary-feedback-table .bg-\[\#fff0ee\],
 html.app-dark .summary-metrics .bg-\[\#fff0ee\] {
   background: rgba(220, 38, 38, 0.13) !important;
   color: #fee2e2 !important;
+}
+
+html.app-dark .summary-practice .bg-\[\#fff7df\] {
+  background: rgba(245, 158, 11, 0.16) !important;
+}
+
+html.app-dark .summary-practice .border-\[\#d6a43b\]\/35 {
+  border-color: rgba(251, 191, 36, 0.35) !important;
 }
 
 html.app-dark .summary-verdict .bg-\[\#f7f4ed\],
