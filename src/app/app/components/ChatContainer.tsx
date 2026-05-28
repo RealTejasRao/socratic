@@ -1598,8 +1598,8 @@ export default function ChatContainer({
               </h3>
 
               <p className="app-debate-ended-copy mt-3 text-[13px] leading-6 text-[#6f6658]">
-                The clock has run out. Review the full summary or reveal the
-                verdict here.
+                The clock has run out. Review the Post-Match Report or reveal
+                the verdict here.
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
@@ -1611,7 +1611,7 @@ export default function ChatContainer({
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
                   >
                     <ScrollText size={14} />
-                    Show summary
+                    Post-Match Report
                   </Link>
                 )}
 
@@ -1672,7 +1672,7 @@ export default function ChatContainer({
 
               <p className="app-debate-winner-copy mt-3 text-[14px] leading-7 text-[#6f6658]">
                 {completedDebate.verdictSummary ||
-                  "The verdict is available in the full summary."}
+                  "The verdict is available in the Post-Match Report."}
               </p>
 
               <div className="mt-5 flex justify-center">
@@ -1684,7 +1684,7 @@ export default function ChatContainer({
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
                   >
                     <ScrollText size={14} />
-                    Open full summary
+                    Open Post-Match Report
                   </Link>
                 )}
               </div>

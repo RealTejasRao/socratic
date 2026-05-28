@@ -22,6 +22,52 @@ const AUX_MODEL = getDeepSeekAuxModel();
 
 const THIRTY_DAYS_MS = 1000 * 60 * 60 * 24 * 30;
 
+const VERDICT_SYSTEM_PROMPT = `You are a neutral debate judge. Your only job is to evaluate the reasoning quality in the transcript below and return a verdict in strict JSON.
+
+Rules:
+- Judge only the quality of arguments, logical consistency, burden of proof handling, and pressure resistance. Do not favor either side.
+- winner must be exactly USER, ASSISTANT, or DRAW. No other value is valid.
+- verdictSummary: 2-3 sentences. State who won and exactly why. Name the specific arguments that decided it. Do not be vague.
+- summary: 1 sentence only. What was this debate about and how did it end.
+
+Return only this JSON, nothing else, no markdown:
+{
+  "winner": "USER" | "ASSISTANT" | "DRAW",
+  "verdictSummary": "...",
+  "summary": "..."
+}`;
+
+const DASHBOARD_SYSTEM_PROMPT = `You are generating a post-debate debrief for the human participant. Read the full transcript carefully. Every piece of feedback must reference specific moments from the transcript, not generic debate advice.
+
+Return strict JSON with exactly these keys:
+
+userBeliefsSummary: One compact paragraph. What position did the user actually defend? What assumptions underpinned their case?
+
+assistantCaseSummary: One compact paragraph. What was the AI's strongest line of attack? What did it keep returning to?
+
+userStrengths: Array of exactly 3 strings. Each must name a specific argument or moment from the transcript where the user was effective. Do not write generic praise.
+
+userWeaknesses: Array of exactly 3 strings. Each must name a specific argument or exchange where the user was weak, dodged, or lost ground. Be precise and direct.
+
+improvementSuggestions: Array of exactly 3 strings. Each must be a concrete, specific action the user should take in their next debate on this topic. No generic advice.
+
+momentumScores: Array of objects scoring each exchange. One object per back-and-forth exchange (pair of turns). Score from -10 (AI dominated) to +10 (User dominated). Include a short label (max 6 words) naming what happened in that exchange.
+Format: [{ "exchange": 1, "score": 4, "label": "Triage analogy dismantled well" }, ...]
+
+strongestMoment: One sentence naming the single best argument the user made and why it worked.
+
+weakestMoment: One sentence naming the single worst exchange for the user and what went wrong.
+
+rhetoricalStyle: 2-3 words describing how the user argued. Examples: "Aggressive and systematic", "Reactive but precise", "Philosophical but evasive".
+
+roundsWon: Integer. Number of exchanges the user clearly won.
+roundsLost: Integer. Number of exchanges the user clearly lost.
+roundsContested: Integer. Number of exchanges that were roughly even.
+
+drillForNextTime: One sentence. The single most important thing the user should practice before their next debate. Must be specific to what failed in this debate.
+
+Return only the JSON. No markdown, no preamble.`;
+
 type DebateSuggestionParams = {
   tone: DebateTone;
   durationPreset: DebateDurationPreset;
@@ -53,6 +99,18 @@ export type DebateDashboard = {
   userStrengths: string[];
   userWeaknesses: string[];
   improvementSuggestions: string[];
+  momentumScores?: Array<{
+    exchange: number;
+    score: number;
+    label: string | null;
+  }>;
+  strongestMoment?: string | null;
+  weakestMoment?: string | null;
+  rhetoricalStyle?: string | null;
+  roundsWon?: number | null;
+  roundsLost?: number | null;
+  roundsContested?: number | null;
+  drillForNextTime?: string | null;
 };
 
 const FALLBACK_TOPICS = [
@@ -176,6 +234,55 @@ const FALLBACK_VERDICT = {
 
 const DEBATE_DASHBOARD_VERSION = "debate-dashboard-v1";
 
+function readOptionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function readOptionalInteger(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.trunc(value)
+    : null;
+}
+
+function parseMomentumScores(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        return null;
+      }
+
+      const record = item as Record<string, unknown>;
+      const exchange = readOptionalInteger(record["exchange"]);
+      const score =
+        typeof record["score"] === "number" && Number.isFinite(record["score"])
+          ? Math.max(-10, Math.min(10, record["score"]))
+          : null;
+
+      if (exchange === null || score === null) {
+        return null;
+      }
+
+      return {
+        exchange,
+        score,
+        label: readOptionalString(record["label"]),
+      };
+    })
+    .filter(
+      (
+        item,
+      ): item is {
+        exchange: number;
+        score: number;
+        label: string | null;
+      } => item !== null,
+    );
+}
+
 function normalizeStoredDebateTone(tone: string | DebateTone): DebateTone {
   switch (tone as string) {
     case "RUTHLESS_RESPECTFUL":
@@ -233,6 +340,7 @@ function parseDebateDashboard(meta: Prisma.JsonValue | null | undefined) {
         (item): item is string => typeof item === "string",
       )
     : [];
+  const momentumScores = parseMomentumScores(dashboard["momentumScores"]);
 
   if (
     typeof userBeliefsSummary !== "string" ||
@@ -251,6 +359,14 @@ function parseDebateDashboard(meta: Prisma.JsonValue | null | undefined) {
     userStrengths,
     userWeaknesses,
     improvementSuggestions,
+    momentumScores,
+    strongestMoment: readOptionalString(dashboard["strongestMoment"]),
+    weakestMoment: readOptionalString(dashboard["weakestMoment"]),
+    rhetoricalStyle: readOptionalString(dashboard["rhetoricalStyle"]),
+    roundsWon: readOptionalInteger(dashboard["roundsWon"]),
+    roundsLost: readOptionalInteger(dashboard["roundsLost"]),
+    roundsContested: readOptionalInteger(dashboard["roundsContested"]),
+    drillForNextTime: readOptionalString(dashboard["drillForNextTime"]),
   } satisfies DebateDashboard;
 }
 
@@ -294,6 +410,14 @@ function buildFallbackDashboard(params: {
       "Use one concrete example or distinction per reply instead of broad restatement.",
       "Answer the model's strongest objection before moving to a new point.",
     ],
+    momentumScores: [],
+    strongestMoment: null,
+    weakestMoment: null,
+    rhetoricalStyle: null,
+    roundsWon: null,
+    roundsLost: null,
+    roundsContested: null,
+    drillForNextTime: null,
   };
 }
 
@@ -652,19 +776,12 @@ export async function generateDebateVerdict(params: DebateVerdictParams) {
     const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
       temperature: 0.2,
-      max_tokens: 320,
+      max_tokens: 500,
       response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
-          content: [
-            "You are a neutral debate judge.",
-            "Judge only the quality of reasoning in the transcript.",
-            "Reply in strict JSON with keys winner, verdictSummary, summary.",
-            "winner must be USER, ASSISTANT, or DRAW.",
-            "verdictSummary should be one crisp paragraph.",
-            "summary should be a short transcript summary suitable for a Show summary panel.",
-          ].join(" "),
+          content: VERDICT_SYSTEM_PROMPT,
         },
         {
           role: "user",
@@ -750,19 +867,12 @@ async function generateDebateDashboard(params: {
     const completion = await deepseek.chat.completions.create({
       model: AUX_MODEL,
       temperature: 0.25,
-      max_tokens: 950,
+      max_tokens: 1400,
       response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
-          content: [
-            "You are generating a post-debate dashboard for the human participant.",
-            "Return strict JSON with keys: userBeliefsSummary, assistantCaseSummary, userStrengths, userWeaknesses, improvementSuggestions.",
-            "Each summary should be a compact paragraph.",
-            "Each list should contain 3 concise string items.",
-            "Focus on reasoning quality, structure, pressure handling, clarity, and burden of proof.",
-            "Do not flatter. Be fair, specific, and useful.",
-          ].join(" "),
+          content: DASHBOARD_SYSTEM_PROMPT,
         },
         {
           role: "user",
@@ -774,7 +884,6 @@ async function generateDebateDashboard(params: {
             `Assistant side: ${params.aiSide}`,
             `Winner: ${params.winner ?? "UNKNOWN"}`,
             `Verdict summary: ${params.verdictSummary ?? "None"}`,
-            `Debate summary: ${params.summary ?? "None"}`,
             "",
             "Extracted user beliefs:",
             beliefText,
@@ -798,7 +907,16 @@ async function generateDebateDashboard(params: {
       userStrengths?: string[];
       userWeaknesses?: string[];
       improvementSuggestions?: string[];
+      momentumScores?: unknown;
+      strongestMoment?: string;
+      weakestMoment?: string;
+      rhetoricalStyle?: string;
+      roundsWon?: number;
+      roundsLost?: number;
+      roundsContested?: number;
+      drillForNextTime?: string;
     };
+    const momentumScores = parseMomentumScores(parsed.momentumScores);
     const userStrengths = parsed.userStrengths
       ?.filter(
         (item): item is string =>
@@ -839,6 +957,14 @@ async function generateDebateDashboard(params: {
         improvementSuggestions && improvementSuggestions.length > 0
           ? improvementSuggestions
           : fallbackDashboard.improvementSuggestions,
+      momentumScores,
+      strongestMoment: readOptionalString(parsed.strongestMoment),
+      weakestMoment: readOptionalString(parsed.weakestMoment),
+      rhetoricalStyle: readOptionalString(parsed.rhetoricalStyle),
+      roundsWon: readOptionalInteger(parsed.roundsWon),
+      roundsLost: readOptionalInteger(parsed.roundsLost),
+      roundsContested: readOptionalInteger(parsed.roundsContested),
+      drillForNextTime: readOptionalString(parsed.drillForNextTime),
     } satisfies DebateDashboard;
   } catch {
     return buildFallbackDashboard({

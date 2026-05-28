@@ -226,7 +226,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
                 className="inline-flex items-center gap-2 rounded-full border border-[#d9d2c4] bg-white px-3.5 py-2 text-[11px] text-slate-700 transition hover:border-[#b6ac98] hover:text-slate-950"
               >
                 <ScrollText size={13} />
-                Show summary
+                Post-Match Report
                 {showSummary ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
               </button>
             </div>

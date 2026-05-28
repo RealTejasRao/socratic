@@ -43,6 +43,7 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "recharts": "^3.8.1",
     "standardwebhooks": "^1.0.0",
     "svix": "^1.86.0",
     "tailwind-merge": "^3.6.0",

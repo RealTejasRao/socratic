@@ -155,7 +155,6 @@ export default function MessageInput({
   const voiceBaseContentRef = useRef("");
   const voiceCommittedTranscriptRef = useRef("");
   const isStoppingRecognitionRef = useRef(false);
-  const hasVerifiedMicrophoneAccessRef = useRef(false);
   const supportsWebSpeech = useSyncExternalStore(
     subscribeToClientSnapshot,
     () => {
@@ -365,9 +364,6 @@ export default function MessageInput({
             ? "I couldn't hear anything. Try again."
             : "Voice dictation ran into a problem.";
 
-      if (event.error === "not-allowed") {
-        hasVerifiedMicrophoneAccessRef.current = false;
-      }
       setVoiceError(nextError);
       setIsListening(false);
     };
@@ -380,59 +376,16 @@ export default function MessageInput({
     return recognition;
   }
 
-  async function ensureMicrophoneAccess() {
-    if (hasVerifiedMicrophoneAccessRef.current) {
-      return true;
-    }
-
+  function canStartVoiceInput() {
     if (!window.isSecureContext) {
       setVoiceError("Voice input needs HTTPS or localhost.");
       return false;
     }
 
-    const mediaDevices = navigator.mediaDevices;
-    if (!mediaDevices?.getUserMedia) {
-      setVoiceError("Microphone access is not available in this browser.");
-      return false;
-    }
-
-    if ("permissions" in navigator && typeof navigator.permissions.query === "function") {
-      try {
-        const permissionStatus = await navigator.permissions.query({
-          name: "microphone" as PermissionName,
-        });
-
-        if (permissionStatus.state === "denied") {
-          setVoiceError("Microphone permission was denied.");
-          return false;
-        }
-      } catch {
-        // Ignore Permissions API errors and continue with a direct audio request.
-      }
-    }
-
-    try {
-      const stream = await mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
-      hasVerifiedMicrophoneAccessRef.current = true;
-      return true;
-    } catch (error) {
-      const errorName = error instanceof DOMException ? error.name : "";
-      const nextError =
-        errorName === "NotAllowedError" || errorName === "SecurityError"
-          ? "Microphone permission was denied."
-          : errorName === "NotFoundError" || errorName === "DevicesNotFoundError"
-            ? "No microphone was detected."
-            : errorName === "NotReadableError" || errorName === "TrackStartError"
-              ? "Microphone is busy in another app."
-              : "Voice input couldn't access your microphone.";
-
-      setVoiceError(nextError);
-      return false;
-    }
+    return true;
   }
 
-  async function handleVoiceToggle() {
+  function handleVoiceToggle() {
     if (!supportsWebSpeech || isStreaming) {
       return;
     }
@@ -450,8 +403,7 @@ export default function MessageInput({
       return;
     }
 
-    const canUseMicrophone = await ensureMicrophoneAccess();
-    if (!canUseMicrophone) {
+    if (!canStartVoiceInput()) {
       return;
     }
 

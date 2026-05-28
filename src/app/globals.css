@@ -1737,6 +1737,19 @@ html.app-dark .summary-details {
   border-color: var(--surface-active) !important;
 }
 
+html.app-dark .summary-verdict-card,
+html.app-dark .summary-stat-card,
+html.app-dark .summary-drill-callout,
+html.app-dark .summary-chart-empty,
+html.app-dark .summary-chart-tooltip {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+html.app-dark .summary-stat-card:hover {
+  border-color: var(--border-strong) !important;
+}
+
 html.app-dark .summary-title,
 html.app-dark .summary-section-title,
 html.app-dark .summary-subheading,
@@ -1757,8 +1770,14 @@ html.app-dark .summary-advice,
 html.app-dark .summary-body,
 html.app-dark .summary-list,
 html.app-dark .summary-details div,
-html.app-dark .summary-generated {
+html.app-dark .summary-generated,
+html.app-dark .summary-chart-empty,
+html.app-dark .summary-chart-tooltip p {
   color: var(--text-secondary) !important;
+}
+
+html.app-dark .summary-chart-tooltip p:first-child {
+  color: var(--text-primary) !important;
 }
 
 html.app-dark .summary-back-link,
@@ -1804,6 +1823,24 @@ html.app-dark .summary-list .bg-emerald-500 {
 
 html.app-dark .summary-list .bg-amber-500 {
   background: #f59e0b !important;
+}
+
+html.app-dark .summary-verdict-badge.bg-emerald-50 {
+  background: rgba(5, 150, 105, 0.16) !important;
+  border-color: rgba(52, 211, 153, 0.36) !important;
+  color: #6ee7b7 !important;
+}
+
+html.app-dark .summary-verdict-badge.bg-red-50 {
+  background: rgba(220, 38, 38, 0.14) !important;
+  border-color: rgba(248, 113, 113, 0.34) !important;
+  color: #fca5a5 !important;
+}
+
+html.app-dark .summary-verdict-badge.bg-slate-100 {
+  background: var(--surface-hover) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
 }
 
 html.app-dark .summary-details summary:hover {
