@@ -50,20 +50,18 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
           className="object-cover object-center"
         />
         <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(180deg,rgba(8,9,10,0)_0%,rgba(8,9,10,0.18)_35%,rgba(8,9,10,0.62)_100%)]" />
-        <div className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10">
-          <Image
-            src="/brand/Logo_Light_SVG.svg"
-            alt="Socratic AI"
-            width={28}
-            height={28}
-            className="h-7 w-7"
-            priority
-          />
-        </div>
         <section className="relative z-10 flex min-h-svh flex-col justify-between px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:px-7">
-          <div className="max-w-[calc(100%-3.75rem)] pt-1 sm:max-w-[calc(100%-4.25rem)]">
+          <div className="max-w-[21rem] pt-1">
+            <Image
+              src="/brand/Logo_Light_SVG.svg"
+              alt="Socratic AI"
+              width={44}
+              height={44}
+              className="mb-5 h-11 w-11"
+              priority
+            />
             <h1
-              className={`${instrumentSerif.className} text-[1.78rem] leading-[0.92] tracking-[-0.04em] text-[#fbf4eb] sm:text-[2rem]`}
+              className={`${instrumentSerif.className} text-[2rem] leading-[1.02] tracking-[0.018em] text-[#fbf4eb] sm:text-[2.2rem]`}
             >
               Your mind was meant for more
             </h1>
