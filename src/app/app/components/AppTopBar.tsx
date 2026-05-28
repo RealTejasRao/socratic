@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -54,6 +55,8 @@ type ActionDialog =
       currentTitle: string;
     };
 
+type AppTheme = "light" | "dark";
+
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -77,10 +80,6 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isThemeReady, setIsThemeReady] = useState(false);
   const [isEndingDebate, setIsEndingDebate] = useState(false);
-  const [themeSweep, setThemeSweep] = useState<{
-    id: number;
-    dark: boolean;
-  } | null>(null);
   const [nowMs, setNowMs] = useState<number | null>(null);
   const finalizeRequestedRef = useRef(false);
 
@@ -127,38 +126,74 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
   useEffect(() => {
     const savedTheme = localStorage.getItem("socratic:theme");
     const useDark = savedTheme ? savedTheme === "dark" : false;
-    setIsDarkMode(useDark);
     document.documentElement.classList.toggle("app-dark", useDark);
+    setIsDarkMode(useDark);
     setIsThemeReady(true);
   }, []);
 
-  useEffect(() => {
-    if (!isThemeReady) {
+  const applyTheme = useCallback((nextTheme: AppTheme, animate: boolean) => {
+    const root = document.documentElement;
+    const useDark = nextTheme === "dark";
+    const currentTheme = root.classList.contains("app-dark") ? "dark" : "light";
+
+    if (currentTheme === nextTheme && isThemeReady) {
+      localStorage.setItem("socratic:theme", nextTheme);
+      setIsDarkMode(useDark);
       return;
     }
 
-    document.documentElement.classList.toggle("app-dark", isDarkMode);
-    localStorage.setItem("socratic:theme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode, isThemeReady]);
+    const commitTheme = () => {
+      root.classList.toggle("app-dark", useDark);
+      localStorage.setItem("socratic:theme", nextTheme);
+      flushSync(() => {
+        setIsDarkMode(useDark);
+        setIsThemeReady(true);
+      });
+    };
+
+    const viewTransitionDocument = document as Document & {
+      startViewTransition?: (callback: () => void) => {
+        finished: Promise<void>;
+      };
+    };
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (
+      !animate ||
+      prefersReducedMotion ||
+      typeof viewTransitionDocument.startViewTransition !== "function"
+    ) {
+      commitTheme();
+      return;
+    }
+
+    root.classList.add("theme-wave-transition");
+    const transition = viewTransitionDocument.startViewTransition(commitTheme);
+
+    void transition.finished.finally(() => {
+      root.classList.remove("theme-wave-transition");
+    });
+  }, [isThemeReady]);
 
   useEffect(() => {
     function handleThemeChanged(event: Event) {
-      const customEvent = event as CustomEvent<{ theme?: "light" | "dark" }>;
+      const customEvent = event as CustomEvent<{ theme?: AppTheme }>;
       const nextTheme = customEvent.detail?.theme;
 
       if (!nextTheme) {
         return;
       }
 
-      setIsDarkMode(nextTheme === "dark");
-      setIsThemeReady(true);
+      applyTheme(nextTheme, true);
     }
 
     window.addEventListener("socratic:theme:changed", handleThemeChanged);
     return () => {
       window.removeEventListener("socratic:theme:changed", handleThemeChanged);
     };
-  }, []);
+  }, [applyTheme]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -367,16 +402,6 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
   }
 
   function handleThemeChange(nextValue: boolean) {
-    const root = document.documentElement;
-
-    root.classList.add("theme-switching");
-
-    setTimeout(() => {
-      root.classList.remove("theme-switching");
-    }, 180);
-
-    setThemeSweep({ id: Date.now(), dark: nextValue });
-    setIsDarkMode(nextValue);
     window.dispatchEvent(
       new CustomEvent("socratic:theme:changed", {
         detail: { theme: nextValue ? "dark" : "light" },
@@ -554,22 +579,6 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
 
   return (
     <>
-      <AnimatePresence>
-        {themeSweep && (
-          <motion.div
-            key={themeSweep.id}
-            className={cn(
-              "pointer-events-none fixed inset-0 z-55",
-              themeSweep.dark ? "bg-black" : "bg-[#fefefc]",
-            )}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, themeSweep.dark ? 0.22 : 0.16, 0] }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            onAnimationComplete={() => setThemeSweep(null)}
-          />
-        )}
-      </AnimatePresence>
-
       <header className="app-topbar sticky top-0 z-20 flex h-12 shrink-0 items-center bg-white px-4 shadow-[inset_0_-0.5px_0_rgba(0,0,0,0.10)] md:h-12 md:px-6">
         <div className="flex min-w-0 flex-1 items-center lg:w-47 lg:flex-none">
           <div className="flex items-center gap-2 lg:hidden">

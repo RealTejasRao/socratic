@@ -66,7 +66,6 @@ const smoothUiClass =
 const COLLAPSE_BY_DEFAULT_KEY = "socratic:sidebar:collapseByDefault";
 const SHOW_HOVER_PREVIEWS_KEY = "socratic:sidebar:showHoverPreviews";
 const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
-const THEME_KEY = "socratic:theme";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
 
@@ -368,7 +367,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
   useEffect(() => {
     if (pathname === ROUTES.APP) {
-      setIsNewChatNavigating(false);
+      const timeoutId = window.setTimeout(() => {
+        setIsNewChatNavigating(false);
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
   }, [pathname]);
 
@@ -430,11 +435,6 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   }
 
   function handleThemePreference(nextTheme: "light" | "dark") {
-    const root = document.documentElement;
-    const useDark = nextTheme === "dark";
-    root.classList.toggle("app-dark", useDark);
-    localStorage.setItem(THEME_KEY, nextTheme);
-    setIsDarkMode(useDark);
     window.dispatchEvent(
       new CustomEvent("socratic:theme:changed", {
         detail: { theme: nextTheme },
