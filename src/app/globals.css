@@ -159,6 +159,16 @@ html.pwa-standalone .app-composer-dock {
   padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
 }
 
+html.pwa-standalone .app-greeting-heading {
+  font-size: 30px;
+}
+
+@media (min-width: 48rem) {
+  html.pwa-standalone .app-greeting-heading {
+    font-size: 31px;
+  }
+}
+
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .pwa-bottom-nav {
     display: block;

@@ -51,7 +51,7 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
         />
         <div className="absolute inset-x-0 bottom-0 h-[44%] bg-[linear-gradient(180deg,rgba(8,9,10,0)_0%,rgba(8,9,10,0.18)_35%,rgba(8,9,10,0.62)_100%)]" />
         <section className="relative z-10 flex min-h-svh flex-col justify-between px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:px-7">
-          <div className="max-w-[21rem] pt-1">
+          <div className="max-w-84 pt-1">
             <Image
               src="/brand/Logo_Light_SVG.svg"
               alt="Socratic AI"
