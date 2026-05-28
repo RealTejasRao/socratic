@@ -1784,12 +1784,34 @@ html.app-dark .app-debate-winner-close:hover {
 }
 
 html.app-dark .summary-page {
+  background: var(--bg-main) !important;
   color: var(--text-primary) !important;
+}
+
+html.app-dark .summary-topbar {
+  background: color-mix(in srgb, var(--bg-main) 88%, transparent) !important;
+  border-color: var(--surface-active) !important;
 }
 
 html.app-dark .summary-hero,
 html.app-dark .summary-section,
+html.app-dark .summary-graph-stage,
+html.app-dark .summary-verdict,
+html.app-dark .summary-metrics,
+html.app-dark .summary-feedback,
 html.app-dark .summary-details {
+  border-color: var(--surface-active) !important;
+}
+
+html.app-dark .summary-result-grid,
+html.app-dark .summary-chart-note,
+html.app-dark .summary-detail-item,
+html.app-dark .summary-metrics dl {
+  border-color: var(--surface-active) !important;
+}
+
+html.app-dark .summary-metrics dl,
+html.app-dark .summary-metrics .divide-\[\#e3e1d8\] > :not(:last-child) {
   border-color: var(--surface-active) !important;
 }
 
@@ -1807,6 +1829,7 @@ html.app-dark .summary-stat-card:hover {
 }
 
 html.app-dark .summary-title,
+html.app-dark .summary-section-heading,
 html.app-dark .summary-section-title,
 html.app-dark .summary-subheading,
 html.app-dark .summary-details summary {
@@ -1836,12 +1859,65 @@ html.app-dark .summary-chart-tooltip p:first-child {
   color: var(--text-primary) !important;
 }
 
+html.app-dark .summary-chart-empty {
+  background: transparent !important;
+}
+
+html.app-dark .summary-ratio .bg-\[\#ebe8df\] {
+  background: var(--surface-active) !important;
+}
+
+html.app-dark .summary-ratio .text-\[\#285f53\],
+html.app-dark .summary-feedback .text-\[\#285f53\],
+html.app-dark .summary-metrics .text-\[\#285f53\] {
+  color: #6ee7b7 !important;
+}
+
+html.app-dark .summary-ratio .text-\[\#a33c32\],
+html.app-dark .summary-feedback .text-\[\#a33c32\],
+html.app-dark .summary-metrics .text-\[\#a33c32\] {
+  color: #fca5a5 !important;
+}
+
+html.app-dark .summary-ratio .text-\[\#955b25\] {
+  color: #fbbf24 !important;
+}
+
+html.app-dark .summary-feedback-table .bg-\[\#eef7f2\],
+html.app-dark .summary-metrics .bg-\[\#eef7f2\] {
+  background: rgba(5, 150, 105, 0.14) !important;
+  color: #d1fae5 !important;
+}
+
+html.app-dark .summary-feedback-table .bg-\[\#fff0ee\],
+html.app-dark .summary-metrics .bg-\[\#fff0ee\] {
+  background: rgba(220, 38, 38, 0.13) !important;
+  color: #fee2e2 !important;
+}
+
+html.app-dark .summary-verdict .bg-\[\#f7f4ed\],
+html.app-dark .summary-practice.bg-\[\#f7f4ed\],
+html.app-dark .summary-practice .bg-\[\#f7f4ed\],
+html.app-dark .summary-feedback-table .bg-\[\#f7f4ed\],
+html.app-dark .summary-metrics .bg-\[\#fbfaf6\],
+html.app-dark .summary-feedback-table .bg-\[\#fbfaf6\] {
+  background: var(--bg-elevated) !important;
+}
+
+html.app-dark .summary-practice .bg-\[\#2c3a4b\] {
+  background: var(--surface-active) !important;
+}
+
+html.app-dark .summary-verdict .border-\[\#2c3a4b\] {
+  border-color: var(--text-primary) !important;
+}
+
 html.app-dark .summary-back-link,
 html.app-dark .summary-jump-link,
 html.app-dark .summary-meta-pill,
 html.app-dark .summary-step-number {
   border-color: var(--border-subtle) !important;
-  background: var(--bg-elevated) !important;
+  background: transparent !important;
 }
 
 html.app-dark .summary-back-link,

@@ -21,6 +21,7 @@ type MomentumPoint = {
 
 type Props = {
   data: MomentumPoint[];
+  className?: string;
 };
 
 type TooltipPayload = {
@@ -100,7 +101,7 @@ function toChartData(data: MomentumPoint[]) {
   return chartData;
 }
 
-export function DebateMomentumChart({ data }: Props) {
+export function DebateMomentumChart({ data, className }: Props) {
   const chartData = toChartData(data);
   const highest = findPoint(data, (current, next) =>
     next.score > current.score ? next : current,
@@ -115,7 +116,9 @@ export function DebateMomentumChart({ data }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="summary-chart-empty flex min-h-[260px] items-center justify-center rounded-lg border border-dashed border-slate-200 px-6 text-center text-[13px] leading-6 text-slate-500">
+      <div
+        className={`summary-chart-empty flex min-h-[260px] items-center justify-center border-y border-dashed border-slate-200 px-6 text-center text-[13px] leading-6 text-slate-500 ${className ?? ""}`}
+      >
         Momentum data was not available for this debate. Future completed
         debates will show round-by-round movement here.
       </div>
@@ -123,7 +126,7 @@ export function DebateMomentumChart({ data }: Props) {
   }
 
   return (
-    <div className="summary-chart h-[320px] w-full">
+    <div className={`summary-chart h-[320px] w-full ${className ?? ""}`}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
