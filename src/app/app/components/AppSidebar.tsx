@@ -1175,7 +1175,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                         </div>
 
                         <label
-                          className={`flex items-center justify-between gap-4 border-b py-3 ${
+                          className={`${isStandalone ? "hidden" : "hidden md:flex"} items-center justify-between gap-4 border-b py-3 ${
                             isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
                           }`}
                         >
@@ -1196,7 +1196,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                         </label>
 
                         <label
-                          className={`flex items-center justify-between gap-4 border-b py-3 ${
+                          className={`${isStandalone ? "hidden" : "hidden md:flex"} items-center justify-between gap-4 border-b py-3 ${
                             isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
                           }`}
                         >
@@ -1217,7 +1217,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                         </label>
 
                         <label
-                          className={`flex items-center justify-between gap-4 border-b py-3 ${
+                          className={`${isStandalone ? "hidden" : "hidden md:flex"} items-center justify-between gap-4 border-b py-3 ${
                             isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
                           }`}
                         >
