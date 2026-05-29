@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import type { Route } from "next";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -30,6 +31,7 @@ import type {
   ChatImageAttachment,
   ChatMessage,
   ChatSessionMeta,
+  SessionMode,
 } from "src/types/chat";
 import type { BillingStateResponse } from "src/types/billing";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
@@ -49,6 +51,32 @@ interface Props {
   sessionMeta?: ChatSessionMeta;
   initialAutoSendMessage?: string | null;
   initialBilling?: Pick<BillingStateResponse, "isPremium" | "usage" | "features">;
+}
+
+function getModeFromSearchParam(value: string | null): SessionMode {
+  const normalized = value?.toLowerCase().trim();
+
+  if (normalized === "debate") {
+    return "DEBATE";
+  }
+
+  if (normalized === "roleplay") {
+    return "ROLEPLAY";
+  }
+
+  return "SOCRATIC";
+}
+
+function getModeHref(mode: SessionMode) {
+  if (mode === "DEBATE") {
+    return `${ROUTES.APP}?mode=debate` as Route;
+  }
+
+  if (mode === "ROLEPLAY") {
+    return `${ROUTES.APP}?mode=roleplay` as Route;
+  }
+
+  return ROUTES.APP;
 }
 
 const MORNING_GREETINGS = [
@@ -275,6 +303,7 @@ export default function ChatContainer({
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const hasMessages = messages.length > 0;
   const isDebateSession = activeSessionMeta.mode === "DEBATE";
   const isRoleplaySession = activeSessionMeta.mode === "ROLEPLAY";
@@ -371,9 +400,29 @@ export default function ChatContainer({
     }
   }
 
+  function selectNewChatMode(mode: SessionMode, updateUrl = true) {
+    setModeSelection(mode);
+    setActiveSessionMeta({ mode });
+    setPendingRoleplayId(null);
+
+    if (updateUrl) {
+      router.replace(getModeHref(mode), { scroll: false });
+    }
+  }
+
   useEffect(() => {
     setActiveSessionMeta(sessionMeta);
   }, [sessionMeta]);
+
+  useEffect(() => {
+    if (activeSessionId || messages.length > 0) {
+      return;
+    }
+
+    selectNewChatMode(getModeFromSearchParam(searchParams.get("mode")), false);
+  // selectNewChatMode intentionally stays outside deps to avoid URL sync loops.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSessionId, messages.length, searchParams]);
 
   useEffect(() => {
     void refreshBillingState();
@@ -404,8 +453,7 @@ export default function ChatContainer({
       setMessages([]);
       setEditingMessage(null);
       setEditDraft("");
-      setModeSelection("SOCRATIC");
-      setActiveSessionMeta({ mode: "SOCRATIC" });
+      selectNewChatMode("SOCRATIC");
       setPendingRoleplayId(null);
       setShowWinnerReveal(false);
       finalizeRequestedRef.current = false;
@@ -423,6 +471,8 @@ export default function ChatContainer({
         handleNewChatRequested,
       );
     };
+  // selectNewChatMode intentionally stays outside deps; this listener is mounted once.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -1324,7 +1374,7 @@ export default function ChatContainer({
                     <button
                       type="button"
                       onClick={() => {
-                        setModeSelection("SOCRATIC");
+                        selectNewChatMode("SOCRATIC");
                         setIsModeMenuOpen(false);
                       }}
                       data-active={modeSelection === "SOCRATIC"}
@@ -1347,7 +1397,7 @@ export default function ChatContainer({
                           setIsModeMenuOpen(false);
                           return;
                         }
-                        setModeSelection("DEBATE");
+                        selectNewChatMode("DEBATE");
                         setIsModeMenuOpen(false);
                       }}
                       data-active={modeSelection === "DEBATE"}
@@ -1366,7 +1416,7 @@ export default function ChatContainer({
                     <button
                       type="button"
                       onClick={() => {
-                        setModeSelection("ROLEPLAY");
+                        selectNewChatMode("ROLEPLAY");
                         setIsModeMenuOpen(false);
                       }}
                       data-active={modeSelection === "ROLEPLAY"}

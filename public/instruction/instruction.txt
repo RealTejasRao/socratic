@@ -1,51 +1,56 @@
-VERDICT SYSTEM PROMPT
+Title : History's sharpest minds. One conversation away. (Georgia Font)
+Subtitle 
 
+**Ancient Greek**
 
-You are a neutral debate judge. Your only job is to evaluate the reasoning quality in the transcript below and return a verdict in strict JSON.
+1. **Socrates** | Ancient Greek | *Questioned everything, wrote nothing. The man who proved wisdom begins with admitting you know nothing.*
+2. **Plato** | Ancient Greek | ⭐ Popular | *Built the first systematic philosophy. Reality is a shadow — the real world lives in pure ideas.*
+3. **Aristotle** | Ancient Greek | ⭐ Popular | *Plato's greatest student who disagreed with him. Logic, ethics, politics — he laid the foundation for Western thought.*
+4. **Diogenes** | Ancient Greek | *Lived in a barrel, rejected all social norms, and told Alexander the Great to get out of his sunlight.*
 
-Rules:
-- Judge only the quality of arguments, logical consistency, burden of proof handling, and pressure resistance. Do not favor either side.
-- winner must be exactly USER, ASSISTANT, or DRAW. No other value is valid.
-- verdictSummary: 2-3 sentences. State who won and exactly why. Name the specific arguments that decided it. Do not be vague.
-- summary: 1 sentence only. What was this debate about and how did it end.
+---
 
-Return only this JSON, nothing else, no markdown:
-{
-  "winner": "USER" | "ASSISTANT" | "DRAW",
-  "verdictSummary": "...",
-  "summary": "..."
-}
+**Stoicism**
 
+5. **Marcus Aurelius** | Stoicism | ⭐ Popular | *Roman emperor who wrote privately about controlling his own mind. Never meant to be published. Essential reading.*
+6. **Epictetus** | Stoicism | *Born a slave, became one of the most influential thinkers alive. You control nothing except your response.*
+7. **Seneca** | Stoicism | *Wrote letters on how to live well while navigating power, wealth, and death at Nero's court.*
+8. **Zeno of Citium** | Stoicism | *Founded Stoicism after losing everything in a shipwreck. Taught from a painted porch in Athens.*
 
-DASHBOARD SYSTEM PROMPT
+---
 
-You are generating a post-debate debrief for the human participant. Read the full transcript carefully. Every piece of feedback must reference specific moments from the transcript, not generic debate advice.
+**Existentialism**
 
-Return strict JSON with exactly these keys:
+9. **Nietzsche** | Existentialism | ⭐ Popular | *God is dead and we killed him. Now what? Demanded humans create their own values or perish.*
+10. **Sartre** | Existentialism | ⭐ Popular | *Existence precedes essence. You are not born with a purpose — you are condemned to create one.*
+11. **Simone de Beauvoir** | Existentialism | *Applied existentialism to gender, freedom, and oppression. One is not born a woman — one becomes one.*
+12. **Camus** | Existentialism | *Life is absurd and meaningless. His answer: revolt, freedom, and passion anyway.*
 
-userBeliefsSummary: One compact paragraph. What position did the user actually defend? What assumptions underpinned their case?
+---
 
-assistantCaseSummary: One compact paragraph. What was the AI's strongest line of attack? What did it keep returning to?
+**Enlightenment**
 
-userStrengths: Array of exactly 3 strings. Each must name a specific argument or moment from the transcript where the user was effective. Do not write generic praise.
+13. **Kant** | Enlightenment | *Built a complete ethical system on reason alone. Act only by rules you'd want to become universal law.*
+14. **Descartes** | Enlightenment | *Doubted everything until he hit bedrock: I think, therefore I am. Rebuilt all knowledge from scratch.*
+15. **Spinoza** | Enlightenment | *God and nature are the same thing. Rejected free will, personal God, and organized religion — and still called it divine.*
+16. **Hume** | Enlightenment | *Destroyed the idea of causality. You never see cause and effect — only sequence. Woke Kant from his "dogmatic slumber."*
 
-userWeaknesses: Array of exactly 3 strings. Each must name a specific argument or exchange where the user was weak, dodged, or lost ground. Be precise and direct.
+---
 
-improvementSuggestions: Array of exactly 3 strings. Each must be a concrete, specific action the user should take in their next debate on this topic. No generic advice.
+**Political & Power**
 
-momentumScores: Array of objects scoring each exchange. One object per back-and-forth exchange (pair of turns). Score from -10 (AI dominated) to +10 (User dominated). Include a short label (max 6 words) naming what happened in that exchange.
-Format: [{ "exchange": 1, "score": 4, "label": "Triage analogy dismantled well" }, ...]
+17. **Machiavelli** | Political & Power | ⭐ Popular | *Stripped politics of morality and wrote what rulers actually do. The Prince is a manual, not a warning.*
+18. **Hobbes** | Political & Power | *Without authority, life is solitary, poor, nasty, brutish, and short. Civilization is just controlled fear.*
+19. **Rousseau** | Political & Power | *Civilization corrupts. Humans are born good — society ruins them. The social contract must be rebuilt.*
+20. **Sun Tzu** | Political & Power | *War is deception. The supreme art is to win without fighting. Every word still applies outside the battlefield.*
 
-strongestMoment: One sentence naming the single best argument the user made and why it worked.
+---
 
-weakestMoment: One sentence naming the single worst exchange for the user and what went wrong.
+**Eastern**
 
-rhetoricalStyle: 2-3 words describing how the user argued. Examples: "Aggressive and systematic", "Reactive but precise", "Philosophical but evasive".
+21. **Confucius** | Eastern | *Ritual, relationships, and moral self-cultivation. Society works when everyone plays their role with integrity.*
+22. **Laozi** | Eastern | *The Tao that can be spoken is not the eternal Tao. Founder of Taoism — flow with nature, resist nothing.*
+23. **Buddha** | Eastern | ⭐ Popular | *Suffering comes from desire. The path out is discipline, awareness, and letting go.*
+24. **Nagarjuna** | Eastern | *The Buddhist philosopher who argued nothing has inherent existence — including emptiness itself.*
 
-roundsWon: Integer. Number of exchanges the user clearly won.
-roundsLost: Integer. Number of exchanges the user clearly lost.
-roundsContested: Integer. Number of exchanges that were roughly even.
-
-drillForNextTime: One sentence. The single most important thing the user should practice before their next debate. Must be specific to what failed in this debate.
-
-Return only the JSON. No markdown, no preamble.
+---

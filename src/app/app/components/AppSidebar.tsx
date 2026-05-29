@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Inter } from "next/font/google";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -14,6 +14,7 @@ import {
   Globe,
   House,
   Instagram,
+  Landmark,
   Linkedin,
   Mail,
   PanelLeftClose,
@@ -21,6 +22,7 @@ import {
   PenSquare,
   Search,
   Settings,
+  Swords,
   X,
   Youtube,
 } from "lucide-react";
@@ -57,6 +59,7 @@ interface Props {
 }
 
 type SettingsTab = "GENERAL" | "SOCIAL";
+type SidebarModeLink = "DEBATE" | "ROLEPLAY";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -71,6 +74,8 @@ const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
 const HOME_CONTACT_HREF = "/#contact" as const;
+const DEBATE_MODE_HREF = `${ROUTES.APP}?mode=debate` as const;
+const ROLEPLAY_MODE_HREF = `${ROUTES.APP}?mode=roleplay` as const;
 
 const SETTINGS_TABS: Array<{
   value: SettingsTab;
@@ -190,6 +195,7 @@ function readChatFontSizeSetting(): ChatFontSize {
 
 export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isStandalone = useStandaloneMode();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -209,10 +215,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
   const [isHomeNavigating, setIsHomeNavigating] = useState(false);
   const [isNewChatNavigating, setIsNewChatNavigating] = useState(false);
+  const [navigatingModeLink, setNavigatingModeLink] =
+    useState<SidebarModeLink | null>(null);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const toneDropdownMenuRef = useRef<HTMLDivElement | null>(null);
   const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
+  const newChatFeedbackTimeoutRef = useRef<number | null>(null);
   const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
   const activeSettingsMeta = SETTINGS_TAB_META[activeSettingsTab];
@@ -338,6 +347,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       if (resetToastTimeoutRef.current !== null) {
         window.clearTimeout(resetToastTimeoutRef.current);
       }
+      if (newChatFeedbackTimeoutRef.current !== null) {
+        window.clearTimeout(newChatFeedbackTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -380,6 +392,35 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       };
     }
   }, [pathname]);
+
+  useEffect(() => {
+    if (!navigatingModeLink) {
+      return;
+    }
+
+    const normalizedMode = searchParams.get("mode")?.toLowerCase().trim();
+    const isMatchingMode =
+      (navigatingModeLink === "DEBATE" && normalizedMode === "debate") ||
+      (navigatingModeLink === "ROLEPLAY" && normalizedMode === "roleplay");
+
+    if (pathname === ROUTES.APP && isMatchingMode) {
+      const timeoutId = window.setTimeout(() => {
+        setNavigatingModeLink(null);
+      }, 300);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
+    }
+
+    const fallbackTimeoutId = window.setTimeout(() => {
+      setNavigatingModeLink(null);
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(fallbackTimeoutId);
+    };
+  }, [navigatingModeLink, pathname, searchParams]);
 
   useEffect(() => {
     const handleOpen = () => setIsMobileSidebarOpen(true);
@@ -495,7 +536,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     }
 
     event.preventDefault();
-    setIsNewChatNavigating(false);
+    setIsNewChatNavigating(true);
+    if (newChatFeedbackTimeoutRef.current !== null) {
+      window.clearTimeout(newChatFeedbackTimeoutRef.current);
+    }
+    newChatFeedbackTimeoutRef.current = window.setTimeout(() => {
+      setIsNewChatNavigating(false);
+      newChatFeedbackTimeoutRef.current = null;
+    }, 450);
     window.dispatchEvent(new CustomEvent("socratic:new-chat:requested"));
   }
 
@@ -553,6 +601,54 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     >
       <Mail size={iconSize} /> {label ? <span>Send Us a Message</span> : null}
     </Link>
+  );
+
+  const modeLinks = (
+    iconSize: number,
+    className: string,
+    onClick?: () => void,
+    label = true,
+  ) => (
+    <div
+      className={
+        label ? "mt-1 space-y-0.5" : "mt-0.5 flex flex-col items-center gap-0.5"
+      }
+    >
+      <Link
+        href={DEBATE_MODE_HREF}
+        onClick={() => {
+          setNavigatingModeLink("DEBATE");
+          onClick?.();
+        }}
+        className={`${className} ${navigatingModeLink === "DEBATE" ? "pointer-events-none opacity-90" : ""}`}
+        aria-label="Debate mode"
+        data-tooltip={label ? undefined : "Debate mode"}
+      >
+        {navigatingModeLink === "DEBATE" ? (
+          <RoseCurveLoader className="h-[1.65rem] w-[1.65rem] text-rose-600" />
+        ) : (
+          <Swords size={iconSize} className="shrink-0 text-rose-600" />
+        )}
+        {label ? <span>Debate mode</span> : null}
+      </Link>
+      <Link
+        href={ROLEPLAY_MODE_HREF}
+        onClick={() => {
+          setNavigatingModeLink("ROLEPLAY");
+          onClick?.();
+        }}
+        className={`${className} ${navigatingModeLink === "ROLEPLAY" ? "pointer-events-none opacity-90" : ""}`}
+        aria-label="Talk to a philosopher"
+        data-tooltip={label ? undefined : "Talk to a philosopher"}
+      >
+        {navigatingModeLink === "ROLEPLAY" ? (
+          <RoseCurveLoader className="h-[1.65rem] w-[1.65rem] text-amber-500" />
+        ) : (
+          <Landmark size={iconSize} className="shrink-0 text-amber-500" />
+        )}
+        {label ? <span>Talk to a philosopher</span> : null}
+      </Link>
+    </div>
   );
 
   return (
@@ -663,6 +759,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               >
                 <Search size={17} />
               </button>
+              {modeLinks(
+                17,
+                "app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition",
+                undefined,
+                false,
+              )}
             </div>
 
             <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
@@ -711,37 +813,44 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           </>
         ) : (
           <>
-            <div className="mb-1 border-t border-slate-200" />
+            <div className="sidebar-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
+              <div className="mb-1 border-t border-slate-200" />
 
-            <div className="mb-1 mt-1">
-              <Link
-                href={ROUTES.APP}
-                onClick={handleNewChatClick}
-                className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
-              >
-                {isNewChatNavigating ? (
-                  <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
-                ) : (
-                  <PenSquare size={16} />
-                )}
-                <span>New Chat</span>
-              </Link>
+              <div className="mb-1 mt-1">
+                <Link
+                  href={ROUTES.APP}
+                  onClick={handleNewChatClick}
+                  className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
+                >
+                  {isNewChatNavigating ? (
+                    <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
+                  ) : (
+                    <PenSquare size={16} />
+                  )}
+                  <span>New Chat</span>
+                </Link>
+              </div>
+
+              <SidebarSearch />
+
+              {modeLinks(
+                16,
+                "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition",
+              )}
+
+              <div className="mt-2">
+                <p className="mb-2 px-3 text-[11px] uppercase tracking-[0.14em] text-slate-500">
+                  Chats
+                </p>
+                <SidebarSessions
+                  sessions={sessions}
+                  showHoverPreviews={showHoverPreviews}
+                  showModeBadges={showModeBadges}
+                />
+              </div>
             </div>
 
-            <SidebarSearch />
-
-            <div className="sidebar-scroll mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-              <p className="mb-2 px-3 text-[11px] uppercase tracking-[0.14em] text-slate-500">
-                Chats
-              </p>
-              <SidebarSessions
-                sessions={sessions}
-                showHoverPreviews={showHoverPreviews}
-                showModeBadges={showModeBadges}
-              />
-            </div>
-
-            <div className="mt-3 space-y-0.5 border-t border-slate-200 pt-2">
+            <div className="mt-3 shrink-0 space-y-0.5 border-t border-slate-200 pt-2">
               {isStandalone ? (
                 visitWebsiteLink(
                   16,
@@ -855,41 +964,49 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           </button>
         </div>
 
-        <div className="mb-2 border-t border-slate-200" />
+        <div className="sidebar-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
+          <div className="mb-2 border-t border-slate-200" />
 
-        <div className="mb-1.5">
-          <Link
-            href={ROUTES.APP}
-            onClick={(event) => {
-              handleNewChatClick(event);
-              setIsMobileSidebarOpen(false);
-            }}
-            className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
-          >
-            {isNewChatNavigating ? (
-              <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
-            ) : (
-              <PenSquare size={18} />
-            )}
-            <span>New Chat</span>
-          </Link>
+          <div className="mb-1.5">
+            <Link
+              href={ROUTES.APP}
+              onClick={(event) => {
+                handleNewChatClick(event);
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
+            >
+              {isNewChatNavigating ? (
+                <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
+              ) : (
+                <PenSquare size={18} />
+              )}
+              <span>New Chat</span>
+            </Link>
+          </div>
+
+          <SidebarSearch />
+
+          {modeLinks(
+            18,
+            "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition",
+            () => setIsMobileSidebarOpen(false),
+          )}
+
+          <div className="mt-2">
+            <p className="mb-2 px-2.5 text-[12px] uppercase tracking-[0.11em] text-slate-500">
+              Chats
+            </p>
+            <SidebarSessions
+              sessions={sessions}
+              showHoverPreviews={showHoverPreviews}
+              showModeBadges={showModeBadges}
+              onSessionOpen={() => setIsMobileSidebarOpen(false)}
+            />
+          </div>
         </div>
 
-        <SidebarSearch />
-
-        <div className="sidebar-scroll mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <p className="mb-2 px-2.5 text-[12px] uppercase tracking-[0.11em] text-slate-500">
-            Chats
-          </p>
-          <SidebarSessions
-            sessions={sessions}
-            showHoverPreviews={showHoverPreviews}
-            showModeBadges={showModeBadges}
-            onSessionOpen={() => setIsMobileSidebarOpen(false)}
-          />
-        </div>
-
-        <div className="mt-3 space-y-1 border-t border-slate-200 pt-2.5">
+        <div className="mt-3 shrink-0 space-y-1 border-t border-slate-200 pt-2.5">
           {isStandalone ? (
             visitWebsiteLink(
               18,
