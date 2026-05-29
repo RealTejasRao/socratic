@@ -139,6 +139,14 @@ body {
   display: none;
 }
 
+.app-input-mobile-status-popover {
+  display: none;
+}
+
+.app-input-mobile-status-close {
+  display: none;
+}
+
 html.pwa-standalone .pwa-bottom-nav {
   display: block;
 }
@@ -157,6 +165,77 @@ body.pwa-bottom-nav-active {
 
 html.pwa-standalone .app-composer-dock {
   padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
+}
+
+html.pwa-standalone .app-input-inline-status {
+  display: none !important;
+}
+
+html.pwa-standalone .app-input-mobile-status-popover {
+  position: absolute;
+  right: 0.65rem;
+  bottom: calc(100% + 0.55rem);
+  z-index: 30;
+  display: flex;
+  max-width: min(21rem, calc(100vw - 2.5rem));
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 0.85rem;
+  padding: 0.55rem 0.7rem;
+  font-family: Poppins, sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+}
+
+html.pwa-standalone .app-input-mobile-status-close {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(15, 23, 42, 0.06);
+  color: currentColor;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+html.pwa-standalone .app-input-mobile-status-close:active {
+  transform: scale(0.94);
+}
+
+html.pwa-standalone .app-input-mobile-status-close:hover {
+  background: rgba(15, 23, 42, 0.1);
+}
+
+html.pwa-standalone .app-input-mobile-status-popover::after {
+  content: "";
+  position: absolute;
+  right: 1.1rem;
+  bottom: -0.32rem;
+  width: 0.68rem;
+  height: 0.68rem;
+  rotate: 45deg;
+  background: inherit;
+  border-right: inherit;
+  border-bottom: inherit;
+}
+
+html.pwa-standalone .app-input-mobile-status-popover-warning {
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  background: rgba(255, 251, 235, 0.98);
+  color: #92400e;
+}
+
+html.pwa-standalone .app-input-mobile-status-popover-neutral {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.98);
+  color: #475569;
 }
 
 html.pwa-standalone .app-greeting-heading {
@@ -188,6 +267,79 @@ html.pwa-standalone .app-greeting-heading {
 
   .app-composer-dock {
     padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 767px) {
+  .app-input-inline-status {
+    display: none !important;
+  }
+
+  .app-input-mobile-status-popover {
+    position: absolute;
+    right: 0.65rem;
+    bottom: calc(100% + 0.55rem);
+    z-index: 30;
+    display: flex;
+    max-width: min(21rem, calc(100vw - 2.5rem));
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 0.85rem;
+    padding: 0.55rem 0.7rem;
+    font-family: Poppins, sans-serif;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+  }
+
+  .app-input-mobile-status-close {
+    display: inline-flex;
+    width: 1.35rem;
+    height: 1.35rem;
+    flex: 0 0 auto;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 0;
+    background: rgba(15, 23, 42, 0.06);
+    color: currentColor;
+    transition:
+      background-color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .app-input-mobile-status-close:active {
+    transform: scale(0.94);
+  }
+
+  .app-input-mobile-status-close:hover {
+    background: rgba(15, 23, 42, 0.1);
+  }
+
+  .app-input-mobile-status-popover::after {
+    content: "";
+    position: absolute;
+    right: 1.1rem;
+    bottom: -0.32rem;
+    width: 0.68rem;
+    height: 0.68rem;
+    rotate: 45deg;
+    background: inherit;
+    border-right: inherit;
+    border-bottom: inherit;
+  }
+
+  .app-input-mobile-status-popover-warning {
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    background: rgba(255, 251, 235, 0.98);
+    color: #92400e;
+  }
+
+  .app-input-mobile-status-popover-neutral {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(248, 250, 252, 0.98);
+    color: #475569;
   }
 }
 
@@ -1320,6 +1472,10 @@ html.app-dark .app-input-toolbar span.app-input-attachment-error {
   color: #f87171 !important;
 }
 
+html.app-dark .app-input-toolbar span.app-input-voice-error {
+  color: #f87171 !important;
+}
+
 html.app-dark .app-input-toolbar span.app-input-max-limit-error {
   color: #f87171 !important;
 }
@@ -1337,6 +1493,28 @@ html.app-dark .app-input-attachment-remove-btn:hover {
 html.app-dark .app-input-toolbar {
   border-top: 0 !important;
   box-shadow: none !important;
+}
+
+html.app-dark .app-input-mobile-status-popover-warning {
+  border-color: rgba(248, 113, 113, 0.22) !important;
+  background: rgba(69, 26, 26, 0.96) !important;
+  color: #fecaca !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.38) !important;
+}
+
+html.app-dark .app-input-mobile-status-popover-neutral {
+  border-color: var(--border-subtle) !important;
+  background: rgba(24, 24, 27, 0.96) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.38) !important;
+}
+
+html.app-dark .app-input-mobile-status-close {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.app-dark .app-input-mobile-status-close:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
 }
 
 html.app-dark .app-input-shell,

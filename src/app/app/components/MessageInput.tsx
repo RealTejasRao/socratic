@@ -19,8 +19,8 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import { buildChatAttachmentPreviewUrl } from "@/src/lib/cloudinary";
 import type { ChatImageAttachment } from "src/types/chat";
+import ImagePreviewDialog from "./ImagePreviewDialog";
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 
@@ -140,6 +140,7 @@ export default function MessageInput({
   >([]);
   const [attachmentError, setAttachmentError] = useState("");
   const [voiceError, setVoiceError] = useState("");
+  const [dismissedComposerStatus, setDismissedComposerStatus] = useState("");
   const [previewImage, setPreviewImage] = useState<{
     name: string;
     dataUrl: string;
@@ -178,6 +179,16 @@ export default function MessageInput({
     (item) => item.status === "uploading",
   );
   const canShowActionMenu = allowImageAttachments || showWebSearch;
+  const composerStatusMessage =
+    content.length >= 3000
+      ? "Max limit reached"
+      : isUploadingAttachments
+        ? "Uploading images..."
+        : attachmentError || voiceError || "";
+  const composerStatusTone = isUploadingAttachments ? "neutral" : "warning";
+  const showMobileComposerStatus =
+    composerStatusMessage &&
+    composerStatusMessage !== dismissedComposerStatus;
 
   function isPhoneViewport() {
     if (typeof window === "undefined") {
@@ -198,6 +209,12 @@ export default function MessageInput({
   useEffect(() => {
     attachmentsRef.current = composerAttachments;
   }, [composerAttachments]);
+
+  useEffect(() => {
+    if (!composerStatusMessage) {
+      setDismissedComposerStatus("");
+    }
+  }, [composerStatusMessage]);
 
   useEffect(() => {
     if (initialValue !== undefined) {
@@ -727,10 +744,33 @@ export default function MessageInput({
   return (
     <div
       className={cn(
-        "mx-auto w-full",
+        "relative mx-auto w-full",
         variant === "hero" ? "max14" : "max-w-155",
       )}
     >
+      {showMobileComposerStatus && (
+        <div
+          className={cn(
+            "app-input-mobile-status-popover",
+            composerStatusTone === "warning"
+              ? "app-input-mobile-status-popover-warning"
+              : "app-input-mobile-status-popover-neutral",
+          )}
+          role="status"
+          aria-live="polite"
+        >
+          <span>{composerStatusMessage}</span>
+          <button
+            type="button"
+            className="app-input-mobile-status-close"
+            onClick={() => setDismissedComposerStatus(composerStatusMessage)}
+            aria-label="Dismiss message"
+          >
+            <X size={13} aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
       <div
         className={cn(
           "app-input-shell overflow-visible border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]",
@@ -998,24 +1038,28 @@ export default function MessageInput({
 
           <div className="flex items-center gap-2">
             {content.length >= 3000 && (
-              <span className="app-input-max-limit-error text-[12px] leading-4 text-amber-700 md:text-[11px]">
+              <span className="app-input-inline-status app-input-max-limit-error text-[12px] leading-4 text-amber-700 md:text-[11px]">
                 Max limit reached
               </span>
             )}
             {isUploadingAttachments && content.length < 3000 && (
-              <span className="text-[10px] text-slate-500">
+              <span className="app-input-inline-status text-[10px] text-slate-500">
                 Uploading images...
               </span>
             )}
             {attachmentError &&
               !isUploadingAttachments &&
               content.length < 3000 && (
-                <span className="app-input-attachment-error text-[12px] leading-4 text-amber-700 md:text-[11px]">
+                <span
+                  className="app-input-inline-status app-input-attachment-error text-[12px] leading-4 text-amber-700 md:text-[11px]"
+                >
                   {attachmentError}
                 </span>
               )}
             {voiceError && !attachmentError && content.length < 3000 && (
-              <span className="text-[12px] leading-4 text-amber-700 md:text-[11px]">
+              <span
+                className="app-input-inline-status app-input-voice-error text-[12px] leading-4 text-amber-700 md:text-[11px]"
+              >
                 {voiceError}
               </span>
             )}
@@ -1068,36 +1112,10 @@ export default function MessageInput({
       </div>
 
       {previewImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Preview of ${previewImage.name}`}
-          onClick={() => setPreviewImage(null)}
-        >
-          <button
-            type="button"
-            className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
-            onClick={() => setPreviewImage(null)}
-            aria-label="Close image preview"
-            data-tooltip="Close image preview"
-          >
-            <X size={18} />
-          </button>
-          <div
-            className="max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={buildChatAttachmentPreviewUrl(previewImage.dataUrl)}
-              alt={previewImage.name}
-              className="max-h-[90vh] max-w-[90vw] object-contain"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        </div>
+        <ImagePreviewDialog
+          image={previewImage}
+          onClose={() => setPreviewImage(null)}
+        />
       )}
     </div>
   );

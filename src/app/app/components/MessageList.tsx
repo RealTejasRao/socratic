@@ -18,16 +18,13 @@ import {
   RotateCcw,
   Square,
   Volume2,
-  X,
 } from "lucide-react";
 import type { ChatMessage } from "src/types/chat";
 import ThinkingBubble from "./ThinkingBubble";
 import { cn } from "@/src/lib/utils";
-import {
-  buildChatAttachmentPreviewUrl,
-  buildChatAttachmentThumbnailUrl,
-} from "@/src/lib/cloudinary";
+import { buildChatAttachmentThumbnailUrl } from "@/src/lib/cloudinary";
 import { isChatFontSize, type ChatFontSize } from "src/lib/chat-display";
+import ImagePreviewDialog from "./ImagePreviewDialog";
 
 interface Props {
   messages: ChatMessage[];
@@ -855,36 +852,10 @@ export default function MessageList({
       </div>
 
       {previewImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Preview of ${previewImage.name}`}
-          onClick={() => setPreviewImage(null)}
-        >
-          <button
-            type="button"
-            className="absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
-            onClick={() => setPreviewImage(null)}
-            aria-label="Close image preview"
-            data-tooltip="Close image preview"
-          >
-            <X size={18} />
-          </button>
-          <div
-            className="max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl border border-white/10 bg-white shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={buildChatAttachmentPreviewUrl(previewImage.dataUrl)}
-              alt={previewImage.name}
-              className="max-h-[90vh] max-w-[90vw] object-contain"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        </div>
+        <ImagePreviewDialog
+          image={previewImage}
+          onClose={() => setPreviewImage(null)}
+        />
       )}
     </div>
   );
