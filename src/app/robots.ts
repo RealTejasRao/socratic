@@ -13,10 +13,11 @@ export default function robots(): MetadataRoute.Robots {
           "/sign-in",
           "/sign-up",
           "/share/",
+          "/favicon/",
+          "/_next/static/media"
         ],
       },
     ],
     sitemap: absoluteUrl("/sitemap.xml"),
-    host: "www.usesocratic.com",
   };
 }

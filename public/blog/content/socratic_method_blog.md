@@ -36,7 +36,7 @@ That man was Socrates. And what he just did to you has a name.
 
 ---
 
-## The Origins of the Socratic Method (And Why It Matters to Socratic AI)
+## The Origins of the Socratic Method (And Why It Matters to [Socratic AI](https://www.usesocratic.com/))
 
 Here's something that gets me every time I think about it.
 
@@ -146,9 +146,9 @@ That discomfort you feel right now is 2,500 years old. It's Socrates, still out 
 
 ## [Socratic AI](https://www.usesocratic.com/): Bringing the Elenchus into the Digital Age
 
-Socratic AI is named after this method because the method is the product.
+[Socratic AI](https://www.usesocratic.com/) is named after this method because the method is the product.
 
-The Socratic Method is literally the engine under the hood. Most AI is built to give you a quick answer so you can stop thinking. Socratic AI is built to be the barefoot man on the street who stops you and asks: 'But how do you know that is true?
+The Socratic Method is literally the engine under the hood. Most AI is built to give you a quick answer so you can stop thinking. [Socratic AI](https://www.usesocratic.com/) is built to be the barefoot man on the street who stops you and asks: 'But how do you know that is true?
 
 Socratic Mode finds your assumptions, asks the questions you haven't asked yourself, follows the logic wherever it actually leads, and does not let you off easy just because letting you off easy would feel nicer.
 
@@ -156,4 +156,4 @@ Because the point was never to make you feel smart.
 
 The point was to make you think better.
 
-That is why we built Socratic AI.
+That is why we built [Socratic AI](https://www.usesocratic.com/).

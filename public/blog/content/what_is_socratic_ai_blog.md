@@ -4,7 +4,7 @@
 
 I want to be upfront about something before you read this.
 
-I built Socratic AI. So yes, I'm biased. But I'm also going to be completely honest with you about what this product is, why I built it, and why I genuinely believe it is the most sophisticated AI for philosophy that exists right now. Not because I need to sell you something. Because I spent a long time looking for something like this before I decided to build it myself.
+I built [Socratic AI](https://www.usesocratic.com/). So yes, I'm biased. But I'm also going to be completely honest with you about what this product is, why I built it, and why I genuinely believe it is the most sophisticated AI for philosophy that exists right now. Not because I need to sell you something. Because I spent a long time looking for something like this before I decided to build it myself.
 
 So let's talk.
 
@@ -12,9 +12,9 @@ So let's talk.
 
 ---
 
-## What is Socratic AI? Key Takeaways:
+## What is [Socratic AI](https://www.usesocratic.com/)? Key Takeaways:
 
-- Socratic AI is a philosophy AI trained on the greatest philosophical texts ever written. Not summaries. The actual texts, absorbed at depth.
+- [Socratic AI](https://www.usesocratic.com/) is a philosophy AI trained on the greatest philosophical texts ever written. Not summaries. The actual texts, absorbed at depth.
 
 - It is the most sophisticated AI built specifically for philosophy. Not a generalist with a philosophy mode. A specialist.
 
@@ -26,11 +26,11 @@ So let's talk.
 
 - It was built because nothing like it existed. Every other AI gave Wikipedia summaries and called it philosophy.
 
-- Early access is open now at [usesocratic.com](https://www.usesocratic.com/)
+- [Try Socratic AI Now!](https://www.usesocratic.com/)
 
 ---
 
-## Why I Built Socratic AI: The Problem with Standard Chatbots
+## Why I Built [Socratic AI](https://www.usesocratic.com/): The Problem with Standard Chatbots
 
 I've been obsessed with philosophy for a while. Not in an academic, memorize-the-textbook way. In a "I can't stop thinking about this" way.
 
@@ -38,19 +38,19 @@ And every time I finished something, I wanted to talk about it. Debate it. Push 
 
 That person basically didn't exist in my life. And every AI I tried was useless for this. ChatGPT would give me a Wikipedia summary and call it philosophy (I personally hated the responses given by ChatGPT). Another problem was that many tools would agree with everything I said. None of them had any real depth. None of them had actually 'read' the books.
 
-So I built Socratic AI. And I built it to be genuinely, unapologetically the best AI in the philosophy space. Not a generalist AI with a philosophy mode. An AI that lives and breathes philosophy, built from the ground up for people who actually want to think.
+So I built [Socratic AI](https://www.usesocratic.com/). And I built it to be genuinely, unapologetically the best AI in the philosophy space. Not a generalist AI with a philosophy mode. An AI that lives and breathes philosophy, built from the ground up for people who actually want to think.
 
 Here's what that looks like.
 
 ---
 
-## What Socratic AI Actually Is
+## What [Socratic AI](https://www.usesocratic.com/) Actually Is
 
-At its core, Socratic AI is a philosophy AI trained on a vast library of the greatest philosophical texts ever written. We're talking the actual foundational works, not summaries, not SEO articles about what Nietzsche "really meant." The real texts. Absorbed at depth.
+At its core, [Socratic AI](https://www.usesocratic.com/) is a philosophy AI trained on a vast library of the greatest philosophical texts ever written. We're talking the actual foundational works, not summaries, not SEO articles about what Nietzsche "really meant." The real texts. Absorbed at depth.
 
-When you talk to Socratic AI, you're pulling from thousands of years of the sharpest thinking humanity has ever produced. Every response is grounded in that library. It doesn't make things up. It doesn't hallucinate philosophical positions. It knows this domain cold.
+When you talk to [Socratic AI](https://www.usesocratic.com/), you're pulling from thousands of years of the sharpest thinking humanity has ever produced. Every response is grounded in that library. It doesn't make things up. It doesn't hallucinate philosophical positions. It knows this domain cold.
 
-But the training is just the foundation. What makes Socratic AI different is what it does with that knowledge.
+But the training is just the foundation. What makes [Socratic AI](https://www.usesocratic.com/) different is what it does with that knowledge.
 
 It doesn't just answer your questions. It interrogates them.
 
@@ -58,7 +58,7 @@ It doesn't just answer your questions. It interrogates them.
 
 ## Socratic Mode: The Default That Changes Everything
 
-The main mode of Socratic AI is called Socratic Mode. Named after the man himself.
+The main mode of [Socratic AI](https://www.usesocratic.com/) is called Socratic Mode. Named after the man himself.
 
 Here's the thing about Socrates that most people miss: he was not a teacher in any conventional sense. He never stood at a podium and delivered lectures. He never wrote a single book. What he did was walk around Athens talking to people — really talking — until they understood something about themselves and the world that they couldn't see before.
 
@@ -91,11 +91,11 @@ If your idea survives Debate Mode, you can walk away knowing it actually holds u
 
 ## Why This Is the Best Philosophy AI Out There
 
-I'll say it plainly: there is no other AI that does what Socratic AI does in this domain.
+I'll say it plainly: there is no other AI that does what [Socratic AI](https://www.usesocratic.com/) does in this domain.
 
 General AI tools are generalists. They know a little about everything and a lot about nothing. When it comes to philosophy, they skim the surface. They give you the popular interpretation. They agree with you because agreement is frictionless and frictionless feels good.
 
-Socratic AI is a specialist. Built on a library that most people will never read in a lifetime. Designed specifically for depth, not breadth. Built to challenge, not to please.
+[Socratic AI](https://www.usesocratic.com/) is a specialist. Built on a library that most people will never read in a lifetime. Designed specifically for depth, not breadth. Built to challenge, not to please.
 
 The difference is not subtle. The first time you use Socratic Mode and have a conversation with it for 10 minutes, you will feel the difference immediately. This is not a chatbot that has read the SparkNotes version of Plato. This is something that has actually reckoned with the text, with the arguments, with the centuries of commentary and counter-commentary that followed.
 
@@ -103,7 +103,7 @@ There is nothing else like it. I looked. That's why I built it.
 
 ---
 
-## Who Should Use Socratic AI
+## Who Should Use [Socratic AI](https://www.usesocratic.com/)
 
 I'll be straight with you: this is not for everyone, and I'm fine with that.
 
@@ -117,11 +117,9 @@ So I built three tones. Ruthless and Blunt for people like me. Simple and Clear 
 I personally use either Simple and Clear, or Ruthless and Blunt mostly.
 ---
 
-## Join the Future of Philosophy: Socratic AI Early Access
+## Join the Future of Philosophy: [Socratic AI](https://www.usesocratic.com/)
 
-Socratic AI is in early access right now. Limited spots. Once they're gone, you'll wait for the full launch.
-
-I'm not going to dress that up with fake urgency. The spots are limited because we want the early experience to be tight and personal, not because of a marketing trick.
+We have launched [Socratic AI](https://www.usesocratic.com/) publicly. 
 
 If you've read this entire thing and something in you is lit up, that feeling is exactly right. Come use it.
 
@@ -129,4 +127,4 @@ Philosophy isn't something you study. It's something you do.
 
 Go do it.
 
-[Claim your spot in Socratic AI Early Access at usesocratic.com](https://www.usesocratic.com/)
+[Try Socratic AI Now!](https://www.usesocratic.com/)

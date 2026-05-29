@@ -182,8 +182,8 @@ Kings and slaves, conquests and defeats, fame and obscurity - all of it, from fa
 
 This isn't nihilism. It's perspective. The Stoics used it to dissolve the ego - to shrink the problems that felt enormous down to their actual size.
 
-### Evening Review: The Practice Socratic AI Was Built Around
-Each night, Seneca recommended reviewing your day with brutal honesty. This is the spirit Socratic AI runs on — not telling you what you want to hear, but asking the questions that actually matter. Start with: *Where did I fall short today? What could I have done better?*
+### Evening Review: The Practice [Socratic AI](https://www.usesocratic.com/) Was Built Around
+Each night, Seneca recommended reviewing your day with brutal honesty. This is the spirit [Socratic AI](https://www.usesocratic.com/) runs on — not telling you what you want to hear, but asking the questions that actually matter. Start with: *Where did I fall short today? What could I have done better?*
 
 Not as self-punishment. As honest accounting. The Stoic self-review was precise and clinical - like an athlete watching game tape. What worked? What didn't? What needs to change tomorrow?
 
@@ -226,7 +226,7 @@ That's the promise. And after 2,300 years, nobody has offered a better one.
 
 ---
 
-## Where Do You Start? (Socratic AI Has an Answer)
+## Where Do You Start? ([Socratic AI](https://www.usesocratic.com/) Has an Answer)
 
 If you've read this far and you want to actually practice Stoicism rather than just know about it, [Socratic AI](https://www.usesocratic.com/) was built for exactly this. Bring it the Stoics, debate their ideas, and let it push back on what you think you believe. Here's the honest starting point:
 

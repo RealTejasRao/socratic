@@ -98,7 +98,7 @@ His answer to this is where he gets genuinely extraordinary, and genuinely diffi
 
 ---
 
-## The Will to Power (And Why Socratic AI Is Built Around It)
+## The Will to Power (And Why [Socratic AI](https://www.usesocratic.com/) Is Built Around It)
 
 The phrase 'will to power' has been so thoroughly abused that it's almost impossible to hear it fresh. People think it means the drive to dominate. Nietzsche meant something almost completely different. And it's the reason [Socratic AI](https://www.usesocratic.com/) was built the way it was: not to give you answers, but to push you to grow beyond where you currently are. That impulse, the drive to overcome, to expand, to become more, that is will to power in its truest form.
 
@@ -172,7 +172,7 @@ I'm not sure he was wrong. But I don't think he was entirely right either.
 
 ---
 
-## The Invitation: This Is What Socratic AI Was Built For
+## The Invitation: This Is What [Socratic AI](https://www.usesocratic.com/) Was Built For
 
 Nietzsche once wrote that his books were written for nobody yet. Messages in bottles waiting for the reader who deserved them. [Socratic AI](https://www.usesocratic.com/) was built for exactly that reader, the one who recognized something in this piece and wants to go deeper, argue it, push on it, and find out what they actually believe.
 

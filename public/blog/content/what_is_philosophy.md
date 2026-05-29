@@ -147,15 +147,15 @@ The historical texts matter because other people have thought about these questi
 
 ---
 
-## Where Socratic AI Fits Into This
+## Where [Socratic AI](https://www.usesocratic.com/) Fits Into This
 
-Socratic AI was built on this premise: that philosophy is not a subject to be studied but a practice to be developed. And that developing it requires dialogue, not just reading.
+[Socratic AI](https://www.usesocratic.com/) was built on this premise: that philosophy is not a subject to be studied but a practice to be developed. And that developing it requires dialogue, not just reading.
 
 You cannot become a better thinker by consuming content about thinking. You become a better thinker by actually thinking, under conditions that push you, challenge your assumptions, and refuse to let you coast on comfortable certainties.
 
-That is what Socratic AI is designed to create. Not a philosophy encyclopedia. A philosophy practice. A place to bring the questions you actually have and work through them with something that has genuine philosophical depth and is not going to tell you what you want to hear just because it's easier.
+That is what [Socratic AI](https://www.usesocratic.com/) is designed to create. Not a philosophy encyclopedia. A philosophy practice. A place to bring the questions you actually have and work through them with something that has genuine philosophical depth and is not going to tell you what you want to hear just because it's easier.
 
-You are already a philosopher. The question is whether you're going to get better at it. [Socratic AI is the gym where you train your mind. Claim your spot in our Early Access cohort today.](https://www.usesocratic.com/) 
+You are already a philosopher. The question is whether you're going to get better at it. [Socratic AI is the gym where you train your mind. Try Now!](https://www.usesocratic.com/)
 
 
 

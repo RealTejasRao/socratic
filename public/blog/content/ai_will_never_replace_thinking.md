@@ -90,7 +90,7 @@ The person who uses AI to think faster will compound their advantage over time. 
 
 I think about this a lot as someone building in the AI space. The tools we build either make people sharper or make people more dependent. There's not much middle ground.
 
-The reason I built Socratic AI the way I built it, with modes that challenge you and push back and refuse to just validate whatever you already think, is because I genuinely believe that the most important thing an AI can do for a person right now is not answer their questions. It's help them become better at asking questions themselves.
+The reason I built [Socratic AI](https://www.usesocratic.com/) the way I built it, with modes that challenge you and push back and refuse to just validate whatever you already think, is because I genuinely believe that the most important thing an AI can do for a person right now is not answer their questions. It's help them become better at asking questions themselves.
 
 Not forever dependent on the tool. Actually better, in their own mind, because of how they used it.
 
@@ -102,7 +102,7 @@ Let me be concrete about this because I think it's easy to agree with the princi
 
 The difference between using AI to think and using AI instead of thinking is usually a single step: whether you engage with the answer or just accept it.
 
-When you get a response from any AI, including Socratic AI, the question worth asking is: do I actually understand why this is true? Could I reconstruct this argument myself? Is there something here I disagree with? What's being assumed that I haven't examined?
+When you get a response from any AI, including [Socratic AI](https://www.usesocratic.com/), the question worth asking is: do I actually understand why this is true? Could I reconstruct this argument myself? Is there something here I disagree with? What's being assumed that I haven't examined?
 
 These questions feel slower. They are slower. But they are the difference between consuming information and building understanding. And understanding, unlike information, actually belongs to you.
 
@@ -132,7 +132,7 @@ You want to be the good thinker.
 
 ---
 
-## Where to Start (Using Socratic AI)
+## Where to Start (Using [Socratic AI](https://www.usesocratic.com/))
 
 I'm not going to pretend this is easy or that I have it fully figured out myself.
 

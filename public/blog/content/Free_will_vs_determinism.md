@@ -173,7 +173,7 @@ What do you think?
 
 ---
 
-## Test Your Agency: Using Socratic AI to Debate Free Will
+## Test Your Agency: Using [Socratic AI](https://www.usesocratic.com/) to Debate Free Will
 
 The free will debate is not an academic exercise. It is one of the most consequential questions a human being can sit with, because how you answer it, or how you live as if you've answered it, shapes everything. How you hold people responsible. How you hold yourself responsible. Whether regret makes sense. Whether effort makes sense. Whether you are the author of your life or its audience.
 
