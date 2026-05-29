@@ -11,6 +11,7 @@ import {
   CircleCheck,
   Crown,
   ChevronDown,
+  Globe,
   House,
   Instagram,
   Linkedin,
@@ -531,7 +532,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       aria-label="Visit Website"
       data-tooltip={label ? undefined : "Visit Website"}
     >
-      <ArrowUpRight size={iconSize} />
+      <Globe size={iconSize} />
       {label ? <span>{label}</span> : null}
     </Link>
   );
@@ -884,6 +885,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             sessions={sessions}
             showHoverPreviews={showHoverPreviews}
             showModeBadges={showModeBadges}
+            onSessionOpen={() => setIsMobileSidebarOpen(false)}
           />
         </div>
 

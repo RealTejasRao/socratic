@@ -35,6 +35,7 @@ interface Props {
   sessions: Session[];
   showHoverPreviews?: boolean;
   showModeBadges?: boolean;
+  onSessionOpen?: () => void;
 }
 
 type SessionActionDialog =
@@ -62,6 +63,7 @@ export default function SidebarSessions({
   sessions,
   showHoverPreviews = true,
   showModeBadges = true,
+  onSessionOpen,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -334,12 +336,14 @@ export default function SidebarSessions({
 
     if (pathname === `/app/${id}`) {
       setPendingSessionId(null);
+      onSessionOpen?.();
       return;
     }
 
     setPendingSessionId(id);
     setOpenMenuId(null);
     setHoveredSession(null);
+    onSessionOpen?.();
   }
 
   return (
