@@ -56,6 +56,9 @@ const MORNING_GREETINGS = [
   "Clarity is just a few prompts away.",
   "Everything's ready, let's begin.",
   "Good morning, {name}.",
+  "Here in the morning. Good, {name}.",
+  "Clear mind. Let's use it.",
+  "The day hasn't ruined you yet, {name}",
 ];
 
 const AFTERNOON_GREETINGS = [
@@ -63,6 +66,8 @@ const AFTERNOON_GREETINGS = [
   "Peak efficiency mode engaged.",
   "Time is moving, are you?",
   "Good afternoon, {name}.",
+  "Midday. Still here, {name}",
+  "Back at it, {name}",
 ];
 
 const EVENING_GREETINGS = [
@@ -70,12 +75,18 @@ const EVENING_GREETINGS = [
   "Aristotle did his best work at dusk. Now it's your turn.",
   "The sun sets, {name}. The mind rises.",
   "Good evening, {name}.",
+  "Sunset is philosophy's hour.",
+  "Evening light. Different questions now.",
 ];
 
 const LATE_GREETINGS = [
   "The best philosophers were night owls too.",
   "Seek the light in the dark.",
   "The world's quiet, best time to talk.",
+  "Late. Honest.",
+  "Night thoughts cut deeper, {name}",
+  "Can't sleep, {name}? Or won't?",
+  "Darkness is the oldest classroom, {name}.",
 ];
 
 const FALLBACK_STARTER_CHIPS = [
