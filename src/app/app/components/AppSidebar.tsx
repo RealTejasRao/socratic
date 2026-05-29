@@ -24,6 +24,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { ROUTES } from "src/lib/routes";
+import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { Switch } from "@/src/components/ui/switch";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
@@ -68,6 +69,7 @@ const SHOW_HOVER_PREVIEWS_KEY = "socratic:sidebar:showHoverPreviews";
 const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
+const HOME_CONTACT_HREF = "/#contact" as const;
 
 const SETTINGS_TABS: Array<{
   value: SettingsTab;
@@ -187,6 +189,7 @@ function readChatFontSizeSetting(): ChatFontSize {
 
 export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
+  const isStandalone = useStandaloneMode();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -513,6 +516,44 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     setIsHomeNavigating(true);
   }
 
+  const visitWebsiteLink = (
+    iconSize: number,
+    className: string,
+    label?: string,
+    onClick?: () => void,
+  ) => (
+    <Link
+      href={ROUTES.HOME}
+      target="_blank"
+      rel="noreferrer noopener"
+      onClick={onClick ?? (() => undefined)}
+      className={className}
+      aria-label="Visit Website"
+      data-tooltip={label ? undefined : "Visit Website"}
+    >
+      <ArrowUpRight size={iconSize} />
+      {label ? <span>{label}</span> : null}
+    </Link>
+  );
+
+  const contactLink = (
+    iconSize: number,
+    className: string,
+    onClick?: () => void,
+    label = false,
+  ) => (
+    <Link
+      href={HOME_CONTACT_HREF}
+      target="_blank"
+      rel="noreferrer noopener"
+      onClick={onClick ?? (() => undefined)}
+      className={className}
+      aria-label="Contact us"
+    >
+      <Mail size={iconSize} /> {label ? <span>Send Us a Message</span> : null}
+    </Link>
+  );
+
   return (
     <>
       <AnimatePresence>
@@ -624,18 +665,25 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             </div>
 
             <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
-              <Link
-                href={ROUTES.HOME}
-                onClick={handleHomeClick}
-                className={`app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
-                aria-label="Home"
-              >
-                {isHomeNavigating ? (
-                  <RoseCurveLoader className="h-8 w-8" />
-                ) : (
-                  <House size={17} />
-                )}
-              </Link>
+              {isStandalone ? (
+                visitWebsiteLink(
+                  17,
+                  "app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition",
+                )
+              ) : (
+                <Link
+                  href={ROUTES.HOME}
+                  onClick={handleHomeClick}
+                  className={`app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
+                  aria-label="Home"
+                >
+                  {isHomeNavigating ? (
+                    <RoseCurveLoader className="h-8 w-8" />
+                  ) : (
+                    <House size={17} />
+                  )}
+                </Link>
+              )}
               <Link
                 href={billingCtaHref}
                 target="_blank"
@@ -654,15 +702,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               >
                 <Settings size={17} />
               </button>
-              <Link
-                href={`${ROUTES.HOME}#contact`}
-                target="_blank"
-                rel="noreferrer"
-                className="app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition"
-                aria-label="Contact us"
-              >
-                <Mail size={17} />
-              </Link>
+              {contactLink(
+                17,
+                "app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition",
+              )}
             </div>
           </>
         ) : (
@@ -698,18 +741,26 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             </div>
 
             <div className="mt-3 space-y-0.5 border-t border-slate-200 pt-2">
-              <Link
-                href={ROUTES.HOME}
-                onClick={handleHomeClick}
-                className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
-              >
-                {isHomeNavigating ? (
-                  <RoseCurveLoader className="h-6 w-6" />
-                ) : (
-                  <House size={16} />
-                )}{" "}
-                Home
-              </Link>
+              {isStandalone ? (
+                visitWebsiteLink(
+                  16,
+                  "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]",
+                  "Visit Website",
+                )
+              ) : (
+                <Link
+                  href={ROUTES.HOME}
+                  onClick={handleHomeClick}
+                  className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
+                >
+                  {isHomeNavigating ? (
+                    <RoseCurveLoader className="h-6 w-6" />
+                  ) : (
+                    <House size={16} />
+                  )}{" "}
+                  Home
+                </Link>
+              )}
               <Link
                 href={billingCtaHref}
                 target="_blank"
@@ -732,14 +783,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               >
                 <Settings size={16} /> Settings
               </button>
-              <Link
-                href={`${ROUTES.HOME}#contact`}
-                target="_blank"
-                rel="noreferrer"
-                className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
-              >
-                <Mail size={16} /> Send Us a Message
-              </Link>
+              {contactLink(
+                16,
+                "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]",
+                undefined,
+                true,
+              )}
             </div>
           </>
         )}
@@ -839,21 +888,30 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         </div>
 
         <div className="mt-3 space-y-1 border-t border-slate-200 pt-2.5">
-          <Link
-            href={ROUTES.HOME}
-            onClick={(event) => {
-              handleHomeClick(event);
-              setIsMobileSidebarOpen(false);
-            }}
-            className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
-          >
-            {isHomeNavigating ? (
-              <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
-            ) : (
-              <House size={18} />
-            )}{" "}
-            Home
-          </Link>
+          {isStandalone ? (
+            visitWebsiteLink(
+              18,
+              "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]",
+              "Visit Website",
+              () => setIsMobileSidebarOpen(false),
+            )
+          ) : (
+            <Link
+              href={ROUTES.HOME}
+              onClick={(event) => {
+                handleHomeClick(event);
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
+            >
+              {isHomeNavigating ? (
+                <RoseCurveLoader className="h-[1.05rem] w-[1.05rem]" />
+              ) : (
+                <House size={18} />
+              )}{" "}
+              Home
+            </Link>
+          )}
           <Link
             href={billingCtaHref}
             target="_blank"
@@ -880,15 +938,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           >
             <Settings size={18} /> Settings
           </button>
-          <Link
-            href={`${ROUTES.HOME}#contact`}
-            target="_blank"
-            rel="noreferrer"
-            onClick={() => setIsMobileSidebarOpen(false)}
-            className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
-          >
-            <Mail size={18} /> Send Us a Message
-          </Link>
+          {contactLink(
+            18,
+            "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]",
+            () => setIsMobileSidebarOpen(false),
+            true,
+          )}
         </div>
       </motion.aside>
 

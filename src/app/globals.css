@@ -164,7 +164,7 @@ body.pwa-bottom-nav-active {
 }
 
 html.pwa-standalone .app-composer-dock {
-  padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
 html.pwa-standalone .app-input-inline-status {
@@ -266,7 +266,7 @@ html.pwa-standalone .app-greeting-heading {
   }
 
   .app-composer-dock {
-    padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
   }
 }
 
