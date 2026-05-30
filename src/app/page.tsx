@@ -22,7 +22,7 @@ import { createPageMetadata } from "@/src/lib/seo";
 import { HOME_HERO_ID } from "@/src/lib/home-hero";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Socratic AI | Philosophy, Strategy & Deep Critical Thinking",
+  title: "Socratic AI | Philosophy, Critical Thinking & Deep Conversations",
   description:
     "Socratic AI: An AI thinking partner for philosophy, critical thinking, and deep conversation. Built on Socratic dialogue, it challenges your reasoning, sharpens your arguments, and helps you think more clearly.",
   path: "/",

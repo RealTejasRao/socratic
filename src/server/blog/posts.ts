@@ -28,6 +28,51 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "philosophy-of-death",
+    title: "Philosophy of Death: What the Greatest Thinkers Say About Dying",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "11 min read",
+    excerpt:
+      "Every great philosopher had something to say about death. None of them said what you expect.",
+    coverImagePath: "/blog/images/philosophy-of-death.webp",
+    contentFilePath: "public/blog/content/philosophy-of-death.md",
+  },
+  {
+    slug: "meaning-of-life",
+    title: "What is the Meaning of Life? Philosophy's Most Honest Answers",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "13 min read",
+    excerpt:
+      "Philosophy's greatest minds spent their lives on this one question. They didn't agree.",
+    coverImagePath: "/blog/images/meaning-of-life.webp",
+    contentFilePath: "public/blog/content/meaning-of-life.md",
+  },
+  {
+    slug: "is-ai-making-us-dumber",
+    title:
+      "Is AI Making Us Dumber? The Question Nobody Wants to Answer Honestly",
+    category: "AI & Learning",
+    author: "Socratic AI team",
+    readTimeLabel: "12 min read",
+    excerpt:
+      "Most people using AI right now are quietly getting dumber. Here is the honest truth.",
+    coverImagePath: "/blog/images/is-ai-making-us-dumber.webp",
+    contentFilePath: "public/blog/content/is_ai_making_us_dumber.md",
+  },
+  {
+    slug: "marcus-aurelius-and-stoicism",
+    title: "Marcus Aurelius: The Emperor Who Chose Philosophy Over Power",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "12 min read",
+    excerpt:
+      "The story of Marcus Aurelius - his Stoic philosophy, Meditations, and why he still matters.",
+    coverImagePath: "/blog/images/aurelius_stoicism.webp",
+    contentFilePath: "public/blog/content/marcus_aurelius_stoicism.md",
+  },
+  {
     slug: "what-is-philosophy",
     title:
       "What Is Philosophy? And Why It's the Most Practical Thing You Can Study",
@@ -106,7 +151,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
     readTimeLabel: "15 min read",
     excerpt:
       "The complete story of Stoicism - its origins, core ideas, and how to live it.",
-    coverImagePath: "/blog/images/Aurelius.webp",
+    coverImagePath: "/blog/images/what-is-stoicism.webp",
     contentFilePath: "public/blog/content/stoicism_blog_final.md",
   },
 ];

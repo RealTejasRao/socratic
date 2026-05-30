@@ -33,7 +33,8 @@ type BlogPostPageProps = {
 
 type MarkdownBlock =
   | { type: "hr" }
-  | { type: "h1" | "h2" | "h3" | "p"; content: string };
+  | { type: "h1" | "h2" | "h3" | "p"; content: string }
+  | { type: "ul"; items: string[] };
 
 export function generateStaticParams() {
   return getAllBlogSlugs().map((slug) => ({ slug }));
@@ -70,6 +71,7 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
   const lines = markdown.split(/\r?\n/);
   const blocks: MarkdownBlock[] = [];
   let paragraphBuffer: string[] = [];
+  let isKeyTakeawaysSection = false;
 
   const flushParagraph = () => {
     if (paragraphBuffer.length === 0) {
@@ -94,24 +96,45 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
     if (line === "---") {
       flushParagraph();
       blocks.push({ type: "hr" });
+      isKeyTakeawaysSection = false;
       continue;
     }
 
     if (line.startsWith("# ")) {
       flushParagraph();
-      blocks.push({ type: "h1", content: line.slice(2).trim() });
+      const content = line.slice(2).trim();
+      blocks.push({ type: "h1", content });
+      isKeyTakeawaysSection = normalizeHeadingText(content).includes("key takeaways");
       continue;
     }
 
     if (line.startsWith("## ")) {
       flushParagraph();
-      blocks.push({ type: "h2", content: line.slice(3).trim() });
+      const content = line.slice(3).trim();
+      blocks.push({ type: "h2", content });
+      isKeyTakeawaysSection = normalizeHeadingText(content).includes("key takeaways");
       continue;
     }
 
     if (line.startsWith("### ")) {
       flushParagraph();
-      blocks.push({ type: "h3", content: line.slice(4).trim() });
+      const content = line.slice(4).trim();
+      blocks.push({ type: "h3", content });
+      isKeyTakeawaysSection = normalizeHeadingText(content).includes("key takeaways");
+      continue;
+    }
+
+    if (isKeyTakeawaysSection && line.startsWith("- ")) {
+      flushParagraph();
+      const item = line.slice(2).trim();
+      const previousBlock = blocks.at(-1);
+
+      if (previousBlock?.type === "ul") {
+        previousBlock.items.push(item);
+      } else {
+        blocks.push({ type: "ul", items: [item] });
+      }
+
       continue;
     }
 
@@ -196,6 +219,10 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "socratic-method": ["The Socratic Method", "Most Powerful"],
   "what-is-socratic-ai": ["What is Socratic AI?"],
   "what-is-stoicism": ["What is Stoicism?"],
+  "marcus-aurelius-and-stoicism": ["Marcus Aurelius", "Philosophy Over Power"],
+  "is-ai-making-us-dumber":["Dumber", "Honestly", "AI"],
+  "meaning-of-life":["Meaning of Life","Honest"],
+  "philosophy-of-death":["Philosophy of Death", "Dying"]
 };
 
 function escapeRegExp(value: string) {
@@ -260,6 +287,19 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
       >
         {renderInlineMarkdown(block.content)}
       </h3>
+    );
+  }
+
+  if (block.type === "ul") {
+    return (
+      <ul
+        key={`ul-${index}`}
+        className={`${interClassName} mt-6 list-disc space-y-4 pl-6 text-[1.03rem] leading-[1.75] tracking-normal text-black/82 marker:text-black/72 sm:text-[1.1rem]`}
+      >
+        {block.items.map((item, itemIndex) => (
+          <li key={`li-${index}-${itemIndex}`}>{renderInlineMarkdown(item)}</li>
+        ))}
+      </ul>
     );
   }
 
@@ -339,6 +379,8 @@ function PostContent({ post }: { post: BlogPost }) {
 
           <AuthAwareCtaLink
             signedOutHref={ROUTES.SIGN_UP}
+            showPendingStateOnNavigate
+            pendingIndicator="roseCurve"
             className={`${interClassName} inline-flex w-full min-w-62 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-6 py-4 text-[1rem] font-semibold text-white transition-colors duration-220 hover:bg-[#8f1414] lg:w-auto`}
           >
             Try Socratic AI Now

@@ -8,7 +8,7 @@ export const seoConfig = {
   siteUrl: SITE_URL,
   siteName: SITE_NAME,
   applicationName: SITE_NAME,
-  defaultTitle: "Socratic AI | Philosophy, Strategy & Deep Critical Thinking",
+  defaultTitle: "Socratic AI | Philosophy, Critical Thinking & Deep Conversations",
   titleTemplate: "Socratic AI | %s",
   defaultDescription:
     "Socratic AI: An AI thinking partner for philosophy, critical thinking, and deep conversation. Built on Socratic dialogue, it challenges your reasoning, sharpens your arguments, and helps you think more clearly.",
