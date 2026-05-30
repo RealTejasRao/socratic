@@ -625,9 +625,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         data-tooltip={label ? undefined : "Debate mode"}
       >
         {navigatingModeLink === "DEBATE" ? (
-          <RoseCurveLoader className="h-[1.65rem] w-[1.65rem] text-rose-600" />
+          <RoseCurveLoader className="app-sidebar-mode-color-debate h-[1.65rem] w-[1.65rem] text-rose-600" />
         ) : (
-          <Swords size={iconSize} className="shrink-0 text-rose-600" />
+          <Swords
+            size={iconSize}
+            className="app-sidebar-mode-color-debate shrink-0 text-rose-600"
+          />
         )}
         {label ? <span>Debate mode</span> : null}
       </Link>
@@ -642,9 +645,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         data-tooltip={label ? undefined : "Talk to a philosopher"}
       >
         {navigatingModeLink === "ROLEPLAY" ? (
-          <RoseCurveLoader className="h-[1.65rem] w-[1.65rem] text-amber-500" />
+          <RoseCurveLoader className="app-sidebar-mode-color-roleplay h-[1.65rem] w-[1.65rem] text-amber-500" />
         ) : (
-          <Landmark size={iconSize} className="shrink-0 text-amber-500" />
+          <Landmark
+            size={iconSize}
+            className="app-sidebar-mode-color-roleplay shrink-0 text-amber-500"
+          />
         )}
         {label ? <span>Talk to a philosopher</span> : null}
       </Link>

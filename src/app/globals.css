@@ -1430,6 +1430,14 @@ html.app-dark .app-sidebar p {
   color: var(--text-primary);
 }
 
+html.app-dark .app-sidebar .app-sidebar-mode-color-debate {
+  color: #fb7185 !important;
+}
+
+html.app-dark .app-sidebar .app-sidebar-mode-color-roleplay {
+  color: #fbbf24 !important;
+}
+
 html.app-dark .app-sidebar .bg-white,
 html.app-dark .app-sidebar .bg-white\/50,
 html.app-dark .app-sidebar .hover\:bg-white\/70:hover,
