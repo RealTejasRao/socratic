@@ -225,7 +225,9 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "philosophy-of-death": ["Philosophy of Death", "Dying"],
   "think-like-a-philosopher": ["5 Mental Models", "Think"],
   "soren-kierkegaard-and-existentialism": ["Søren Kierkegaard"],
-  "does-god-exists": ["Does God Exist?", "Biggest Question"],
+  "does-god-exist": ["Does God Exist?", "Biggest Question"],
+  "debate-ai": ["Debate AI", "Sharper, Deadlier Debater"],
+  "what-is-consciousness": ["What is Consciousness?"],
 };
 
 function escapeRegExp(value: string) {

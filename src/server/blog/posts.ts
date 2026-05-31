@@ -28,7 +28,30 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
-    slug: "does-god-exists",
+    slug: "what-is-consciousness",
+    title: "What is Consciousness? The Hardest Problem in All of Philosophy",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "16 min read",
+    excerpt:
+      "You cannot doubt that you are conscious. We have no idea what consciousness actually is.",
+    coverImagePath: "/blog/images/what-is-consciousness.webp",
+    contentFilePath: "public/blog/content/what_is_consciousness.md",
+  },
+  {
+    slug: "debate-ai",
+    title:
+      "Debate AI: How to Use Artificial Intelligence to Become a Sharper, Deadlier Debater",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "11 min read",
+    excerpt:
+      "The best debaters practice against opponents who are trying to destroy their argument. AI does that.",
+    coverImagePath: "/blog/images/debate-ai.webp",
+    contentFilePath: "public/blog/content/debate_ai.md",
+  },
+  {
+    slug: "does-god-exist",
     title:
       "Does God Exist? Philosophy's Most Honest Answer to the Biggest Question Ever Asked",
     category: "Philosophy",
