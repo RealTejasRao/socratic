@@ -28,6 +28,42 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "does-god-exists",
+    title:
+      "Does God Exist? Philosophy's Most Honest Answer to the Biggest Question Ever Asked",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "21 min read",
+    excerpt:
+      "The greatest minds in history disagreed completely. Here is every argument, honestly examined.",
+    coverImagePath: "/blog/images/does-god-exists.webp",
+    contentFilePath: "public/blog/content/does_god_exists.md",
+  },
+  {
+    slug: "soren-kierkegaard-and-existentialism",
+    title: "Søren Kierkegaard: The Father of Existentialism",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "14 min read",
+    excerpt:
+      "The life and philosophy of Søren Kierkegaard, the man also called the father of existentialism.",
+    coverImagePath: "/blog/images/soren.webp",
+    contentFilePath:
+      "public/blog/content/søren_kierkegaard_and_existentialism.md",
+  },
+  {
+    slug: "think-like-a-philosopher",
+    title:
+      "How to Think Like a Philosopher: 5 Mental Models That Change Everything",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "13 min read",
+    excerpt:
+      "Five actually useful mental models philosophers use to think clearly about anything.",
+    coverImagePath: "/blog/images/think-like-a-philosopher.webp",
+    contentFilePath: "public/blog/content/think_like_a_philosopher.md",
+  },
+  {
     slug: "philosophy-of-death",
     title: "Philosophy of Death: What the Greatest Thinkers Say About Dying",
     category: "Philosophy",

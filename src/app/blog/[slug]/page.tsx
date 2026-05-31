@@ -220,9 +220,12 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "what-is-socratic-ai": ["What is Socratic AI?"],
   "what-is-stoicism": ["What is Stoicism?"],
   "marcus-aurelius-and-stoicism": ["Marcus Aurelius", "Philosophy Over Power"],
-  "is-ai-making-us-dumber":["Dumber", "Honestly", "AI"],
-  "meaning-of-life":["Meaning of Life","Honest"],
-  "philosophy-of-death":["Philosophy of Death", "Dying"]
+  "is-ai-making-us-dumber": ["Dumber", "Honestly", "AI"],
+  "meaning-of-life": ["Meaning of Life", "Honest"],
+  "philosophy-of-death": ["Philosophy of Death", "Dying"],
+  "think-like-a-philosopher": ["5 Mental Models", "Think"],
+  "soren-kierkegaard-and-existentialism": ["Søren Kierkegaard"],
+  "does-god-exists": ["Does God Exist?", "Biggest Question"],
 };
 
 function escapeRegExp(value: string) {
