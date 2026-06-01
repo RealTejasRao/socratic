@@ -454,7 +454,7 @@ export default async function PrivacyPolicyPage() {
     },
     {
       label: "Instagram",
-      href: "https://www.instagram.com/usesocratic/",
+    href: "https://www.instagram.com/usesocraticai/",
       icon: <Instagram size={14} />,
     },
     {

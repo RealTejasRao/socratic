@@ -196,7 +196,7 @@ export default function EarlyAccessPage() {
               </svg>
             </a>
             <a
-              href="https://www.instagram.com/usesocratic/"
+                    href="https://www.instagram.com/usesocraticai/"
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Instagram"

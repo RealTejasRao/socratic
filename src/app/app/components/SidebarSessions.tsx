@@ -55,6 +55,21 @@ type SuccessToastState = {
   isLeaving: boolean;
 } | null;
 
+type SessionsChangedEvent = CustomEvent<{
+  activeSessionId?: string;
+}>;
+
+type ApiSession = {
+  id: string;
+  title: string | null;
+  mode: "SOCRATIC" | "DEBATE" | "ROLEPLAY";
+  firstMessagePreview: string | null;
+  meta?: {
+    debate?: DebateSessionState | null;
+    roleplay?: RoleplaySessionState | null;
+  };
+};
+
 function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
@@ -88,10 +103,63 @@ export default function SidebarSessions({
   >(null);
   const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
   const [displaySessions, setDisplaySessions] = useState(sessions);
+  const [currentPath, setCurrentPath] = useState(pathname);
 
   useEffect(() => {
     setDisplaySessions(sessions);
   }, [sessions]);
+
+  useEffect(() => {
+    setCurrentPath(pathname);
+  }, [pathname]);
+
+  useEffect(() => {
+    async function refreshDisplaySessions(activeSessionId?: string) {
+      if (activeSessionId) {
+        setCurrentPath(`/app/${activeSessionId}`);
+      }
+
+      try {
+        const res = await fetch("/api/v1/chat/sessions", {
+          method: "GET",
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const payload = (await res.json()) as ApiSession[];
+        setDisplaySessions(
+          payload.map((session) => ({
+            id: session.id,
+            title: session.title,
+            mode: session.mode,
+            debate: session.meta?.debate ?? null,
+            roleplay: session.meta?.roleplay ?? null,
+            firstMessagePreview: session.firstMessagePreview,
+          })),
+        );
+      } catch {
+        // Sidebar refresh is best-effort; the chat itself has already updated.
+      }
+    }
+
+    function handleSessionsChanged(event: Event) {
+      const activeSessionId = (event as SessionsChangedEvent).detail
+        ?.activeSessionId;
+
+      void refreshDisplaySessions(activeSessionId);
+    }
+
+    window.addEventListener("socratic:sessions:changed", handleSessionsChanged);
+
+    return () => {
+      window.removeEventListener(
+        "socratic:sessions:changed",
+        handleSessionsChanged,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -370,7 +438,7 @@ export default function SidebarSessions({
       )}
 
       {displaySessions.map((session) => {
-        const isActive = pathname === `/app/${session.id}`;
+      const isActive = currentPath === `/app/${session.id}`;
         const isOpening = pendingSessionId === session.id && !isActive;
         const hoverPreview =
           session.firstMessagePreview?.trim() ||

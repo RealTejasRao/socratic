@@ -32,7 +32,7 @@ export const seoConfig = {
   social: {
     x: "https://x.com/useSocraticAI",
     linkedin: "https://www.linkedin.com/company/usesocratic/",
-    instagram: "https://www.instagram.com/usesocratic/",
+    instagram: "https://www.instagram.com/usesocraticai/",
   },
 } as const;
 

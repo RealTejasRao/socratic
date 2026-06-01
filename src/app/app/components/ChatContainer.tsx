@@ -928,6 +928,7 @@ export default function ChatContainer({
     }
 
     const tempId = createTempId("temp");
+    const startedWithoutSession = !activeSessionId;
     let assistantMessageId: string | null = null;
     const { content, attachments, webSearch } = payload;
 
@@ -1001,9 +1002,6 @@ export default function ChatContainer({
               message.id !== optimisticMessage.id,
           ),
         );
-        if (res.status !== 402 && !rateLimitMessage) {
-          router.refresh();
-        }
         void refreshBillingState();
         return;
       }
@@ -1028,7 +1026,7 @@ export default function ChatContainer({
       }
 
       const createdSessionFromNewChat =
-        !activeSessionId && Boolean(returnedSessionId);
+        startedWithoutSession && Boolean(returnedSessionId);
 
       if (createdSessionFromNewChat && returnedSessionId) {
         const draftFromNewChat = sessionStorage.getItem("socratic:draft:/app");
@@ -1041,9 +1039,12 @@ export default function ChatContainer({
         }
 
         setActiveSessionId(returnedSessionId);
-        router.replace(`/app/${returnedSessionId}`, { scroll: false });
-      } else {
-        router.refresh();
+        window.history.replaceState(null, "", `/app/${returnedSessionId}`);
+        window.dispatchEvent(
+          new CustomEvent("socratic:sessions:changed", {
+            detail: { activeSessionId: returnedSessionId },
+          }),
+        );
       }
 
       void refreshBillingState();
@@ -1087,18 +1088,20 @@ export default function ChatContainer({
 
   async function handleRegenerate() {
     if (!activeSessionId || isStreaming || isDebateCompleted) return;
+    let assistantMessageId: string | null = null;
 
     try {
       setIsStreaming(true);
       const streamController = new AbortController();
       activeStreamControllerRef.current = streamController;
 
-      const assistantMessageId = createTempId("assistant-temp");
+      const nextAssistantMessageId = createTempId("assistant-temp");
+      assistantMessageId = nextAssistantMessageId;
 
       setMessages((prev) => [
         ...prev.slice(0, -1),
         {
-          id: assistantMessageId,
+          id: nextAssistantMessageId,
           role: "ASSISTANT",
           content: "",
           createdAt: new Date().toISOString(),
@@ -1128,7 +1131,9 @@ export default function ChatContainer({
         }
 
         if (res.status !== 402 && !rateLimitMessage) {
-          router.refresh();
+          setMessages((prev) =>
+            prev.filter((message) => message.id !== assistantMessageId),
+          );
         }
         return;
       }
@@ -1144,17 +1149,18 @@ export default function ChatContainer({
 
         setMessages((prev) =>
           prev.map((message) =>
-            message.id === assistantMessageId
+            message.id === nextAssistantMessageId
               ? { ...message, content: `${message.content}${chunk}` }
               : message,
           ),
         );
       }
 
-      router.refresh();
     } catch (error) {
       if (!isAbortError(error)) {
-        router.refresh();
+        setMessages((prev) =>
+          prev.filter((message) => message.id !== assistantMessageId),
+        );
       }
     } finally {
       activeStreamControllerRef.current = null;
@@ -1178,19 +1184,22 @@ export default function ChatContainer({
     if (!editingMessage || !activeSessionId || isStreaming || isDebateSession)
       return;
     const newContent = editDraft;
+    const cutoffIndex = messages.findIndex(
+      (message) => message.id === editingMessage.id,
+    );
+    if (cutoffIndex < 0) return;
+    let assistantMessageId: string | null = null;
 
     try {
       setIsStreaming(true);
       const streamController = new AbortController();
       activeStreamControllerRef.current = streamController;
 
-      const index = messages.findIndex(
-        (message) => message.id === editingMessage.id,
-      );
-      const assistantMessageId = createTempId("assistant-temp");
+      const nextAssistantMessageId = createTempId("assistant-temp");
+      assistantMessageId = nextAssistantMessageId;
 
       setMessages((prev) => [
-        ...prev.slice(0, index),
+        ...prev.slice(0, cutoffIndex),
         editingMessage.attachments
           ? {
               ...editingMessage,
@@ -1202,7 +1211,7 @@ export default function ChatContainer({
               content: newContent.trim(),
             },
         {
-          id: assistantMessageId,
+          id: nextAssistantMessageId,
           role: "ASSISTANT",
           content: "",
           createdAt: new Date().toISOString(),
@@ -1252,7 +1261,7 @@ export default function ChatContainer({
         }
 
         if (res.status !== 402 && !rateLimitMessage) {
-          router.refresh();
+          setMessages((prev) => prev.slice(0, cutoffIndex));
         }
         return;
       }
@@ -1268,7 +1277,7 @@ export default function ChatContainer({
 
         setMessages((prev) =>
           prev.map((message) =>
-            message.id === assistantMessageId
+            message.id === nextAssistantMessageId
               ? { ...message, content: `${message.content}${chunk}` }
               : message,
           ),
@@ -1277,10 +1286,9 @@ export default function ChatContainer({
 
       setEditingMessage(null);
       setEditDraft("");
-      router.refresh();
     } catch (error) {
       if (!isAbortError(error)) {
-        router.refresh();
+        setMessages((prev) => prev.slice(0, cutoffIndex));
       }
     } finally {
       activeStreamControllerRef.current = null;

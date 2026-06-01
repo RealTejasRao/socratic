@@ -426,7 +426,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     },
     {
       label: "Instagram",
-      href: "https://www.instagram.com/usesocratic/",
+    href: "https://www.instagram.com/usesocraticai/",
       icon: <Instagram size={14} />,
     },
   ];

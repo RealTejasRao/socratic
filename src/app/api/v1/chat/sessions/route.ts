@@ -53,13 +53,25 @@ export async function GET() {
       roleplayMeta: true,
       lastActivityAt: true,
       createdAt: true,
+      messages: {
+        orderBy: { createdAt: "asc" },
+        take: 1,
+        select: {
+          content: true,
+        },
+      },
     },
   });
 
   return NextResponse.json(
-    sessions.map((session: (typeof sessions)[number]) => ({
-      ...session,
-      meta: serializeSessionMeta(session),
-    })),
+    sessions.map((session: (typeof sessions)[number]) => {
+      const { messages, ...sessionWithoutMessages } = session;
+
+      return {
+        ...sessionWithoutMessages,
+        firstMessagePreview: messages[0]?.content ?? null,
+        meta: serializeSessionMeta(session),
+      };
+    }),
   );
 }

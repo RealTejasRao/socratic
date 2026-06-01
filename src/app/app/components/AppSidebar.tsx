@@ -126,7 +126,7 @@ function XIcon({ className = "h-4 w-4 fill-current" }: { className?: string }) {
 const SOCIAL_LINKS: SocialLink[] = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/usesocratic/",
+    href: "https://www.instagram.com/usesocraticai/",
     icon: <Instagram size={16} />,
     lightIconColor: "#db2777",
     darkIconColor: "#f472b6",

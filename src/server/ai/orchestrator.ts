@@ -121,6 +121,13 @@ function normalizeImageAttachments(
   });
 }
 
+function normalizeStreamText(text: string) {
+  return text
+    .replace(/\s*\u2014\s*/g, " - ")
+    .replace(/\s*\u2013\s*/g, " - ")
+    .replace(/\s*\u2212\s*/g, " - ");
+}
+
 export async function generateReply(params: {
   userId: string;
   sessionId: string;
@@ -711,8 +718,9 @@ export async function generateReply(params: {
       for await (const chunk of stream) {
         const token = chunk.choices[0]?.delta?.content;
         if (token) {
-          generatedText += token;
-          controller.enqueue(new TextEncoder().encode(token));
+          const normalizedToken = normalizeStreamText(token);
+          generatedText += normalizedToken;
+          controller.enqueue(new TextEncoder().encode(normalizedToken));
         }
       }
 
