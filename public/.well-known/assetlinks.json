@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.socraticai.app",
+      "sha256_cert_fingerprints": ["74:E7:C7:DB:17:34:F7:B9:20:2B:C9:80:F6:01:9E:73:D0:E9:02:BB:F5:3B:EB:99:7C:5D:35:D3:33:8B:41:23"]
+    }
+  }
+]
