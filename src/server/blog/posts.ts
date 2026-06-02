@@ -28,6 +28,17 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "critical-thinking-in-ai-era",
+    title: "Why Critical Thinking is the Most Valuable Skill in the AI Era",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "12 min read",
+    excerpt:
+      "AI automates outputs. Critical thinking determines whether those outputs are any good.",
+    coverImagePath: "/blog/images/critical-thinking-ai-era.webp",
+    contentFilePath: "public/blog/content/critical-thinking-ai-era.md",
+  },
+  {
     slug: "what-is-consciousness",
     title: "What is Consciousness? The Hardest Problem in All of Philosophy",
     category: "Philosophy",

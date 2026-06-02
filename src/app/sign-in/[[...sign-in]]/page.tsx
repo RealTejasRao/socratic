@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
-import { createPageMetadata } from "@/src/lib/seo";
+import { createPageMetadata, seoConfig } from "@/src/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Sign In",
@@ -25,6 +25,8 @@ export default async function SignInPage() {
   const nietzscheImageScale = 0.8; // 1 = 100% of right panel width
   const nietzscheImageMaxWidthPx = 1960;
   const nietzscheImageOffsetXPx = -80;
+  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP}`;
+  const signUpUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_UP}`;
 
   const clerkGlassAppearance = {
     elements: {
@@ -80,8 +82,10 @@ export default async function SignInPage() {
             <div className="auth-sign-in-zoom w-full max-w-md">
               <SignIn
                 appearance={clerkGlassAppearance}
-                fallbackRedirectUrl={ROUTES.APP}
-                forceRedirectUrl={ROUTES.APP}
+                fallbackRedirectUrl={appRedirectUrl}
+                forceRedirectUrl={appRedirectUrl}
+                oauthFlow="redirect"
+                signUpUrl={signUpUrl}
               />
             </div>
           </section>

@@ -7,6 +7,15 @@ const PUBLIC_FILE_REGEX =
 const APP_ROUTE_PREFIX = "/app";
 const NON_CANONICAL_HOST = "usesocratic.com";
 const CANONICAL_HOST = "www.usesocratic.com";
+const AUTH_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/sso-callback"];
+const OAUTH_CALLBACK_SEARCH_PARAMS = [
+  "__clerk_status",
+  "__clerk_created_session",
+  "__clerk_db_jwt",
+  "code",
+  "state",
+  "ticket",
+];
 
 function normalizePathname(pathname: string): string {
   return pathname.length > 1 && pathname.endsWith("/")
@@ -18,8 +27,22 @@ function matchesRoutePrefix(pathname: string, routePrefix: string): boolean {
   return pathname === routePrefix || pathname.startsWith(`${routePrefix}/`);
 }
 
+function isAuthRoute(pathname: string): boolean {
+  return AUTH_ROUTE_PREFIXES.some((routePrefix) =>
+    matchesRoutePrefix(pathname, routePrefix),
+  );
+}
+
+function hasOAuthCallbackSearchParams(req: NextRequest): boolean {
+  return OAUTH_CALLBACK_SEARCH_PARAMS.some((searchParam) =>
+    req.nextUrl.searchParams.has(searchParam),
+  );
+}
+
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
+  const isOAuthCallbackRequest =
+    isAuthRoute(pathname) && hasOAuthCallbackSearchParams(req);
   const env = process.env["VERCEL_TARGET_ENV"] ?? process.env["VERCEL_ENV"];
   const isProduction = env === "production";
   const staticCanonicalRouteMap: Record<string, string> = {
@@ -36,7 +59,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "";
   const requestHost = requestHostHeader.split(",")[0]?.trim().split(":")[0]?.toLowerCase();
 
-  if (requestHost === NON_CANONICAL_HOST) {
+  if (requestHost === NON_CANONICAL_HOST && !isOAuthCallbackRequest) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.hostname = CANONICAL_HOST;
     redirectUrl.protocol = "https";
@@ -48,6 +71,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const canonicalStaticPath = staticCanonicalRouteMap[lowerPathname];
 
   if (
+    !isOAuthCallbackRequest &&
     canonicalStaticPath &&
     (pathname !== canonicalStaticPath || normalizedPathname !== canonicalStaticPath)
   ) {
@@ -60,7 +84,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/sign-in")) {
+  if (isAuthRoute(pathname)) {
     return NextResponse.next();
   }
 

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
-import { createPageMetadata } from "@/src/lib/seo";
+import { createPageMetadata, seoConfig } from "@/src/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Sign Up",
@@ -21,6 +21,9 @@ export default async function SignUpPage() {
   if (userId) {
     redirect(ROUTES.APP);
   }
+
+  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP}`;
+  const signInUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_IN}`;
 
   const clerkGlassAppearance = {
     elements: {
@@ -76,8 +79,10 @@ export default async function SignUpPage() {
             <div className="auth-sign-up-zoom w-full max-w-md">
               <SignUp
                 appearance={clerkGlassAppearance}
-                fallbackRedirectUrl={ROUTES.APP}
-                forceRedirectUrl={ROUTES.APP}
+                fallbackRedirectUrl={appRedirectUrl}
+                forceRedirectUrl={appRedirectUrl}
+                oauthFlow="redirect"
+                signInUrl={signInUrl}
               />
             </div>
           </section>

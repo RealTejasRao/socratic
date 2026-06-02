@@ -1,6 +1,7 @@
 import type { Metadata, Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { FallbackBlogImage } from "@/src/components/blog/fallback-blog-image";
 import { Instrument_Serif, Inter } from "next/font/google";
 import { Footer } from "@/src/components/home/footer";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
@@ -251,7 +252,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 >
                   <article className="flex h-full flex-col overflow-hidden rounded-[14px] border border-black/7 bg-white/70 p-3.5 outline outline-black/8 transition-all duration-220 hover:-translate-y-1 hover:border-[#a01717]/25 hover:outline-[#a01717]/30 hover:shadow-[0_16px_30px_rgba(160,23,23,0.12)]">
                     <div className="relative h-52 overflow-hidden rounded-[10px]">
-                      <Image
+                      <FallbackBlogImage
                         src={resolveOptimizedCloudinaryPublicAsset(
                           post.coverImagePath,
                           {
@@ -260,8 +261,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             quality: "auto:good",
                           },
                         )}
+                        fallbackSrc={post.coverImagePath}
                         alt={post.title}
-                        fill
+                        sizes="(min-width: 1280px) 31vw, (min-width: 640px) 46vw, 92vw"
                         className="object-cover transition-transform duration-450 ease-out group-hover:scale-[1.03]"
                       />
                     </div>
