@@ -223,6 +223,8 @@ We do not knowingly collect, solicit data from, or market to children under 18 y
 
 In some regions (like the EEA, UK, Switzerland, and Canada), you have certain rights under applicable data protection laws. These may include the right (i) to request access and obtain a copy of your personal information, (ii) to request rectification or erasure; (iii) to restrict the processing of your personal information; (iv) if applicable, to data portability; and (v) not to be subject to automated decision-making. If a decision that produces legal or similarly significant effects is made solely by automated means, we will inform you, explain the main factors, and offer a simple way to request human review. In certain circumstances, you may also have the right to object to the processing of your personal information. You can make such a request by contacting us by using the contact details provided in the section '[HOW CAN YOU CONTACT US ABOUT THIS NOTICE?](https://www.usesocratic.com/privacy#contact)' below.
 
+**Account Deletion:** Users can delete their account and associated data directly within the application by clicking their profile avatar and selecting "Delete Account". Alternatively, you can request manual deletion by contacting us at contact@usesocratic.com.
+
 We will consider and act upon any request in accordance with applicable data protection laws.
 
 If you are located in the EEA or UK and you believe we are unlawfully processing your personal information, you also have the right to complain to your [Member State data protection authority or UK data protection authority](https://ec.europa.eu/newsroom/article29/items/612080).
@@ -339,5 +341,7 @@ If you have questions or comments about this notice, you may email us at contact
 
 
 ## 17. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?
-Based on the applicable laws of your country or state of residence in the US, you may have the right to request access to the personal information we collect from you, details about how we have processed it, correct inaccuracies, or delete your personal information. You may also have the right to withdraw your consent to our processing of your personal information. These rights may be limited in some circumstances by applicable law. To request to review, update, or delete your personal information, please visit: https://www.usesocratic.com/#contact, or contact us at contact@usesocratic.com.
+Based on the applicable laws of your country or state of residence in the US, you may have the right to request access to the personal information we collect from you, details about how we have processed it, correct inaccuracies, or delete your personal information. You may also have the right to withdraw your consent to our processing of your personal information. These rights may be limited in some circumstances by applicable law.
+
+Users can delete their account and associated data directly within the application by clicking their profile avatar and selecting "Delete Account". Alternatively, you can request manual deletion by visiting https://www.usesocratic.com/#contact or by contacting us at contact@usesocratic.com.
 
