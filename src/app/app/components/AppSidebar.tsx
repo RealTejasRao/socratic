@@ -217,6 +217,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [isNewChatNavigating, setIsNewChatNavigating] = useState(false);
   const [navigatingModeLink, setNavigatingModeLink] =
     useState<SidebarModeLink | null>(null);
+  const [
+    shouldCloseMobileSidebarAfterModeLoad,
+    setShouldCloseMobileSidebarAfterModeLoad,
+  ] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const toneDropdownMenuRef = useRef<HTMLDivElement | null>(null);
   const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
@@ -406,6 +410,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     if (pathname === ROUTES.APP && isMatchingMode) {
       const timeoutId = window.setTimeout(() => {
         setNavigatingModeLink(null);
+        if (shouldCloseMobileSidebarAfterModeLoad) {
+          setIsMobileSidebarOpen(false);
+          setShouldCloseMobileSidebarAfterModeLoad(false);
+        }
       }, 300);
 
       return () => {
@@ -415,12 +423,21 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
     const fallbackTimeoutId = window.setTimeout(() => {
       setNavigatingModeLink(null);
+      if (shouldCloseMobileSidebarAfterModeLoad) {
+        setIsMobileSidebarOpen(false);
+        setShouldCloseMobileSidebarAfterModeLoad(false);
+      }
     }, 12000);
 
     return () => {
       window.clearTimeout(fallbackTimeoutId);
     };
-  }, [navigatingModeLink, pathname, searchParams]);
+  }, [
+    navigatingModeLink,
+    pathname,
+    searchParams,
+    shouldCloseMobileSidebarAfterModeLoad,
+  ]);
 
   useEffect(() => {
     const handleOpen = () => setIsMobileSidebarOpen(true);
@@ -996,7 +1013,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           {modeLinks(
             18,
             "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition",
-            () => setIsMobileSidebarOpen(false),
+            () => setShouldCloseMobileSidebarAfterModeLoad(true),
           )}
 
           <div className="mt-2">
