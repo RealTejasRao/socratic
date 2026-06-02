@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "src/server/db/client";
+import { ensureUserForClerkId } from "src/server/auth/ensure-user";
 import { ROUTES } from "src/lib/routes";
 import { serializeSessionMeta } from "src/server/chat/session-meta";
 import { absoluteUrl } from "src/lib/seo";
@@ -44,14 +45,7 @@ export default async function AppLayout({ children }: Props) {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { clerkUserId },
-    select: { id: true, email: true },
-  });
-
-  if (!dbUser) {
-    redirect(ROUTES.HOME);
-  }
+  const dbUser = await ensureUserForClerkId(clerkUserId);
   const billing = await getUserBillingStateByUserId(dbUser.id);
   const visibleSessionsLimit = getVisibleSessionsLimit({
     isPremium: billing?.isPremium ?? false,
