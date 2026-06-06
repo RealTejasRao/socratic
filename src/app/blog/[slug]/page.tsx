@@ -228,7 +228,9 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "does-god-exist": ["Does God Exist?", "Biggest Question"],
   "debate-ai": ["Debate AI", "Sharper, Deadlier Debater"],
   "what-is-consciousness": ["What is Consciousness?"],
-  "critical-thinking-in-ai-era":["Critical Thinking", "AI Era"],
+  "critical-thinking-in-ai-era": ["Critical Thinking", "AI Era"],
+  "what-is-epistemology": ["What is Epistemology?"],
+  "plato-vs-aristotle": ["Plato vs Aristotle:", "Split"],
 };
 
 function escapeRegExp(value: string) {

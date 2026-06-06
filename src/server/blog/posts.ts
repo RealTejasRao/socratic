@@ -28,6 +28,28 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "plato-vs-aristotle",
+    title: "Plato vs Aristotle: The Debate That Split Philosophy in Two",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "17 min read",
+    excerpt:
+      "One pointed up. One pointed out. Their disagreement split Western thought in two and never stopped.",
+    coverImagePath: "/blog/images/plato-vs-aristotle.webp",
+    contentFilePath: "public/blog/content/plato_vs_aristotle.md",
+  },
+  {
+    slug: "what-is-epistemology",
+    title: "What is Epistemology? How Do We Actually Know What We Know?",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "14 min read",
+    excerpt:
+      "You believe thousands of things. How many of them do you actually know?",
+    coverImagePath: "/blog/images/what-is-epistemology.webp",
+    contentFilePath: "public/blog/content/what_is_epistemology.md",
+  },
+  {
     slug: "critical-thinking-in-ai-era",
     title: "Why Critical Thinking is the Most Valuable Skill in the AI Era",
     category: "Philosophy",
