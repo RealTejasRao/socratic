@@ -248,7 +248,7 @@ html.pwa-standalone .app-greeting-heading {
   }
 }
 
-@media (display-mode: standalone), (display-mode: fullscreen) {
+@media (display-mode: standalone) {
   .pwa-bottom-nav {
     display: block;
   }

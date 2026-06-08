@@ -10,28 +10,19 @@ export function detectStandaloneMode(win: Window = window) {
   const isDisplayModeStandalone = win.matchMedia(
     "(display-mode: standalone)",
   ).matches;
-  const isDisplayModeFullscreen = win.matchMedia(
-    "(display-mode: fullscreen)",
-  ).matches;
   const isAndroidTwa = win.document.referrer.startsWith(
     ANDROID_TWA_REFERRER_PREFIX,
   );
 
-  return (
-    isIosStandalone ||
-    isDisplayModeStandalone ||
-    isDisplayModeFullscreen ||
-    isAndroidTwa
-  );
+  return isIosStandalone || isDisplayModeStandalone || isAndroidTwa;
 }
 
 export const STANDALONE_MODE_INIT_SCRIPT = `(() => {
   try {
     const isIosStandalone = window.navigator.standalone === true;
     const isDisplayModeStandalone = window.matchMedia("(display-mode: standalone)").matches;
-    const isDisplayModeFullscreen = window.matchMedia("(display-mode: fullscreen)").matches;
     const isAndroidTwa = document.referrer.startsWith("android-app://");
-    const isStandalone = isIosStandalone || isDisplayModeStandalone || isDisplayModeFullscreen || isAndroidTwa;
+    const isStandalone = isIosStandalone || isDisplayModeStandalone || isAndroidTwa;
     const root = document.documentElement;
     root.dataset.displayMode = isStandalone ? "standalone" : "browser";
     root.classList.toggle("pwa-standalone", isStandalone);

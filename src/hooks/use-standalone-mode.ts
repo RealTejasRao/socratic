@@ -37,14 +37,10 @@ export function useStandaloneMode() {
     updateStandaloneMode();
 
     const displayModeMedia = window.matchMedia("(display-mode: standalone)");
-    const fullscreenMedia = window.matchMedia("(display-mode: fullscreen)");
-
     if (displayModeMedia.addEventListener) {
       displayModeMedia.addEventListener("change", updateStandaloneMode);
-      fullscreenMedia.addEventListener("change", updateStandaloneMode);
     } else {
       displayModeMedia.addListener(updateStandaloneMode);
-      fullscreenMedia.addListener(updateStandaloneMode);
     }
     window.addEventListener("focus", updateStandaloneMode);
     document.addEventListener("visibilitychange", updateStandaloneMode);
@@ -52,10 +48,8 @@ export function useStandaloneMode() {
     return () => {
       if (displayModeMedia.removeEventListener) {
         displayModeMedia.removeEventListener("change", updateStandaloneMode);
-        fullscreenMedia.removeEventListener("change", updateStandaloneMode);
       } else {
         displayModeMedia.removeListener(updateStandaloneMode);
-        fullscreenMedia.removeListener(updateStandaloneMode);
       }
       window.removeEventListener("focus", updateStandaloneMode);
       document.removeEventListener("visibilitychange", updateStandaloneMode);
