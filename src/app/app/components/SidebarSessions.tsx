@@ -70,6 +70,9 @@ type ApiSession = {
   };
 };
 
+const DESKTOP_HOVER_PREVIEW_QUERY =
+  "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+
 function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
@@ -104,6 +107,7 @@ export default function SidebarSessions({
   const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
   const [displaySessions, setDisplaySessions] = useState(sessions);
   const [currentPath, setCurrentPath] = useState(pathname);
+  const [canShowHoverPreview, setCanShowHoverPreview] = useState(false);
 
   useEffect(() => {
     setDisplaySessions(sessions);
@@ -112,6 +116,25 @@ export default function SidebarSessions({
   useEffect(() => {
     setCurrentPath(pathname);
   }, [pathname]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(DESKTOP_HOVER_PREVIEW_QUERY);
+
+    function syncHoverPreviewAvailability() {
+      setCanShowHoverPreview(mediaQuery.matches);
+
+      if (!mediaQuery.matches) {
+        setHoveredSession(null);
+      }
+    }
+
+    syncHoverPreviewAvailability();
+    mediaQuery.addEventListener("change", syncHoverPreviewAvailability);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncHoverPreviewAvailability);
+    };
+  }, []);
 
   useEffect(() => {
     async function refreshDisplaySessions(activeSessionId?: string) {
@@ -461,7 +484,7 @@ export default function SidebarSessions({
                   : "text-slate-600",
             )}
             onMouseEnter={(event) => {
-              if (!showHoverPreviews) return;
+              if (!showHoverPreviews || !canShowHoverPreview) return;
 
               if (
                 isOpening ||
@@ -594,7 +617,7 @@ export default function SidebarSessions({
         </div>
       )}
 
-      {showHoverPreviews && hoveredSession && (
+      {showHoverPreviews && canShowHoverPreview && hoveredSession && (
         <div
           className="pointer-events-none fixed z-50 w-64 -translate-y-1/2"
           style={{ left: hoveredSession.x, top: hoveredSession.y }}

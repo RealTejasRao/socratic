@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import type { Route } from "next";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -40,6 +46,7 @@ import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-publ
 import { ROUTES } from "@/src/lib/routes";
 import { PLAN_LIMITS } from "@/src/lib/billing";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
+import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import DebateModeSetup from "./DebateModeSetup";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
@@ -293,6 +300,8 @@ export default function ChatContainer({
   const [errorToast, setErrorToast] = useState<ErrorToastState>(null);
   const [billing, setBilling] = useState(initialBilling);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [isPricingNavigationPending, setIsPricingNavigationPending] =
+    useState(false);
   const [upgradePromptSmallText, setUpgradePromptSmallText] = useState(
     DEFAULT_UPGRADE_PROMPT_TEXT,
   );
@@ -431,6 +440,20 @@ export default function ChatContainer({
   useEffect(() => {
     setActiveSessionId(sessionId);
   }, [sessionId]);
+
+  useEffect(() => {
+    if (!isPricingNavigationPending) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setIsPricingNavigationPending(false);
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isPricingNavigationPending]);
 
   useEffect(() => {
     autoSendTriggeredRef.current = false;
@@ -786,6 +809,24 @@ export default function ChatContainer({
     setShowUpgradePrompt(true);
   }
 
+  function handlePricingClick(event: ReactMouseEvent<HTMLAnchorElement>) {
+    if (isPricingNavigationPending || event.defaultPrevented) {
+      return;
+    }
+
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    setIsPricingNavigationPending(true);
+  }
+
   function renderUpgradePromptModal() {
     if (!showUpgradePrompt) {
       return null;
@@ -822,10 +863,19 @@ export default function ChatContainer({
           <div className="mt-5 flex items-center gap-2.5">
             <Link
               href={ROUTES.PRICING}
-              className="app-upgrade-primary inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]"
+              onClick={handlePricingClick}
+              aria-busy={isPricingNavigationPending}
+              className={cn(
+                "app-upgrade-primary inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]",
+                isPricingNavigationPending && "pointer-events-none opacity-90",
+              )}
             >
               View Pricing
-              <ArrowUpRight size={13} />
+              {isPricingNavigationPending ? (
+                <RoseCurveLoader className="h-[1.6em] w-[1.6em] !text-black [filter:none]" />
+              ) : (
+                <ArrowUpRight size={13} />
+              )}
             </Link>
             <button
               type="button"

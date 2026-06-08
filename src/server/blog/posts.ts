@@ -28,6 +28,18 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "philosophy-of-power",
+    title:
+      "The Philosophy of Power: What Machiavelli, Nietzsche, and Aristotle Actually Said",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    readTimeLabel: "16 min read",
+    excerpt:
+      "Machiavelli studied it. Nietzsche diagnosed it. Aristotle asked what it was for. Here is what they found.",
+    coverImagePath: "/blog/images/philosophy-of-power.webp",
+    contentFilePath: "public/blog/content/philosophy_of_power.md",
+  },
+  {
     slug: "plato-vs-aristotle",
     title: "Plato vs Aristotle: The Debate That Split Philosophy in Two",
     category: "Philosophy",

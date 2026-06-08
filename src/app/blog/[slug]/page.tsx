@@ -231,6 +231,7 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "critical-thinking-in-ai-era": ["Critical Thinking", "AI Era"],
   "what-is-epistemology": ["What is Epistemology?"],
   "plato-vs-aristotle": ["Plato vs Aristotle:", "Split"],
+  "philosophy-of-power": ["The Philosophy of Power:"],
 };
 
 function escapeRegExp(value: string) {

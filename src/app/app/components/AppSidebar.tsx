@@ -564,6 +564,20 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     window.dispatchEvent(new CustomEvent("socratic:new-chat:requested"));
   }
 
+  function handleDebateModeClick(event: ReactMouseEvent<HTMLAnchorElement>) {
+    if (isPremium) {
+      setNavigatingModeLink("DEBATE");
+      return true;
+    }
+
+    event.preventDefault();
+    setNavigatingModeLink(null);
+    setIsMobileSidebarOpen(false);
+    setShouldCloseMobileSidebarAfterModeLoad(false);
+    window.dispatchEvent(new CustomEvent("socratic:upgrade-prompt:open"));
+    return false;
+  }
+
   function handleHomeClick(event: ReactMouseEvent<HTMLAnchorElement>) {
     if (event.defaultPrevented || isHomeNavigating) {
       return;
@@ -633,9 +647,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     >
       <Link
         href={DEBATE_MODE_HREF}
-        onClick={() => {
-          setNavigatingModeLink("DEBATE");
-          onClick?.();
+        onClick={(event) => {
+          if (handleDebateModeClick(event)) {
+            onClick?.();
+          }
         }}
         className={`${className} ${navigatingModeLink === "DEBATE" ? "pointer-events-none opacity-90" : ""}`}
         aria-label="Debate mode"
