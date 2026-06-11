@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.socraticai.app",
-      "sha256_cert_fingerprints": ["74:E7:C7:DB:17:34:F7:B9:20:2B:C9:80:F6:01:9E:73:D0:E9:02:BB:F5:3B:EB:99:7C:5D:35:D3:33:8B:41:23"]
+      "sha256_cert_fingerprints": ["27:EE:50:5B:C5:EC:CB:22:FB:67:9E:03:33:EB:73:C0:03:85:CA:B4:F4:DD:DD:1C:72:C5:CB:3E:7A:CE:80:91"]
     }
   }
 ]

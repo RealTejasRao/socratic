@@ -8,7 +8,7 @@ import { Footer } from "@/src/components/home/footer";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
 import { ROUTES } from "@/src/lib/routes";
-import { createPageMetadata } from "@/src/lib/seo";
+import { createBlogPostingSchema, createPageMetadata } from "@/src/lib/seo";
 import {
   getAllBlogSlugs,
   getBlogPostBySlug,
@@ -58,6 +58,7 @@ export async function generateMetadata({
     title: `Socratic AI: ${post.title}`,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
+    ogImage: post.coverImagePath,
     keywords: [
       "Socratic AI blog",
       "philosophy",
@@ -408,6 +409,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const blogPostingSchema = createBlogPostingSchema({
+    slug: post.slug,
+    title: post.title,
+    description: post.excerpt,
+    category: post.category,
+    author: post.author,
+    coverImagePath: post.coverImagePath,
+    publishedAt: post.publishedAt,
+    updatedAt: post.updatedAt,
+  });
+
   const shareItems = [
     {
       label: "X",
@@ -436,7 +448,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   ];
 
   return (
-    <main className="min-h-screen bg-white text-black">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
+      />
+      <main className="min-h-screen bg-white text-black">
       <MarketingNavbar
         interClassName={interClassName}
         instrumentSerifClassName={instrumentSerif.className}
@@ -501,6 +518,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </section>
 
       <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOME} />
-    </main>
+      </main>
+    </>
   );
 }

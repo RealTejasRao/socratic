@@ -175,3 +175,46 @@ export function createFaqSchema(
     })),
   };
 }
+
+export function createBlogPostingSchema(post: {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  author: string;
+  coverImagePath: string;
+  publishedAt: string;
+  updatedAt: string;
+}) {
+  const url = absoluteUrl(`/blog/${post.slug}`);
+  const imageUrl = absoluteUrl(post.coverImagePath);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${url}#blogposting`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    headline: post.title,
+    description: post.description,
+    image: [imageUrl],
+    url,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt,
+    author: {
+      "@type": "Organization",
+      name: post.author,
+      url: seoConfig.siteUrl,
+    },
+    publisher: {
+      "@id": absoluteUrl("/#organization"),
+    },
+    isPartOf: {
+      "@id": absoluteUrl("/#website"),
+    },
+    articleSection: post.category,
+    inLanguage: "en",
+  };
+}
