@@ -151,6 +151,11 @@ html.pwa-standalone .pwa-bottom-nav {
   display: block;
 }
 
+html.pwa-standalone,
+html.pwa-standalone body {
+  overscroll-behavior-y: none;
+}
+
 html.pwa-standalone .pwa-browser-only {
   display: none !important;
 }
@@ -249,6 +254,11 @@ html.pwa-standalone .app-greeting-heading {
 }
 
 @media (display-mode: standalone) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+
   .pwa-bottom-nav {
     display: block;
   }
