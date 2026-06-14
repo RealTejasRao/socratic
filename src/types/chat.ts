@@ -57,11 +57,13 @@ export interface RoleplaySessionState {
   philosopherId: RoleplayPhilosopherId;
   philosopherName: string;
   imagePath: string;
-  tradition: string;
-  schoolLabel: string;
-  description: string;
-  introBlurb: string;
-  retrievalAuthors: string[];
+  flairs: string[];
+  expertise: string;
+  shortDescription: string;
+  bestFor: string;
+  starterPrompts: string[];
+  voicePreview: string;
+  accent: string;
 }
 
 export interface ChatSessionMeta {

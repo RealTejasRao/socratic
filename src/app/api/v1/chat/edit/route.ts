@@ -238,14 +238,17 @@ export async function POST(req: Request) {
     }),
   });
 
-  return new Response(generationResult.readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "X-Session-Id": session.id,
-      "X-AI-Context-Ms": String(generationResult.debug.contextMs),
-      "X-AI-Retrieval-Ms": String(generationResult.debug.retrievalMs ?? 0),
-      "X-AI-Prestream-Ms": String(generationResult.debug.preStreamTotalMs),
-      "X-AI-Stream-Setup-Ms": String(generationResult.debug.streamSetupMs),
-    },
-  });
+  const headers: Record<string, string> = {
+    "Content-Type": "text/plain; charset=utf-8",
+    "X-Session-Id": session.id,
+    "X-AI-Context-Ms": String(generationResult.debug.contextMs),
+    "X-AI-Prestream-Ms": String(generationResult.debug.preStreamTotalMs),
+    "X-AI-Stream-Setup-Ms": String(generationResult.debug.streamSetupMs),
+  };
+
+  if (session.mode !== "ROLEPLAY") {
+    headers["X-AI-Retrieval-Ms"] = String(generationResult.debug.retrievalMs ?? 0);
+  }
+
+  return new Response(generationResult.readable, { headers });
 }

@@ -564,6 +564,7 @@ export async function retrieveHybridPassages(params: {
   vectorLimit?: number;
   lexicalLimit?: number;
   limit?: number;
+  authors?: string[];
 }) {
   const details = await retrieveHybridPassagesWithDetails(params);
   return details.fusedCandidates.slice(0, params.limit ?? DEFAULT_OUTPUT_LIMIT);
@@ -574,6 +575,7 @@ export async function retrieveHybridPassagesWithDetails(params: {
   vectorLimit?: number;
   lexicalLimit?: number;
   limit?: number;
+  authors?: string[];
 }) {
   const retrievalQuery = params.query.trim();
   const analysisQuery = retrievalQuery;
@@ -589,7 +591,9 @@ export async function retrieveHybridPassagesWithDetails(params: {
   const vectorLimit = params.vectorLimit ?? DEFAULT_VECTOR_LIMIT;
   const lexicalLimit = params.lexicalLimit ?? DEFAULT_LEXICAL_LIMIT;
   const limit = params.limit ?? DEFAULT_OUTPUT_LIMIT;
-  const authorFilters = detectAuthorFilters(retrievalQuery);
+  const authorFilters = params.authors?.length
+    ? params.authors
+    : detectAuthorFilters(retrievalQuery);
   const queryType = detectQueryType(analysisQuery);
   const queryComplexity = detectQueryComplexity(analysisQuery);
 

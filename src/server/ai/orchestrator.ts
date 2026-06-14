@@ -45,6 +45,7 @@ import {
   getRoleplayPhilosopherConfig,
   isRoleplayPhilosopherId,
 } from "src/lib/roleplay";
+import { getRoleplayGroundingConfig } from "src/server/roleplay/grounding";
 import type { SocraticTone } from "src/lib/socratic";
 import { PREMIUM_FEATURES } from "src/lib/billing";
 import {
@@ -378,14 +379,20 @@ export async function generateReply(params: {
     !Array.isArray(session.roleplayMeta)
       ? (session.roleplayMeta as Record<string, unknown>)
       : null;
+  const roleplayPhilosopherCandidate =
+    roleplayMetaRecord?.["characterId"] ?? roleplayMetaRecord?.["philosopherId"];
   const roleplayPhilosopherId = isRoleplayPhilosopherId(
-    roleplayMetaRecord?.["philosopherId"],
+    roleplayPhilosopherCandidate,
   )
-    ? roleplayMetaRecord["philosopherId"]
+    ? roleplayPhilosopherCandidate
     : null;
   const roleplayPhilosopher =
     session.mode === "ROLEPLAY" && roleplayPhilosopherId
       ? getRoleplayPhilosopherConfig(roleplayPhilosopherId)
+      : null;
+  const roleplayGrounding =
+    session.mode === "ROLEPLAY" && roleplayPhilosopherId
+      ? getRoleplayGroundingConfig(roleplayPhilosopherId)
       : null;
 
   const conversationHistory = previousMessagesRaw.reverse().map((msg) => ({
@@ -404,9 +411,11 @@ export async function generateReply(params: {
     session.mode === "DEBATE" && baseKnowledgeRoute === "web"
       ? "conversation_only"
       : session.mode === "ROLEPLAY"
-        ? forceWebSearch
+        ? roleplayGrounding?.useKnowledgeBase || forceWebSearch
+          ? forceWebSearch
           ? "hybrid"
           : "rag"
+          : "conversation_only"
         : baseKnowledgeRoute;
 
   const originalQuery = userContent;
@@ -457,13 +466,16 @@ export async function generateReply(params: {
       rewrittenQuery = await retrievalRewritePromise;
       retrievalQuery = rewrittenQuery || originalQuery;
 
-      if (session.mode === "ROLEPLAY" && roleplayPhilosopher) {
-        retrievalQuery = `${retrievalQuery} ${roleplayPhilosopher.retrievalHint}`;
+      if (session.mode === "ROLEPLAY" && roleplayGrounding) {
+        retrievalQuery = `${retrievalQuery} ${roleplayGrounding.retrievalHint}`;
       }
 
       const retrievalDetails = await retrieveHybridPassagesWithDetails({
         query: retrievalQuery,
         limit: 10,
+        ...(session.mode === "ROLEPLAY" && roleplayGrounding
+          ? { authors: roleplayGrounding.retrievalAuthors }
+          : {}),
       });
       rerankedCandidates = rerankRetrievedPassages({
         query: retrievalQuery,
@@ -549,18 +561,21 @@ export async function generateReply(params: {
             hasTimer: session.debateHasTimer,
           },
         })
-      : session.mode === "ROLEPLAY" && roleplayPhilosopher
+      : session.mode === "ROLEPLAY" && roleplayPhilosopher && roleplayGrounding
         ? buildRoleplayPrompt({
             ...sharedPromptBuilderParams,
-            knowledgeRoute:
-              knowledgeRoute === "conversation_only" ? "rag" : knowledgeRoute,
+            knowledgeRoute,
             roleplay: {
               philosopherName: roleplayPhilosopher.name,
-              tradition: roleplayPhilosopher.tradition,
-              schoolLabel: roleplayPhilosopher.schoolLabel,
-              voiceGuide: roleplayPhilosopher.voiceGuide,
-              openingPrompt: roleplayPhilosopher.openingPrompt,
-              retrievalAuthors: [...roleplayPhilosopher.retrievalAuthors],
+              flairs: [...roleplayPhilosopher.flairs],
+              expertise: roleplayPhilosopher.expertise,
+              bestFor: roleplayPhilosopher.bestFor,
+              schoolLabel: roleplayGrounding.schoolLabel,
+              doctrineGuide: roleplayGrounding.doctrineGuide,
+              voiceGuide: roleplayGrounding.voiceGuide,
+              openingPrompt: roleplayGrounding.openingPrompt,
+              boundaries: roleplayGrounding.boundaries,
+              retrievalAuthors: [...roleplayGrounding.retrievalAuthors],
             },
           })
         : buildSocraticPrompt({

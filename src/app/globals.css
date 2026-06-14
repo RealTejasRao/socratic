@@ -172,6 +172,12 @@ html.pwa-standalone .app-composer-dock {
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
+@media (max-width: 767px) {
+  html.pwa-standalone .app-new-chat-roleplay-shell {
+    padding-top: 2rem;
+  }
+}
+
 html.pwa-standalone .app-input-inline-status {
   display: none !important;
 }
@@ -2652,6 +2658,456 @@ html.app-dark .app-roleplay-thread-intro .bg-white {
 
 html.app-dark .app-roleplay-thread-intro .border-slate-200 {
   border-color: var(--border-subtle) !important;
+}
+
+.app-roleplay-library {
+  color: #161513;
+  caret-color: transparent;
+  user-select: none;
+}
+
+.app-roleplay-search-input,
+.app-roleplay-character-card,
+.app-roleplay-empty,
+.app-roleplay-starter-prompt {
+  background: rgba(255, 255, 252, 0.9);
+  border-color: rgba(22, 21, 19, 0.09);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+}
+
+.app-roleplay-search-input {
+  caret-color: auto;
+  color: #171513;
+  user-select: text;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.app-roleplay-search-input::placeholder {
+  color: #9a9286;
+}
+
+.app-roleplay-search-input:focus {
+  border-color: rgba(88, 75, 54, 0.28);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.85),
+    0 0 0 3px rgba(217, 182, 111, 0.14),
+    0 16px 38px rgba(15, 23, 42, 0.08);
+}
+
+.app-roleplay-search-clear {
+  color: #827769;
+}
+
+.app-roleplay-search-clear:hover {
+  background: rgba(22, 21, 19, 0.06);
+  color: #24201a;
+}
+
+.app-roleplay-flair-row {
+  scrollbar-width: none;
+}
+
+.app-roleplay-flair-row::-webkit-scrollbar {
+  display: none;
+}
+
+.app-roleplay-flair-shell {
+  min-width: 0;
+}
+
+.app-roleplay-flair-arrow {
+  background: transparent;
+  border-color: rgba(36, 32, 26, 0.28);
+  color: #4e463b;
+  box-shadow: none;
+}
+
+.app-roleplay-flair-arrow:hover {
+  background: transparent;
+  border-color: rgba(36, 32, 26, 0.52);
+  color: #211d17;
+}
+
+.app-roleplay-flair-token {
+  position: relative;
+  background: var(--roleplay-flair-bg);
+  border-color: var(--roleplay-flair-border);
+  color: var(--roleplay-flair-border);
+  font-weight: 700;
+  box-shadow: none !important;
+  text-shadow: none;
+}
+
+.app-roleplay-flair-token[data-flair="All"] {
+  color: #f4f0e8;
+}
+
+.app-roleplay-flair-filter {
+  opacity: 0.9;
+  outline: none;
+}
+
+.app-roleplay-flair-filter:focus,
+.app-roleplay-flair-filter:focus-visible {
+  outline: none;
+}
+
+.app-roleplay-flair-filter[data-active="true"] {
+  opacity: 1;
+  border-color: #111111 !important;
+  outline: none;
+  box-shadow: inset 0 0 0 1px #111111 !important;
+}
+
+.app-roleplay-flair-filter:hover {
+  opacity: 1;
+}
+
+.app-roleplay-results-meta,
+.app-roleplay-preview-label,
+.app-roleplay-prompts-label {
+  color: #83796b;
+}
+
+.app-roleplay-character-card {
+  color: #171513;
+}
+
+.app-roleplay-character-card::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--roleplay-accent);
+  content: "";
+  opacity: 0.8;
+}
+
+.app-roleplay-character-card:hover {
+  border-color: color-mix(in srgb, var(--roleplay-accent) 54%, #241f18);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.105);
+  transform: translateY(-1px);
+}
+
+.app-roleplay-card-media {
+  background:
+    linear-gradient(180deg, rgba(20, 18, 15, 0.06), rgba(20, 18, 15, 0.14)),
+    color-mix(in srgb, var(--roleplay-accent) 12%, #eee9de);
+}
+
+.app-roleplay-card-media::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.16), transparent 44%),
+    linear-gradient(180deg, transparent 54%, rgba(18, 16, 13, 0.22));
+  content: "";
+  pointer-events: none;
+}
+
+.app-roleplay-card-image-backdrop {
+  filter: blur(16px) saturate(0.82);
+  opacity: 0.34;
+  transform: scale(1.12);
+}
+
+.app-roleplay-card-image-main {
+  z-index: 1;
+  filter: saturate(1.03) contrast(1.02);
+}
+
+.app-roleplay-flair-badge {
+  font-weight: 700;
+}
+
+.app-roleplay-card-skeleton {
+  background: #fbfaf6;
+  border-color: rgba(22, 21, 19, 0.1);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+}
+
+.app-roleplay-skeleton-media,
+.app-roleplay-skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: #e7dfd1;
+}
+
+.app-roleplay-skeleton-media::after,
+.app-roleplay-skeleton-line::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.46),
+    transparent
+  );
+  content: "";
+  transform: translateX(-100%);
+  animation: roleplaySkeletonShimmer 900ms ease-in-out infinite;
+}
+
+@keyframes roleplaySkeletonShimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.app-roleplay-card-copy {
+  color: #5f574d;
+}
+
+.app-roleplay-card-action {
+  background: transparent;
+  color: #312b22;
+}
+
+.app-roleplay-character-card:hover .app-roleplay-card-action {
+  color: color-mix(in srgb, var(--roleplay-accent) 54%, #201b15);
+}
+
+.app-roleplay-fallback-portrait {
+  background:
+    radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(145deg, color-mix(in srgb, var(--roleplay-accent) 48%, #2a2520), #171513);
+  color: #fff8e8;
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.app-roleplay-starter-prompt {
+  position: relative;
+  color: #3f382f;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(250, 247, 240, 0.92)),
+    #fffdfa;
+  border-color: rgba(44, 39, 32, 0.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 8px 18px rgba(44, 39, 32, 0.035);
+}
+
+.app-roleplay-starter-prompt:hover {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--roleplay-accent, #d9b66f) 9%, #ffffff),
+      #fbf7ee
+    ),
+    #fbf7ee;
+  border-color: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 34%, rgba(44, 39, 32, 0.18));
+  color: #171513;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 10px 22px rgba(44, 39, 32, 0.06);
+}
+
+.app-roleplay-thread-intro {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 246, 239, 0.94) 54%),
+    linear-gradient(135deg, color-mix(in srgb, var(--roleplay-accent) 18%, #fffdfa), #fffefb 58%),
+    #fffefb;
+  border-color: rgba(46, 40, 31, 0.14);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.92) inset,
+    0 18px 46px rgba(36, 32, 26, 0.09),
+    0 2px 6px rgba(36, 32, 26, 0.035);
+}
+
+.app-roleplay-thread-intro::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--roleplay-accent) 82%, #ffffff),
+    color-mix(in srgb, var(--roleplay-accent) 58%, #2c281f)
+  );
+  content: "";
+}
+
+.app-roleplay-thread-intro::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.46), transparent 30%),
+    linear-gradient(180deg, transparent, rgba(50, 44, 34, 0.035));
+  content: "";
+  pointer-events: none;
+}
+
+.app-roleplay-profile-image {
+  border: 1px solid rgba(46, 40, 31, 0.14);
+  transform: translateZ(0);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.76) inset,
+    0 16px 30px rgba(36, 32, 26, 0.13),
+    0 2px 6px rgba(36, 32, 26, 0.08);
+}
+
+.app-roleplay-profile-image img {
+  filter: saturate(1.02) contrast(1.04);
+}
+
+.app-roleplay-profile-image::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(18, 16, 13, 0.02), transparent 42%, rgba(18, 16, 13, 0.16)),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.16), transparent 42%);
+  content: "";
+  pointer-events: none;
+}
+
+.app-roleplay-profile-copy {
+  position: relative;
+  z-index: 1;
+  color: #171513;
+}
+
+.app-roleplay-prompt-index {
+  display: grid;
+  min-height: 1.45rem;
+  min-width: 1.9rem;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 13%, #fffaf0);
+  color: color-mix(in srgb, var(--roleplay-accent, #8a7a5b) 62%, #4b4338);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--roleplay-accent, #d9b66f) 20%, rgba(44, 39, 32, 0.1));
+}
+
+html.app-dark .app-roleplay-library {
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-search-input,
+html.app-dark .app-roleplay-character-card,
+html.app-dark .app-roleplay-empty,
+html.app-dark .app-roleplay-starter-prompt {
+  background: rgba(31, 30, 29, 0.92) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.app-dark .app-roleplay-results-meta,
+html.app-dark .app-roleplay-preview-label,
+html.app-dark .app-roleplay-prompts-label {
+  color: var(--text-muted) !important;
+}
+
+html.app-dark .app-roleplay-search-input {
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+html.app-dark .app-roleplay-search-input:focus {
+  border-color: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 36%, var(--border-strong)) !important;
+  box-shadow:
+    0 0 0 3px rgba(217, 182, 111, 0.08),
+    0 18px 48px rgba(0, 0, 0, 0.32) !important;
+}
+
+html.app-dark .app-roleplay-search-clear {
+  color: var(--text-secondary) !important;
+}
+
+html.app-dark .app-roleplay-search-clear:hover {
+  background: var(--surface-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-flair-arrow {
+  background: transparent !important;
+  border-color: rgba(235, 231, 223, 0.26) !important;
+  color: #d9d4ca !important;
+}
+
+html.app-dark .app-roleplay-flair-arrow:hover {
+  background: transparent !important;
+  border-color: rgba(235, 231, 223, 0.5) !important;
+  color: #ffffff !important;
+}
+
+html.app-dark .app-roleplay-character-card {
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-character-card:hover {
+  border-color: color-mix(in srgb, var(--roleplay-accent) 45%, var(--border-strong)) !important;
+}
+
+html.app-dark .app-roleplay-card-skeleton {
+  background: rgba(31, 30, 29, 0.92) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.app-dark .app-roleplay-skeleton-media,
+html.app-dark .app-roleplay-skeleton-line {
+  background: #2b302d !important;
+}
+
+html.app-dark .app-roleplay-skeleton-media::after,
+html.app-dark .app-roleplay-skeleton-line::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  ) !important;
+}
+
+html.app-dark .app-roleplay-card-copy {
+  color: var(--text-secondary) !important;
+}
+
+html.app-dark .app-roleplay-card-action {
+  background: var(--surface-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-starter-prompt:hover {
+  background: var(--surface-hover) !important;
+  border-color: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 36%, var(--border-strong)) !important;
+  color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-thread-intro {
+  background:
+    linear-gradient(145deg, rgba(39, 38, 36, 0.94), rgba(31, 30, 29, 0.9) 54%),
+    linear-gradient(135deg, color-mix(in srgb, var(--roleplay-accent) 12%, rgba(37, 36, 35, 0.94)), rgba(37, 36, 35, 0.86) 58%),
+    rgba(37, 36, 35, 0.86) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 18px 46px rgba(0, 0, 0, 0.26) !important;
+}
+
+html.app-dark .app-roleplay-profile-image {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 12px 30px rgba(0, 0, 0, 0.24) !important;
+}
+
+html.app-dark .app-roleplay-profile-copy {
+  color: var(--text-secondary) !important;
+}
+
+html.app-dark .app-roleplay-prompt-index {
+  background: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 12%, var(--bg-elevated)) !important;
+  color: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 64%, var(--text-secondary)) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--roleplay-accent, #d9b66f) 20%, var(--border-subtle)) !important;
 }
 
 @keyframes authFadeIn {

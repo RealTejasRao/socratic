@@ -102,7 +102,7 @@ function serializeRoleplayState(
   }
 
   const record = session.roleplayMeta as Record<string, unknown>;
-  const philosopherId = record["philosopherId"];
+  const philosopherId = record["characterId"] ?? record["philosopherId"];
 
   if (typeof philosopherId !== "string") {
     return null;
@@ -120,10 +120,12 @@ function serializeRoleplayState(
     philosopherId: philosopher.id,
     philosopherName: philosopher.name,
     imagePath: philosopher.imagePath,
-    tradition: philosopher.tradition,
-    schoolLabel: philosopher.schoolLabel,
-    description: philosopher.description,
-    introBlurb: philosopher.introBlurb,
-    retrievalAuthors: [...philosopher.retrievalAuthors],
+    flairs: [...philosopher.flairs],
+    expertise: philosopher.expertise,
+    shortDescription: philosopher.shortDescription,
+    bestFor: philosopher.bestFor,
+    starterPrompts: [...philosopher.starterPrompts],
+    voicePreview: philosopher.voicePreview,
+    accent: philosopher.accent,
   };
 }

@@ -69,10 +69,14 @@ type DebatePromptParams = {
 
 type RoleplayPromptParams = {
   philosopherName: string;
-  tradition: string;
+  flairs: string[];
+  expertise: string;
+  bestFor: string;
   schoolLabel: string;
+  doctrineGuide: string;
   voiceGuide: string;
   openingPrompt: string;
+  boundaries: string;
   retrievalAuthors: string[];
 };
 
@@ -270,7 +274,8 @@ function buildRoleplayCorePolicyMessage(params: RoleplayPromptParams) {
     "OBJECTIVE",
     "RULES",
     "STYLE",
-    "ROLEPLAY_CONFIG",
+    "CHARACTER_CONFIG",
+    "CHARACTER_METHOD",
     "OUTPUT",
   ];
 
@@ -287,13 +292,28 @@ function buildRoleplayCorePolicyMessage(params: RoleplayPromptParams) {
     "STYLE",
     ROLEPLAY_PROMPT_SECTIONS.style,
     "",
-    "ROLEPLAY_CONFIG",
+    "CHARACTER_CONFIG",
     `Philosopher: ${params.philosopherName}`,
-    `Tradition: ${params.tradition}`,
-    `Corpus focus: ${params.schoolLabel}`,
+    `School flairs: ${params.flairs.join(", ")}`,
+    `Expertise: ${params.expertise}`,
+    `Best for: ${params.bestFor}`,
+    `Intellectual territory: ${params.schoolLabel}`,
+    `Doctrine guide: ${params.doctrineGuide}`,
     `Voice guide: ${params.voiceGuide}`,
     `Opening discipline: ${params.openingPrompt}`,
-    `Relevant authors: ${params.retrievalAuthors.join(", ")}`,
+    `Boundaries: ${params.boundaries}`,
+    "",
+    "CHARACTER_METHOD",
+    [
+      "Respond as this philosopher-character in a live conversation.",
+      "Apply the philosopher's expertise directly to the user's situation.",
+      "Do not produce a detached school summary unless the user explicitly asks for explanation.",
+      "Challenge the user when this philosopher would challenge them.",
+      "Use retrieved passages only as quiet grounding; never discuss retrieval mechanics or hidden source routing.",
+      params.retrievalAuthors.length
+        ? `Internal grounding authors: ${params.retrievalAuthors.join(", ")}`
+        : "Internal grounding authors: none specified.",
+    ].join(" "),
     "",
     "OUTPUT",
     ROLEPLAY_PROMPT_SECTIONS.output,
@@ -322,6 +342,7 @@ function buildDynamicContextMessage(params: {
   webSearchSummary: string | undefined;
   webSearchSources: WebSource[] | undefined;
   knowledgeRoute: KnowledgeRoute;
+  retrievedPassageInstruction?: string;
 }) {
   const sectionOrder = [
     "CONVERSATION_MEMORY",
@@ -358,7 +379,8 @@ function buildDynamicContextMessage(params: {
     formatBeliefContext(params.beliefContext),
     "",
     "RETRIEVED_PASSAGES",
-    "Citation format for retrieved passages: [Author- Book] only. If you use any retrieved passage, you must cite it. Never mention chunk numbers or chunk types.",
+    params.retrievedPassageInstruction ??
+      "Citation format for retrieved passages: [Author- Book] only. If you use any retrieved passage, you must cite it. Never mention chunk numbers or chunk types.",
     "",
     retrievedPassages,
     "",
@@ -660,6 +682,8 @@ export function buildRoleplayPrompt(params: {
     webSearchSummary,
     webSearchSources,
     knowledgeRoute,
+    retrievedPassageInstruction:
+      "Use these passages only as quiet grounding for the philosopher's reply. Do not cite them unless the user directly asks for sources, and never mention retrieval, context routing, chunk numbers, or system mechanics.",
   });
   const includesImages =
     includeVisionContent &&

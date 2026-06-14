@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type CSSProperties,
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import confetti from "canvas-confetti";
@@ -30,7 +31,9 @@ import { cn } from "@/src/lib/utils";
 import { getDebateDurationMeta } from "src/lib/debate";
 import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
+  ROLEPLAY_FLAIR_THEMES,
   getRoleplayPhilosopherConfig,
+  type RoleplayFlair,
   type RoleplayPhilosopherId,
 } from "src/lib/roleplay";
 import type {
@@ -132,6 +135,16 @@ const FALLBACK_STARTER_CHIPS = [
 const STARTER_CHIP_COUNT = 2;
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
+
+function getRoleplayFlairStyle(flair: string) {
+  const theme =
+    ROLEPLAY_FLAIR_THEMES[flair as RoleplayFlair] ?? ROLEPLAY_FLAIR_THEMES.All;
+
+  return {
+    "--roleplay-flair-bg": theme.background,
+    "--roleplay-flair-border": theme.border,
+  } as CSSProperties;
+}
 
 type ErrorToastState = {
   message: string;
@@ -341,16 +354,26 @@ export default function ChatContainer({
         philosopherId: activeRoleplayPhilosopher.philosopherId,
         philosopherName: activeRoleplayPhilosopher.philosopherName,
         imagePath: activeRoleplayPhilosopher.imagePath,
-        tradition: activeRoleplayPhilosopher.tradition,
-        introBlurb: activeRoleplayPhilosopher.introBlurb,
+        flairs: activeRoleplayPhilosopher.flairs,
+        expertise: activeRoleplayPhilosopher.expertise,
+        shortDescription: activeRoleplayPhilosopher.shortDescription,
+        bestFor: activeRoleplayPhilosopher.bestFor,
+        starterPrompts: activeRoleplayPhilosopher.starterPrompts,
+        voicePreview: activeRoleplayPhilosopher.voicePreview,
+        accent: activeRoleplayPhilosopher.accent,
       }
     : pendingRoleplayPhilosopher
       ? {
           philosopherId: pendingRoleplayPhilosopher.id,
           philosopherName: pendingRoleplayPhilosopher.name,
           imagePath: pendingRoleplayPhilosopher.imagePath,
-          tradition: pendingRoleplayPhilosopher.tradition,
-          introBlurb: pendingRoleplayPhilosopher.introBlurb,
+          flairs: [...pendingRoleplayPhilosopher.flairs],
+          expertise: pendingRoleplayPhilosopher.expertise,
+          shortDescription: pendingRoleplayPhilosopher.shortDescription,
+          bestFor: pendingRoleplayPhilosopher.bestFor,
+          starterPrompts: [...pendingRoleplayPhilosopher.starterPrompts],
+          voicePreview: pendingRoleplayPhilosopher.voicePreview,
+          accent: pendingRoleplayPhilosopher.accent,
         }
       : null;
   const remainingDebateSeconds =
@@ -371,7 +394,7 @@ export default function ChatContainer({
   const inputPlaceholder = isDebateSession
     ? "Defend your side."
     : visibleRoleplayPhilosopher
-      ? "Write a message to start the conversation."
+      ? `Message ${visibleRoleplayPhilosopher.philosopherName}.`
       : name === "friend"
         ? "What's on your mind?"
         : `What's on your mind, ${name}?`;
@@ -1111,28 +1134,49 @@ export default function ChatContainer({
   }
 
   const roleplayIntro = visibleRoleplayPhilosopher ? (
-    <div className="app-roleplay-thread-intro mb-8 flex flex-col items-center text-center">
-      <div className="relative h-20 w-20 overflow-hidden rounded-full border border-slate-200 bg-[#f5f3ee] shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-        <Image
-          src={resolveOptimizedCloudinaryPublicAsset(
-            visibleRoleplayPhilosopher.imagePath,
-            { width: 240, height: 240, crop: "fill", quality: "auto" },
-          )}
-          alt={`${visibleRoleplayPhilosopher.philosopherName} portrait for Socratic AI roleplay mode`}
-          fill
-          sizes="80px"
-          className="object-cover"
-        />
+    <div
+      className="app-roleplay-thread-intro mb-4 rounded-[18px] border p-3 text-left md:p-4"
+      style={
+        {
+          "--roleplay-accent": visibleRoleplayPhilosopher.accent,
+        } as CSSProperties
+      }
+    >
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="app-roleplay-profile-image relative h-36 w-full shrink-0 overflow-hidden rounded-[14px] bg-[#f1eee7] sm:h-40 sm:w-43 md:w-48">
+          <Image
+            src={resolveOptimizedCloudinaryPublicAsset(
+              visibleRoleplayPhilosopher.imagePath,
+              { width: 520, height: 420, crop: "fill", quality: "auto" },
+            )}
+            alt={`${visibleRoleplayPhilosopher.philosopherName} portrait for Socratic AI roleplay mode`}
+            fill
+            sizes="(max-width: 640px) 100vw, 192px"
+            className="object-cover"
+            priority={!activeSessionId}
+          />
+        </div>
+        <div className="app-roleplay-profile-copy min-w-0 flex-1">
+          <div className="flex flex-wrap gap-1.5">
+            {visibleRoleplayPhilosopher.flairs.map((flair) => (
+              <span
+                key={flair}
+                data-flair={flair}
+                className="app-roleplay-flair-token app-roleplay-flair-badge rounded-[8px] border px-3.5 py-2 text-[13px] leading-none"
+                style={getRoleplayFlairStyle(flair)}
+              >
+                {flair}
+              </span>
+            ))}
+          </div>
+          <h3 className="mt-3 text-[30px] leading-none tracking-[-0.045em] text-slate-950 font-[Georgia,serif] md:text-[36px]">
+            {visibleRoleplayPhilosopher.philosopherName}
+          </h3>
+          <p className="mt-2 max-w-145 text-[13px] leading-5.5 text-slate-600">
+            {visibleRoleplayPhilosopher.shortDescription}
+          </p>
+        </div>
       </div>
-      <h3 className="mt-4 text-[28px] leading-none tracking-[-0.05em] text-slate-950 font-[Georgia,serif]">
-        {visibleRoleplayPhilosopher.philosopherName}
-      </h3>
-      <div className="mt-3 inline-flex items-center rounded-full bg-white px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
-        {visibleRoleplayPhilosopher.tradition}
-      </div>
-      <p className="mt-4 max-w-155 text-[14px] leading-7 text-slate-600">
-        {visibleRoleplayPhilosopher.introBlurb}
-      </p>
     </div>
   ) : null;
 
@@ -1383,7 +1427,14 @@ export default function ChatContainer({
 
   if (!hasMessages) {
     return (
-      <div className="relative flex h-full min-h-0 items-center justify-center px-4 md:px-6">
+      <div
+        className={cn(
+          "app-new-chat-shell relative flex h-full min-h-0 px-4 md:px-6",
+          modeSelection === "ROLEPLAY"
+            ? "app-new-chat-roleplay-shell items-start justify-center pt-16 pb-8 md:pt-18"
+            : "items-center justify-center",
+        )}
+      >
         <div className="w-full">
           <div className="fixed top-1.5 left-1/2 z-30 -translate-x-1/2 md:absolute md:-top-1 md:left-6 md:z-10 md:translate-x-0 lg:-top-3 lg:left-4">
             <div ref={modeMenuRef} className="relative">
@@ -1602,8 +1653,8 @@ export default function ChatContainer({
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="mx-auto max-w-170">
-                  <div className="mb-3 flex justify-start -ml-30">
+                <div className="mx-auto max-w-160">
+                  <div className="mb-2 flex justify-start">
                     <button
                       type="button"
                       onClick={() => setPendingRoleplayId(null)}
@@ -1614,6 +1665,35 @@ export default function ChatContainer({
                     </button>
                   </div>
                   {roleplayIntro}
+
+                  <div className="mb-2.5">
+                    <p className="app-roleplay-prompts-label text-[10px] font-semibold uppercase tracking-[0.18em]">
+                      Suggested messages
+                    </p>
+                  </div>
+                  <div className="mb-4 grid gap-1.5">
+                    {pendingRoleplayPhilosopher.starterPrompts.map((prompt, index) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        onClick={() =>
+                          handleSend({
+                            content: prompt,
+                            attachments: [],
+                            webSearch: false,
+                          })
+                        }
+                        disabled={isStreaming}
+                        className="app-roleplay-starter-prompt flex cursor-pointer items-center gap-3 rounded-[12px] border px-3.5 py-2.5 text-left text-[12px] leading-5 transition disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <span className="app-roleplay-prompt-index shrink-0 text-[10px] font-semibold tabular-nums">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span>{prompt}</span>
+                      </button>
+                    ))}
+                  </div>
+
                   <MessageInput
                     key={`roleplay-${pendingRoleplayPhilosopher.id}`}
                     onSend={handleSend}
@@ -1628,7 +1708,7 @@ export default function ChatContainer({
                       billing.usage.dailyImageUploadsRemaining
                     }
                     initialValue={undefined}
-                    variant="hero"
+                    variant="default"
                     placeholder={inputPlaceholder}
                   />
                 </div>

@@ -143,6 +143,7 @@ export async function POST(req: Request) {
 
   let activeSessionId = sessionId;
   let activeUserId: string;
+  let activeSessionMode: "SOCRATIC" | "DEBATE" | "ROLEPLAY" = "SOCRATIC";
 
   if (!activeSessionId) {
     const requestedMode = body?.mode;
@@ -166,6 +167,7 @@ export async function POST(req: Request) {
           ? {
               mode: "ROLEPLAY" as const,
               roleplayMeta: {
+                characterId: roleplayPhilosopher.id,
                 philosopherId: roleplayPhilosopher.id,
               },
             }
@@ -177,6 +179,7 @@ export async function POST(req: Request) {
 
     activeSessionId = newSession.id;
     activeUserId = billing.userId;
+    activeSessionMode = roleplayPhilosopher ? "ROLEPLAY" : "SOCRATIC";
   } else {
     const existingSession = await prisma.chatSession.findFirst({
       where: {
@@ -199,6 +202,8 @@ export async function POST(req: Request) {
     if (!existingSession) {
       return new NextResponse("Session not found", { status: 404 });
     }
+
+    activeSessionMode = existingSession.mode;
 
     if (existingSession.mode === "DEBATE") {
       if (existingSession.debateStatus === "COMPLETED") {
@@ -274,16 +279,19 @@ export async function POST(req: Request) {
   });
   const prepareMs = Date.now() - requestStartedAtMs;
 
-  return new Response(generationResult.readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "X-Session-Id": activeSessionId!,
-      "X-Server-Prepare-Ms": String(prepareMs),
-      "X-AI-Context-Ms": String(generationResult.debug.contextMs),
-      "X-AI-Retrieval-Ms": String(generationResult.debug.retrievalMs ?? 0),
-      "X-AI-Web-Search-Ms": String(generationResult.debug.webSearchMs ?? 0),
-      "X-AI-Prestream-Ms": String(generationResult.debug.preStreamTotalMs),
-      "X-AI-Stream-Setup-Ms": String(generationResult.debug.streamSetupMs),
-    },
-  });
+  const headers: Record<string, string> = {
+    "Content-Type": "text/plain; charset=utf-8",
+    "X-Session-Id": activeSessionId!,
+    "X-Server-Prepare-Ms": String(prepareMs),
+    "X-AI-Context-Ms": String(generationResult.debug.contextMs),
+    "X-AI-Web-Search-Ms": String(generationResult.debug.webSearchMs ?? 0),
+    "X-AI-Prestream-Ms": String(generationResult.debug.preStreamTotalMs),
+    "X-AI-Stream-Setup-Ms": String(generationResult.debug.streamSetupMs),
+  };
+
+  if (activeSessionMode !== "ROLEPLAY") {
+    headers["X-AI-Retrieval-Ms"] = String(generationResult.debug.retrievalMs ?? 0);
+  }
+
+  return new Response(generationResult.readable, { headers });
 }

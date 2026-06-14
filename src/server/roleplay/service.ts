@@ -28,6 +28,7 @@ export async function createRoleplaySession(params: {
       expiresAt,
       lastActivityAt: now,
       roleplayMeta: {
+        characterId: philosopher.id,
         philosopherId: philosopher.id,
       } as Prisma.InputJsonValue,
     },
