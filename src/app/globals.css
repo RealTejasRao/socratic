@@ -746,6 +746,20 @@ html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-rolepla
   stroke: currentColor;
 }
 
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"],
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] {
+  color: rgba(255, 255, 255, 0.94) !important;
+  filter: brightness(1.45) contrast(1.08) saturate(1.12);
+}
+
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg,
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg,
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] span,
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] span {
+  color: rgba(255, 255, 255, 0.94) !important;
+  stroke: currentColor;
+}
+
 .app-tour-spotlight {
   border: 1px solid color-mix(in srgb, var(--tour-accent) 74%, #ffffff);
   background: transparent;
