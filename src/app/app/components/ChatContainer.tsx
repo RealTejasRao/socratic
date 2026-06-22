@@ -13,7 +13,7 @@ import {
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import {
   AlertCircle,
   ArrowUpRight,
@@ -216,6 +216,30 @@ const DAILY_MESSAGES_LIMIT_REASON =
   "Daily free limit reached. Upgrade to Socratic+ for unlimited messages.";
 const DAILY_IMAGE_UPLOAD_LIMIT_REASON =
   "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.";
+const roleplayContentTransition = {
+  duration: 0.48,
+  ease: [0.22, 1, 0.36, 1],
+} as const;
+const roleplayPanelVariants: Variants = {
+  initial: (direction: number) => ({
+    opacity: 0,
+    x: direction >= 0 ? 32 : -32,
+    y: 10,
+    scale: 0.98,
+  }),
+  animate: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    x: direction >= 0 ? -26 : 26,
+    y: -8,
+    scale: 0.98,
+  }),
+};
 
 let greetingSeedStore = 0;
 const greetingSeedListeners = new Set<() => void>();
@@ -837,6 +861,8 @@ export default function ChatContainer({
     useState<ChatSessionMeta>(sessionMeta);
   const [pendingRoleplayId, setPendingRoleplayId] =
     useState<RoleplayPhilosopherId | null>(null);
+  const [roleplayNavigationDirection, setRoleplayNavigationDirection] =
+    useState(1);
   const [showWinnerReveal, setShowWinnerReveal] = useState(false);
   const [debateNowMs, setDebateNowMs] = useState<number | null>(null);
   const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
@@ -968,11 +994,22 @@ export default function ChatContainer({
   function selectNewChatMode(mode: SessionMode, updateUrl = true) {
     setModeSelection(mode);
     setActiveSessionMeta({ mode });
+    setRoleplayNavigationDirection(-1);
     setPendingRoleplayId(null);
 
     if (updateUrl) {
       router.replace(getModeHref(mode), { scroll: false });
     }
+  }
+
+  function openRoleplayPhilosopher(philosopherId: RoleplayPhilosopherId) {
+    setRoleplayNavigationDirection(1);
+    setPendingRoleplayId(philosopherId);
+  }
+
+  function returnToRoleplayLibrary() {
+    setRoleplayNavigationDirection(-1);
+    setPendingRoleplayId(null);
   }
 
   function markQuickTourComplete() {
@@ -2164,15 +2201,19 @@ export default function ChatContainer({
             </div>
           </div>
 
-          <AnimatePresence mode="wait">
-            {modeSelection === "SOCRATIC" ? (
-              <motion.div
-                key="socratic"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-              >
+          <AnimatePresence
+            mode="wait"
+            initial={false}
+            custom={roleplayNavigationDirection}
+          >
+              {modeSelection === "SOCRATIC" ? (
+                <motion.div
+                  key="socratic"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                >
                 <div className="mx-auto max-w-190 text-center">
                   <h2
                     className="app-greeting-heading mx-auto max-w-115 text-center text-[34px] font-normal leading-[1.1] tracking-[-0.035em] text-slate-900 font-[Georgia,serif] md:max-w-110 md:text-[33px] md:leading-[1.1] md:tracking-[-0.032em]"
@@ -2252,31 +2293,34 @@ export default function ChatContainer({
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            ) : modeSelection === "DEBATE" ? (
-              <motion.div
-                key="debate"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-                className="flex w-full justify-center"
-              >
-                <DebateModeSetup canAccessDebate={billing.features.debateMode} />
-              </motion.div>
-            ) : pendingRoleplayPhilosopher ? (
-              <motion.div
-                key={`roleplay-ready-${pendingRoleplayPhilosopher.id}`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-              >
+                </motion.div>
+              ) : modeSelection === "DEBATE" ? (
+                <motion.div
+                  key="debate"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex w-full justify-center"
+                >
+                  <DebateModeSetup canAccessDebate={billing.features.debateMode} />
+                </motion.div>
+              ) : pendingRoleplayPhilosopher ? (
+                <motion.div
+                  key={`roleplay-ready-${pendingRoleplayPhilosopher.id}`}
+                  custom={roleplayNavigationDirection}
+                  variants={roleplayPanelVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={roleplayContentTransition}
+                  className="w-full"
+                >
                 <div className="mx-auto max-w-160">
                   <div className="mb-2 flex justify-start">
                     <button
                       type="button"
-                      onClick={() => setPendingRoleplayId(null)}
+                      onClick={returnToRoleplayLibrary}
                       className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
                     >
                       <ArrowLeft size={13} />
@@ -2331,19 +2375,21 @@ export default function ChatContainer({
                     placeholder={inputPlaceholder}
                   />
                 </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="roleplay"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-                className="flex w-full justify-center"
-              >
-                <RoleplayModeSetup onChatNow={setPendingRoleplayId} />
-              </motion.div>
-            )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="roleplay"
+                  custom={roleplayNavigationDirection}
+                  variants={roleplayPanelVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={roleplayContentTransition}
+                  className="flex w-full justify-center"
+                >
+                  <RoleplayModeSetup onChatNow={openRoleplayPhilosopher} />
+                </motion.div>
+              )}
           </AnimatePresence>
         </div>
         <AnimatePresence>{renderUpgradePromptModal()}</AnimatePresence>
