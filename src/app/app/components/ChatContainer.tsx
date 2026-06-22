@@ -187,7 +187,7 @@ const APP_QUICK_TOUR_STEPS: {
     accent: "#57f2cf",
     title: "Switch modes",
     detail:
-      "You can switch modes from the dropdown at the top, or use the sidebar shortcuts for Debate mode and Talk to a Philosopher (Roleplay Mode).",
+      "Switch modes from the top dropdown or the sidebar shortcuts for Debate mode and Talk to a Philosopher (Roleplay Mode).",
   },
 ];
 
@@ -521,21 +521,25 @@ function AppQuickTour({
   }));
   const isCompactTour =
     anchorFrame ? anchorFrame.viewportWidth < 768 : false;
+  const isSwitchingStep = step.id === "switching";
   const cardWidth =
     anchorFrame?.viewportWidth && anchorFrame.viewportWidth < 520
-      ? Math.min(anchorFrame.viewportWidth - 28, 370)
-      : 410;
+      ? Math.min(anchorFrame.viewportWidth - 28, 320)
+      : isSwitchingStep
+        ? 360
+        : 320;
+  const estimatedCardHeight = isCompactTour ? 330 : 305;
   const cardTop = anchorFrame
     ? anchorFrame.viewportWidth < 768
       ? clampNumber(
           anchorFrame.top + anchorFrame.height + 18,
-          74,
-          anchorFrame.viewportHeight - 300,
+          58,
+          anchorFrame.viewportHeight - estimatedCardHeight - 14,
         )
       : clampNumber(
           anchorFrame.top + anchorFrame.height + 22,
-          82,
-          anchorFrame.viewportHeight - 410,
+          72,
+          anchorFrame.viewportHeight - estimatedCardHeight - 16,
         )
     : 0;
   const cardLeft = anchorFrame
@@ -553,11 +557,11 @@ function AppQuickTour({
   const measuredCardHeight = cardFrame?.height ?? 330;
   const previewWidth = anchorFrame
     ? anchorFrame.viewportWidth < 768
-      ? Math.min(anchorFrame.viewportWidth - 28, 360)
+      ? Math.min(anchorFrame.viewportWidth - 28, 300)
       : Math.min(
-          340,
+          300,
           Math.max(
-            292,
+            250,
             anchorFrame.viewportWidth -
               measuredCardLeft -
               measuredCardWidth -
@@ -565,7 +569,7 @@ function AppQuickTour({
           ),
         )
     : 320;
-  const previewHeight = isCompactTour ? 238 : 250;
+  const previewHeight = isCompactTour ? 198 : 218;
   const previewFitsRight = anchorFrame
     ? measuredCardLeft + measuredCardWidth + previewWidth + 34 <=
       anchorFrame.viewportWidth
@@ -616,10 +620,10 @@ function AppQuickTour({
     ? {
         "--tour-accent": step.accent,
         width: cardWidth,
-        maxHeight:
-          anchorFrame.viewportWidth < 768
-            ? "calc(100svh - 1.5rem)"
-            : "calc(100svh - 2rem)",
+        maxHeight: Math.max(
+          260,
+          anchorFrame.viewportHeight - cardTop - (isCompactTour ? 12 : 16),
+        ),
         top: cardTop,
         left: cardLeft,
       }
@@ -650,7 +654,7 @@ function AppQuickTour({
         role="dialog"
         aria-modal="true"
         aria-label={`${step.title} introduction`}
-        className="app-tour-card pointer-events-auto fixed overflow-y-auto overscroll-contain rounded-[30px] border p-0 text-white"
+        className="app-tour-card pointer-events-auto fixed overflow-y-auto overscroll-contain rounded-[24px] border p-0 text-white"
         style={cardStyle}
         key={step.id}
         initial={{ opacity: 0, y: 18, scale: 0.96 }}
@@ -658,10 +662,10 @@ function AppQuickTour({
         exit={{ opacity: 0, y: 10, scale: 0.97 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="relative p-5 md:p-6">
-          <div className="mb-5 flex items-start justify-between gap-4">
+        <div className="relative p-4">
+          <div className="mb-3 flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-[36px] leading-[0.95] tracking-[-0.055em] font-[Georgia,serif] md:text-[42px]">
+              <h2 className="text-[29px] leading-[0.95] tracking-[-0.035em] font-[Georgia,serif] md:text-[32px]">
                 {step.title}
               </h2>
             </div>
@@ -669,27 +673,27 @@ function AppQuickTour({
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center text-white/62 transition hover:text-white"
+              className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center text-white/62 transition hover:text-white"
               aria-label="Skip app tour"
             >
-              <X size={22} strokeWidth={1.7} />
+              <X size={19} strokeWidth={1.7} />
             </button>
           </div>
 
           <div className="mt-2">
-            <p className="text-[16px] leading-7 text-white/76 md:text-[17px] md:leading-8">
+            <p className="text-[13px] leading-5 text-white/76 md:text-[14px] md:leading-6">
               {step.detail}
             </p>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-1.5 rounded-[18px] border border-white/10 bg-black/20 p-1.5">
+          <div className="mt-4 grid grid-cols-2 gap-1 rounded-[16px] border border-white/10 bg-black/20 p-1">
             {APP_QUICK_TOUR_STEPS.map((tourStep, index) => (
               <button
                 key={tourStep.id}
                 type="button"
                 onClick={() => onStepChange(index)}
                 className={cn(
-                  "relative flex min-h-11 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[13px] px-3 py-2.5 text-[13px] font-semibold transition",
+                  "relative flex min-h-9 cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[12px] px-2.5 py-1.5 text-[12px] font-semibold transition",
                   index === activeStep
                     ? "text-[#06120f]"
                     : "text-white/52 hover:bg-white/[0.06] hover:text-white",
@@ -698,24 +702,24 @@ function AppQuickTour({
                 {index === activeStep ? (
                   <motion.span
                     layoutId="app-tour-step-active"
-                    className="absolute inset-0 rounded-[13px] bg-[color:var(--tour-accent)]"
+                    className="absolute inset-0 rounded-[12px] bg-[color:var(--tour-accent)]"
                     transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                   />
                 ) : null}
-                <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full text-[13px]">
+                <span className="relative inline-flex h-4 w-4 items-center justify-center rounded-full text-[12px]">
                   {index + 1}
                 </span>
-                <span className="relative leading-4">{tourStep.title}</span>
+                <span className="relative leading-3.5">{tourStep.title}</span>
               </button>
             ))}
           </div>
 
-          <div className="mt-5 flex items-center justify-between gap-3">
+          <div className="mt-3.5 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => onStepChange(activeStep - 1)}
               disabled={activeStep === 0}
-              className="cursor-pointer rounded-full px-3 py-2 text-[12px] font-medium text-white/56 transition hover:bg-white/[0.07] hover:text-white disabled:pointer-events-none disabled:opacity-35"
+              className="cursor-pointer rounded-full px-2.5 py-1.5 text-[11px] font-medium text-white/56 transition hover:bg-white/[0.07] hover:text-white disabled:pointer-events-none disabled:opacity-35"
             >
               Back
             </button>
@@ -730,10 +734,10 @@ function AppQuickTour({
 
                 onStepChange(activeStep + 1);
               }}
-              className="app-tour-primary-btn inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[13px] font-semibold text-[#06120f] transition"
+              className="app-tour-primary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold text-[#06120f] transition"
             >
               {isLastStep ? "Finish" : "Next"}
-              {!isLastStep ? <ArrowUpRight size={14} /> : null}
+              {!isLastStep ? <ArrowUpRight size={13} /> : null}
             </button>
           </div>
         </div>
@@ -741,7 +745,7 @@ function AppQuickTour({
 
       {step.id === "debate" && anchorFrame ? (
         <motion.div
-          className="app-tour-report-preview pointer-events-auto fixed overflow-hidden rounded-[24px] border"
+          className="app-tour-report-preview pointer-events-auto fixed overflow-hidden rounded-[20px] border"
           data-side={
             isCompactTour
               ? compactPreviewFitsBelow
@@ -758,18 +762,18 @@ function AppQuickTour({
           transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
           aria-hidden="true"
         >
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3.5 py-2.5">
             <div>
-              <p className="text-[15px] font-semibold text-white">
+              <p className="text-[13px] font-semibold text-white">
                 Post Match Report Preview
               </p>
             </div>
-            <span className="rounded-full bg-[color:var(--tour-accent)] px-2.5 py-1 text-[11px] font-bold text-[#120c04]">
+            <span className="rounded-full bg-[color:var(--tour-accent)] px-2 py-0.5 text-[10px] font-bold text-[#120c04]">
               Debate
             </span>
           </div>
 
-          <div className="relative h-[178px] bg-[#f7f4ec] md:h-[190px]">
+          <div className="relative h-[145px] bg-[#f7f4ec] md:h-[165px]">
             <Image
               src="/app/debate-report-preview.png"
               alt="Preview of the Debate Mode post-match report"
