@@ -186,7 +186,7 @@ export function SettingsAppClient() {
   const socialLinks = [
     {
       label: "Instagram",
-    href: "https://www.instagram.com/usesocraticai/",
+    href: "https://www.instagram.com/usesocratic/",
       icon: <Instagram size={18} className="text-[#ff4d8d]" />,
     },
     {

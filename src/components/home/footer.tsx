@@ -76,7 +76,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
     },
     {
       label: "Instagram",
-    href: "https://www.instagram.com/usesocraticai/",
+    href: "https://www.instagram.com/usesocratic/",
       icon: <Instagram size={15} />,
     },
     {

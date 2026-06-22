@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
-  Crown,
+  ArrowUpRight,
   ArrowRight,
   Check,
   Clock3,
@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
   DEBATE_DURATION_OPTIONS,
@@ -251,24 +252,24 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
 
   if (!canAccessDebate) {
     return (
-      <div className="mx-auto w-full max-w-100 rounded-3xl border border-[#d7c39d] bg-[linear-gradient(165deg,#22180e_0%,#2a1f12_55%,#19120a_100%)] px-5 py-5 text-[#f2e6ce] shadow-[0_20px_60px_rgba(0,0,0,0.42)]">
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#d8c59f] bg-[#f5e2bc] px-3 py-1 text-[11px] uppercase tracking-[0.13em] text-[#2e2215]">
-          <Crown size={12} />
-          Socratic+ Feature
-        </div>
-        <h2 className="mt-4 text-[31px] leading-[1.02] tracking-[-0.04em] font-[Georgia,serif]">
-          Debate Mode is premium.
+      <div className="app-card app-upgrade-modal mx-auto w-full max-w-135 rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]">
+        <h2 className="app-upgrade-title inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
+          <span>
+            Go Unlimited with{" "}
+            <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
+          </span>
+          <PremiumCrownIcon className="text-[36px]" />
         </h2>
-        <p className="mt-3 text-[14px] leading-7 text-[#d5c39f]">
+        <p className="app-upgrade-copy mt-2 text-[13px] leading-6 text-[#746758]">
           Free accounts keep full core chat access. Upgrade to Socratic+ for
           timed debates, ruthless sparring, and detailed post-debate feedback.
         </p>
         <a
           href={ROUTES.PRICING}
-          className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#f5dfb5] bg-[#f5dfb5] px-4 py-2 text-[13px] text-[#271a0f] transition hover:bg-[#eace98]"
+          className="app-upgrade-primary mt-5 inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]"
         >
-          View plans
-          <ArrowRight size={13} />
+          View Pricing
+          <ArrowUpRight size={13} />
         </a>
       </div>
     );

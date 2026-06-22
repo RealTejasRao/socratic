@@ -116,6 +116,7 @@ export default async function SessionPage({ params }: Props) {
       initialMessages={serializedMessages}
       sessionId={session.id}
       sessionMeta={serializeSessionMeta(session)}
+      userStorageId={clerkUserId}
       initialBilling={{
         isPremium: billing?.isPremium ?? false,
         usage: {

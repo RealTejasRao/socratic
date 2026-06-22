@@ -30,6 +30,10 @@ function getFirstSearchParam(value: string | string[] | undefined) {
 function resolveMode(value: string | undefined): SessionMode {
   const normalized = value?.toLowerCase().trim();
 
+  if (normalized === "socratic") {
+    return "SOCRATIC";
+  }
+
   if (normalized === "debate") {
     return "DEBATE";
   }
@@ -38,7 +42,7 @@ function resolveMode(value: string | undefined): SessionMode {
     return "ROLEPLAY";
   }
 
-  return "SOCRATIC";
+  return "ROLEPLAY";
 }
 
 export default async function AppHomePage({ searchParams }: AppHomePageProps) {
@@ -90,6 +94,7 @@ export default async function AppHomePage({ searchParams }: AppHomePageProps) {
       initialMessages={[]}
       sessionMeta={{ mode: requestedMode }}
       initialAutoSendMessage={initialAutoSendMessage}
+      userStorageId={clerkUserId}
       initialBilling={{
         isPremium: billing?.isPremium ?? false,
         usage: {

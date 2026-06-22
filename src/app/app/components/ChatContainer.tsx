@@ -12,8 +12,7 @@ import {
 } from "react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
@@ -61,10 +60,16 @@ interface Props {
   sessionMeta?: ChatSessionMeta;
   initialAutoSendMessage?: string | null;
   initialBilling?: Pick<BillingStateResponse, "isPremium" | "usage" | "features">;
+  userStorageId?: string | null;
+  initialUserName?: string | null;
 }
 
 function getModeFromSearchParam(value: string | null): SessionMode {
   const normalized = value?.toLowerCase().trim();
+
+  if (normalized === "socratic") {
+    return "SOCRATIC";
+  }
 
   if (normalized === "debate") {
     return "DEBATE";
@@ -74,7 +79,7 @@ function getModeFromSearchParam(value: string | null): SessionMode {
     return "ROLEPLAY";
   }
 
-  return "SOCRATIC";
+  return "ROLEPLAY";
 }
 
 function getModeHref(mode: SessionMode) {
@@ -86,7 +91,7 @@ function getModeHref(mode: SessionMode) {
     return `${ROUTES.APP}?mode=roleplay` as Route;
   }
 
-  return ROUTES.APP;
+  return `${ROUTES.APP}?mode=socratic` as Route;
 }
 
 const MORNING_GREETINGS = [
@@ -135,6 +140,56 @@ const FALLBACK_STARTER_CHIPS = [
 const STARTER_CHIP_COUNT = 2;
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
+const APP_QUICK_TOUR_STORAGE_KEY = "socratic:app-quick-tour:v1";
+
+const APP_QUICK_TOUR_STEPS: {
+  id: string;
+  mode: SessionMode;
+  targets: string[];
+  accent: string;
+  title: string;
+  detail: string;
+}[] = [
+  {
+    id: "socratic",
+    mode: "SOCRATIC",
+    targets: ["mode-option-socratic"],
+    accent: "#57f2cf",
+    title: "Socratic",
+    detail:
+      "Your all in one space for deep, open-ended conversation. Bring any topic, idea, or question and we'll make sure you think harder than you were planning to.",
+  },
+  {
+    id: "debate",
+    mode: "DEBATE",
+    targets: ["mode-option-debate"],
+    accent: "#ff9f43",
+    title: "Debate",
+    detail:
+      "Pick a topic, pick a side, and go head to head with an AI that argues back for real. Learn and improve instantly using the Post Match Report.",
+  },
+  {
+    id: "roleplay",
+    mode: "ROLEPLAY",
+    targets: ["mode-option-roleplay"],
+    accent: "#8bd3ff",
+    title: "Roleplay",
+    detail:
+      "Have an actual conversation with a philosopher, in their own voice and logic. Discuss ideas, life and more...",
+  },
+  {
+    id: "switching",
+    mode: "ROLEPLAY",
+    targets: [
+      "mode-switch-menu",
+      "sidebar-mode-links",
+    ],
+    accent: "#57f2cf",
+    title: "Switch modes",
+    detail:
+      "You can switch modes from the dropdown at the top, or use the sidebar shortcuts for Debate mode and Talk to a Philosopher (Roleplay Mode).",
+  },
+];
 
 function getRoleplayFlairStyle(flair: string) {
   const theme =
@@ -260,11 +315,483 @@ function getSocraticToneSetting(): SocraticTone {
   }
 }
 
+function clampNumber(value: number, min: number, max: number) {
+  if (max < min) {
+    return min;
+  }
+
+  return Math.min(Math.max(value, min), max);
+}
+
+function getQuickTourStorageKey(userId: string) {
+  return `${APP_QUICK_TOUR_STORAGE_KEY}:${userId}`;
+}
+
+function AppQuickTour({
+  activeStep,
+  onStepChange,
+  onClose,
+}: {
+  activeStep: number;
+  onStepChange: (nextStep: number) => void;
+  onClose: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [targetFrames, setTargetFrames] = useState<
+    {
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+    }[]
+  >([]);
+  const [anchorFrame, setAnchorFrame] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    viewportWidth: number;
+    viewportHeight: number;
+  } | null>(null);
+  const [cardFrame, setCardFrame] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const step =
+    APP_QUICK_TOUR_STEPS[activeStep] ?? APP_QUICK_TOUR_STEPS[0]!;
+  const isLastStep = activeStep === APP_QUICK_TOUR_STEPS.length - 1;
+
+  useEffect(() => {
+    document.documentElement.dataset["appTourStep"] = step.id;
+
+    return () => {
+      delete document.documentElement.dataset["appTourStep"];
+    };
+  }, [step.id]);
+
+  useEffect(() => {
+    function measureAnchor() {
+      const frames = step.targets
+        .flatMap((target) =>
+          Array.from(
+            document.querySelectorAll<HTMLElement>(
+              `[data-app-tour-target='${target}']`,
+            ),
+          ),
+        )
+        .map((element) => element.getBoundingClientRect())
+        .filter(
+          (rect) =>
+            rect.width > 0 &&
+            rect.height > 0 &&
+            rect.bottom > 0 &&
+            rect.right > 0 &&
+            rect.top < window.innerHeight &&
+            rect.left < window.innerWidth,
+        )
+        .map((rect) => ({
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        }));
+
+      const fallbackRect =
+        document
+          .querySelector<HTMLElement>("[data-app-tour-target='mode-switch']")
+          ?.getBoundingClientRect() ?? null;
+      const nextFrames =
+        frames.length > 0
+          ? frames
+          : [
+              {
+                top: fallbackRect?.top ?? 14,
+                left: fallbackRect?.left ?? window.innerWidth / 2 - 72,
+                width: fallbackRect?.width ?? 144,
+                height: fallbackRect?.height ?? 40,
+              },
+            ];
+      const top = Math.min(...nextFrames.map((frame) => frame.top));
+      const left = Math.min(...nextFrames.map((frame) => frame.left));
+      const right = Math.max(
+        ...nextFrames.map((frame) => frame.left + frame.width),
+      );
+      const bottom = Math.max(
+        ...nextFrames.map((frame) => frame.top + frame.height),
+      );
+
+      setTargetFrames(nextFrames);
+      setAnchorFrame({
+        top,
+        left,
+        width: right - left,
+        height: bottom - top,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      });
+    }
+
+    measureAnchor();
+
+    const frameIds: number[] = [];
+    frameIds.push(window.requestAnimationFrame(measureAnchor));
+    frameIds.push(
+      window.requestAnimationFrame(() => {
+        frameIds.push(window.requestAnimationFrame(measureAnchor));
+      }),
+    );
+    const timeoutIds = [120, 220, 320].map((delay) =>
+      window.setTimeout(measureAnchor, delay),
+    );
+    window.addEventListener("resize", measureAnchor);
+    window.addEventListener("scroll", measureAnchor, true);
+
+    return () => {
+      frameIds.forEach((frameId) => window.cancelAnimationFrame(frameId));
+      timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      window.removeEventListener("resize", measureAnchor);
+      window.removeEventListener("scroll", measureAnchor, true);
+    };
+  }, [activeStep, step.targets]);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+
+      if (event.key === "ArrowRight" && !isLastStep) {
+        onStepChange(activeStep + 1);
+      }
+
+      if (event.key === "ArrowLeft" && activeStep > 0) {
+        onStepChange(activeStep - 1);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeStep, isLastStep, onClose, onStepChange]);
+
+  useEffect(() => {
+    const cardElement = cardRef.current;
+
+    if (cardElement === null) {
+      return;
+    }
+
+    const currentCardElement = cardElement;
+
+    function measureCard() {
+      const rect = currentCardElement.getBoundingClientRect();
+
+      setCardFrame({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
+    }
+
+    measureCard();
+
+    const resizeObserver = new ResizeObserver(measureCard);
+    resizeObserver.observe(currentCardElement);
+    window.addEventListener("resize", measureCard);
+    window.addEventListener("scroll", measureCard, true);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", measureCard);
+      window.removeEventListener("scroll", measureCard, true);
+    };
+  }, [activeStep, anchorFrame]);
+
+  const spotlightStyles = targetFrames.map((frame) => ({
+    "--tour-accent": step.accent,
+    top: frame.top - 7,
+    left: frame.left - 7,
+    width: frame.width + 14,
+    height: frame.height + 14,
+  }));
+  const isCompactTour =
+    anchorFrame ? anchorFrame.viewportWidth < 768 : false;
+  const cardWidth =
+    anchorFrame?.viewportWidth && anchorFrame.viewportWidth < 520
+      ? Math.min(anchorFrame.viewportWidth - 28, 370)
+      : 410;
+  const cardTop = anchorFrame
+    ? anchorFrame.viewportWidth < 768
+      ? clampNumber(
+          anchorFrame.top + anchorFrame.height + 18,
+          74,
+          anchorFrame.viewportHeight - 300,
+        )
+      : clampNumber(
+          anchorFrame.top + anchorFrame.height + 22,
+          82,
+          anchorFrame.viewportHeight - 410,
+        )
+    : 0;
+  const cardLeft = anchorFrame
+    ? anchorFrame.viewportWidth < 520
+      ? 14
+      : clampNumber(
+          anchorFrame.left + anchorFrame.width / 2 - cardWidth / 2,
+          18,
+          anchorFrame.viewportWidth - cardWidth - 18,
+        )
+    : 0;
+  const measuredCardTop = cardFrame?.top ?? cardTop;
+  const measuredCardLeft = cardFrame?.left ?? cardLeft;
+  const measuredCardWidth = cardFrame?.width ?? cardWidth;
+  const measuredCardHeight = cardFrame?.height ?? 330;
+  const previewWidth = anchorFrame
+    ? anchorFrame.viewportWidth < 768
+      ? Math.min(anchorFrame.viewportWidth - 28, 360)
+      : Math.min(
+          340,
+          Math.max(
+            292,
+            anchorFrame.viewportWidth -
+              measuredCardLeft -
+              measuredCardWidth -
+              44,
+          ),
+        )
+    : 320;
+  const previewHeight = isCompactTour ? 238 : 250;
+  const previewFitsRight = anchorFrame
+    ? measuredCardLeft + measuredCardWidth + previewWidth + 34 <=
+      anchorFrame.viewportWidth
+    : false;
+  const previewLeft = anchorFrame
+    ? isCompactTour
+      ? clampNumber(
+          measuredCardLeft,
+          14,
+          anchorFrame.viewportWidth - previewWidth - 14,
+        )
+      : previewFitsRight
+        ? measuredCardLeft + measuredCardWidth + 18
+        : clampNumber(
+            measuredCardLeft - previewWidth - 18,
+            18,
+            anchorFrame.viewportWidth - previewWidth - 18,
+          )
+    : 0;
+  const compactPreviewFitsBelow = anchorFrame
+    ? measuredCardTop + measuredCardHeight + previewHeight + 12 <=
+      anchorFrame.viewportHeight
+    : true;
+  const compactPreviewTop = anchorFrame
+    ? compactPreviewFitsBelow
+      ? measuredCardTop + measuredCardHeight + 12
+      : clampNumber(
+          measuredCardTop - previewHeight - 12,
+          74,
+          anchorFrame.viewportHeight - previewHeight - 14,
+        )
+    : 0;
+  const previewStyle = anchorFrame
+    ? {
+        "--tour-accent": step.accent,
+        width: previewWidth,
+        top: isCompactTour
+          ? compactPreviewTop
+          : clampNumber(
+              measuredCardTop + 22,
+              82,
+              anchorFrame.viewportHeight - previewHeight,
+            ),
+        left: previewLeft,
+      }
+    : {};
+  const cardStyle = anchorFrame
+    ? {
+        "--tour-accent": step.accent,
+        width: cardWidth,
+        maxHeight:
+          anchorFrame.viewportWidth < 768
+            ? "calc(100svh - 1.5rem)"
+            : "calc(100svh - 2rem)",
+        top: cardTop,
+        left: cardLeft,
+      }
+    : {};
+
+  return (
+    <motion.div
+      className="pointer-events-none fixed inset-0 z-80"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      aria-live="polite"
+    >
+      {spotlightStyles.map((spotlightStyle, index) => (
+        <motion.div
+          key={`${step.id}-${index}`}
+          className="app-tour-spotlight pointer-events-none fixed rounded-[18px]"
+          data-tour-dim={index === 0}
+          style={spotlightStyle}
+          layout
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        />
+      ))}
+
+      <motion.div
+        ref={cardRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${step.title} introduction`}
+        className="app-tour-card pointer-events-auto fixed overflow-y-auto overscroll-contain rounded-[30px] border p-0 text-white"
+        style={cardStyle}
+        key={step.id}
+        initial={{ opacity: 0, y: 18, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 10, scale: 0.97 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="relative p-5 md:p-6">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="text-[36px] leading-[0.95] tracking-[-0.055em] font-[Georgia,serif] md:text-[42px]">
+                {step.title}
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center text-white/62 transition hover:text-white"
+              aria-label="Skip app tour"
+            >
+              <X size={22} strokeWidth={1.7} />
+            </button>
+          </div>
+
+          <div className="mt-2">
+            <p className="text-[16px] leading-7 text-white/76 md:text-[17px] md:leading-8">
+              {step.detail}
+            </p>
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-1.5 rounded-[18px] border border-white/10 bg-black/20 p-1.5">
+            {APP_QUICK_TOUR_STEPS.map((tourStep, index) => (
+              <button
+                key={tourStep.id}
+                type="button"
+                onClick={() => onStepChange(index)}
+                className={cn(
+                  "relative flex min-h-11 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-[13px] px-3 py-2.5 text-[13px] font-semibold transition",
+                  index === activeStep
+                    ? "text-[#06120f]"
+                    : "text-white/52 hover:bg-white/[0.06] hover:text-white",
+                )}
+              >
+                {index === activeStep ? (
+                  <motion.span
+                    layoutId="app-tour-step-active"
+                    className="absolute inset-0 rounded-[13px] bg-[color:var(--tour-accent)]"
+                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                ) : null}
+                <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full text-[13px]">
+                  {index + 1}
+                </span>
+                <span className="relative leading-4">{tourStep.title}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => onStepChange(activeStep - 1)}
+              disabled={activeStep === 0}
+              className="cursor-pointer rounded-full px-3 py-2 text-[12px] font-medium text-white/56 transition hover:bg-white/[0.07] hover:text-white disabled:pointer-events-none disabled:opacity-35"
+            >
+              Back
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (isLastStep) {
+                  onClose();
+                  return;
+                }
+
+                onStepChange(activeStep + 1);
+              }}
+              className="app-tour-primary-btn inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[13px] font-semibold text-[#06120f] transition"
+            >
+              {isLastStep ? "Finish" : "Next"}
+              {!isLastStep ? <ArrowUpRight size={14} /> : null}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {step.id === "debate" && anchorFrame ? (
+        <motion.div
+          className="app-tour-report-preview pointer-events-auto fixed overflow-hidden rounded-[24px] border"
+          data-side={
+            isCompactTour
+              ? compactPreviewFitsBelow
+                ? "bottom"
+                : "top"
+              : previewFitsRight
+                ? "right"
+                : "left"
+          }
+          style={previewStyle}
+          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 8, scale: 0.97 }}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden="true"
+        >
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+            <div>
+              <p className="text-[15px] font-semibold text-white">
+                Post Match Report Preview
+              </p>
+            </div>
+            <span className="rounded-full bg-[color:var(--tour-accent)] px-2.5 py-1 text-[11px] font-bold text-[#120c04]">
+              Debate
+            </span>
+          </div>
+
+          <div className="relative h-[178px] bg-[#f7f4ec] md:h-[190px]">
+            <Image
+              src="/app/debate-report-preview.png"
+              alt="Preview of the Debate Mode post-match report"
+              fill
+              sizes="(max-width: 767px) 360px, 340px"
+              className="object-cover object-top"
+              priority
+            />
+          </div>
+        </motion.div>
+      ) : null}
+    </motion.div>
+  );
+}
+
 export default function ChatContainer({
   initialMessages,
   sessionId,
-  sessionMeta = { mode: "SOCRATIC" },
+  sessionMeta = { mode: "ROLEPLAY" },
   initialAutoSendMessage = null,
+  userStorageId = null,
+  initialUserName = null,
   initialBilling = {
     isPremium: false,
     usage: {
@@ -285,7 +812,6 @@ export default function ChatContainer({
     },
   },
 }: Props) {
-  const { user } = useUser();
   const greetingSeed = useSyncExternalStore(
     subscribeToGreetingSeed,
     getGreetingSeedSnapshot,
@@ -318,6 +844,8 @@ export default function ChatContainer({
   const [upgradePromptSmallText, setUpgradePromptSmallText] = useState(
     DEFAULT_UPGRADE_PROMPT_TEXT,
   );
+  const [showQuickTour, setShowQuickTour] = useState(false);
+  const [quickTourStep, setQuickTourStep] = useState(0);
   const [activeSessionId, setActiveSessionId] = useState(sessionId);
   const tempIdRef = useRef(0);
   const autoSendTriggeredRef = useRef(false);
@@ -325,13 +853,14 @@ export default function ChatContainer({
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const hasMessages = messages.length > 0;
   const isDebateSession = activeSessionMeta.mode === "DEBATE";
   const isRoleplaySession = activeSessionMeta.mode === "ROLEPLAY";
   const isDebateCompleted = activeSessionMeta.debate?.status === "COMPLETED";
   const completedDebate = isDebateCompleted ? activeSessionMeta.debate : null;
-  const rawName = user?.firstName?.trim() || user?.username?.trim() || "friend";
+  const rawName = initialUserName?.trim() || "friend";
   const name = rawName.length > 0 ? rawName : "friend";
   const userLabel = name === "friend" ? "You" : name;
   const winnerLabel =
@@ -442,6 +971,39 @@ export default function ChatContainer({
     }
   }
 
+  function markQuickTourComplete() {
+    if (!userStorageId) {
+      setShowQuickTour(false);
+      setIsModeMenuOpen(false);
+      selectNewChatMode("ROLEPLAY");
+      return;
+    }
+
+    try {
+      localStorage.setItem(getQuickTourStorageKey(userStorageId), "complete");
+    } catch {
+      // best effort
+    }
+
+    setShowQuickTour(false);
+    setIsModeMenuOpen(false);
+    selectNewChatMode("ROLEPLAY");
+  }
+
+  function moveQuickTourToStep(nextStep: number) {
+    const boundedStep = clampNumber(
+      nextStep,
+      0,
+      APP_QUICK_TOUR_STEPS.length - 1,
+    );
+    const nextTourStep =
+      APP_QUICK_TOUR_STEPS[boundedStep] ?? APP_QUICK_TOUR_STEPS[0]!;
+
+    setQuickTourStep(boundedStep);
+    setIsModeMenuOpen(true);
+    selectNewChatMode(nextTourStep.mode, false);
+  }
+
   useEffect(() => {
     setActiveSessionMeta(sessionMeta);
   }, [sessionMeta]);
@@ -459,6 +1021,42 @@ export default function ChatContainer({
   useEffect(() => {
     void refreshBillingState();
   }, []);
+
+  useEffect(() => {
+    if (
+      pathname !== ROUTES.APP ||
+      activeSessionId ||
+      messages.length > 0 ||
+      initialAutoSendMessage ||
+      !userStorageId
+    ) {
+      return;
+    }
+
+    try {
+      if (
+        localStorage.getItem(getQuickTourStorageKey(userStorageId)) ===
+        "complete"
+      ) {
+        return;
+      }
+    } catch {
+      return;
+    }
+
+    setQuickTourStep(0);
+    setShowQuickTour(true);
+    setIsModeMenuOpen(true);
+    selectNewChatMode("SOCRATIC", false);
+  // selectNewChatMode intentionally stays outside deps; this only initializes first-run onboarding.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    activeSessionId,
+    initialAutoSendMessage,
+    messages.length,
+    pathname,
+    userStorageId,
+  ]);
 
   useEffect(() => {
     setActiveSessionId(sessionId);
@@ -499,7 +1097,7 @@ export default function ChatContainer({
       setMessages([]);
       setEditingMessage(null);
       setEditDraft("");
-      selectNewChatMode("SOCRATIC");
+      selectNewChatMode("ROLEPLAY");
       setPendingRoleplayId(null);
       setShowWinnerReveal(false);
       finalizeRequestedRef.current = false;
@@ -555,7 +1153,7 @@ export default function ChatContainer({
   ]);
 
   useEffect(() => {
-    if (!isModeMenuOpen) {
+    if (!isModeMenuOpen || showQuickTour) {
       return;
     }
 
@@ -582,7 +1180,7 @@ export default function ChatContainer({
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isModeMenuOpen]);
+  }, [isModeMenuOpen, showQuickTour]);
 
   useEffect(() => {
     const handleUpgradePromptOpen = (event: Event) => {
@@ -1441,6 +2039,7 @@ export default function ChatContainer({
               <button
                 type="button"
                 onClick={() => setIsModeMenuOpen((prev) => !prev)}
+                data-app-tour-target="mode-switch"
                 className={cn(
                   "app-mode-switch-trigger group inline-flex cursor-pointer items-center gap-2.5 rounded-full border px-3 py-2 text-[14px] transition",
                   isModeMenuOpen && "app-mode-switch-trigger-open",
@@ -1479,17 +2078,23 @@ export default function ChatContainer({
                     exit={{ opacity: 0, y: -6, scale: 0.98 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                     className="app-mode-switch-menu absolute left-0 top-full mt-2 flex min-w-42 origin-top flex-col gap-1 rounded-2xl border p-1.5"
+                    data-app-tour-target="mode-switch-menu"
                   >
                     <button
                       type="button"
                       onClick={() => {
                         selectNewChatMode("SOCRATIC");
-                        setIsModeMenuOpen(false);
+                        setIsModeMenuOpen(showQuickTour);
                       }}
                       data-active={modeSelection === "SOCRATIC"}
-                    className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
-                  >
-                    <span className="inline-flex items-center gap-2">
+                      data-app-tour-target="mode-option-socratic"
+                      data-tour-active={
+                        showQuickTour &&
+                        APP_QUICK_TOUR_STEPS[quickTourStep]?.id === "socratic"
+                      }
+                      className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
+                    >
+                      <span className="inline-flex items-center gap-2">
                         <GraduationCap size={15} />
                         Socratic
                       </span>
@@ -1503,13 +2108,18 @@ export default function ChatContainer({
                       onClick={() => {
                         if (!billing.features.debateMode) {
                           openUpgradePrompt();
-                          setIsModeMenuOpen(false);
+                          setIsModeMenuOpen(showQuickTour);
                           return;
                         }
                         selectNewChatMode("DEBATE");
-                        setIsModeMenuOpen(false);
+                        setIsModeMenuOpen(showQuickTour);
                       }}
                       data-active={modeSelection === "DEBATE"}
+                      data-app-tour-target="mode-option-debate"
+                      data-tour-active={
+                        showQuickTour &&
+                        APP_QUICK_TOUR_STEPS[quickTourStep]?.id === "debate"
+                      }
                       className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
@@ -1526,9 +2136,14 @@ export default function ChatContainer({
                       type="button"
                       onClick={() => {
                         selectNewChatMode("ROLEPLAY");
-                        setIsModeMenuOpen(false);
+                        setIsModeMenuOpen(showQuickTour);
                       }}
                       data-active={modeSelection === "ROLEPLAY"}
+                      data-app-tour-target="mode-option-roleplay"
+                      data-tour-active={
+                        showQuickTour &&
+                        APP_QUICK_TOUR_STEPS[quickTourStep]?.id === "roleplay"
+                      }
                       className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
@@ -1667,8 +2282,8 @@ export default function ChatContainer({
                   {roleplayIntro}
 
                   <div className="mb-2.5">
-                    <p className="app-roleplay-prompts-label text-[10px] font-semibold uppercase tracking-[0.18em]">
-                      Suggested messages
+                    <p className="app-roleplay-prompts-label text-[12px] font-semibold">
+                      Suggested Messages:
                     </p>
                   </div>
                   <div className="mb-4 grid gap-1.5">
@@ -1728,6 +2343,15 @@ export default function ChatContainer({
           </AnimatePresence>
         </div>
         <AnimatePresence>{renderUpgradePromptModal()}</AnimatePresence>
+        <AnimatePresence>
+          {showQuickTour ? (
+            <AppQuickTour
+              activeStep={quickTourStep}
+              onStepChange={moveQuickTourToStep}
+              onClose={markQuickTourComplete}
+            />
+          ) : null}
+        </AnimatePresence>
       </div>
     );
   }

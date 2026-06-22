@@ -1,25 +1,3 @@
-Got it:
-
-Socrates — The father of Western philosophy who never wrote a word. Taught by asking questions that made people deeply uncomfortable.
-Plato — Student of Socrates who turned his teacher's questions into a complete vision of reality. Built the foundation of Western thought.
-Aristotle — Plato's greatest student who disagreed with almost everything Plato said. Wrote about everything from logic to politics to the nature of happiness.
-Epictetus — Born into slavery and became one of the most respected philosophers of his time. Taught that freedom begins in the mind, not in circumstances.
-Marcus Aurelius — Ruled the Roman Empire and still found time to question himself daily. Wrote his private thoughts down, never intending anyone to read them.
-Seneca — Advisor to emperors, witness to power, and one of the sharpest writers in history. Obsessed with how we spend the one life we are given.
-Nietzsche — Declared that old values were collapsing and that humanity needed new ones. One of the most misunderstood and most important thinkers of the modern age.
-Kant — Built one of the most rigorous systems of moral philosophy ever attempted. Believed that reason, not religion or emotion, was the foundation of right action.
-Machiavelli — Studied power for what it actually is, not what people pretend it to be. Wrote the book that rulers read in private and condemned in public.
-Karl Marx — Looked at history as a story of who owns what and who suffers for it. Changed the course of the twentieth century more than almost any other thinker.
-Hobbes — Believed human life without order was brutal and short. Argued that strong government was not a cage but a necessity.
-Rousseau — Believed humans were naturally good and that civilization slowly corrupted them. His ideas lit the fuse on the French Revolution.
-Mill — Fought for individual freedom at a time when few philosophers bothered. Believed that a society was only as good as the liberty it protected.
-Hume — Doubted more carefully than almost anyone before him. Challenged the foundations of religion, causation, and human knowledge itself.
-Spinoza — Saw God and nature as one and the same thing. Was expelled from his community for ideas that the modern world has largely come to accept.
-Schopenhauer — Believed the universe was driven by blind, irrational will. Honest about suffering in a way that philosophy rarely allows itself to be.
-Kierkegaard — Wrote about what it actually feels like to be a human being trying to live a meaningful life. The first philosopher to take anxiety seriously.
-Camus — Looked at the absurdity of existence and refused to look away. Argued that the only real philosophical question is whether life is worth living.
-Sartre — Said that existence comes before essence, meaning you are nothing until you make yourself something. Total freedom, total responsibility.
-Freud — Argued that most of what drives human behavior is buried beneath conscious awareness. Changed how the world thinks about the mind forever.
-Thoreau — Left society for two years to live deliberately and think clearly. Wrote about nature, conscience, and the cost of living someone else's life.
-William James — Believed that truth was what worked in practice, not what sounded elegant in theory. The most human and readable of all the great philosophers.
-Adam Smith — Explained how markets work and why self-interest can serve the common good. Cared about morality just as much as he cared about economics.
+socratic = Your all in one space for deep, open-ended conversation. Bring any topic, idea, or question and we'll make sure you think harder than you were planning to.
+debate= Pick a topic, pick a side, and go head to head with an AI that argues back for real. Learn and improve instantly using the Post Match Report.
+roleplay=Have an actual conversation with a philosopher, in their own voice and logic. Discuss ideas, life and more...

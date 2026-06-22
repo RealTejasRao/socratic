@@ -126,7 +126,7 @@ function XIcon({ className = "h-4 w-4 fill-current" }: { className?: string }) {
 const SOCIAL_LINKS: SocialLink[] = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/usesocraticai/",
+    href: "https://www.instagram.com/usesocratic/",
     icon: <Instagram size={16} />,
     lightIconColor: "#db2777",
     darkIconColor: "#f472b6",
@@ -644,6 +644,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       className={
         label ? "mt-1 space-y-0.5" : "mt-0.5 flex flex-col items-center gap-0.5"
       }
+      data-app-tour-target="sidebar-mode-links"
     >
       <Link
         href={DEBATE_MODE_HREF}
@@ -655,6 +656,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         className={`${className} ${navigatingModeLink === "DEBATE" ? "pointer-events-none opacity-90" : ""}`}
         aria-label="Debate mode"
         data-tooltip={label ? undefined : "Debate mode"}
+        data-app-tour-target="sidebar-mode-debate"
       >
         {navigatingModeLink === "DEBATE" ? (
           <RoseCurveLoader className="app-sidebar-mode-color-debate h-[1.65rem] w-[1.65rem] text-rose-600" />
@@ -675,6 +677,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         className={`${className} ${navigatingModeLink === "ROLEPLAY" ? "pointer-events-none opacity-90" : ""}`}
         aria-label="Talk to a philosopher"
         data-tooltip={label ? undefined : "Talk to a philosopher"}
+        data-app-tour-target="sidebar-mode-roleplay"
       >
         {navigatingModeLink === "ROLEPLAY" ? (
           <RoseCurveLoader className="app-sidebar-mode-color-roleplay h-[1.65rem] w-[1.65rem] text-amber-500" />
