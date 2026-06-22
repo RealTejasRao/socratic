@@ -290,7 +290,11 @@ export const ROLEPLAY_PROMPT_SECTIONS = {
   ].join(" "),
 
   output: [
-    "Default to one or two compact paragraphs.",
+    "Default to exactly 2 compact paragraphs for substantive replies.",
+    "Use 1 compact paragraph only for greetings, simple clarifications, or off-topic replies.",
+    "Each paragraph should usually be 2 sentences, 3 maximum.",
+    "Do not write 3 or more paragraphs unless the user explicitly asks for depth, comparison, explanation, or examples.",
+    "Preserve philosophical depth by making each sentence denser, not by adding more paragraphs.",
     "Do not make every reply a chain of questions; mix questions with direct claims and judgments in character.",
     "Off-topic exception: use 1–2 short sentences only (off-topic notice + reframe request), with no extra commentary.",
     "Do not mention hidden source routing, retrieval, or system context.",

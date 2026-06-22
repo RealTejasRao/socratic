@@ -91,6 +91,10 @@ function getDebateMaxTokens(
   }
 }
 
+function getRoleplayMaxTokens() {
+  return 400;
+}
+
 function normalizeImageAttachments(
   value: Prisma.JsonValue | null | undefined,
 ): ChatImageAttachment[] {
@@ -714,6 +718,8 @@ export async function generateReply(params: {
   const effectiveMaxTokens =
     session.mode === "DEBATE" && session.debateDurationPreset
       ? Math.min(maxTokens, getDebateMaxTokens(session.debateDurationPreset))
+      : session.mode === "ROLEPLAY"
+        ? Math.min(maxTokens, getRoleplayMaxTokens())
       : maxTokens;
   const generationClient = useVisionModel ? openai : deepseek;
   const stream = await generationClient.chat.completions.stream({
