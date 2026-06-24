@@ -70,7 +70,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/what_is_epistemology.md",
   },
   {
-    slug: "socratic-ai-story",
+    slug: "the-background-story",
     title: "Socratic AI: The Background Story",
     category: "About",
     author: "Socratic AI Founder",
