@@ -17,7 +17,7 @@ When I finished the first version, I was genuinely happy with it. It had only on
 
 The feedback was not what I really expected. One of them asked me why it was being mean to him. He felt like he was being interrogated. Well, his ideas were being interrogated. I was confused because to me that was the whole point but apparently that's not a universal feeling. Added two more tones for my friends- "Simple and Clear", and "Encouraging and Supportive". 
 
-At this point my friends were telling me to release it publicly, so I took a couple months, slapped a decent UI on it, and here we are. 
+At this point my friends were telling me to release it publicly, so I took a few months, worked extensively, slapped a decent UI on it, and here we are. That makes it sound easy but it wasn't. Building something for yourself and building something production level are two completely different jobs, and the gap between them taught me more than the original idea did.
 
 So currently there are three Modes
 
@@ -27,7 +27,7 @@ So currently there are three Modes
 
 3) Roleplay (Talk to a Philosopher) mode- There were originally only 4 philosophers= Socrates, Kant, Nietzsche, Epictetus. But now I have added a lot more, and I love it. It is genuinely very fun to talk to them. Each philosopher has a different personality, and it is overall a great experience. 
 
-There are some things that I have not released publicly. It has like a decision mode too where a complex pipeline runs in the background and helps you make a decision or analyze a situation. In simple words, it is focused more on real life situations, and it is actually pretty good. Now it sounds selfish that I have not released it out there if it's that good, and it is a bit selfish to be honest. But there is another factor into play here and that is cost. As I said it runs a pretty complex pipeline in the background with every message and it costs me money. Also it is not that simple to use. You have to prompt your need in a certain way for it to work perfectly, but the output is worth it. For a similar reason, the debate mode is also behind a paywall because making the Debate Report is a bit complex and costly.
+There are some things that I haven't released publicly. It has one more mode which I call 'decision mode'. It runs a pretty complex pipeline that runs in the background and actually helps you think through a real decision, a real situation, the kind of stuff that's messier than philosophy. In simple words, it is focused more on real life problems, and it is genuinely really good, probably the best thing I've built. Now it sounds selfish that I have not released it out there, and it is a bit selfish to be honest. But there is another factor into play here and that is cost. As I said it runs a pretty complex pipeline in the background with every message and it costs me money. Also it is not that simple to use. You have to prompt your need in a certain way for it to work perfectly, but the output is worth it. For a similar reason, the debate mode is behind a paywall because making the Debate Report is a bit complex and costly.
 
 
 One thing I would like to say, Philosophy is not just books and lectures. It is everything. You are a philosopher. Your goal should be to be a better one.  It doesn't matter if you are a student, a teacher, a founder, a criminal, a beggar. You don't need a book to think, or even this AI. These are tools that can certainly help you. But in the end, it is you who's gotta think. I would like to end with a phrase I always say - Thinking is your MOAT. 
