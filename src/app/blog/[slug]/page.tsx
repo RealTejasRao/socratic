@@ -233,6 +233,7 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "what-is-epistemology": ["What is Epistemology?"],
   "plato-vs-aristotle": ["Plato vs Aristotle:", "Split"],
   "philosophy-of-power": ["The Philosophy of Power:"],
+  "socratic-ai-story": ["The Story of Socratic AI"],
 };
 
 function escapeRegExp(value: string) {

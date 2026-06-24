@@ -70,6 +70,19 @@ const BLOG_POSTS: BlogPostRecord[] = [
     contentFilePath: "public/blog/content/what_is_epistemology.md",
   },
   {
+    slug: "socratic-ai-story",
+    title: "The Story of Socratic AI: Why was it built?",
+    category: "About",
+    author: "Socratic AI Founder",
+    publishedAt: "2026-06-09T03:26:59+05:30",
+    updatedAt: "2026-06-09T03:26:59+05:30",
+    readTimeLabel: "9 min read",
+    excerpt:
+      "This blog contains my personal views and why I built Socratic AI.",
+    coverImagePath: "/blog/images/socratic-ai-story.webp",
+    contentFilePath: "public/blog/content/socratic_ai_story.md",
+  },
+  {
     slug: "critical-thinking-in-ai-era",
     title: "Why Critical Thinking is the Most Valuable Skill in the AI Era",
     category: "Philosophy",
