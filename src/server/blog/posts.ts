@@ -71,7 +71,7 @@ const BLOG_POSTS: BlogPostRecord[] = [
   },
   {
     slug: "socratic-ai-story",
-    title: "The Story of Socratic AI: Why was it built?",
+    title: "",
     category: "About",
     author: "Socratic AI Founder",
     publishedAt: "2026-06-09T03:26:59+05:30",
