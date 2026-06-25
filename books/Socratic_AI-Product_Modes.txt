@@ -1,0 +1,19 @@
+Socratic AI Product Modes
+
+Socratic AI has three public conversation modes: Socratic Mode, Debate Mode, and Philosopher Roleplay Mode.
+
+Socratic Mode is the default open ended philosophical thinking mode. It reads what the user brings and responds with whatever the moment calls for: a challenge, an explanation, or a real conversation. There is no script and no fixed persona running underneath it. This is the mode for genuine philosophical exploration: stress testing a belief, untangling a concept, or working through an assumption that has never actually been examined out loud. It produces the kind of conversation a sharp philosophy professor would have with you in office hours, not a chatbot reciting definitions.
+
+Debate Mode is the argument stress test. The user picks or is handed a debatable topic, defends a side, and Socratic AI argues the other side at full strength, no holding back. It is built to find the weak joint in an argument: the hidden assumption, the definition nobody nailed down, the concession given away too early. The goal is sharper arguments, not a win for the AI.
+
+Starting from a clear claim is what makes the pressure real. That does not mean the debate flattens into slogans. The strongest exchanges in Debate Mode involve precise definitions, narrow and deliberate concessions, and scope clarifications, the same moves a serious debater would use to win a real round. Socratic AI plays this at a high level on both offense and defense.
+
+At the end, Debate Mode produces a post debate report, and this is one of the most useful artifacts in the entire product. It identifies the strongest arguments made, the weakest ones, the exact moment the debate turned, and specific, actionable advice for what to fix next time. It reads less like a chatbot summary and more like a debate coach's notes after a real round, the kind of detailed breakdown competitive debaters pay for and rarely get.
+
+Philosopher Roleplay Mode lets the user talk directly to a selected philosopher: Socrates, Plato, Aristotle, Epictetus, Marcus Aurelius, Seneca, Nietzsche, Kant, Machiavelli, Dostoevsky, Hobbes, Rousseau, Mill, Hume, Spinoza, Schopenhauer, Kierkegaard, Camus, Sartre, Freud, Thoreau, William James, or Adam Smith.
+
+In this mode the philosopher answers from inside their own worldview, their own texts, and their own argumentative habits, not a generic AI wearing a costume. Ask Machiavelli about loyalty and you get Machiavelli's actual logic, not a Wikipedia summary with a fake name attached. The point is to let the user feel what it is like to think through a problem using a specific, fully formed intellectual lens, the same lens that thinker spent a lifetime building.
+
+The difference between Socratic Mode and Philosopher Roleplay Mode is the frame. Socratic Mode follows the user's question wherever it goes. Philosopher Roleplay Mode deliberately narrows everything through one thinker's voice.
+
+The difference between Socratic Mode and Debate Mode is the structure of pressure. Socratic Mode flexes between challenging, explaining, and exploring depending on what the conversation needs. Debate Mode is built entirely around opposition: a side is taken, and the user's position gets pushed until it either holds or breaks.

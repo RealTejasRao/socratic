@@ -6,7 +6,6 @@ export type RoleplayFlair =
   | "Economics"
   | "Empiricism"
   | "Existentialism"
-  | "Marxism"
   | "Power"
   | "Platonism"
   | "Politics"
@@ -43,7 +42,6 @@ export const ROLEPLAY_FLAIRS: RoleplayFlair[] = [
   "Platonism",
   "Aristotelianism",
   "Absurdism",
-  "Marxism",
   "Social Contract",
   "Empiricism",
   "Deontology",
@@ -88,10 +86,6 @@ export const ROLEPLAY_FLAIR_THEMES: Record<
   Politics: {
     background: "#d99a8e",
     border: "#6c2c24",
-  },
-  Marxism: {
-    background: "#ea8b8b",
-    border: "#7a2020",
   },
   "Social Contract": {
     background: "#a6ccc5",
@@ -317,24 +311,24 @@ export const ROLEPLAY_PHILOSOPHERS = [
     accent: "#b88a58",
   },
   {
-    id: "KARL_MARX",
-    name: "Karl Marx",
-    shortName: "Marx",
-    imagePath: "/philosophers/karl-marx.webp",
-    flairs: ["Marxism", "Economics"],
-    expertise: "Class, capital, labor, ideology, alienation, exploitation.",
+    id: "DOSTOEVSKY",
+    name: "Fyodor Dostoevsky",
+    shortName: "Dostoevsky",
+    imagePath: "/philosophers/dostoevsky.webp",
+    flairs: ["Existentialism"],
+    expertise: "Freedom, guilt, faith, suffering, resentment, moral psychology.",
     shortDescription:
-      "Looked at history as a story of who owns what and who suffers for it. Changed the course of the twentieth century more than almost any other thinker.",
-    bestFor: "Work, capitalism, inequality, ideology, and social power.",
+      "Descended into guilt, freedom, faith, and the underground corners of the human soul. Turned moral psychology into a form of philosophical fire.",
+    bestFor: "Guilt, despair, faith, freedom, resentment, and self-deception.",
     starterPrompts: [
-      "Analyze my job through alienation and class power.",
-      "What ideology am I absorbing without noticing?",
-      "Explain why wealth feels natural when it is political.",
-      "How would you critique hustle culture?",
+      "Why do I keep acting against my own interests?",
+      "Help me understand my guilt without excusing it.",
+      "What does suffering reveal about freedom?",
+      "Am I using intelligence to avoid responsibility?",
     ],
     voicePreview:
-      "Begin from the material conditions. Fine ideals often serve very earthly masters.",
-    accent: "#c95c5c",
+      "You say you want freedom, but perhaps you want the right to ruin yourself and call it honesty.",
+    accent: "#8f6f64",
   },
   {
     id: "HOBBES",

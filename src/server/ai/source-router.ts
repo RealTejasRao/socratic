@@ -8,6 +8,9 @@ const PHILOSOPHY_PATTERN =
 const PHILOSOPHICAL_QUESTION_PATTERN =
   /\b(what is|what are|why do|why does|why is|how should|should we|can we|do we|is there|what makes|what does it mean|is it|are we|does|how do we|what would)\b.{0,60}\b(life|death|meaning|purpose|truth|reality|mind|soul|self|free will|freedom|good|evil|right|wrong|happy|happiness|exist|existence|god|time|consciousness|knowledge|belief|power|justice|love|beauty|pain|suffering|fear|choice|fate|destiny|nature|society|identity)\b/i;
 
+const PRODUCT_KNOWLEDGE_PATTERN =
+  /\b(socratic ai|socratic mode|debate mode|roleplay mode|role-play mode|philosopher roleplay|talk to a philosopher|post-debate|post debate)\b/i;
+
 const WEB_TRIGGER_PATTERN =
   /\b(search|web|internet|online|look up|lookup|browse|google|find sources|source this|fact check|fact-check)\b/i;
 
@@ -40,7 +43,9 @@ export function decideKnowledgeRoute(params: {
 
   const mentionsPhilosophy = PHILOSOPHY_PATTERN.test(normalized);
   const isPhilosophicalQuestion = PHILOSOPHICAL_QUESTION_PATTERN.test(normalized);
-  const shouldUseRag = mentionsPhilosophy || isPhilosophicalQuestion;
+  const mentionsProductKnowledge = PRODUCT_KNOWLEDGE_PATTERN.test(normalized);
+  const shouldUseRag =
+    mentionsProductKnowledge || mentionsPhilosophy || isPhilosophicalQuestion;
   const requestsWeb = WEB_TRIGGER_PATTERN.test(normalized);
   const needsFreshness = FRESHNESS_PATTERN.test(normalized);
   const blendsDomains = MIXED_COMPARISON_PATTERN.test(normalized);

@@ -26,7 +26,7 @@ interface Props {
 const ROLEPLAY_LIBRARY_ORDER: RoleplayPhilosopherId[] = [
   "MACHIAVELLI",
   "MARCUS_AURELIUS",
-  "KARL_MARX",
+  "DOSTOEVSKY",
   "NIETZSCHE",
   "SOCRATES",
   "ARISTOTLE",

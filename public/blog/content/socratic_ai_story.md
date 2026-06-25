@@ -33,5 +33,3 @@ There are some things that I haven't released publicly. It has one more mode whi
 One thing I would like to say, Philosophy is not just books and lectures. It is everything. You are a philosopher. Your goal should be to be a better one.  It doesn't matter if you are a student, a teacher, a founder, a criminal, a beggar. You don't need a book to think, or even this AI. These are tools that can certainly help you. But in the end, it is you who's gotta think. I would like to end with a phrase I always say - Thinking is your MOAT. 
 
 Also, I have written an essay - "The Rising Cost of Being Human". [It can be read here](https://res.cloudinary.com/dz0v0p86u/image/upload/v1782302075/Yadav_Tejas_The_Rising_Cost_of_Being_Human_ptrpyy.pdf). I promise it is a good read.
-
-

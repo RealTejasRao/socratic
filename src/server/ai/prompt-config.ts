@@ -1,4 +1,4 @@
-export const SOCRATIC_PROMPT_VERSION = "socratic-v8";
+export const SOCRATIC_PROMPT_VERSION = "socratic-v10";
 export const DEBATE_PROMPT_VERSION = "debate-v1";
 export const ROLEPLAY_PROMPT_VERSION = "roleplay-v2";
 
