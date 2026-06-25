@@ -51,6 +51,24 @@
   --app-light-scrollbar-thumb-hover: #9f5f2c;
   --app-dark-scrollbar-thumb: #a8d1ff;
   --app-dark-scrollbar-thumb-hover: #c7e2ff;
+  --expo-out: linear(
+    0 0%,
+    0.1684 2.66%,
+    0.3165 5.49%,
+    0.446 8.52%,
+    0.5581 11.78%,
+    0.6535 15.29%,
+    0.7341 19.11%,
+    0.8011 23.3%,
+    0.8557 27.93%,
+    0.8962 32.68%,
+    0.9283 38.01%,
+    0.9529 44.08%,
+    0.9711 51.14%,
+    0.9833 59.06%,
+    0.9915 68.74%,
+    1 100%
+  );
   --radius: 1rem;
 }
 
@@ -375,51 +393,30 @@ svg {
 }
 
 html.theme-wave-transition::view-transition-group(root) {
-  animation-duration: 1500ms;
-  animation-timing-function: linear;
+  animation-timing-function: var(--expo-out);
+}
+
+html.theme-wave-transition::view-transition-new(root) {
+  -webkit-mask: url("/assets/custom-svg.svg") top left / 0 no-repeat;
+  mask: url("/assets/custom-svg.svg") top left / 0 no-repeat;
+  -webkit-mask-origin: top left;
+  mask-origin: top left;
+  animation: themeScale 1.5s;
+  animation-fill-mode: both;
 }
 
 html.theme-wave-transition::view-transition-old(root),
-html.theme-wave-transition::view-transition-new(root) {
-  animation: none;
-  block-size: 100%;
-  inline-size: 100%;
-  mix-blend-mode: normal;
+html.app-dark.theme-wave-transition::view-transition-old(root) {
+  animation: themeScale 1.5s;
+  animation-fill-mode: both;
+  z-index: -1;
+  transform-origin: top left;
 }
 
-html.theme-wave-transition::view-transition-new(root) {
-  backface-visibility: hidden;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 260' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 120 C8 108 16 108 24 120 S40 132 48 120 S64 108 72 120 S88 132 100 120 V260 H0 Z'/%3E%3C/svg%3E");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 260%;
-  animation: themeWaveReveal 1500ms linear both;
-  filter: saturate(1.02);
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 260' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M0 120 C8 108 16 108 24 120 S40 132 48 120 S64 108 72 120 S88 132 100 120 V260 H0 Z'/%3E%3C/svg%3E");
-  mask-repeat: no-repeat;
-  mask-size: 100% 260%;
-  will-change: mask-position, -webkit-mask-position;
-}
-
-html.theme-wave-transition::view-transition-old(root) {
-  animation: themeOldThemeHold 1500ms linear both;
-}
-
-@keyframes themeOldThemeHold {
-  from,
+@keyframes themeScale {
   to {
-    opacity: 1;
-  }
-}
-
-@keyframes themeWaveReveal {
-  0% {
-    -webkit-mask-position: 0 0;
-    mask-position: 0 0;
-  }
-
-  100% {
-    -webkit-mask-position: 0 100%;
-    mask-position: 0 100%;
+    -webkit-mask-size: 200vmax;
+    mask-size: 200vmax;
   }
 }
 
