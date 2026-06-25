@@ -12,6 +12,7 @@ import {
   Crown,
   ChevronDown,
   Globe,
+  GraduationCap,
   House,
   Instagram,
   Landmark,
@@ -59,7 +60,7 @@ interface Props {
 }
 
 type SettingsTab = "GENERAL" | "SOCIAL";
-type SidebarModeLink = "DEBATE" | "ROLEPLAY";
+type SidebarModeLink = "SOCRATIC" | "DEBATE" | "ROLEPLAY";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -74,6 +75,7 @@ const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
 const HOME_CONTACT_HREF = "/#contact" as const;
+const SOCRATIC_MODE_HREF = `${ROUTES.APP}?mode=socratic` as const;
 const DEBATE_MODE_HREF = `${ROUTES.APP}?mode=debate` as const;
 const ROLEPLAY_MODE_HREF = `${ROUTES.APP}?mode=roleplay` as const;
 
@@ -404,6 +406,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
     const normalizedMode = searchParams.get("mode")?.toLowerCase().trim();
     const isMatchingMode =
+      (navigatingModeLink === "SOCRATIC" && normalizedMode === "socratic") ||
       (navigatingModeLink === "DEBATE" && normalizedMode === "debate") ||
       (navigatingModeLink === "ROLEPLAY" && normalizedMode === "roleplay");
 
@@ -646,6 +649,27 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       }
       data-app-tour-target="sidebar-mode-links"
     >
+      <Link
+        href={SOCRATIC_MODE_HREF}
+        onClick={() => {
+          setNavigatingModeLink("SOCRATIC");
+          onClick?.();
+        }}
+        className={`${className} ${navigatingModeLink === "SOCRATIC" ? "pointer-events-none opacity-90" : ""}`}
+        aria-label="Socratic General Mode"
+        data-tooltip={label ? undefined : "Socratic General Mode"}
+        data-app-tour-target="sidebar-mode-socratic"
+      >
+        {navigatingModeLink === "SOCRATIC" ? (
+          <RoseCurveLoader className="app-sidebar-mode-color-socratic h-[1.65rem] w-[1.65rem] text-teal-600" />
+        ) : (
+          <GraduationCap
+            size={iconSize}
+            className="app-sidebar-mode-color-socratic shrink-0 text-teal-600"
+          />
+        )}
+        {label ? <span>Socratic (General) Mode</span> : null}
+      </Link>
       <Link
         href={DEBATE_MODE_HREF}
         onClick={(event) => {

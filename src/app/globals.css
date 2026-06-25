@@ -717,6 +717,10 @@ html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-links"]
   z-index: 81;
 }
 
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] {
+  --sidebar-tour-accent: #14b8a6;
+}
+
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] {
   --sidebar-tour-accent: #ff9f43;
 }
@@ -725,6 +729,7 @@ html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-rolepla
   --sidebar-tour-accent: #f7c948;
 }
 
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"],
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"],
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] {
   position: relative;
@@ -738,22 +743,27 @@ html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-rolepla
   animation: none !important;
 }
 
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] svg,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg,
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] span,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] span,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] span {
   color: #141414 !important;
   stroke: currentColor;
 }
 
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"],
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"],
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] {
   color: rgba(255, 255, 255, 0.94) !important;
   filter: brightness(1.45) contrast(1.08) saturate(1.12);
 }
 
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] svg,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg,
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] span,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] span,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] span {
   color: rgba(255, 255, 255, 0.94) !important;
@@ -1663,6 +1673,10 @@ html.app-dark .app-sidebar p {
 
 html.app-dark .app-sidebar .app-sidebar-mode-color-debate {
   color: #fb7185 !important;
+}
+
+html.app-dark .app-sidebar .app-sidebar-mode-color-socratic {
+  color: #2dd4bf !important;
 }
 
 html.app-dark .app-sidebar .app-sidebar-mode-color-roleplay {

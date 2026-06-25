@@ -187,7 +187,7 @@ const APP_QUICK_TOUR_STEPS: {
     accent: "#57f2cf",
     title: "Switch modes",
     detail:
-      "Switch modes from the top dropdown or the sidebar shortcuts for Debate mode and Talk to a Philosopher (Roleplay Mode).",
+      "Switch modes from the top dropdown or the sidebar shortcuts for Socratic, Debate, and Talk to a Philosopher.",
   },
 ];
 
