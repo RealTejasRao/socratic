@@ -222,28 +222,25 @@ const DAILY_MESSAGES_LIMIT_REASON =
 const DAILY_IMAGE_UPLOAD_LIMIT_REASON =
   "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.";
 const roleplayContentTransition = {
-  duration: 0.48,
+  duration: 0.24,
   ease: [0.22, 1, 0.36, 1],
 } as const;
 const roleplayPanelVariants: Variants = {
-  initial: (direction: number) => ({
+  initial: {
     opacity: 0,
-    x: direction >= 0 ? 32 : -32,
-    y: 10,
-    scale: 0.98,
-  }),
+    y: 8,
+    scale: 0.995,
+  },
   animate: {
     opacity: 1,
-    x: 0,
     y: 0,
     scale: 1,
   },
-  exit: (direction: number) => ({
+  exit: {
     opacity: 0,
-    x: direction >= 0 ? -26 : 26,
-    y: -8,
-    scale: 0.98,
-  }),
+    y: -4,
+    scale: 0.995,
+  },
 };
 
 let greetingSeedStore = 0;
@@ -2273,7 +2270,7 @@ export default function ChatContainer({
           </div>
 
           <AnimatePresence
-            mode="wait"
+            mode="popLayout"
             initial={false}
             custom={roleplayNavigationDirection}
           >
