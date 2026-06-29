@@ -32,6 +32,7 @@ import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
   ROLEPLAY_FLAIR_THEMES,
   getRoleplayPhilosopherConfig,
+  isRoleplayPhilosopherId,
   type RoleplayFlair,
   type RoleplayPhilosopherId,
 } from "src/lib/roleplay";
@@ -92,6 +93,10 @@ function getModeHref(mode: SessionMode) {
   }
 
   return `${ROUTES.APP}?mode=socratic` as Route;
+}
+
+function getRoleplayPhilosopherHref(philosopherId: RoleplayPhilosopherId) {
+  return `${ROUTES.APP}?mode=roleplay&philosopher=${encodeURIComponent(philosopherId)}` as Route;
 }
 
 const MORNING_GREETINGS = [
@@ -1005,11 +1010,40 @@ export default function ChatContainer({
   function openRoleplayPhilosopher(philosopherId: RoleplayPhilosopherId) {
     setRoleplayNavigationDirection(1);
     setPendingRoleplayId(philosopherId);
+
+    if (!activeSessionId && messages.length === 0) {
+      router.push(getRoleplayPhilosopherHref(philosopherId), { scroll: false });
+    }
   }
 
   function returnToRoleplayLibrary() {
     setRoleplayNavigationDirection(-1);
     setPendingRoleplayId(null);
+
+    if (!activeSessionId && messages.length === 0) {
+      router.replace(getModeHref("ROLEPLAY"), { scroll: false });
+    }
+  }
+
+  function resetToRoleplayLibrary() {
+    activeStreamControllerRef.current?.abort();
+    activeStreamControllerRef.current = null;
+    setMessages([]);
+    setIsStreaming(false);
+    setEditingMessage(null);
+    setEditDraft("");
+    setModeSelection("ROLEPLAY");
+    setActiveSessionMeta({ mode: "ROLEPLAY" });
+    setRoleplayNavigationDirection(-1);
+    setPendingRoleplayId(null);
+    setShowWinnerReveal(false);
+    finalizeRequestedRef.current = false;
+    setActiveSessionId(undefined);
+  }
+
+  function openRoleplayLibraryFromSession() {
+    resetToRoleplayLibrary();
+    router.push(getModeHref("ROLEPLAY"), { scroll: false });
   }
 
   function markQuickTourComplete() {
@@ -1050,14 +1084,35 @@ export default function ChatContainer({
   }, [sessionMeta]);
 
   useEffect(() => {
+    const nextMode = getModeFromSearchParam(searchParams.get("mode"));
+    const philosopherParam = searchParams.get("philosopher");
+
+    if (
+      pathname === ROUTES.APP &&
+      nextMode === "ROLEPLAY" &&
+      !isRoleplayPhilosopherId(philosopherParam) &&
+      (activeSessionId || messages.length > 0 || isStreaming)
+    ) {
+      resetToRoleplayLibrary();
+      return;
+    }
+
     if (activeSessionId || messages.length > 0) {
       return;
     }
 
-    selectNewChatMode(getModeFromSearchParam(searchParams.get("mode")), false);
-  // selectNewChatMode intentionally stays outside deps to avoid URL sync loops.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSessionId, messages.length, searchParams]);
+    setModeSelection(nextMode);
+    setActiveSessionMeta({ mode: nextMode });
+
+    if (nextMode === "ROLEPLAY" && isRoleplayPhilosopherId(philosopherParam)) {
+      setRoleplayNavigationDirection(1);
+      setPendingRoleplayId(philosopherParam);
+      return;
+    }
+
+    setRoleplayNavigationDirection(-1);
+    setPendingRoleplayId(null);
+  }, [activeSessionId, isStreaming, messages.length, pathname, searchParams]);
 
   useEffect(() => {
     void refreshBillingState();
@@ -1818,6 +1873,22 @@ export default function ChatContainer({
       </div>
     </div>
   ) : null;
+  const roleplaySessionTopContent =
+    isRoleplaySession && roleplayIntro ? (
+      <>
+        <div className="mb-2 flex justify-start">
+          <button
+            type="button"
+            onClick={openRoleplayLibraryFromSession}
+            className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
+          >
+            <ArrowLeft size={13} />
+            Back
+          </button>
+        </div>
+        {roleplayIntro}
+      </>
+    ) : undefined;
 
   async function handleRegenerate() {
     if (!activeSessionId || isStreaming || isDebateCompleted) return;
@@ -2436,7 +2507,7 @@ export default function ChatContainer({
         editingMessageId={editingMessage?.id ?? null}
         editDraft={editDraft}
         disableRevisionActions={isDebateSession}
-        topContent={isRoleplaySession ? roleplayIntro : undefined}
+        topContent={roleplaySessionTopContent}
       />
 
       {!isDebateCompleted ? (
