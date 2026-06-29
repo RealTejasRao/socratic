@@ -47,6 +47,7 @@ const ROLEPLAY_LIBRARY_ORDER: RoleplayPhilosopherId[] = [
   "THOREAU",
   "EPICTETUS",
   "WILLIAM_JAMES",
+  "AL_GHAZALI",
 ];
 
 const roleplayLibraryRank = new Map(

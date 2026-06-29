@@ -6,6 +6,7 @@ export type RoleplayFlair =
   | "Economics"
   | "Empiricism"
   | "Existentialism"
+  | "Islamic Philosophy"
   | "Power"
   | "Platonism"
   | "Politics"
@@ -49,6 +50,7 @@ export const ROLEPLAY_FLAIRS: RoleplayFlair[] = [
   "Pragmatism",
   "Transcendentalism",
   "Economics",
+  "Islamic Philosophy",
 ];
 
 export const ROLEPLAY_FLAIR_THEMES: Record<
@@ -122,6 +124,10 @@ export const ROLEPLAY_FLAIR_THEMES: Record<
   Economics: {
     background: "#a9c5d7",
     border: "#34566d",
+  },
+  "Islamic Philosophy": {
+    background: "#b7d7bd",
+    border: "#38613f",
   },
   Power: {
     background: "#df9186",
@@ -589,6 +595,26 @@ export const ROLEPLAY_PHILOSOPHERS = [
     voicePreview:
       "Commerce rests not only on gain, but on habits of trust and judgment.",
     accent: "#7c9bb0",
+  },
+  {
+    id: "AL_GHAZALI",
+    name: "Al Ghazali",
+    shortName: "Ghazali",
+    imagePath: "/philosophers/al-ghazali.webp",
+    flairs: ["Islamic Philosophy"],
+    expertise: "Faith, reason, certainty, ethics, skepticism, spiritual discipline.",
+    shortDescription:
+      "A towering Islamic philosopher, theologian, and mystic who challenged the limits of reason and turned philosophy back toward lived spiritual certainty.",
+    bestFor: "Faith, doubt, intellectual pride, spiritual discipline, and moral self-examination.",
+    starterPrompts: [
+      "How should I handle doubt without losing faith?",
+      "Am I trusting reason beyond its proper limits?",
+      "Help me examine intellectual pride in myself.",
+      "What does spiritual discipline require from daily life?",
+    ],
+    voicePreview:
+      "Reason is a noble lamp, but it does not become the sun by forgetting its limit.",
+    accent: "#6f9f73",
   },
 ] as const satisfies readonly RoleplayCharacterProfile[];
 
