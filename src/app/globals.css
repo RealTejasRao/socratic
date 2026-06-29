@@ -2997,6 +2997,11 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
   color: #83796b;
 }
 
+.app-roleplay-detail-layer {
+  min-height: max(100%, calc(100svh - 8rem));
+  background: var(--app-light-chat-bg);
+}
+
 .app-roleplay-character-card {
   color: #171513;
 }
@@ -3299,6 +3304,10 @@ html.app-dark .app-roleplay-card-copy {
 html.app-dark .app-roleplay-card-action {
   background: var(--surface-hover) !important;
   color: var(--text-primary) !important;
+}
+
+html.app-dark .app-roleplay-detail-layer {
+  background: var(--bg-main) !important;
 }
 
 html.app-dark .app-roleplay-starter-prompt:hover {

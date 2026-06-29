@@ -242,6 +242,29 @@ const roleplayPanelVariants: Variants = {
     scale: 0.995,
   },
 };
+const roleplaySheetTransition = {
+  type: "spring",
+  stiffness: 420,
+  damping: 38,
+  mass: 0.82,
+} as const;
+const roleplaySheetVariants: Variants = {
+  initial: {
+    opacity: 0,
+    y: 22,
+    scale: 0.985,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+  },
+  exit: {
+    opacity: 0,
+    y: 14,
+    scale: 0.99,
+  },
+};
 
 let greetingSeedStore = 0;
 const greetingSeedListeners = new Set<() => void>();
@@ -884,6 +907,7 @@ export default function ChatContainer({
   const activeStreamControllerRef = useRef<AbortController | null>(null);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
+  const roleplayUrlUpdateTimeoutRef = useRef<number | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -993,7 +1017,24 @@ export default function ChatContainer({
     }
   }
 
+  function clearRoleplayUrlUpdateTimeout() {
+    if (roleplayUrlUpdateTimeoutRef.current === null) {
+      return;
+    }
+
+    window.clearTimeout(roleplayUrlUpdateTimeoutRef.current);
+    roleplayUrlUpdateTimeoutRef.current = null;
+  }
+
+  function scrollRoleplaySetupToTop() {
+    document.querySelector(".app-chat-main")?.scrollTo({
+      top: 0,
+      behavior: "auto",
+    });
+  }
+
   function selectNewChatMode(mode: SessionMode, updateUrl = true) {
+    clearRoleplayUrlUpdateTimeout();
     setModeSelection(mode);
     setActiveSessionMeta({ mode });
     setRoleplayNavigationDirection(-1);
@@ -1005,24 +1046,36 @@ export default function ChatContainer({
   }
 
   function openRoleplayPhilosopher(philosopherId: RoleplayPhilosopherId) {
+    clearRoleplayUrlUpdateTimeout();
+    scrollRoleplaySetupToTop();
     setRoleplayNavigationDirection(1);
     setPendingRoleplayId(philosopherId);
 
     if (!activeSessionId && messages.length === 0) {
-      router.push(getRoleplayPhilosopherHref(philosopherId), { scroll: false });
+      roleplayUrlUpdateTimeoutRef.current = window.setTimeout(() => {
+        roleplayUrlUpdateTimeoutRef.current = null;
+        router.push(getRoleplayPhilosopherHref(philosopherId), {
+          scroll: false,
+        });
+      }, 220);
     }
   }
 
   function returnToRoleplayLibrary() {
+    clearRoleplayUrlUpdateTimeout();
     setRoleplayNavigationDirection(-1);
     setPendingRoleplayId(null);
 
     if (!activeSessionId && messages.length === 0) {
-      router.replace(getModeHref("ROLEPLAY"), { scroll: false });
+      roleplayUrlUpdateTimeoutRef.current = window.setTimeout(() => {
+        roleplayUrlUpdateTimeoutRef.current = null;
+        router.replace(getModeHref("ROLEPLAY"), { scroll: false });
+      }, 180);
     }
   }
 
   function resetToRoleplayLibrary() {
+    clearRoleplayUrlUpdateTimeout();
     activeStreamControllerRef.current?.abort();
     activeStreamControllerRef.current = null;
     setMessages([]);
@@ -1109,10 +1162,20 @@ export default function ChatContainer({
 
     setRoleplayNavigationDirection(-1);
     setPendingRoleplayId(null);
+  // resetToRoleplayLibrary intentionally stays outside deps; this effect mirrors URL state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSessionId, isStreaming, messages.length, pathname, searchParams]);
 
   useEffect(() => {
     void refreshBillingState();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (roleplayUrlUpdateTimeoutRef.current !== null) {
+        window.clearTimeout(roleplayUrlUpdateTimeoutRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -2373,77 +2436,6 @@ export default function ChatContainer({
                 >
                   <DebateModeSetup canAccessDebate={billing.features.debateMode} />
                 </motion.div>
-              ) : pendingRoleplayPhilosopher ? (
-                <motion.div
-                  key={`roleplay-ready-${pendingRoleplayPhilosopher.id}`}
-                  custom={roleplayNavigationDirection}
-                  variants={roleplayPanelVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={roleplayContentTransition}
-                  className="w-full"
-                >
-                <div className="mx-auto max-w-160">
-                  <div className="mb-2 flex justify-start">
-                    <button
-                      type="button"
-                      onClick={returnToRoleplayLibrary}
-                      className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
-                    >
-                      <ArrowLeft size={13} />
-                      Back
-                    </button>
-                  </div>
-                  {roleplayIntro}
-
-                  <div className="mb-2.5">
-                    <p className="app-roleplay-prompts-label text-[12px] font-semibold">
-                      Suggested Messages:
-                    </p>
-                  </div>
-                  <div className="mb-4 grid gap-1.5">
-                    {pendingRoleplayPhilosopher.starterPrompts.map((prompt, index) => (
-                      <button
-                        key={prompt}
-                        type="button"
-                        onClick={() =>
-                          handleSend({
-                            content: prompt,
-                            attachments: [],
-                            webSearch: false,
-                          })
-                        }
-                        disabled={isStreaming}
-                        className="app-roleplay-starter-prompt flex cursor-pointer items-center gap-3 rounded-[12px] border px-3.5 py-2.5 text-left text-[12px] leading-5 transition disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <span className="app-roleplay-prompt-index shrink-0 text-[10px] font-semibold tabular-nums">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span>{prompt}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <MessageInput
-                    key={`roleplay-${pendingRoleplayPhilosopher.id}`}
-                    onSend={handleSend}
-                    onRestrictionReached={(reason) =>
-                      openUpgradePrompt({ reason })
-                    }
-                    onStop={handleStopStreaming}
-                    isStreaming={isStreaming}
-                    isPremium={billing.isPremium}
-                    dailyMessagesRemaining={billing.usage.dailyMessagesRemaining}
-                    dailyImageUploadsRemaining={
-                      billing.usage.dailyImageUploadsRemaining
-                    }
-                    initialValue={undefined}
-                    variant="default"
-                    placeholder={inputPlaceholder}
-                  />
-                </div>
-                </motion.div>
               ) : (
                 <motion.div
                   key="roleplay"
@@ -2453,9 +2445,109 @@ export default function ChatContainer({
                   animate="animate"
                   exit="exit"
                   transition={roleplayContentTransition}
-                  className="flex w-full justify-center"
+                  className="relative flex w-full justify-center"
                 >
-                  <RoleplayModeSetup onChatNow={openRoleplayPhilosopher} />
+                  <div
+                    className={cn(
+                      "w-full transition-opacity duration-150 ease-out",
+                      pendingRoleplayPhilosopher &&
+                        "pointer-events-none select-none opacity-100",
+                    )}
+                    aria-hidden={Boolean(pendingRoleplayPhilosopher)}
+                  >
+                    <RoleplayModeSetup onChatNow={openRoleplayPhilosopher} />
+                  </div>
+
+                  <AnimatePresence initial={false}>
+                    {pendingRoleplayPhilosopher ? (
+                      <motion.div
+                        key={`roleplay-ready-layer-${pendingRoleplayPhilosopher.id}`}
+                        className="app-roleplay-detail-layer absolute inset-0 z-20"
+                        initial={{ opacity: 1 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 1 }}
+                      >
+                        <motion.button
+                          type="button"
+                          className="absolute inset-0 cursor-default"
+                          onClick={returnToRoleplayLibrary}
+                          aria-label="Return to philosopher library"
+                        />
+                        <motion.div
+                          key={`roleplay-ready-${pendingRoleplayPhilosopher.id}`}
+                          variants={roleplaySheetVariants}
+                          initial="initial"
+                          animate="animate"
+                          exit="exit"
+                          transition={roleplaySheetTransition}
+                          style={{ willChange: "transform, opacity" }}
+                          className="absolute inset-x-0 top-0 z-10 mx-auto w-full max-w-160 transform-gpu px-0 pb-8"
+                        >
+                          <div className="mb-2 flex justify-start">
+                            <button
+                              type="button"
+                              onClick={returnToRoleplayLibrary}
+                              className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
+                            >
+                              <ArrowLeft size={13} />
+                              Back
+                            </button>
+                          </div>
+                          {roleplayIntro}
+
+                          <div className="mb-2.5">
+                            <p className="app-roleplay-prompts-label text-[12px] font-semibold">
+                              Suggested Messages:
+                            </p>
+                          </div>
+                          <div className="mb-4 grid gap-1.5">
+                            {pendingRoleplayPhilosopher.starterPrompts.map(
+                              (prompt, index) => (
+                                <button
+                                  key={prompt}
+                                  type="button"
+                                  onClick={() =>
+                                    handleSend({
+                                      content: prompt,
+                                      attachments: [],
+                                      webSearch: false,
+                                    })
+                                  }
+                                  disabled={isStreaming}
+                                  className="app-roleplay-starter-prompt flex cursor-pointer items-center gap-3 rounded-[12px] border px-3.5 py-2.5 text-left text-[12px] leading-5 transition disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  <span className="app-roleplay-prompt-index shrink-0 text-[10px] font-semibold tabular-nums">
+                                    {String(index + 1).padStart(2, "0")}
+                                  </span>
+                                  <span>{prompt}</span>
+                                </button>
+                              ),
+                            )}
+                          </div>
+
+                          <MessageInput
+                            key={`roleplay-${pendingRoleplayPhilosopher.id}`}
+                            onSend={handleSend}
+                            onRestrictionReached={(reason) =>
+                              openUpgradePrompt({ reason })
+                            }
+                            onStop={handleStopStreaming}
+                            isStreaming={isStreaming}
+                            isPremium={billing.isPremium}
+                            dailyMessagesRemaining={
+                              billing.usage.dailyMessagesRemaining
+                            }
+                            dailyImageUploadsRemaining={
+                              billing.usage.dailyImageUploadsRemaining
+                            }
+                            initialValue={undefined}
+                            variant="default"
+                            placeholder={inputPlaceholder}
+                          />
+                        </motion.div>
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
                 </motion.div>
               )}
           </AnimatePresence>
