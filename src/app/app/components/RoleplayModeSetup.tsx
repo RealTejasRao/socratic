@@ -9,7 +9,7 @@ import {
   useReducedMotion,
   type MotionStyle,
 } from "framer-motion";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import {
   ROLEPLAY_FLAIRS,
@@ -21,6 +21,7 @@ import {
 
 interface Props {
   onChatNow: (philosopherId: RoleplayPhilosopherId) => void;
+  startingPhilosopherId?: RoleplayPhilosopherId | null;
 }
 
 const ROLEPLAY_LIBRARY_ORDER: RoleplayPhilosopherId[] = [
@@ -73,7 +74,10 @@ function getFlairStyle(flair: RoleplayFlair | "All") {
   } as CSSProperties;
 }
 
-export default function RoleplayModeSetup({ onChatNow }: Props) {
+export default function RoleplayModeSetup({
+  onChatNow,
+  startingPhilosopherId = null,
+}: Props) {
   const [query, setQuery] = useState("");
   const [selectedFlair, setSelectedFlair] = useState<RoleplayFlair | "All">(
     "All",
@@ -302,10 +306,8 @@ export default function RoleplayModeSetup({ onChatNow }: Props) {
                 const imageFailed = failedImages.has(philosopher.id);
 
                 return (
-                  <motion.button
+                  <motion.article
                     key={philosopher.id}
-                    type="button"
-                    onClick={() => onChatNow(philosopher.id)}
                     initial={
                       prefersReducedMotion
                         ? false
@@ -318,7 +320,7 @@ export default function RoleplayModeSetup({ onChatNow }: Props) {
                       delay: prefersReducedMotion ? 0 : Math.min(index, 10) * 0.025,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="app-roleplay-character-card group relative flex min-h-0 cursor-pointer flex-col overflow-hidden rounded-[16px] border text-left transition"
+                    className="app-roleplay-character-card group relative flex min-h-0 cursor-default flex-col overflow-hidden rounded-[16px] border text-left transition"
                     style={
                       {
                         "--roleplay-accent": philosopher.accent,
@@ -372,8 +374,24 @@ export default function RoleplayModeSetup({ onChatNow }: Props) {
                       <p className="app-roleplay-card-copy mt-3 line-clamp-3 text-[13px] leading-5.5">
                         {philosopher.shortDescription}
                       </p>
+
+                      <button
+                        type="button"
+                        onClick={() => onChatNow(philosopher.id)}
+                        disabled={Boolean(startingPhilosopherId)}
+                        className="app-roleplay-start-now mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-[12px] px-3.5 py-2 text-[13px] font-semibold transition disabled:cursor-not-allowed"
+                      >
+                        {startingPhilosopherId === philosopher.id ? (
+                          <Loader2 size={15} className="animate-spin" />
+                        ) : null}
+                        <span>
+                          {startingPhilosopherId === philosopher.id
+                            ? "Opening..."
+                            : "Start now"}
+                        </span>
+                      </button>
                     </div>
-                  </motion.button>
+                  </motion.article>
                 );
               })}
             </motion.div>

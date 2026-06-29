@@ -886,6 +886,8 @@ export default function ChatContainer({
     useState<ChatSessionMeta>(sessionMeta);
   const [pendingRoleplayId, setPendingRoleplayId] =
     useState<RoleplayPhilosopherId | null>(null);
+  const [startingRoleplayId, setStartingRoleplayId] =
+    useState<RoleplayPhilosopherId | null>(null);
   const [roleplayNavigationDirection, setRoleplayNavigationDirection] =
     useState(1);
   const [showWinnerReveal, setShowWinnerReveal] = useState(false);
@@ -907,7 +909,7 @@ export default function ChatContainer({
   const activeStreamControllerRef = useRef<AbortController | null>(null);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
-  const roleplayUrlUpdateTimeoutRef = useRef<number | null>(null);
+  const roleplayStartTimeoutRef = useRef<number | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -1017,13 +1019,13 @@ export default function ChatContainer({
     }
   }
 
-  function clearRoleplayUrlUpdateTimeout() {
-    if (roleplayUrlUpdateTimeoutRef.current === null) {
+  function clearRoleplayStartTimeout() {
+    if (roleplayStartTimeoutRef.current === null) {
       return;
     }
 
-    window.clearTimeout(roleplayUrlUpdateTimeoutRef.current);
-    roleplayUrlUpdateTimeoutRef.current = null;
+    window.clearTimeout(roleplayStartTimeoutRef.current);
+    roleplayStartTimeoutRef.current = null;
   }
 
   function scrollRoleplaySetupToTop() {
@@ -1034,10 +1036,11 @@ export default function ChatContainer({
   }
 
   function selectNewChatMode(mode: SessionMode, updateUrl = true) {
-    clearRoleplayUrlUpdateTimeout();
+    clearRoleplayStartTimeout();
     setModeSelection(mode);
     setActiveSessionMeta({ mode });
     setRoleplayNavigationDirection(-1);
+    setStartingRoleplayId(null);
     setPendingRoleplayId(null);
 
     if (updateUrl) {
@@ -1046,36 +1049,39 @@ export default function ChatContainer({
   }
 
   function openRoleplayPhilosopher(philosopherId: RoleplayPhilosopherId) {
-    clearRoleplayUrlUpdateTimeout();
+    clearRoleplayStartTimeout();
     scrollRoleplaySetupToTop();
     setRoleplayNavigationDirection(1);
-    setPendingRoleplayId(philosopherId);
+    setStartingRoleplayId(philosopherId);
 
     if (!activeSessionId && messages.length === 0) {
-      roleplayUrlUpdateTimeoutRef.current = window.setTimeout(() => {
-        roleplayUrlUpdateTimeoutRef.current = null;
-        router.push(getRoleplayPhilosopherHref(philosopherId), {
-          scroll: false,
-        });
-      }, 220);
+      window.history.pushState(
+        null,
+        "",
+        getRoleplayPhilosopherHref(philosopherId),
+      );
     }
+
+    roleplayStartTimeoutRef.current = window.setTimeout(() => {
+      roleplayStartTimeoutRef.current = null;
+      setPendingRoleplayId(philosopherId);
+      setStartingRoleplayId(null);
+    }, 120);
   }
 
   function returnToRoleplayLibrary() {
-    clearRoleplayUrlUpdateTimeout();
+    clearRoleplayStartTimeout();
     setRoleplayNavigationDirection(-1);
+    setStartingRoleplayId(null);
     setPendingRoleplayId(null);
 
     if (!activeSessionId && messages.length === 0) {
-      roleplayUrlUpdateTimeoutRef.current = window.setTimeout(() => {
-        roleplayUrlUpdateTimeoutRef.current = null;
-        router.replace(getModeHref("ROLEPLAY"), { scroll: false });
-      }, 180);
+      window.history.replaceState(null, "", getModeHref("ROLEPLAY"));
     }
   }
 
   function resetToRoleplayLibrary() {
-    clearRoleplayUrlUpdateTimeout();
+    clearRoleplayStartTimeout();
     activeStreamControllerRef.current?.abort();
     activeStreamControllerRef.current = null;
     setMessages([]);
@@ -1085,6 +1091,7 @@ export default function ChatContainer({
     setModeSelection("ROLEPLAY");
     setActiveSessionMeta({ mode: "ROLEPLAY" });
     setRoleplayNavigationDirection(-1);
+    setStartingRoleplayId(null);
     setPendingRoleplayId(null);
     setShowWinnerReveal(false);
     finalizeRequestedRef.current = false;
@@ -1156,11 +1163,13 @@ export default function ChatContainer({
 
     if (nextMode === "ROLEPLAY" && isRoleplayPhilosopherId(philosopherParam)) {
       setRoleplayNavigationDirection(1);
+      setStartingRoleplayId(null);
       setPendingRoleplayId(philosopherParam);
       return;
     }
 
     setRoleplayNavigationDirection(-1);
+    setStartingRoleplayId(null);
     setPendingRoleplayId(null);
   // resetToRoleplayLibrary intentionally stays outside deps; this effect mirrors URL state.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1172,8 +1181,8 @@ export default function ChatContainer({
 
   useEffect(() => {
     return () => {
-      if (roleplayUrlUpdateTimeoutRef.current !== null) {
-        window.clearTimeout(roleplayUrlUpdateTimeoutRef.current);
+      if (roleplayStartTimeoutRef.current !== null) {
+        window.clearTimeout(roleplayStartTimeoutRef.current);
       }
     };
   }, []);
@@ -2455,7 +2464,10 @@ export default function ChatContainer({
                     )}
                     aria-hidden={Boolean(pendingRoleplayPhilosopher)}
                   >
-                    <RoleplayModeSetup onChatNow={openRoleplayPhilosopher} />
+                    <RoleplayModeSetup
+                      onChatNow={openRoleplayPhilosopher}
+                      startingPhilosopherId={startingRoleplayId}
+                    />
                   </div>
 
                   <AnimatePresence initial={false}>
