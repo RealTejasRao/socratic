@@ -304,6 +304,8 @@ export default function RoleplayModeSetup({
             >
               {filteredPhilosophers.map((philosopher, index) => {
                 const imageFailed = failedImages.has(philosopher.id);
+                const primaryFlairTheme =
+                  ROLEPLAY_FLAIR_THEMES[philosopher.flairs[0]];
 
                 return (
                   <motion.article
@@ -324,6 +326,7 @@ export default function RoleplayModeSetup({
                     style={
                       {
                         "--roleplay-accent": philosopher.accent,
+                        "--roleplay-primary-flair": primaryFlairTheme.background,
                       } as CSSProperties as MotionStyle
                     }
                   >

@@ -3109,7 +3109,8 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
 }
 
 .app-roleplay-start-now:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--roleplay-accent) 18%, #171513);
+  background: var(--roleplay-primary-flair, var(--roleplay-accent));
+  color: #171513;
   transform: translateY(-1px);
 }
 
@@ -3337,7 +3338,8 @@ html.app-dark .app-roleplay-start-now {
 }
 
 html.app-dark .app-roleplay-start-now:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--roleplay-accent, #d9b66f) 16%, #e8ece8) !important;
+  background: var(--roleplay-primary-flair, var(--roleplay-accent, #d9b66f)) !important;
+  color: #111514 !important;
 }
 
 html.app-dark .app-roleplay-starter-prompt:hover {
