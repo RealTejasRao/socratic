@@ -723,7 +723,7 @@ export default function MessageList({
               {!isEditingThisMessage && (
                 <div
                   className={cn(
-                    "mt-1 flex items-center gap-1 opacity-0 transition group-hover:opacity-100",
+                    "mt-1 flex items-center gap-1",
                     isUser ? "justify-end pr-0.5" : "justify-start pl-2",
                   )}
                 >

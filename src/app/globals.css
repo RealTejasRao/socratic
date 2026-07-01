@@ -2998,7 +2998,6 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
 }
 
 .app-roleplay-detail-layer {
-  min-height: max(100%, calc(100svh - 8rem));
   background: var(--app-light-chat-bg);
 }
 

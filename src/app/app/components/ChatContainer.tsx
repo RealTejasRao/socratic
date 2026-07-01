@@ -2460,7 +2460,7 @@ export default function ChatContainer({
                     className={cn(
                       "w-full transition-opacity duration-150 ease-out",
                       pendingRoleplayPhilosopher &&
-                        "pointer-events-none select-none opacity-100",
+                        "hidden pointer-events-none select-none",
                     )}
                     aria-hidden={Boolean(pendingRoleplayPhilosopher)}
                   >
@@ -2474,7 +2474,7 @@ export default function ChatContainer({
                     {pendingRoleplayPhilosopher ? (
                       <motion.div
                         key={`roleplay-ready-layer-${pendingRoleplayPhilosopher.id}`}
-                        className="app-roleplay-detail-layer absolute inset-0 z-20"
+                        className="app-roleplay-detail-layer relative z-20 w-full"
                         initial={{ opacity: 1 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 1 }}
@@ -2493,7 +2493,7 @@ export default function ChatContainer({
                           exit="exit"
                           transition={roleplaySheetTransition}
                           style={{ willChange: "transform, opacity" }}
-                          className="absolute inset-x-0 top-0 z-10 mx-auto w-full max-w-160 transform-gpu px-0 pb-8"
+                          className="relative z-10 mx-auto w-full max-w-160 transform-gpu px-0 pb-8"
                         >
                           <div className="mb-2 flex justify-start">
                             <button
