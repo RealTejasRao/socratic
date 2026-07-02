@@ -2905,6 +2905,8 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
   caret-color: auto;
   color: #171513;
   user-select: text;
+  min-width: 0;
+  text-overflow: ellipsis;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.8),
     0 10px 24px rgba(15, 23, 42, 0.05);
@@ -2958,16 +2960,48 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
 
 .app-roleplay-flair-token {
   position: relative;
+  overflow: hidden;
+  z-index: 0;
   background: var(--roleplay-flair-bg);
   border-color: var(--roleplay-flair-border);
   color: var(--roleplay-flair-border);
   font-weight: 700;
-  box-shadow: none !important;
-  text-shadow: none;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -1px 0 rgba(25, 20, 12, 0.1),
+    0 7px 16px color-mix(in srgb, var(--roleplay-flair-border) 18%, transparent) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.app-roleplay-flair-token::before,
+.app-roleplay-flair-token::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.app-roleplay-flair-token::before {
+  inset: 1px 2px auto;
+  height: 48%;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.16) 56%, transparent);
+  opacity: 0.72;
+}
+
+.app-roleplay-flair-token::after {
+  inset: -42% auto auto -18%;
+  width: 54%;
+  height: 184%;
+  background: linear-gradient(105deg, transparent 16%, rgba(255, 255, 255, 0.52) 48%, transparent 74%);
+  opacity: 0.34;
+  transform: rotate(15deg);
 }
 
 .app-roleplay-flair-token[data-flair="All"] {
   color: #f4f0e8;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
 }
 
 .app-roleplay-flair-filter {
@@ -2984,11 +3018,31 @@ html.app-dark .app-roleplay-thread-intro .border-slate-200 {
   opacity: 1;
   border-color: #111111 !important;
   outline: none;
-  box-shadow: inset 0 0 0 1px #111111 !important;
+  box-shadow:
+    inset 0 0 0 1px #111111,
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    0 9px 18px color-mix(in srgb, var(--roleplay-flair-border) 22%, transparent) !important;
 }
 
 .app-roleplay-flair-filter:hover {
   opacity: 1;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 430px) {
+  .app-roleplay-search-input {
+    padding-left: 2.35rem !important;
+    padding-right: 1rem !important;
+    font-size: 12px !important;
+  }
+
+  .app-roleplay-search-input:not(:placeholder-shown) {
+    padding-right: 2.35rem !important;
+  }
+
+  .app-roleplay-search-input::placeholder {
+    font-size: 12px;
+  }
 }
 
 .app-roleplay-results-meta,

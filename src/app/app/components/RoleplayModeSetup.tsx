@@ -205,7 +205,7 @@ export default function RoleplayModeSetup({
               showFilteringState();
               setQuery(event.target.value);
             }}
-            placeholder="Search philosopher name, school or category..."
+            placeholder="Search philosophers..."
             className="app-roleplay-search-input w-full rounded-[14px] border px-11 py-3 text-[14px] outline-none transition"
           />
           {query ? (
