@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { CSSProperties } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AnimatePresence,
@@ -55,6 +55,8 @@ const roleplayLibraryRank = new Map(
   ROLEPLAY_LIBRARY_ORDER.map((id, index) => [id, index]),
 );
 
+const DESKTOP_CARD_CLICK_QUERY = "(hover: hover) and (pointer: fine)";
+
 function getInitials(name: string) {
   return name
     .split(/\s+/)
@@ -87,6 +89,26 @@ export default function RoleplayModeSetup({
   const flairRailRef = useRef<HTMLDivElement>(null);
   const filteringTimeoutRef = useRef<number | null>(null);
   const prefersReducedMotion = useReducedMotion();
+
+  const canUseDesktopCardClick = () =>
+    typeof window !== "undefined" &&
+    window.matchMedia(DESKTOP_CARD_CLICK_QUERY).matches;
+
+  const handlePhilosopherCardClick = (
+    philosopherId: RoleplayPhilosopherId,
+  ) => {
+    if (startingPhilosopherId || !canUseDesktopCardClick()) return;
+
+    onChatNow(philosopherId);
+  };
+
+  const handleStartButtonClick = (
+    event: MouseEvent<HTMLButtonElement>,
+    philosopherId: RoleplayPhilosopherId,
+  ) => {
+    event.stopPropagation();
+    onChatNow(philosopherId);
+  };
 
   useEffect(() => {
     return () => {
@@ -323,6 +345,7 @@ export default function RoleplayModeSetup({
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     className="app-roleplay-character-card group relative flex min-h-0 cursor-default flex-col overflow-hidden rounded-[16px] border text-left transition"
+                    onClick={() => handlePhilosopherCardClick(philosopher.id)}
                     style={
                       {
                         "--roleplay-accent": philosopher.accent,
@@ -380,7 +403,9 @@ export default function RoleplayModeSetup({
 
                       <button
                         type="button"
-                        onClick={() => onChatNow(philosopher.id)}
+                        onClick={(event) =>
+                          handleStartButtonClick(event, philosopher.id)
+                        }
                         disabled={Boolean(startingPhilosopherId)}
                         className="app-roleplay-start-now mt-4 inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-[12px] px-3.5 py-2 text-[13px] font-semibold transition disabled:cursor-not-allowed"
                       >
