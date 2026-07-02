@@ -93,7 +93,7 @@ export function AuthAwareCtaLink({
     <>
       <SignedIn>
         <Link
-          href={ROUTES.APP}
+          href={ROUTES.APP_ROLEPLAY}
           className={resolvedClassName}
           onClick={handleClick}
           aria-busy={showPendingStateOnNavigate ? isNavigating : undefined}

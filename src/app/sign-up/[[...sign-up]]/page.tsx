@@ -19,10 +19,10 @@ export default async function SignUpPage() {
   const { userId } = await auth();
 
   if (userId) {
-    redirect(ROUTES.APP);
+    redirect(ROUTES.APP_ROLEPLAY);
   }
 
-  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP}`;
+  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP_ROLEPLAY}`;
   const signInUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_IN}`;
 
   const clerkGlassAppearance = {

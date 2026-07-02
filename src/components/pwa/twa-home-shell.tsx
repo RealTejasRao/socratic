@@ -28,7 +28,7 @@ export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
 
   useEffect(() => {
     if (isStandalone && isSignedIn) {
-      router.replace(ROUTES.APP);
+      router.replace(ROUTES.APP_ROLEPLAY);
     }
   }, [isSignedIn, isStandalone, router]);
 

@@ -89,7 +89,7 @@ export default async function HomePage() {
                 </h1>
                 <div className="hero-load-up hero-load-up-hero-cta mt-8 w-full px-1 sm:mt-7 sm:px-4">
                   <AuthAwareCtaLink
-                    signedOutHref={ROUTES.APP}
+                    signedOutHref={ROUTES.APP_ROLEPLAY}
                     showPendingStateOnNavigate
                     pendingIndicator="roseCurve"
                     className={`${interClassName} group inline-flex min-h-12 min-w-62 items-center justify-center gap-2 rounded-full outline outline-[#a01717] bg-transparent px-6 py-2 text-[0.82rem] font-semibold tracking-[0.06em] text-[#a01717] transition-all duration-250 hover:bg-[#a01717] hover:text-white sm:min-h-10.5 sm:min-w-57 sm:text-[0.79rem]`}

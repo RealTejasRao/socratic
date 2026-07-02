@@ -153,7 +153,7 @@ export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
     }
 
     if (planId === BILLINGSDK_PLAN_IDS.FREE) {
-      window.location.href = ROUTES.APP;
+      window.location.href = ROUTES.APP_ROLEPLAY;
       return;
     }
 

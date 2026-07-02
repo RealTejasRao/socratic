@@ -750,7 +750,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           className={`mb-2 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}
         >
           <Link
-            href={ROUTES.APP}
+            href={ROUTES.APP_ROLEPLAY}
             className={
               collapsed
                 ? "flex items-center justify-center"
@@ -805,7 +805,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           <>
             <div className="mt-1 flex flex-col items-center gap-0.5">
               <Link
-                href={ROUTES.APP}
+                href={ROUTES.APP_ROLEPLAY}
                 onClick={handleNewChatClick}
                 className={`app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
                 aria-label="New chat"
@@ -883,7 +883,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
               <div className="mb-1 mt-1">
                 <Link
-                  href={ROUTES.APP}
+                  href={ROUTES.APP_ROLEPLAY}
                   onClick={handleNewChatClick}
                   className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
                 >
@@ -992,7 +992,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       >
         <div className="mb-2.5 flex items-center justify-between">
           <Link
-            href={ROUTES.APP}
+            href={ROUTES.APP_ROLEPLAY}
             className="flex items-center gap-2 px-0.5"
             onClick={() => setIsMobileSidebarOpen(false)}
           >
@@ -1034,7 +1034,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
           <div className="mb-1.5">
             <Link
-              href={ROUTES.APP}
+              href={ROUTES.APP_ROLEPLAY}
               onClick={(event) => {
                 handleNewChatClick(event);
                 setIsMobileSidebarOpen(false);

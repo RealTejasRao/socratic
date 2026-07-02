@@ -34,7 +34,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
       ]
     : isPremium
       ? [
-          { label: "Go to App", href: ROUTES.APP, className: "text-white/76 hover:text-white" },
+          { label: "Go to App", href: ROUTES.APP_ROLEPLAY, className: "text-white/76 hover:text-white" },
           {
             label: "Socratic +",
             href: ROUTES.APP_BILLING,
@@ -47,7 +47,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
           },
         ]
       : [
-          { label: "Go to App", href: ROUTES.APP, className: "text-white/76 hover:text-white" },
+          { label: "Go to App", href: ROUTES.APP_ROLEPLAY, className: "text-white/76 hover:text-white" },
           {
             label: "Get Socratic +",
             href: ROUTES.PRICING,

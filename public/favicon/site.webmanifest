@@ -28,7 +28,7 @@
     }
   ],
   "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "background_color": "#fefefc",
   "display": "standalone",
-  "start_url": "/"
+  "start_url": "/app?mode=roleplay"
 }

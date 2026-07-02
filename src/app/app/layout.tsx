@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ensureUserForClerkId } from "src/server/auth/ensure-user";
 import { ROUTES } from "src/lib/routes";
+import { PLAN_LIMITS } from "src/lib/billing";
 import { serializeSessionMeta } from "src/server/chat/session-meta";
 import { absoluteUrl } from "src/lib/seo";
 import {
@@ -46,42 +47,44 @@ export default async function AppLayout({ children }: Props) {
   }
 
   const dbUser = await ensureUserForClerkId(clerkUserId);
-  const billing = await getUserBillingStateByUserId(dbUser.id);
+  const [billing, allVisibleSessions] = await Promise.all([
+    getUserBillingStateByUserId(dbUser.id),
+    prisma.chatSession.findMany({
+      where: { userId: dbUser.id },
+      orderBy: { lastActivityAt: "desc" },
+      take: PLAN_LIMITS.PREMIUM_VISIBLE_SESSIONS,
+      select: {
+        id: true,
+        title: true,
+        mode: true,
+        status: true,
+        debateTone: true,
+        debateDurationPreset: true,
+        debateHasTimer: true,
+        debateTopic: true,
+        debateTopicSource: true,
+        userDebateSide: true,
+        aiDebateSide: true,
+        debateStatus: true,
+        debateStartedAt: true,
+        debateEndedAt: true,
+        debateWinner: true,
+        roleplayMeta: true,
+        lastActivityAt: true,
+        messages: {
+          orderBy: { createdAt: "asc" },
+          take: 1,
+          select: {
+            content: true,
+          },
+        },
+      },
+    }),
+  ]);
   const visibleSessionsLimit = getVisibleSessionsLimit({
     isPremium: billing?.isPremium ?? false,
   });
-  
-  const sessions = await prisma.chatSession.findMany({
-    where: { userId: dbUser.id },
-    orderBy: { lastActivityAt: "desc" },
-    take: visibleSessionsLimit,
-    select: {
-      id: true,
-      title: true,
-      mode: true,
-      status: true,
-      debateTone: true,
-      debateDurationPreset: true,
-      debateHasTimer: true,
-      debateTopic: true,
-      debateTopicSource: true,
-      userDebateSide: true,
-      aiDebateSide: true,
-      debateStatus: true,
-      debateStartedAt: true,
-      debateEndedAt: true,
-      debateWinner: true,
-      roleplayMeta: true,
-      lastActivityAt: true,
-      messages: {
-        orderBy: { createdAt: "asc" },
-        take: 1,
-        select: {
-          content: true,
-        },
-      },
-    },
-  });
+  const sessions = allVisibleSessions.slice(0, visibleSessionsLimit);
 
   const sidebarSessions = sessions.map(
     (session: (typeof sessions)[number]) => ({

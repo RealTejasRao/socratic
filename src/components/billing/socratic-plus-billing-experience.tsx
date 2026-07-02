@@ -261,7 +261,7 @@ export function SocraticPlusBillingExperience({
 
             <motion.div variants={itemVariants}>
               <Link
-                href={ROUTES.APP}
+                href={ROUTES.APP_ROLEPLAY}
                 className="group flex w-full items-center gap-4 px-5 py-4 transition-colors hover:bg-[#faf9f7] sm:px-6"
               >
                 <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[#e7e3dc] bg-[#f6f4f0] text-[#4f4a43]">

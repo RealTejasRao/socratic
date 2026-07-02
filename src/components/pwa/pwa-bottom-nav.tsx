@@ -57,7 +57,7 @@ export function PwaBottomNav() {
       icon: <House size={18} />,
     },
     {
-      href: ROUTES.APP,
+      href: ROUTES.APP_ROLEPLAY,
       label: "Chat",
       isActive: matchPath(pathname, ROUTES.APP),
       icon: <MessageCircle size={18} />,

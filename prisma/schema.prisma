@@ -97,6 +97,7 @@ model ChatSession {
   retrievalTraces RetrievalTrace[]
 
   @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, lastActivityAt(sort: Desc)])
   @@index([expiresAt])
   @@index([debateStatus, debateStartedAt(sort: Desc)])
   @@index([mode, createdAt(sort: Desc)])

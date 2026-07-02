@@ -19,13 +19,13 @@ export default async function SignInPage() {
   const { userId } = await auth();
 
   if (userId) {
-    redirect(ROUTES.APP);
+    redirect(ROUTES.APP_ROLEPLAY);
   }
 
   const nietzscheImageScale = 0.8; // 1 = 100% of right panel width
   const nietzscheImageMaxWidthPx = 1960;
   const nietzscheImageOffsetXPx = -80;
-  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP}`;
+  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP_ROLEPLAY}`;
   const signUpUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_UP}`;
 
   const clerkGlassAppearance = {
