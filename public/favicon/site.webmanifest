@@ -27,8 +27,52 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#fefefc",
   "background_color": "#fefefc",
   "display": "standalone",
-  "start_url": "/app?mode=roleplay"
+  "start_url": "/app?mode=roleplay",
+  "shortcuts": [
+    {
+      "name": "Roleplay Mode",
+      "short_name": "Roleplay",
+      "description": "Open Socratic AI in Roleplay mode.",
+      "url": "/app?mode=roleplay",
+      "icons": [
+        {
+          "src": "/favicon/shortcut-roleplay.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Socratic Mode",
+      "short_name": "Socratic",
+      "description": "Open Socratic AI in Socratic mode.",
+      "url": "/app?mode=socratic",
+      "icons": [
+        {
+          "src": "/favicon/shortcut-socratic.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Debate Mode",
+      "short_name": "Debate",
+      "description": "Open Socratic AI in Debate mode.",
+      "url": "/app?mode=debate",
+      "icons": [
+        {
+          "src": "/favicon/shortcut-debate.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml",
+          "purpose": "any"
+        }
+      ]
+    }
+  ]
 }
