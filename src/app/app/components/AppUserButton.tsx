@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
+import { ROUTES } from "@/src/lib/routes";
 import { cn } from "@/src/lib/utils";
 
 interface Props {
@@ -66,6 +67,7 @@ export default function AppUserButton({ size = "md" }: Props) {
 
   return (
     <UserButton
+      afterSignOutUrl={ROUTES.HOME}
       appearance={{
         elements: {
           userButtonTrigger: triggerClassName,

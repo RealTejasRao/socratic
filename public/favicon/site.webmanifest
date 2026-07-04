@@ -30,7 +30,7 @@
   "theme_color": "#fefefc",
   "background_color": "#fefefc",
   "display": "standalone",
-  "start_url": "/app?mode=roleplay",
+  "start_url": "/app?mode=roleplay&twa=1",
   "shortcuts": [
     {
       "name": "Roleplay Mode",

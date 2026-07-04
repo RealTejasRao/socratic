@@ -7,6 +7,7 @@ const PUBLIC_FILE_REGEX =
 const APP_ROUTE_PREFIX = "/app";
 const NON_CANONICAL_HOST = "usesocratic.com";
 const CANONICAL_HOST = "www.usesocratic.com";
+const TWA_LAUNCH_SEARCH_PARAM = "twa";
 const AUTH_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/sso-callback"];
 const OAUTH_CALLBACK_SEARCH_PARAMS = [
   "__clerk_status",
@@ -112,6 +113,13 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   if (userId) {
     return NextResponse.next();
+  }
+
+  if (req.nextUrl.searchParams.get(TWA_LAUNCH_SEARCH_PARAM) === "1") {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = "/";
+    redirectUrl.search = "";
+    return NextResponse.redirect(redirectUrl);
   }
 
   const redirectUrl = req.nextUrl.clone();
