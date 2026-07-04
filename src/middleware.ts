@@ -5,6 +5,7 @@ import type { NextRequest } from "next/server";
 const PUBLIC_FILE_REGEX =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|json|map|png|svg|txt|webm|webp|woff|woff2|xml)$/i;
 const APP_ROUTE_PREFIX = "/app";
+const ANDROID_TWA_REFERRER_PREFIX = "android-app://";
 const NON_CANONICAL_HOST = "usesocratic.com";
 const CANONICAL_HOST = "www.usesocratic.com";
 const TWA_LAUNCH_SEARCH_PARAM = "twa";
@@ -37,6 +38,15 @@ function isAuthRoute(pathname: string): boolean {
 function hasOAuthCallbackSearchParams(req: NextRequest): boolean {
   return OAUTH_CALLBACK_SEARCH_PARAMS.some((searchParam) =>
     req.nextUrl.searchParams.has(searchParam),
+  );
+}
+
+function isTwaLaunchRequest(req: NextRequest): boolean {
+  const referrer = req.headers.get("referer") ?? "";
+
+  return (
+    req.nextUrl.searchParams.get(TWA_LAUNCH_SEARCH_PARAM) === "1" ||
+    referrer.startsWith(ANDROID_TWA_REFERRER_PREFIX)
   );
 }
 
@@ -115,7 +125,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
 
-  if (req.nextUrl.searchParams.get(TWA_LAUNCH_SEARCH_PARAM) === "1") {
+  if (isTwaLaunchRequest(req)) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = "/";
     redirectUrl.search = "";
