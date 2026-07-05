@@ -172,6 +172,7 @@ html.pwa-standalone .pwa-bottom-nav {
 html.pwa-standalone,
 html.pwa-standalone body {
   overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
 }
 
 html.pwa-standalone .pwa-browser-only {
@@ -281,6 +282,7 @@ html.pwa-standalone .app-greeting-heading {
   html,
   body {
     overscroll-behavior-y: none;
+    touch-action: pan-x pan-y;
   }
 
   .pwa-bottom-nav {
