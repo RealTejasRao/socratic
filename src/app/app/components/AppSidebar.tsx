@@ -11,7 +11,6 @@ import {
   CircleCheck,
   Crown,
   ChevronDown,
-  Globe,
   GraduationCap,
   House,
   Instagram,
@@ -74,6 +73,7 @@ const SHOW_HOVER_PREVIEWS_KEY = "socratic:sidebar:showHoverPreviews";
 const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
+const CONTACT_EMAIL_HREF = "mailto:contact@usesocratic.com";
 const HOME_CONTACT_HREF = "/#contact" as const;
 const SOCRATIC_MODE_HREF = `${ROUTES.APP}?mode=socratic` as const;
 const DEBATE_MODE_HREF = `${ROUTES.APP}?mode=debate` as const;
@@ -599,26 +599,6 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     setIsHomeNavigating(true);
   }
 
-  const visitWebsiteLink = (
-    iconSize: number,
-    className: string,
-    label?: string,
-    onClick?: () => void,
-  ) => (
-    <Link
-      href={ROUTES.HOME}
-      target="_blank"
-      rel="noreferrer noopener"
-      onClick={onClick ?? (() => undefined)}
-      className={className}
-      aria-label="Visit Website"
-      data-tooltip={label ? undefined : "Visit Website"}
-    >
-      <Globe size={iconSize} />
-      {label ? <span>{label}</span> : null}
-    </Link>
-  );
-
   const contactLink = (
     iconSize: number,
     className: string,
@@ -626,9 +606,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     label = false,
   ) => (
     <Link
-      href={HOME_CONTACT_HREF}
-      target="_blank"
-      rel="noreferrer noopener"
+      href={isStandalone ? CONTACT_EMAIL_HREF : HOME_CONTACT_HREF}
+      target={isStandalone ? undefined : "_blank"}
+      rel={isStandalone ? undefined : "noreferrer noopener"}
       onClick={onClick ?? (() => undefined)}
       className={className}
       aria-label="Contact us"
@@ -833,12 +813,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             </div>
 
             <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
-              {isStandalone ? (
-                visitWebsiteLink(
-                  17,
-                  "app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition",
-                )
-              ) : (
+              {!isStandalone ? (
                 <Link
                   href={ROUTES.HOME}
                   onClick={handleHomeClick}
@@ -851,7 +826,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                     <House size={17} />
                   )}
                 </Link>
-              )}
+              ) : null}
               <Link
                 href={billingCtaHref}
                 target="_blank"
@@ -916,13 +891,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             </div>
 
             <div className="mt-3 shrink-0 space-y-0.5 border-t border-slate-200 pt-2">
-              {isStandalone ? (
-                visitWebsiteLink(
-                  16,
-                  "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]",
-                  "Visit Website",
-                )
-              ) : (
+              {!isStandalone ? (
                 <Link
                   href={ROUTES.HOME}
                   onClick={handleHomeClick}
@@ -935,7 +904,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   )}{" "}
                   Home
                 </Link>
-              )}
+              ) : null}
               <Link
                 href={billingCtaHref}
                 target="_blank"
@@ -1072,14 +1041,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         </div>
 
         <div className="mt-3 shrink-0 space-y-1 border-t border-slate-200 pt-2.5">
-          {isStandalone ? (
-            visitWebsiteLink(
-              18,
-              "app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]",
-              "Visit Website",
-              () => setIsMobileSidebarOpen(false),
-            )
-          ) : (
+          {!isStandalone ? (
             <Link
               href={ROUTES.HOME}
               onClick={(event) => {
@@ -1095,7 +1057,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               )}{" "}
               Home
             </Link>
-          )}
+          ) : null}
           <Link
             href={billingCtaHref}
             target="_blank"
