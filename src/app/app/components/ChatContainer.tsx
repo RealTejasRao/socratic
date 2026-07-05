@@ -408,6 +408,7 @@ function AppQuickTour({
     width: number;
     height: number;
   } | null>(null);
+  const measureFrameRef = useRef<number | null>(null);
   const step =
     APP_QUICK_TOUR_STEPS[activeStep] ?? APP_QUICK_TOUR_STEPS[0]!;
   const isLastStep = activeStep === APP_QUICK_TOUR_STEPS.length - 1;
@@ -482,26 +483,30 @@ function AppQuickTour({
       });
     }
 
-    measureAnchor();
+    function scheduleMeasureAnchor() {
+      if (measureFrameRef.current !== null) {
+        return;
+      }
 
-    const frameIds: number[] = [];
-    frameIds.push(window.requestAnimationFrame(measureAnchor));
-    frameIds.push(
-      window.requestAnimationFrame(() => {
-        frameIds.push(window.requestAnimationFrame(measureAnchor));
-      }),
-    );
-    const timeoutIds = [120, 220, 320].map((delay) =>
-      window.setTimeout(measureAnchor, delay),
-    );
-    window.addEventListener("resize", measureAnchor);
-    window.addEventListener("scroll", measureAnchor, true);
+      measureFrameRef.current = window.requestAnimationFrame(() => {
+        measureFrameRef.current = null;
+        measureAnchor();
+      });
+    }
+
+    scheduleMeasureAnchor();
+    const settleTimeoutId = window.setTimeout(scheduleMeasureAnchor, 140);
+    window.addEventListener("resize", scheduleMeasureAnchor);
+    window.addEventListener("scroll", scheduleMeasureAnchor, true);
 
     return () => {
-      frameIds.forEach((frameId) => window.cancelAnimationFrame(frameId));
-      timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
-      window.removeEventListener("resize", measureAnchor);
-      window.removeEventListener("scroll", measureAnchor, true);
+      if (measureFrameRef.current !== null) {
+        window.cancelAnimationFrame(measureFrameRef.current);
+        measureFrameRef.current = null;
+      }
+      window.clearTimeout(settleTimeoutId);
+      window.removeEventListener("resize", scheduleMeasureAnchor);
+      window.removeEventListener("scroll", scheduleMeasureAnchor, true);
     };
   }, [activeStep, step.targets]);
 
@@ -561,8 +566,7 @@ function AppQuickTour({
     };
   }, [activeStep, anchorFrame]);
 
-  const spotlightStyles = targetFrames.map((frame) => ({
-    "--tour-accent": step.accent,
+  const spotlightRects = targetFrames.map((frame) => ({
     top: frame.top - 7,
     left: frame.left - 7,
     width: frame.width + 14,
@@ -578,8 +582,18 @@ function AppQuickTour({
         ? 360
         : 320;
   const estimatedCardHeight = isCompactTour ? 330 : 305;
+  const switchingStepCardTop =
+    anchorFrame && isSwitchingStep && anchorFrame.viewportWidth >= 768
+      ? clampNumber(
+          anchorFrame.top + anchorFrame.height + 24,
+          96,
+          anchorFrame.viewportHeight - estimatedCardHeight - 16,
+        )
+      : null;
   const cardTop = anchorFrame
-    ? anchorFrame.viewportWidth < 768
+    ? switchingStepCardTop !== null
+      ? switchingStepCardTop
+      : anchorFrame.viewportWidth < 768
       ? clampNumber(
           anchorFrame.top + anchorFrame.height + 18,
           58,
@@ -591,8 +605,18 @@ function AppQuickTour({
           anchorFrame.viewportHeight - estimatedCardHeight - 16,
         )
     : 0;
+  const switchingStepCardLeft =
+    anchorFrame && isSwitchingStep && anchorFrame.viewportWidth >= 768
+      ? clampNumber(
+          anchorFrame.left + anchorFrame.width + 32,
+          18,
+          anchorFrame.viewportWidth - cardWidth - 18,
+        )
+      : null;
   const cardLeft = anchorFrame
-    ? anchorFrame.viewportWidth < 520
+    ? switchingStepCardLeft !== null
+      ? switchingStepCardLeft
+      : anchorFrame.viewportWidth < 520
       ? 14
       : clampNumber(
           anchorFrame.left + anchorFrame.width / 2 - cardWidth / 2,
@@ -677,6 +701,7 @@ function AppQuickTour({
         left: cardLeft,
       }
     : {};
+  const tourMaskId = `app-tour-mask-${step.id}`;
 
   return (
     <motion.div
@@ -687,16 +712,50 @@ function AppQuickTour({
       transition={{ duration: 0.2 }}
       aria-live="polite"
     >
-      {spotlightStyles.map((spotlightStyle, index) => (
-        <motion.div
-          key={`${step.id}-${index}`}
-          className="app-tour-spotlight pointer-events-none fixed rounded-[18px]"
-          data-tour-dim={index === 0}
-          style={spotlightStyle}
-          layout
-          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      <svg
+        className="pointer-events-none fixed inset-0 h-full w-full"
+        aria-hidden="true"
+      >
+        <defs>
+          <mask id={tourMaskId}>
+            <rect width="100%" height="100%" fill="white" />
+            {spotlightRects.map((rect, index) => (
+              <rect
+                key={`tour-mask-${step.id}-${index}`}
+                x={rect.left}
+                y={rect.top}
+                width={rect.width}
+                height={rect.height}
+                rx="6"
+                ry="6"
+                fill="black"
+              />
+            ))}
+          </mask>
+        </defs>
+
+        <rect
+          width="100%"
+          height="100%"
+          fill="rgba(3, 7, 18, 0.6)"
+          mask={`url(#${tourMaskId})`}
         />
-      ))}
+
+        {spotlightRects.map((rect, index) => (
+          <rect
+            key={`tour-outline-${step.id}-${index}`}
+            x={rect.left}
+            y={rect.top}
+            width={rect.width}
+            height={rect.height}
+            rx="6"
+            ry="6"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="2"
+          />
+        ))}
+      </svg>
 
       <motion.div
         ref={cardRef}
@@ -705,35 +764,44 @@ function AppQuickTour({
         aria-label={`${step.title} introduction`}
         className="app-tour-card pointer-events-auto fixed overflow-y-auto overscroll-contain rounded-[24px] border p-0 text-white"
         style={cardStyle}
-        key={step.id}
         initial={{ opacity: 0, y: 18, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.97 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="relative p-4">
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-[29px] leading-[0.95] tracking-[-0.035em] font-[Georgia,serif] md:text-[32px]">
-                {step.title}
-              </h2>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center text-white/62 transition hover:text-white"
-              aria-label="Skip app tour"
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
             >
-              <X size={19} strokeWidth={1.7} />
-            </button>
-          </div>
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-[29px] leading-[0.95] tracking-[-0.035em] font-[Georgia,serif] md:text-[32px]">
+                    {step.title}
+                  </h2>
+                </div>
 
-          <div className="mt-2">
-            <p className="text-[13px] leading-5 text-white/76 md:text-[14px] md:leading-6">
-              {step.detail}
-            </p>
-          </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center text-white/62 transition hover:text-white"
+                  aria-label="Skip app tour"
+                >
+                  <X size={19} strokeWidth={1.7} />
+                </button>
+              </div>
+
+              <div className="mt-2">
+                <p className="text-[13px] leading-5 text-white/76 md:text-[14px] md:leading-6">
+                  {step.detail}
+                </p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
           <div className="mt-4 grid grid-cols-2 gap-1 rounded-[16px] border border-white/10 bg-black/20 p-1">
             {APP_QUICK_TOUR_STEPS.map((tourStep, index) => (
@@ -829,7 +897,6 @@ function AppQuickTour({
               fill
               sizes="(max-width: 767px) 360px, 340px"
               className="object-cover object-top"
-              priority
             />
           </div>
         </motion.div>
@@ -1128,12 +1195,9 @@ export default function ChatContainer({
       0,
       APP_QUICK_TOUR_STEPS.length - 1,
     );
-    const nextTourStep =
-      APP_QUICK_TOUR_STEPS[boundedStep] ?? APP_QUICK_TOUR_STEPS[0]!;
 
     setQuickTourStep(boundedStep);
     setIsModeMenuOpen(true);
-    selectNewChatMode(nextTourStep.mode, false);
   }
 
   useEffect(() => {
@@ -2204,6 +2268,11 @@ export default function ChatContainer({
     messages.length,
   ]);
 
+  const visibleModeSelection =
+    showQuickTour && APP_QUICK_TOUR_STEPS[quickTourStep]
+      ? APP_QUICK_TOUR_STEPS[quickTourStep].mode
+      : modeSelection;
+
   if (!hasMessages) {
     return (
       <div
@@ -2227,18 +2296,18 @@ export default function ChatContainer({
                 )}
               >
                 <span className="app-mode-switch-icon">
-                  {modeSelection === "SOCRATIC" ? (
+                  {visibleModeSelection === "SOCRATIC" ? (
                     <GraduationCap size={14} />
                   ) : null}
-                  {modeSelection === "DEBATE" ? <Swords size={14} /> : null}
-                  {modeSelection === "ROLEPLAY" ? (
+                  {visibleModeSelection === "DEBATE" ? <Swords size={14} /> : null}
+                  {visibleModeSelection === "ROLEPLAY" ? (
                     <ScrollText size={14} />
                   ) : null}
                 </span>
                 <span className="app-mode-switch-label">
-                  {modeSelection === "SOCRATIC"
+                  {visibleModeSelection === "SOCRATIC"
                     ? "Socratic"
-                    : modeSelection === "DEBATE"
+                    : visibleModeSelection === "DEBATE"
                       ? "Debate"
                       : "Roleplay"}
                 </span>
@@ -2267,7 +2336,7 @@ export default function ChatContainer({
                         selectNewChatMode("SOCRATIC");
                         setIsModeMenuOpen(showQuickTour);
                       }}
-                      data-active={modeSelection === "SOCRATIC"}
+                      data-active={visibleModeSelection === "SOCRATIC"}
                       data-app-tour-target="mode-option-socratic"
                       data-tour-active={
                         showQuickTour &&
@@ -2279,7 +2348,7 @@ export default function ChatContainer({
                         <GraduationCap size={15} />
                         Socratic
                       </span>
-                      {modeSelection === "SOCRATIC" ? (
+                      {visibleModeSelection === "SOCRATIC" ? (
                         <Check size={14} />
                       ) : null}
                     </button>
@@ -2295,7 +2364,7 @@ export default function ChatContainer({
                         selectNewChatMode("DEBATE");
                         setIsModeMenuOpen(showQuickTour);
                       }}
-                      data-active={modeSelection === "DEBATE"}
+                      data-active={visibleModeSelection === "DEBATE"}
                       data-app-tour-target="mode-option-debate"
                       data-tour-active={
                         showQuickTour &&
@@ -2310,7 +2379,7 @@ export default function ChatContainer({
                           <Crown size={12} className="text-[#CFA43A]" />
                         ) : null}
                       </span>
-                      {modeSelection === "DEBATE" ? <Check size={14} /> : null}
+                      {visibleModeSelection === "DEBATE" ? <Check size={14} /> : null}
                     </button>
 
                     <button
@@ -2319,7 +2388,7 @@ export default function ChatContainer({
                         selectNewChatMode("ROLEPLAY");
                         setIsModeMenuOpen(showQuickTour);
                       }}
-                      data-active={modeSelection === "ROLEPLAY"}
+                      data-active={visibleModeSelection === "ROLEPLAY"}
                       data-app-tour-target="mode-option-roleplay"
                       data-tour-active={
                         showQuickTour &&
@@ -2331,7 +2400,7 @@ export default function ChatContainer({
                         <ScrollText size={15} />
                         Roleplay
                       </span>
-                      {modeSelection === "ROLEPLAY" ? (
+                      {visibleModeSelection === "ROLEPLAY" ? (
                         <Check size={14} />
                       ) : null}
                     </button>

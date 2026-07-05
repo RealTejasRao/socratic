@@ -767,20 +767,6 @@ html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mod
   stroke: currentColor;
 }
 
-.app-tour-spotlight {
-  border: 1px solid color-mix(in srgb, var(--tour-accent) 74%, #ffffff);
-  background: transparent;
-  box-shadow:
-    0 0 0 5px color-mix(in srgb, var(--tour-accent) 18%, transparent),
-    0 0 34px color-mix(in srgb, var(--tour-accent) 58%, transparent),
-    inset 0 0 18px color-mix(in srgb, var(--tour-accent) 28%, transparent);
-  animation: appTourSpotlightPulse 1.7s ease-in-out infinite;
-}
-
-.app-tour-spotlight[data-tour-dim="true"] {
-  animation-name: appTourSpotlightPulseDim;
-}
-
 .app-tour-card {
   border-color: rgba(255, 255, 255, 0.1);
   background: #101513;
@@ -851,42 +837,6 @@ html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mod
 .app-tour-primary-btn:hover {
   filter: brightness(1.07);
   transform: translateY(-1px);
-}
-
-@keyframes appTourSpotlightPulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 5px color-mix(in srgb, var(--tour-accent) 18%, transparent),
-      0 0 30px color-mix(in srgb, var(--tour-accent) 48%, transparent),
-      inset 0 0 16px color-mix(in srgb, var(--tour-accent) 22%, transparent);
-  }
-
-  50% {
-    box-shadow:
-      0 0 0 8px color-mix(in srgb, var(--tour-accent) 24%, transparent),
-      0 0 48px color-mix(in srgb, var(--tour-accent) 72%, transparent),
-      inset 0 0 24px color-mix(in srgb, var(--tour-accent) 34%, transparent);
-  }
-}
-
-@keyframes appTourSpotlightPulseDim {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 9999px rgba(3, 7, 18, 0.62),
-      0 0 0 5px color-mix(in srgb, var(--tour-accent) 18%, transparent),
-      0 0 30px color-mix(in srgb, var(--tour-accent) 48%, transparent),
-      inset 0 0 16px color-mix(in srgb, var(--tour-accent) 22%, transparent);
-  }
-
-  50% {
-    box-shadow:
-      0 0 0 9999px rgba(3, 7, 18, 0.56),
-      0 0 0 8px color-mix(in srgb, var(--tour-accent) 24%, transparent),
-      0 0 48px color-mix(in srgb, var(--tour-accent) 72%, transparent),
-      inset 0 0 24px color-mix(in srgb, var(--tour-accent) 34%, transparent);
-  }
 }
 
 @keyframes appModeTourGlow {
