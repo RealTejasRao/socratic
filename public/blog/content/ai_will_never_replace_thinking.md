@@ -12,8 +12,6 @@ That gap is the most important thing nobody is talking about.
 
 ---
 
----
-
 ## **Thinking is Your Moat: Key Takeaways:**
 
 - AI is extraordinarily good at giving answers. It is almost useless at teaching you how to think

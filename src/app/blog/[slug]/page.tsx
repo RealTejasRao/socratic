@@ -234,6 +234,7 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "plato-vs-aristotle": ["Plato vs Aristotle:", "Split"],
   "philosophy-of-power": ["The Philosophy of Power:"],
   "the-background-story": ["The Background Story"],
+  "why-self-help-replaced-philosophy": ["Philosophy Got Replaced by Self-Help"],
 };
 
 function escapeRegExp(value: string) {
@@ -283,7 +284,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
     return (
       <h2
         key={`h2-${index}`}
-        className={`${instrumentSerif.className} mt-12 text-[1.9rem] leading-[1.18] tracking-normal text-black/92 sm:text-[2.25rem]`}
+        className={`${instrumentSerif.className} mt-12 text-[1.9rem] leading-[1.18] tracking-normal text-[#a01717] sm:text-[2.25rem]`}
       >
         {renderInlineMarkdown(block.content)}
       </h2>
@@ -294,7 +295,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
     return (
       <h3
         key={`h3-${index}`}
-        className={`${instrumentSerif.className} mt-10 text-[1.55rem] leading-[1.2] tracking-normal text-black/90 sm:text-[1.8rem]`}
+        className={`${instrumentSerif.className} mt-10 text-[1.55rem] leading-[1.2] tracking-normal text-[#a01717] sm:text-[1.8rem]`}
       >
         {renderInlineMarkdown(block.content)}
       </h3>

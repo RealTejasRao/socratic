@@ -30,6 +30,19 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "why-self-help-replaced-philosophy",
+    title: "The Real Reason Philosophy Got Replaced by Self-Help",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    publishedAt: "2026-07-06T03:26:59+05:30",
+    updatedAt: "2026-07-06T03:26:59+05:30",
+    readTimeLabel: "14 min read",
+    excerpt:
+      "Self-help didn't beat philosophy on substance. It beat it on speed. Here is what got lost in the trade.",
+    coverImagePath: "/blog/images/self-help-replaced-philosophy.webp",
+    contentFilePath: "public/blog/content/self_help_replaced_philosophy.md",
+  },
+  {
     slug: "philosophy-of-power",
     title:
       "The Philosophy of Power: What Machiavelli, Nietzsche, and Aristotle Actually Said",
