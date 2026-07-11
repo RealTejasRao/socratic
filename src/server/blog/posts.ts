@@ -8,6 +8,7 @@ export type BlogPostSummary = {
   title: string;
   category: string;
   author: string;
+  authorUrl?: string | undefined;
   publishedAt: string;
   updatedAt: string;
   readTimeLabel: string;
@@ -29,6 +30,22 @@ type BlogPostRecord = BlogPostSummary & {
 };
 
 const BLOG_POSTS: BlogPostRecord[] = [
+  {
+    slug: "ai-boosted-religion-neolithic-art-spirituality",
+    title: "AI-Boosted Religion Is Based on Neolithic Art and Spirituality",
+    category: "AI & Learning",
+    author: "Christian Horgos",
+    authorUrl: "https://cristihorgos.blogspot.com/",
+    publishedAt: "2026-07-11T13:45:00+05:30",
+    updatedAt: "2026-07-11T13:45:00+05:30",
+    readTimeLabel: "19 min read",
+    excerpt:
+      "A long-form inquiry into AI-mediated spirituality, Neolithic spiral symbolism, altered consciousness, and the ancient human longing for immortality.",
+    coverImagePath:
+      "/blog/images/ai-boosted-religion-is-based-on-neolithic-art-and-spirituality.webp",
+    contentFilePath:
+      "public/blog/content/ai_boosted_religion_neolithic_art_spirituality.md",
+  },
   {
     slug: "why-self-help-replaced-philosophy",
     title: "The Real Reason Philosophy Got Replaced by Self-Help",
@@ -346,6 +363,7 @@ export function getAllBlogPostSummaries(
     title: post.title,
     category: post.category,
     author: post.author,
+    authorUrl: post.authorUrl,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
     readTimeLabel: post.readTimeLabel,
@@ -372,6 +390,7 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     title: post.title,
     category: post.category,
     author: post.author,
+    authorUrl: post.authorUrl,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
     readTimeLabel: post.readTimeLabel,

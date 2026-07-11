@@ -182,6 +182,7 @@ export function createBlogPostingSchema(post: {
   description: string;
   category: string;
   author: string;
+  authorUrl?: string | undefined;
   coverImagePath: string;
   publishedAt: string;
   updatedAt: string;
@@ -204,9 +205,9 @@ export function createBlogPostingSchema(post: {
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     author: {
-      "@type": "Organization",
+      "@type": post.authorUrl ? "Person" : "Organization",
       name: post.author,
-      url: seoConfig.siteUrl,
+      url: post.authorUrl ?? seoConfig.siteUrl,
     },
     publisher: {
       "@id": absoluteUrl("/#organization"),

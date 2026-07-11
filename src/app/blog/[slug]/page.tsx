@@ -235,6 +235,10 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
   "philosophy-of-power": ["The Philosophy of Power:"],
   "the-background-story": ["The Background Story"],
   "why-self-help-replaced-philosophy": ["Philosophy Got Replaced by Self-Help"],
+  "ai-boosted-religion-neolithic-art-spirituality": [
+    "AI-Boosted Religion",
+    "Neolithic Art and Spirituality",
+  ],
 };
 
 function escapeRegExp(value: string) {
@@ -417,6 +421,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     description: post.excerpt,
     category: post.category,
     author: post.author,
+    authorUrl: post.authorUrl,
     coverImagePath: post.coverImagePath,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
@@ -508,7 +513,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 {post.excerpt}
               </p>
               <p className={`${interClassName} mt-6 text-[0.84rem] text-black/56`}>
-                {post.author} • {post.readTimeLabel}
+                {post.authorUrl ? (
+                  <a
+                    href={post.authorUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-black/62 underline decoration-black/20 underline-offset-3 transition-colors hover:text-[#a01717] hover:decoration-[#a01717]/45"
+                  >
+                    {post.author}
+                  </a>
+                ) : (
+                  post.author
+                )}{" "}
+                • {post.readTimeLabel}
               </p>
 
               <div className="mt-12 border-t border-black/10 pt-6">

@@ -282,7 +282,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       <p
                         className={`${interClassName} mt-auto pt-2 text-[0.9rem] text-black/58`}
                       >
-                        {post.author} • {post.readTimeLabel}
+                        {post.authorUrl ? (
+                          <span
+                            className="relative z-10 text-black/62 transition-colors hover:text-[#a01717]"
+                          >
+                            {post.author}
+                          </span>
+                        ) : (
+                          post.author
+                        )}{" "}
+                        • {post.readTimeLabel}
                       </p>
                     </div>
                   </article>
