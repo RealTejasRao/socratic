@@ -1,18 +1,29 @@
 export type RoleplayFlair =
   | "Absurdism"
+  | "Analytic Philosophy"
   | "Aristotelianism"
+  | "Buddhism"
   | "Classical Greek"
+  | "Confucianism"
+  | "Critical Theory"
+  | "Cynicism"
   | "Deontology"
+  | "Daoism"
   | "Economics"
+  | "Enlightenment"
   | "Empiricism"
   | "Existentialism"
+  | "Feminism"
   | "Islamic Philosophy"
+  | "Mysticism"
+  | "Objectivism"
   | "Power"
   | "Platonism"
   | "Politics"
   | "Pragmatism"
   | "Psychoanalysis"
   | "Rationalism"
+  | "Strategy"
   | "Social Contract"
   | "Stoicism"
   | "Transcendentalism"
@@ -35,20 +46,31 @@ export type RoleplayCharacterProfile = {
 export const ROLEPLAY_FLAIRS: RoleplayFlair[] = [
   "Stoicism",
   "Classical Greek",
+  "Buddhism",
+  "Confucianism",
+  "Daoism",
   "Power",
+  "Strategy",
   "Existentialism",
+  "Feminism",
+  "Analytic Philosophy",
   "Utilitarianism",
   "Politics",
   "Rationalism",
   "Platonism",
   "Aristotelianism",
+  "Cynicism",
   "Absurdism",
   "Social Contract",
   "Empiricism",
+  "Enlightenment",
   "Deontology",
+  "Critical Theory",
   "Psychoanalysis",
   "Pragmatism",
   "Transcendentalism",
+  "Objectivism",
+  "Mysticism",
   "Economics",
   "Islamic Philosophy",
 ];
@@ -69,6 +91,18 @@ export const ROLEPLAY_FLAIR_THEMES: Record<
     background: "#e8c887",
     border: "#704706",
   },
+  Buddhism: {
+    background: "#d7c77f",
+    border: "#665713",
+  },
+  Confucianism: {
+    background: "#dda18f",
+    border: "#723525",
+  },
+  Daoism: {
+    background: "#98cbb5",
+    border: "#27634b",
+  },
   Platonism: {
     background: "#abd0f2",
     border: "#245681",
@@ -84,6 +118,26 @@ export const ROLEPLAY_FLAIR_THEMES: Record<
   Absurdism: {
     background: "#ecc274",
     border: "#744806",
+  },
+  Cynicism: {
+    background: "#d2bd8d",
+    border: "#6b5520",
+  },
+  Feminism: {
+    background: "#d9aac0",
+    border: "#74344f",
+  },
+  "Analytic Philosophy": {
+    background: "#b7c8e6",
+    border: "#3b557c",
+  },
+  Enlightenment: {
+    background: "#f0c77b",
+    border: "#79500d",
+  },
+  "Critical Theory": {
+    background: "#c7a0a8",
+    border: "#65313d",
   },
   Politics: {
     background: "#d99a8e",
@@ -128,6 +182,18 @@ export const ROLEPLAY_FLAIR_THEMES: Record<
   "Islamic Philosophy": {
     background: "#b7d7bd",
     border: "#38613f",
+  },
+  Mysticism: {
+    background: "#b8b0df",
+    border: "#4c437a",
+  },
+  Objectivism: {
+    background: "#d6c7a3",
+    border: "#675733",
+  },
+  Strategy: {
+    background: "#d7a27b",
+    border: "#70401d",
   },
   Power: {
     background: "#df9186",
@@ -188,7 +254,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
     bestFor: "Turning abstract ideals into practiced character.",
     starterPrompts: [
       "How do I become more disciplined without becoming harsh?",
-      "What virtue am I missing in this situation?",
+      "What virtue am I missing in this situation: [describe the situation]",
       "Help me think through friendship and loyalty.",
       "What does flourishing actually require from daily life?",
     ],
@@ -208,7 +274,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
     bestFor: "Anxiety, resentment, discipline, emotional steadiness.",
     starterPrompts: [
       "Help me stop caring so much about what others think.",
-      "What is actually in my control here?",
+      "What is actually in my control here: [describe what happened]",
       "Train me to handle failure without self-pity.",
       "I keep blaming circumstances. Correct me.",
     ],
@@ -288,8 +354,8 @@ export const ROLEPLAY_PHILOSOPHERS = [
     bestFor: "Moral dilemmas, lying, duty, respect, and principled action.",
     starterPrompts: [
       "Is it ever acceptable to lie for a good outcome?",
-      "Help me find the maxim behind my decision.",
-      "Am I treating someone as a means rather than an end?",
+      "Help me find the maxim behind my decision: [describe the decision]",
+      "Am I treating someone as a means rather than an end: [describe the situation]",
       "What does duty require when I do not feel like doing it?",
     ],
     voicePreview:
@@ -309,8 +375,8 @@ export const ROLEPLAY_PHILOSOPHERS = [
     starterPrompts: [
       "How should I handle someone politically dangerous?",
       "When is deception strategically necessary?",
-      "Should I be feared, loved, or respected in this situation?",
-      "Analyze the power dynamics in my workplace.",
+      "Should I be feared, loved, or respected in this situation: [describe the situation]",
+      "Analyze the power dynamics in my workplace: [describe the workplace situation]",
     ],
     voicePreview:
       "You ask what is noble. First ask who benefits when you behave nobly.",
@@ -349,7 +415,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
     starterPrompts: [
       "Why do people need authority?",
       "Is freedom worth instability?",
-      "Analyze this conflict as a problem of fear.",
+      "Analyze this conflict as a problem of fear: [describe the conflict]",
       "What happens when trust collapses?",
     ],
     voicePreview:
@@ -368,7 +434,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
     bestFor: "Authenticity, inequality, education, freedom, and social pressure.",
     starterPrompts: [
       "Am I being shaped by society in a corrupt way?",
-      "What would real freedom mean here?",
+      "What would real freedom mean here: [describe the situation]",
       "How does comparison distort my desires?",
       "Explain inequality without making it sound natural.",
     ],
@@ -388,7 +454,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
     bestFor: "Freedom, speech, social pressure, pleasure, and public ethics.",
     starterPrompts: [
       "Where should personal freedom end?",
-      "Is this restriction justified by harm?",
+      "Is this restriction justified by harm: [describe the restriction]",
       "How do I decide what produces the most good?",
       "Defend individuality against social pressure.",
     ],
@@ -407,7 +473,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
       "Doubted more carefully than almost anyone before him. Challenged the foundations of religion, causation, and human knowledge itself.",
     bestFor: "Doubt, belief, evidence, emotion, and human nature.",
     starterPrompts: [
-      "What evidence would actually justify this belief?",
+      "What evidence would actually justify this belief: [describe the belief]",
       "Am I confusing habit with reason?",
       "Explain why emotion matters in morality.",
       "Make me more skeptical without becoming cynical.",
@@ -427,9 +493,9 @@ export const ROLEPLAY_PHILOSOPHERS = [
       "Saw God and nature as one and the same thing. Was expelled from his community for ideas that the modern world has largely come to accept.",
     bestFor: "Emotional clarity, determinism, desire, and acceptance.",
     starterPrompts: [
-      "Help me understand this emotion instead of being ruled by it.",
+      "Help me understand this emotion instead of being ruled by it: [describe the emotion]",
       "What would freedom mean if everything has causes?",
-      "Explain my desire through your philosophy.",
+      "Explain desire through your philosophy.",
       "How should I think about God or nature?",
     ],
     voicePreview:
@@ -527,9 +593,9 @@ export const ROLEPLAY_PHILOSOPHERS = [
       "Argued that most of what drives human behavior is buried beneath conscious awareness. Changed how the world thinks about the mind forever.",
     bestFor: "Motivation, repression, conflict, desire, and self-sabotage.",
     starterPrompts: [
-      "What unconscious motive might be operating here?",
-      "Why do I repeat the same self-defeating pattern?",
-      "Analyze my anger as a defense.",
+      "What unconscious motive might be operating here: [describe what happened]",
+      "Why do people repeat self-defeating patterns?",
+      "Analyze anger as a defense.",
       "What does civilization demand from desire?",
     ],
     voicePreview:
@@ -587,7 +653,7 @@ export const ROLEPLAY_PHILOSOPHERS = [
       "Explained how markets work and why self-interest can serve the common good. Cared about morality just as much as he cared about economics.",
     bestFor: "Markets, incentives, work, trade, wealth, and moral judgment.",
     starterPrompts: [
-      "Analyze this incentive problem.",
+      "Analyze this incentive problem: [describe the incentive problem]",
       "What does sympathy have to do with morality?",
       "How should I think about markets without worshiping them?",
       "Explain self-interest without making it selfishness.",
@@ -615,6 +681,306 @@ export const ROLEPLAY_PHILOSOPHERS = [
     voicePreview:
       "Reason is a noble lamp, but it does not become the sun by forgetting its limit.",
     accent: "#6f9f73",
+  },
+  {
+    id: "BUDDHA",
+    name: "Buddha",
+    shortName: "Buddha",
+    imagePath: "/philosophers/buddha.webp",
+    flairs: ["Buddhism"],
+    expertise: "Suffering, craving, impermanence, mindfulness, liberation.",
+    shortDescription:
+      "Taught that suffering has causes and that freedom begins when craving, illusion, and clinging are seen clearly.",
+    bestFor: "Desire, anxiety, attachment, grief, mindfulness, and inner release.",
+    starterPrompts: [
+      "Help me understand the suffering behind this desire: [describe the desire]",
+      "What am I clinging to that keeps hurting me?",
+      "Teach me how to meet anxiety without becoming it.",
+      "How should I practice compassion without losing clarity?",
+    ],
+    voicePreview:
+      "Look carefully at the craving itself; when it is known, it loosens.",
+    accent: "#b99d45",
+  },
+  {
+    id: "CONFUCIUS",
+    name: "Confucius",
+    shortName: "Confucius",
+    imagePath: "/philosophers/confucius.webp",
+    flairs: ["Confucianism"],
+    expertise: "Ritual, virtue, family, duty, education, social harmony.",
+    shortDescription:
+      "Saw character as something cultivated through ritual, respect, learning, and the daily practice of humane conduct.",
+    bestFor: "Family conflict, leadership, duty, respect, education, and character.",
+    starterPrompts: [
+      "How should I act honorably in this relationship: [describe the relationship]",
+      "What duty am I neglecting here: [describe the situation]",
+      "Help me become more disciplined without becoming cold.",
+      "What does respect require when I disagree?",
+    ],
+    voicePreview:
+      "Begin with conduct. A disordered heart rarely produces ordered speech.",
+    accent: "#b87862",
+  },
+  {
+    id: "LAOZI",
+    name: "Laozi",
+    shortName: "Laozi",
+    imagePath: "/philosophers/laozi.webp",
+    flairs: ["Daoism"],
+    expertise: "The Dao, wu wei, simplicity, softness, non-contention.",
+    shortDescription:
+      "Taught that force often fails where softness succeeds, and that wisdom follows the grain of things instead of fighting it.",
+    bestFor: "Control, overthinking, conflict, ambition, simplicity, and patience.",
+    starterPrompts: [
+      "Where am I forcing something that should be allowed to unfold: [describe the situation]",
+      "Teach me how to act without overcontrolling.",
+      "How can softness be stronger than aggression?",
+      "Help me simplify a decision.",
+    ],
+    voicePreview:
+      "The river does not argue with the stones, yet it reaches the sea.",
+    accent: "#6fa98f",
+  },
+  {
+    id: "DIOGENES",
+    name: "Diogenes",
+    shortName: "Diogenes",
+    imagePath: "/philosophers/diogenes.webp",
+    flairs: ["Cynicism", "Classical Greek"],
+    expertise: "Simplicity, shameless honesty, convention, freedom, hypocrisy.",
+    shortDescription:
+      "Rejected status, comfort, and polite lies with theatrical contempt. Used provocation to expose how much of society is vanity.",
+    bestFor: "Status anxiety, social performance, hypocrisy, consumerism, and blunt truth.",
+    starterPrompts: [
+      "Mock the fake status game I am trapped in.",
+      "What convention am I obeying for no good reason?",
+      "Tell me what I am pretending not to know.",
+      "How do I need less without making it a lifestyle brand?",
+    ],
+    voicePreview:
+      "You have decorated your cage and now ask me whether the curtains are tasteful.",
+    accent: "#a98b4f",
+  },
+  {
+    id: "SUN_TZU",
+    name: "Sun Tzu",
+    shortName: "Sun Tzu",
+    imagePath: "/philosophers/suntzu.webp",
+    flairs: ["Strategy", "Power"],
+    expertise: "Strategy, conflict, deception, timing, terrain, leverage.",
+    shortDescription:
+      "Turned conflict into a discipline of perception, timing, and advantage. Preferred winning before the battle begins.",
+    bestFor: "Conflict, negotiation, competition, positioning, and strategic restraint.",
+    starterPrompts: [
+      "Analyze this conflict strategically: [describe the conflict]",
+      "Where is my leverage and where am I exposed: [describe the situation]",
+      "How do I win without direct confrontation?",
+      "What terrain do people usually ignore in a conflict?",
+    ],
+    voicePreview:
+      "Do not begin with courage. Begin with terrain, timing, and what the other side cannot see.",
+    accent: "#b7744f",
+  },
+  {
+    id: "VOLTAIRE",
+    name: "Voltaire",
+    shortName: "Voltaire",
+    imagePath: "/philosophers/voltaire.webp",
+    flairs: ["Enlightenment"],
+    expertise: "Reason, tolerance, satire, religious authority, civil liberty.",
+    shortDescription:
+      "Fought superstition, cruelty, and intellectual laziness with wit sharp enough to make power nervous.",
+    bestFor: "Dogma, free speech, hypocrisy, tolerance, and skeptical clarity.",
+    starterPrompts: [
+      "Make me less vulnerable to dogma.",
+      "How should I defend tolerance without becoming naive?",
+      "Satirize the bad reasoning in my argument: [write the argument]",
+      "What authority am I trusting too easily?",
+    ],
+    voicePreview:
+      "A bad argument does not improve by putting on a priestly robe.",
+    accent: "#d0a858",
+  },
+  {
+    id: "WITTGENSTEIN",
+    name: "Ludwig Wittgenstein",
+    shortName: "Wittgenstein",
+    imagePath: "/philosophers/wittgenstein.webp",
+    flairs: ["Analytic Philosophy"],
+    expertise: "Language, meaning, logic, forms of life, conceptual confusion.",
+    shortDescription:
+      "Changed philosophy twice by showing how many deep problems are knots in language, use, and attention.",
+    bestFor: "Conceptual confusion, language traps, meaning, logic, and clarity.",
+    starterPrompts: [
+      "Show me how language is confusing this problem: [describe the problem]",
+      "What do I mean when I use this word: [write the word]",
+      "Help me dissolve a philosophical puzzle.",
+      "Where has my thinking gone on holiday?",
+    ],
+    voicePreview:
+      "Do not ask for the meaning in the air. Look at how the word is used.",
+    accent: "#7f93b8",
+  },
+  {
+    id: "BERTRAND_RUSSELL",
+    name: "Bertrand Russell",
+    shortName: "Russell",
+    imagePath: "/philosophers/bertrand-russell.webp",
+    flairs: ["Analytic Philosophy", "Empiricism"],
+    expertise: "Logic, clarity, skepticism, knowledge, ethics, public reason.",
+    shortDescription:
+      "Brought mathematical precision to philosophy and public courage to politics. Hated muddle almost as much as cruelty.",
+    bestFor: "Clear reasoning, skepticism, knowledge, argument structure, and public ethics.",
+    starterPrompts: [
+      "Make my argument clearer and less confused: [write the argument]",
+      "What do I actually know here: [describe the claim or situation]",
+      "Help me separate evidence from emotion.",
+      "Where is my reasoning too vague?",
+    ],
+    voicePreview:
+      "Clarity is not a decoration of thought; it is one of its moral duties.",
+    accent: "#819bc0",
+  },
+  {
+    id: "BEAUVOIR",
+    name: "Simone de Beauvoir",
+    shortName: "Beauvoir",
+    imagePath: "/philosophers/beauvoir.webp",
+    flairs: ["Feminism", "Existentialism"],
+    expertise: "Freedom, gender, ambiguity, oppression, responsibility.",
+    shortDescription:
+      "Exposed how women are made into the Other and argued that freedom must be lived under real social constraints.",
+    bestFor: "Identity, gender, freedom, oppression, relationships, and moral ambiguity.",
+    starterPrompts: [
+      "Where am I being made into the Other?",
+      "How do I act freely under social constraint?",
+      "Help me think through responsibility in this relationship: [describe the relationship]",
+      "What does ambiguity demand from me here: [describe the situation]",
+    ],
+    voicePreview:
+      "Freedom is not a private fantasy; it is tested in the situation that resists it.",
+    accent: "#bd7898",
+  },
+  {
+    id: "HANNAH_ARENDT",
+    name: "Hannah Arendt",
+    shortName: "Arendt",
+    imagePath: "/philosophers/hannah-arendt.webp",
+    flairs: ["Politics"],
+    expertise: "Power, action, plurality, totalitarianism, judgment, public life.",
+    shortDescription:
+      "Studied how political evil becomes ordinary and how public action keeps human freedom alive.",
+    bestFor: "Politics, responsibility, conformity, institutions, judgment, and public courage.",
+    starterPrompts: [
+      "How does ordinary conformity become dangerous?",
+      "What would political responsibility require here: [describe the situation]",
+      "Help me judge without hiding in ideology.",
+      "What is the difference between power and violence?",
+    ],
+    voicePreview:
+      "The question is not only what you think privately, but what world your action helps disclose.",
+    accent: "#9d8b72",
+  },
+  {
+    id: "FOUCAULT",
+    name: "Michel Foucault",
+    shortName: "Foucault",
+    imagePath: "/philosophers/foucault.webp",
+    flairs: ["Critical Theory", "Power"],
+    expertise: "Power, knowledge, discipline, institutions, norms, subjectivity.",
+    shortDescription:
+      "Showed how power works through knowledge, categories, institutions, and the ordinary habits that teach people to govern themselves.",
+    bestFor: "Institutions, surveillance, identity, norms, medicine, punishment, and hidden power.",
+    starterPrompts: [
+      "What power structure is hidden in this situation: [describe the situation]",
+      "How do norms train people to treat them as natural?",
+      "Analyze institutions without trusting their official language.",
+      "What kind of subject does modern power train people to become?",
+    ],
+    voicePreview:
+      "Ask first who is authorized to name the truth, and what that truth makes possible.",
+    accent: "#a97682",
+  },
+  {
+    id: "SIMONE_WEIL",
+    name: "Simone Weil",
+    shortName: "Weil",
+    imagePath: "/philosophers/simone-weil.webp",
+    flairs: ["Mysticism", "Politics"],
+    expertise: "Attention, affliction, obligation, grace, justice, rootedness.",
+    shortDescription:
+      "Joined political urgency to mystical attention, insisting that real justice begins by looking at suffering without turning away.",
+    bestFor: "Suffering, attention, duty, justice, spiritual seriousness, and compassion.",
+    starterPrompts: [
+      "Teach me how to pay real attention to suffering.",
+      "What obligation am I avoiding?",
+      "How should I think about justice without vanity?",
+      "Help me distinguish compassion from sentimentality.",
+    ],
+    voicePreview:
+      "Attention is the rarest generosity because it refuses to make suffering useful to the ego.",
+    accent: "#8f86bd",
+  },
+  {
+    id: "AYN_RAND",
+    name: "Ayn Rand",
+    shortName: "Rand",
+    imagePath: "/philosophers/ayn-rand.webp",
+    flairs: ["Objectivism"],
+    expertise: "Reason, individualism, self-interest, capitalism, moral ambition.",
+    shortDescription:
+      "Defended rational self-interest and individual achievement against collectivism, guilt, and secondhand living.",
+    bestFor: "Ambition, independence, guilt, productivity, capitalism, and self-respect.",
+    starterPrompts: [
+      "Am I sacrificing myself for approval: [describe the situation]",
+      "Defend ambition without apology.",
+      "Where am I living secondhand?",
+      "What would rational self-interest require here: [describe the situation]",
+    ],
+    voicePreview:
+      "Do not call it virtue when you surrender your mind to someone else's need.",
+    accent: "#b99a63",
+  },
+  {
+    id: "NUSSBAUM",
+    name: "Martha Nussbaum",
+    shortName: "Nussbaum",
+    imagePath: "/philosophers/nussbaum.webp",
+    flairs: ["Aristotelianism", "Feminism"],
+    expertise: "Capabilities, emotion, justice, vulnerability, human flourishing.",
+    shortDescription:
+      "Rebuilt ancient virtue ethics for modern justice, arguing that a decent society must protect real human capabilities.",
+    bestFor: "Justice, emotions, dignity, vulnerability, education, and flourishing.",
+    starterPrompts: [
+      "What human capability is being denied here: [describe the situation]",
+      "Help me take emotions seriously without being ruled by them.",
+      "How should justice account for vulnerability?",
+      "What does flourishing require beyond income or success?",
+    ],
+    voicePreview:
+      "A society is not just when it praises dignity while leaving people without the powers to live it.",
+    accent: "#9caf75",
+  },
+  {
+    id: "KAUTILYA",
+    name: "Kautilya",
+    shortName: "Kautilya",
+    imagePath: "/philosophers/kautilya.webp",
+    flairs: ["Strategy", "Politics", "Power"],
+    expertise: "Statecraft, governance, espionage, incentives, security, prudence.",
+    shortDescription:
+      "The brilliant strategist and teacher of Chandragupta Maurya (Sandrocottus) who forged one of history's greatest empires through espionage, diplomacy, economics, and relentless political realism.",
+    bestFor: "Leadership, strategy, negotiation, institutions, risk, and political realism.",
+    starterPrompts: [
+      "Analyze this as a problem of statecraft: [describe the situation]",
+      "What incentive would actually change behavior here: [describe the behavior]",
+      "Where does a leader need intelligence before action?",
+      "How should a leader balance prosperity and security?",
+    ],
+    voicePreview:
+      "Good intention without information is not policy; it is exposure.",
+    accent: "#ad7b4b",
   },
 ] as const satisfies readonly RoleplayCharacterProfile[];
 

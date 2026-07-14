@@ -73,6 +73,8 @@ interface Props {
   dailyMessagesRemaining?: number | null;
   dailyImageUploadsRemaining?: number | null;
   initialValue: string | undefined;
+  focusOnMount?: boolean;
+  highlightOnMount?: boolean;
   variant?: "default" | "hero";
   placeholder?: string;
   showWebSearch?: boolean;
@@ -116,6 +118,8 @@ export default function MessageInput({
   dailyMessagesRemaining = null,
   dailyImageUploadsRemaining = null,
   initialValue,
+  focusOnMount = false,
+  highlightOnMount = false,
   variant = "default",
   placeholder = "What's on your mind?",
   showWebSearch = true,
@@ -149,10 +153,12 @@ export default function MessageInput({
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const inputShellRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
   const attachmentsRef = useRef<ComposerImageAttachment[]>([]);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const draftHighlightTimeoutRef = useRef<number | null>(null);
   const voiceBaseContentRef = useRef("");
   const voiceCommittedTranscriptRef = useRef("");
   const isStoppingRecognitionRef = useRef(false);
@@ -211,9 +217,51 @@ export default function MessageInput({
   }, [composerAttachments]);
 
   useEffect(() => {
-    if (!composerStatusMessage) {
-      setDismissedComposerStatus("");
+    if (!focusOnMount) {
+      return;
     }
+
+    if (draftHighlightTimeoutRef.current !== null) {
+      window.clearTimeout(draftHighlightTimeoutRef.current);
+      draftHighlightTimeoutRef.current = null;
+    }
+
+    inputShellRef.current?.classList.remove("app-input-shell-draft-inserted");
+
+    window.requestAnimationFrame(() => {
+      const textarea = textareaRef.current;
+      if (!textarea) {
+        return;
+      }
+
+      textarea.focus();
+      const cursorPosition = textarea.value.length;
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
+
+      if (highlightOnMount) {
+        inputShellRef.current?.classList.add("app-input-shell-draft-inserted");
+        draftHighlightTimeoutRef.current = window.setTimeout(() => {
+          inputShellRef.current?.classList.remove(
+            "app-input-shell-draft-inserted",
+          );
+          draftHighlightTimeoutRef.current = null;
+        }, 1000);
+      }
+    });
+  }, [focusOnMount, highlightOnMount]);
+
+  useEffect(() => {
+    if (composerStatusMessage) {
+      return;
+    }
+
+    const resetDismissedStatusId = window.setTimeout(() => {
+      setDismissedComposerStatus("");
+    }, 0);
+
+    return () => {
+      window.clearTimeout(resetDismissedStatusId);
+    };
   }, [composerStatusMessage]);
 
   useEffect(() => {
@@ -238,6 +286,10 @@ export default function MessageInput({
 
   useEffect(() => {
     return () => {
+      if (draftHighlightTimeoutRef.current !== null) {
+        window.clearTimeout(draftHighlightTimeoutRef.current);
+      }
+
       recognitionRef.current?.abort();
       recognitionRef.current = null;
 
@@ -772,6 +824,7 @@ export default function MessageInput({
       )}
 
       <div
+        ref={inputShellRef}
         className={cn(
           "app-input-shell overflow-visible border border-transparent bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12),0_8px_24px_rgba(15,23,42,0.045)]",
           variant === "hero" ? "rounded-[14px]" : "rounded-[12px]",

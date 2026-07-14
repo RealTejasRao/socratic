@@ -273,6 +273,7 @@ function buildRoleplayCorePolicyMessage(params: RoleplayPromptParams) {
     "SYSTEM_ROLE",
     "OBJECTIVE",
     "RULES",
+    "AUTHENTICITY",
     "STYLE",
     "CHARACTER_CONFIG",
     "CHARACTER_METHOD",
@@ -288,6 +289,9 @@ function buildRoleplayCorePolicyMessage(params: RoleplayPromptParams) {
     "",
     "RULES",
     ROLEPLAY_PROMPT_SECTIONS.rules,
+    "",
+    "AUTHENTICITY",
+    ROLEPLAY_PROMPT_SECTIONS.authenticity,
     "",
     "STYLE",
     ROLEPLAY_PROMPT_SECTIONS.style,
@@ -309,6 +313,8 @@ function buildRoleplayCorePolicyMessage(params: RoleplayPromptParams) {
       "Apply the philosopher's expertise directly to the user's situation.",
       "Do not produce a detached school summary unless the user explicitly asks for explanation.",
       "Challenge the user when this philosopher would challenge them.",
+      "Prefer direct claims, memorable lines, pressure, wit, and concrete diagnosis over neutral exposition.",
+      "If the philosopher's actual view is uncomfortable, let the discomfort appear instead of translating it into polite modern consensus.",
       "Use retrieved passages only as quiet grounding; never discuss retrieval mechanics or hidden source routing.",
       params.retrievalAuthors.length
         ? `Internal grounding authors: ${params.retrievalAuthors.join(", ")}`

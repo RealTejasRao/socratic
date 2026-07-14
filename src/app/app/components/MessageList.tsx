@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -39,12 +40,27 @@ interface Props {
   editDraft: string;
   disableRevisionActions?: boolean;
   topContent?: ReactNode;
+  roleplaySpeaker?: {
+    name: string;
+    imagePath: string;
+    accent: string;
+  } | null;
 }
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const URL_PATTERN = /(https?:\/\/[^\s]+)/gi;
 const EMPHASIS_PATTERN = /(\*\*[^*\n]+\*\*|\*[^*\n]+\*)/g;
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
+
+function getInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
 
 function renderInlineFormatting(text: string, keyPrefix: string) {
   const parts = text.split(EMPHASIS_PATTERN);
@@ -194,7 +210,9 @@ export default function MessageList({
   editDraft,
   disableRevisionActions = false,
   topContent,
+  roleplaySpeaker = null,
 }: Props) {
+  const { user } = useUser();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -504,51 +522,57 @@ export default function MessageList({
   }, [previewImage]);
 
   useEffect(() => {
-    const lastAssistantMessage = [...messages]
-      .reverse()
-      .find((message) => message.role === "ASSISTANT");
+    const updateStreamingChunksId = window.setTimeout(() => {
+      const lastAssistantMessage = [...messages]
+        .reverse()
+        .find((message) => message.role === "ASSISTANT");
 
-    if (!isStreaming || !lastAssistantMessage) {
-      setStreamingChunkMessageId(null);
-      setStreamingChunks([]);
-      streamingChunkCounterRef.current = 0;
-      previousStreamingMessageIdRef.current = null;
-      previousStreamingContentRef.current = "";
-      return;
-    }
-
-    const currentMessageId = lastAssistantMessage.id;
-    const currentContent = lastAssistantMessage.content ?? "";
-    const previousMessageId = previousStreamingMessageIdRef.current;
-    const previousContent = previousStreamingContentRef.current;
-    const isNewStreamingMessage = previousMessageId !== currentMessageId;
-    const canDiffFromPrevious =
-      !isNewStreamingMessage && currentContent.startsWith(previousContent);
-    const chunkText = canDiffFromPrevious
-      ? currentContent.slice(previousContent.length)
-      : currentContent;
-
-    if (isNewStreamingMessage || !canDiffFromPrevious) {
-      streamingChunkCounterRef.current = 0;
-    }
-
-    setStreamingChunkMessageId(currentMessageId);
-    setStreamingChunks((previousChunks) => {
-      const baseChunks =
-        isNewStreamingMessage || !canDiffFromPrevious ? [] : previousChunks;
-
-      if (!chunkText) {
-        return baseChunks;
+      if (!isStreaming || !lastAssistantMessage) {
+        setStreamingChunkMessageId(null);
+        setStreamingChunks([]);
+        streamingChunkCounterRef.current = 0;
+        previousStreamingMessageIdRef.current = null;
+        previousStreamingContentRef.current = "";
+        return;
       }
 
-      const chunkId = streamingChunkCounterRef.current;
-      streamingChunkCounterRef.current += 1;
+      const currentMessageId = lastAssistantMessage.id;
+      const currentContent = lastAssistantMessage.content ?? "";
+      const previousMessageId = previousStreamingMessageIdRef.current;
+      const previousContent = previousStreamingContentRef.current;
+      const isNewStreamingMessage = previousMessageId !== currentMessageId;
+      const canDiffFromPrevious =
+        !isNewStreamingMessage && currentContent.startsWith(previousContent);
+      const chunkText = canDiffFromPrevious
+        ? currentContent.slice(previousContent.length)
+        : currentContent;
 
-      return [...baseChunks, { id: chunkId, text: chunkText }];
-    });
+      if (isNewStreamingMessage || !canDiffFromPrevious) {
+        streamingChunkCounterRef.current = 0;
+      }
 
-    previousStreamingMessageIdRef.current = currentMessageId;
-    previousStreamingContentRef.current = currentContent;
+      setStreamingChunkMessageId(currentMessageId);
+      setStreamingChunks((previousChunks) => {
+        const baseChunks =
+          isNewStreamingMessage || !canDiffFromPrevious ? [] : previousChunks;
+
+        if (!chunkText) {
+          return baseChunks;
+        }
+
+        const chunkId = streamingChunkCounterRef.current;
+        streamingChunkCounterRef.current += 1;
+
+        return [...baseChunks, { id: chunkId, text: chunkText }];
+      });
+
+      previousStreamingMessageIdRef.current = currentMessageId;
+      previousStreamingContentRef.current = currentContent;
+    }, 0);
+
+    return () => {
+      window.clearTimeout(updateStreamingChunksId);
+    };
   }, [isStreaming, messages]);
 
   useLayoutEffect(() => {
@@ -592,6 +616,8 @@ export default function MessageList({
       : chatFontSize === "LARGE"
         ? "text-[17px] leading-7"
         : "text-[15px] leading-6.5";
+  const userAvatarUrl = user?.imageUrl || null;
+  const userInitials = getInitials(user?.fullName || userLabel || "You");
 
   return (
     <div className="flex-1">
@@ -602,6 +628,7 @@ export default function MessageList({
           const isLastAssistant = index === actualLastAssistantIndex;
           const isAssistant = message.role === "ASSISTANT";
           const isUser = message.role === "USER";
+          const showRoleplayAssistantHeader = isAssistant && roleplaySpeaker;
           const isEditingThisMessage = editingMessageId === message.id;
           const isSpeakingThisMessage = speakingMessageId === message.id;
           const showAssistantSeparator =
@@ -616,8 +643,46 @@ export default function MessageList({
               )}
             >
               {isUser && (
-                <div className="mb-1.5 px-1 text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
-                  {userLabel}
+                <div className="mb-1.5 flex items-center gap-2 px-1">
+                  <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 text-[9px] font-semibold text-slate-600 shadow-sm">
+                    {userAvatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={userAvatarUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      userInitials
+                    )}
+                  </span>
+                  <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
+                    {userLabel}
+                  </span>
+                </div>
+              )}
+
+              {showRoleplayAssistantHeader && (
+                <div className="mb-2.5 flex items-center gap-3 px-2">
+                  <span
+                    className="inline-flex h-9.5 w-9.5 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-slate-100 text-[11px] font-semibold text-slate-600 shadow-sm"
+                    style={{
+                      borderColor: `${roleplaySpeaker.accent}66`,
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={roleplaySpeaker.imagePath}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </span>
+                  <span
+                    className="text-[15px] font-medium leading-none tracking-[-0.01em] text-slate-700 font-[Georgia,serif]"
+                    style={{ color: roleplaySpeaker.accent }}
+                  >
+                    {roleplaySpeaker.name}
+                  </span>
                 </div>
               )}
 
