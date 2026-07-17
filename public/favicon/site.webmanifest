@@ -31,6 +31,7 @@
   "background_color": "#fefefc",
   "display": "standalone",
   "start_url": "/app?mode=roleplay&twa=1",
+  "scope": "/",
   "shortcuts": [
     {
       "name": "Roleplay Mode",

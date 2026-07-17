@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
+import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { formatDebateCountdown, getDebateDurationMeta } from "src/lib/debate";
 import { ROUTES } from "src/lib/routes";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
@@ -65,6 +66,7 @@ const inter = Inter({
 export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const isStandalone = useStandaloneMode();
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [actionDialog, setActionDialog] = useState<ActionDialog | null>(null);
@@ -121,7 +123,13 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
       ? `Check out this Socratic AI chat: ${shareTitle}`
       : "Check out this Socratic AI chat",
   );
-  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
+  const billingCtaHref = isStandalone
+    ? ROUTES.APP_ACCOUNT_BILLING
+    : isPremium
+      ? ROUTES.APP_BILLING
+      : ROUTES.PRICING;
+  const billingCtaTarget = isStandalone ? undefined : "_blank";
+  const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("socratic:theme");
@@ -160,20 +168,31 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    if (
-      !animate ||
-      prefersReducedMotion ||
-      typeof viewTransitionDocument.startViewTransition !== "function"
-    ) {
+    if (!animate || prefersReducedMotion) {
       commitTheme();
       return;
     }
 
-    root.classList.add("theme-wave-transition");
+    if (typeof viewTransitionDocument.startViewTransition !== "function") {
+      root.classList.add("theme-fade-fallback-out");
+
+      window.setTimeout(() => {
+        commitTheme();
+        root.classList.remove("theme-fade-fallback-out");
+        root.classList.add("theme-fade-fallback-in");
+
+        window.setTimeout(() => {
+          root.classList.remove("theme-fade-fallback-in");
+        }, 680);
+      }, 420);
+      return;
+    }
+
+    root.classList.add("theme-fade-transition");
     const transition = viewTransitionDocument.startViewTransition(commitTheme);
 
     void transition.finished.finally(() => {
-      root.classList.remove("theme-wave-transition");
+      root.classList.remove("theme-fade-transition");
     });
   }, [isThemeReady]);
 
@@ -839,8 +858,8 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
 
           <Link
             href={billingCtaHref}
-            target="_blank"
-            rel="noreferrer noopener"
+            target={billingCtaTarget}
+            rel={billingCtaRel}
             className="hidden cursor-pointer items-center justify-center rounded-full p-0 transition-transform duration-250 hover:-translate-y-0.5 lg:inline-flex lg:h-12 lg:w-12"
             aria-label={isPremium ? "Open billing" : "Upgrade to Socratic Plus"}
             data-tooltip={isPremium ? "Socratic +" : "Upgrade to Socratic Plus"}
@@ -859,8 +878,8 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
             {isPremium ? (
               <Link
                 href={billingCtaHref}
-                target="_blank"
-                rel="noreferrer noopener"
+                target={billingCtaTarget}
+                rel={billingCtaRel}
                 className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full p-0"
                 aria-label="Open billing"
                 data-tooltip="Socratic +"
