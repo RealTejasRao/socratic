@@ -3,6 +3,7 @@ import { resolveCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets
 const RESEND_API_URL = "https://api.resend.com/emails";
 const LAUNCH_SUBJECT = "Socratic AI: Try Socratic AI now";
 const SIGNUP_WELCOME_SUBJECT = "We saw what you did 👁️";
+const EARLY_ACCESS_ANNOUNCEMENT_SUBJECT = "We haven't forgotten about you 😗";
 const DEFAULT_FROM_NAME = "Socratic";
 const SOCRATIC_LOGO_URL = "https://www.usesocratic.com/brand/Logo_Dark.png";
 const SOCRATIC_SITE_URL =
@@ -13,6 +14,9 @@ const SOCRATIC_LIGHT_LOGO_URL = resolveCloudinaryPublicAsset(
 );
 const SOCRATIC_MAIL_HERO_IMAGE_URL =
   "https://res.cloudinary.com/dz0v0p86u/image/upload/v1779654052/mail_mc3r5p.jpg";
+const SOCRATIC_EARLY_ACCESS_MAIL_HERO_IMAGE_URL = resolveCloudinaryPublicAsset(
+  "/mail/mail-early-access.webp",
+);
 
 type ResendConfig = {
   apiKey: string;
@@ -236,6 +240,103 @@ function buildSignupWelcomeMessage(email: string): ResendMessage {
   };
 }
 
+function buildEarlyAccessAnnouncementMessage(email: string): ResendMessage {
+  return {
+    to: [email],
+    subject: EARLY_ACCESS_ANNOUNCEMENT_SUBJECT,
+    html: `
+<div style="margin:0;padding:32px 16px;background-color:#f8f6f1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#181512;">
+  <style>
+    @media only screen and (max-width: 640px) {
+      .sa-shell { width: 100% !important; }
+      .sa-pad { padding-left: 24px !important; padding-right: 24px !important; }
+      .sa-hero { height: 260px !important; }
+      .sa-hero-table { height: 260px !important; }
+      .sa-body { padding: 34px 24px 24px 24px !important; }
+      .sa-copy { font-size: 15px !important; line-height: 1.85 !important; }
+      .sa-logo { width: 154px !important; }
+    }
+  </style>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" class="sa-shell" style="width:640px;max-width:640px;background:#fffdf8;border-collapse:collapse;border:1px solid #e6e0d6;border-radius:24px;overflow:hidden;">
+          <tr>
+            <td
+              class="sa-hero"
+              align="center"
+              valign="middle"
+              background="${SOCRATIC_EARLY_ACCESS_MAIL_HERO_IMAGE_URL}"
+              style="height:300px;background-color:#1a1612;background-image:url('${SOCRATIC_EARLY_ACCESS_MAIL_HERO_IMAGE_URL}');background-position:center center;background-size:cover;background-repeat:no-repeat;text-align:center;"
+            >
+              <table role="presentation" width="100%" height="300" cellpadding="0" cellspacing="0" border="0" class="sa-hero-table" style="width:100%;height:300px;">
+                <tr>
+                  <td align="center" valign="middle" style="padding:24px;text-align:center;">
+                    <img src="${SOCRATIC_LIGHT_LOGO_URL}" alt="Socratic AI logo" width="172" class="sa-logo" style="display:block;width:172px;height:auto;border:0;margin:0 auto;" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="sa-body sa-pad" style="padding:40px 44px 26px 44px;">
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:17px;line-height:1.9;color:#201c18;font-weight:600;">
+                Hey, it's been a while.
+              </p>
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                You signed up for Socratic AI early access, back when it was basically a prototype and a promise. Then we went quiet for a bit and built the actual thing.
+              </p>
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                It's fully live now. We even gathered feedback from professors and authors, and we are proud to say that many have called it <strong>"The Best AI for Philosophy"</strong>. And they definitely agreed on the part that it can certainly change and improve how the user thinks in a short period.
+              </p>
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                One important thing: this isn't just for people who already read philosophy. It's for people who just want to think sharper, argue better, and <strong>become smarter overall</strong>. You don't need to know who Nietzsche is. You just need to want a better brain.
+              </p>
+              <p class="sa-copy" style="margin:0 0 22px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                So yeah, just wanted to tell you: it's ready, and you were here before anyone else was.
+              </p>
+              <p class="sa-copy" style="margin:0 0 30px 0;font-size:16px;line-height:1.9;color:#342e28;">
+                Your place is reserved and is waiting to be filled.
+              </p>
+              <p class="sa-copy" style="margin:0;font-size:15px;line-height:1.9;color:#5f564c;font-weight:700;">
+                <a href="${SOCRATIC_SITE_URL}" style="color:#2563eb;text-decoration:underline;font-weight:700;"><strong>usesocratic.com</strong></a>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td class="sa-pad" style="padding:0 44px 34px 44px;">
+              <div style="height:1px;background:#ece7dd;margin:0 0 18px 0;">&nbsp;</div>
+              <p style="margin:0;font-size:12px;line-height:1.7;color:#8d8479;">
+                You received this email because you requested early access to Socratic AI.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+`,
+    text: [
+      "Hey, it's been a while.",
+      "",
+      "You signed up for Socratic AI early access, back when it was basically a prototype and a promise. Then we went quiet for a bit and built the actual thing.",
+      "",
+      'It\'s fully live now. We even gathered feedback from professors and authors, and we are proud to say that many have called it "The Best AI for Philosophy". And they definitely agreed on the part that it can certainly change and improve how the user thinks in a short period.',
+      "",
+      "One important thing: this isn't just for people who already read philosophy. It's for people who just want to think sharper, argue better, and become smarter overall. You don't need to know who Nietzsche is. You just need to want a better brain.",
+      "",
+      "So yeah, just wanted to tell you: it's ready, and you were here before anyone else was.",
+      "",
+      "Your place is reserved and is waiting to be filled.",
+      "",
+      "usesocratic.com",
+      "",
+      "You received this email because you requested early access to Socratic AI.",
+    ].join("\n"),
+  };
+}
+
 async function sendResendMessage(message: ResendMessage): Promise<SendResult> {
   const config = getResendConfig();
   if (!config) return { ok: false, reason: "not_configured" };
@@ -281,4 +382,10 @@ export async function sendSignupWelcomeEmail(
   email: string,
 ): Promise<SendResult> {
   return sendResendMessage(buildSignupWelcomeMessage(email));
+}
+
+export async function sendEarlyAccessAnnouncementEmail(
+  email: string,
+): Promise<SendResult> {
+  return sendResendMessage(buildEarlyAccessAnnouncementMessage(email));
 }

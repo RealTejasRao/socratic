@@ -8,7 +8,10 @@ export type BlogPostSummary = {
   title: string;
   category: string;
   author: string;
+  authorTitle?: string | undefined;
   authorUrl?: string | undefined;
+  authorImagePath?: string | undefined;
+  authorBio?: string | undefined;
   publishedAt: string;
   updatedAt: string;
   readTimeLabel: string;
@@ -30,6 +33,25 @@ type BlogPostRecord = BlogPostSummary & {
 };
 
 const BLOG_POSTS: BlogPostRecord[] = [
+  {
+    slug: "why-generative-ai-compels-us-to-reinvent-the-university",
+    title:
+      "Returning to Socrates: Why Generative Artificial Intelligence Compels Us to Reinvent the University",
+    category: "AI & Learning",
+    author: "Ernesto Baltar",
+    authorTitle: "Senior Lecturer in Philosophy at Rey Juan Carlos University",
+    authorUrl: "https://www.linkedin.com/in/ernesto-baltar-2742622a9/",
+    authorImagePath: "/blog/people/ernesto-baltar.webp",
+    publishedAt: "2026-07-17T15:49:00+05:30",
+    updatedAt: "2026-07-17T15:49:00+05:30",
+    readTimeLabel: "10 min read",
+    excerpt:
+      "Generative AI is forcing universities to recover their deepest mission: forming people who can question, reason, deliberate, and judge for themselves.",
+    coverImagePath:
+      "/blog/images/why-generative-artificial-intelligence-compels-us-to-reinvent-the-university.webp",
+    contentFilePath:
+      "public/blog/content/why_generative_ai_compels_us_to_reinvent_the_university.md",
+  },
   {
     slug: "ai-boosted-religion-neolithic-art-spirituality",
     title: "AI-Boosted Religion Is Based on Neolithic Art and Spirituality",
@@ -363,7 +385,10 @@ export function getAllBlogPostSummaries(
     title: post.title,
     category: post.category,
     author: post.author,
+    authorTitle: post.authorTitle,
     authorUrl: post.authorUrl,
+    authorImagePath: post.authorImagePath,
+    authorBio: post.authorBio,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
     readTimeLabel: post.readTimeLabel,
@@ -390,7 +415,10 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     title: post.title,
     category: post.category,
     author: post.author,
+    authorTitle: post.authorTitle,
     authorUrl: post.authorUrl,
+    authorImagePath: post.authorImagePath,
+    authorBio: post.authorBio,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
     readTimeLabel: post.readTimeLabel,

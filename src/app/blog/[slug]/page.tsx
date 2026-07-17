@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
@@ -239,6 +240,11 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
     "AI-Boosted Religion",
     "Neolithic Art and Spirituality",
   ],
+  "why-generative-ai-compels-us-to-reinvent-the-university": [
+    "Returning to Socrates:",
+    "Generative Artificial Intelligence",
+    "Reinvent the University",
+  ],
 };
 
 function escapeRegExp(value: string) {
@@ -333,6 +339,95 @@ function normalizeHeadingText(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
+function AuthorName({ post }: { post: BlogPost }) {
+  if (!post.authorUrl) {
+    return <>{post.author}</>;
+  }
+
+  return (
+    <a
+      href={post.authorUrl}
+      target="_blank"
+      rel="noreferrer"
+      className="text-black/74 underline decoration-black/20 underline-offset-3 transition-colors hover:text-[#a01717] hover:decoration-[#a01717]/45"
+    >
+      {post.author}
+    </a>
+  );
+}
+
+function AuthorCredit({ post }: { post: BlogPost }) {
+  if (!post.authorImagePath && !post.authorTitle) {
+    return (
+      <p className={`${interClassName} mt-6 text-[0.84rem] text-black/56`}>
+        <AuthorName post={post} /> • {post.readTimeLabel}
+      </p>
+    );
+  }
+
+  return <AuthorFollowCard post={post} className="mt-10" />;
+}
+
+function AuthorFollowCard({
+  post,
+  className = "mt-14",
+}: {
+  post: BlogPost;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`${className} rounded-[8px] border border-black/10 bg-[#fafafa] px-5 py-5 sm:px-6`}
+    >
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          {post.authorImagePath ? (
+            <Image
+              src={post.authorImagePath}
+              alt={post.author}
+              width={56}
+              height={56}
+              className="h-14 w-14 rounded-full border border-black/10 object-cover"
+            />
+          ) : null}
+          <div className={`${interClassName}`}>
+            <h3 className="text-[1rem] font-semibold text-black/90">
+              <AuthorName post={post} />
+            </h3>
+            {post.authorTitle ? (
+              <p className="mt-1 text-[0.86rem] leading-snug text-black/58">
+                {post.authorTitle}
+              </p>
+            ) : null}
+          </div>
+        </div>
+        {post.authorUrl ? (
+          <a
+            href={post.authorUrl}
+            target="_blank"
+            rel="noreferrer"
+            className={`${interClassName} inline-flex items-center justify-center gap-2 rounded-[6px] border border-black/12 bg-white px-4 py-2.5 text-[0.9rem] font-medium text-black/76 transition-colors duration-200 hover:border-[#0a66c2]/40 hover:text-[#0a66c2]`}
+          >
+            <Linkedin size={16} aria-hidden="true" className="text-[#0a66c2]" />
+            <span>
+              Follow <strong className="font-semibold">{post.author}</strong> on
+              LinkedIn
+            </span>
+          </a>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function AuthorEndnote({ post }: { post: BlogPost }) {
+  if (!post.authorImagePath && !post.authorTitle && !post.authorUrl) {
+    return null;
+  }
+
+  return <AuthorFollowCard post={post} />;
+}
+
 function PostContent({ post }: { post: BlogPost }) {
   const rawBlocks = toMarkdownBlocks(post.markdown).filter((block) => {
     if (block.type !== "p") {
@@ -375,6 +470,8 @@ function PostContent({ post }: { post: BlogPost }) {
   return (
     <article>
       {blocks.map((block, index) => renderMarkdownBlock(block, index))}
+
+      <AuthorEndnote post={post} />
 
       <div className="mt-14 rounded-[3px] border border-black/10 bg-[#f0f0f0] px-6 py-7 sm:px-9 sm:py-9">
         <div className="grid gap-7 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
@@ -512,21 +609,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               >
                 {post.excerpt}
               </p>
-              <p className={`${interClassName} mt-6 text-[0.84rem] text-black/56`}>
-                {post.authorUrl ? (
-                  <a
-                    href={post.authorUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-black/62 underline decoration-black/20 underline-offset-3 transition-colors hover:text-[#a01717] hover:decoration-[#a01717]/45"
-                  >
-                    {post.author}
-                  </a>
-                ) : (
-                  post.author
-                )}{" "}
-                • {post.readTimeLabel}
-              </p>
+              <AuthorCredit post={post} />
 
               <div className="mt-12 border-t border-black/10 pt-6">
                 <PostContent post={post} />
