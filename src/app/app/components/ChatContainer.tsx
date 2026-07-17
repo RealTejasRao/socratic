@@ -1728,28 +1728,28 @@ export default function ChatContainer({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.98 }}
           transition={{ duration: 0.2 }}
-          className="app-card app-upgrade-modal w-full max-w-135 rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]"
+          className="app-card app-upgrade-modal w-full max-w-135 rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)] max-[520px]:max-w-[calc(100vw-2rem)] max-[520px]:px-5"
           onClick={(event) => event.stopPropagation()}
         >
-          <h3 className="app-upgrade-title inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
-            <span>
+          <h3 className="app-upgrade-title flex items-start justify-between gap-3 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif] max-[520px]:text-[29px]">
+            <span className="min-w-0">
               Go Unlimited with{" "}
               <span style={{ color: "#CFA43A" }}>
                 Socratic Plus
               </span>
             </span>
-            <PremiumCrownIcon className="text-[36px]" />
+            <PremiumCrownIcon className="mt-1 shrink-0 text-[36px] max-[520px]:text-[44px]" />
           </h3>
           <p className="app-upgrade-copy mt-2 text-[13px] leading-6 text-[#746758]">
             {upgradePromptSmallText}
           </p>
-          <div className="mt-5 flex items-center gap-2.5">
+          <div className="mt-5 flex items-center gap-2.5 max-[520px]:flex-col max-[520px]:items-stretch">
             <Link
               href={ROUTES.PRICING}
               onClick={handlePricingClick}
               aria-busy={isPricingNavigationPending}
               className={cn(
-                "app-upgrade-primary inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]",
+                "app-upgrade-primary inline-flex items-center justify-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]",
                 isPricingNavigationPending && "pointer-events-none opacity-90",
               )}
             >
@@ -1763,7 +1763,7 @@ export default function ChatContainer({
             <button
               type="button"
               onClick={() => setShowUpgradePrompt(false)}
-              className="app-upgrade-secondary inline-flex rounded-[14px] border border-[#d8ccbc] bg-[#fdf9f2] px-4 py-2 text-[13px] text-[#5f5344] transition hover:bg-[#f4ece0]"
+              className="app-upgrade-secondary inline-flex justify-center rounded-[14px] border border-[#d8ccbc] bg-[#fdf9f2] px-4 py-2 text-[13px] text-[#5f5344] transition hover:bg-[#f4ece0]"
             >
               Keep exploring free
             </button>

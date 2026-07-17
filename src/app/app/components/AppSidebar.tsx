@@ -693,7 +693,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             className="app-sidebar-mode-color-socratic shrink-0 text-teal-600"
           />
         )}
-        {label ? <span>Socratic (General) Mode</span> : null}
+        {label ? (
+          <span>
+            {navigatingModeLink === "SOCRATIC"
+              ? "Opening..."
+              : "Socratic (General) Mode"}
+          </span>
+        ) : null}
       </Link>
       <Link
         href={DEBATE_MODE_HREF}
@@ -715,7 +721,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             className="app-sidebar-mode-color-debate shrink-0 text-rose-600"
           />
         )}
-        {label ? <span>Debate mode</span> : null}
+        {label ? (
+          <span>{navigatingModeLink === "DEBATE" ? "Opening..." : "Debate mode"}</span>
+        ) : null}
       </Link>
       <Link
         href={ROLEPLAY_MODE_HREF}
@@ -736,7 +744,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             className="app-sidebar-mode-color-roleplay shrink-0 text-amber-500"
           />
         )}
-        {label ? <span>Talk to a philosopher</span> : null}
+        {label ? (
+          <span>
+            {navigatingModeLink === "ROLEPLAY"
+              ? "Opening..."
+              : "Talk to a philosopher"}
+          </span>
+        ) : null}
       </Link>
     </div>
   );
