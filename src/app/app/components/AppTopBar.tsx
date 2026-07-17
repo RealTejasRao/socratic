@@ -123,11 +123,7 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
       ? `Check out this Socratic AI chat: ${shareTitle}`
       : "Check out this Socratic AI chat",
   );
-  const billingCtaHref = isStandalone
-    ? ROUTES.APP_ACCOUNT_BILLING
-    : isPremium
-      ? ROUTES.APP_BILLING
-      : ROUTES.PRICING;
+  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const billingCtaTarget = isStandalone ? undefined : "_blank";
   const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
 

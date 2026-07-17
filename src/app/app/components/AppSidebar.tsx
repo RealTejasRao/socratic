@@ -228,11 +228,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const newChatFeedbackTimeoutRef = useRef<number | null>(null);
-  const billingCtaHref = isStandalone
-    ? ROUTES.APP_ACCOUNT_BILLING
-    : isPremium
-      ? ROUTES.APP_BILLING
-      : ROUTES.PRICING;
+  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
   const billingCtaTarget = isStandalone ? undefined : "_blank";
   const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
