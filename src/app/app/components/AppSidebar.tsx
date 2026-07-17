@@ -228,8 +228,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const newChatFeedbackTimeoutRef = useRef<number | null>(null);
-  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
+  const billingCtaHref = isStandalone
+    ? ROUTES.APP_ACCOUNT_BILLING
+    : isPremium
+      ? ROUTES.APP_BILLING
+      : ROUTES.PRICING;
   const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
+  const billingCtaTarget = isStandalone ? undefined : "_blank";
+  const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
   const activeSettingsMeta = SETTINGS_TAB_META[activeSettingsTab];
 
   useEffect(() => {
@@ -829,8 +835,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               ) : null}
               <Link
                 href={billingCtaHref}
-                target="_blank"
-                rel="noreferrer noopener"
+                target={billingCtaTarget}
+                rel={billingCtaRel}
                 className="app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition"
                 aria-label={billingCtaLabel}
                 data-tooltip={billingCtaLabel}
@@ -907,8 +913,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               ) : null}
               <Link
                 href={billingCtaHref}
-                target="_blank"
-                rel="noreferrer noopener"
+                target={billingCtaTarget}
+                rel={billingCtaRel}
                 className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
               >
                 <Crown size={16} className="shrink-0" />
@@ -1060,8 +1066,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           ) : null}
           <Link
             href={billingCtaHref}
-            target="_blank"
-            rel="noreferrer noopener"
+            target={billingCtaTarget}
+            rel={billingCtaRel}
             onClick={() => setIsMobileSidebarOpen(false)}
             className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
           >

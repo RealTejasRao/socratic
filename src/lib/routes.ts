@@ -12,6 +12,7 @@ export const ROUTES = {
   SIGN_UP: "/sign-up" as Route,
   APP: "/app" as Route,
   APP_ROLEPLAY: "/app?mode=roleplay" as Route,
+  APP_ACCOUNT_BILLING: "/app/billing" as Route,
   APP_BILLING: "/billing" as Route,
   NOTIFICATIONS: "/notifications" as Route,
   SETTINGS_APP: "/settings-app" as Route,

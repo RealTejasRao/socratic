@@ -705,7 +705,7 @@ function AppQuickTour({
 
   return (
     <motion.div
-      className="pointer-events-none fixed inset-0 z-80"
+      className="pointer-events-none fixed inset-0 z-[120]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -757,12 +757,14 @@ function AppQuickTour({
         ))}
       </svg>
 
+      <div className="pointer-events-auto fixed inset-0 z-[121]" aria-hidden="true" />
+
       <motion.div
         ref={cardRef}
         role="dialog"
         aria-modal="true"
         aria-label={`${step.title} introduction`}
-        className="app-tour-card pointer-events-auto fixed overflow-y-auto overscroll-contain rounded-[24px] border p-0 text-white"
+        className="app-tour-card pointer-events-auto fixed z-[122] overflow-y-auto overscroll-contain rounded-[24px] border p-0 text-white"
         style={cardStyle}
         initial={{ opacity: 0, y: 18, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -862,7 +864,7 @@ function AppQuickTour({
 
       {step.id === "debate" && anchorFrame ? (
         <motion.div
-          className="app-tour-report-preview pointer-events-auto fixed overflow-hidden rounded-[20px] border"
+          className="app-tour-report-preview pointer-events-none fixed overflow-hidden rounded-[20px] border"
           data-side={
             isCompactTour
               ? compactPreviewFitsBelow
@@ -971,12 +973,17 @@ export default function ChatContainer({
   const [showQuickTour, setShowQuickTour] = useState(false);
   const [quickTourStep, setQuickTourStep] = useState(0);
   const [activeSessionId, setActiveSessionId] = useState(sessionId);
+  const [roleplayStarterDraft, setRoleplayStarterDraft] = useState<{
+    id: string;
+    content: string;
+  } | null>(null);
   const tempIdRef = useRef(0);
   const autoSendTriggeredRef = useRef(false);
   const activeStreamControllerRef = useRef<AbortController | null>(null);
   const finalizeRequestedRef = useRef(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const roleplayStartTimeoutRef = useRef<number | null>(null);
+  const roleplayComposerRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -1109,6 +1116,7 @@ export default function ChatContainer({
     setRoleplayNavigationDirection(-1);
     setStartingRoleplayId(null);
     setPendingRoleplayId(null);
+    setRoleplayStarterDraft(null);
 
     if (updateUrl) {
       router.replace(getModeHref(mode), { scroll: false });
@@ -1120,6 +1128,7 @@ export default function ChatContainer({
     scrollRoleplaySetupToTop();
     setRoleplayNavigationDirection(1);
     setStartingRoleplayId(philosopherId);
+    setRoleplayStarterDraft(null);
 
     if (!activeSessionId && messages.length === 0) {
       window.history.pushState(
@@ -1141,6 +1150,7 @@ export default function ChatContainer({
     setRoleplayNavigationDirection(-1);
     setStartingRoleplayId(null);
     setPendingRoleplayId(null);
+    setRoleplayStarterDraft(null);
 
     if (!activeSessionId && messages.length === 0) {
       window.history.replaceState(null, "", getModeHref("ROLEPLAY"));
@@ -1160,9 +1170,17 @@ export default function ChatContainer({
     setRoleplayNavigationDirection(-1);
     setStartingRoleplayId(null);
     setPendingRoleplayId(null);
+    setRoleplayStarterDraft(null);
     setShowWinnerReveal(false);
     finalizeRequestedRef.current = false;
     setActiveSessionId(undefined);
+  }
+
+  function selectRoleplayStarterPrompt(prompt: string) {
+    setRoleplayStarterDraft({
+      id: createTempId("roleplay-starter"),
+      content: prompt,
+    });
   }
 
   function openRoleplayLibraryFromSession() {
@@ -1242,6 +1260,21 @@ export default function ChatContainer({
   useEffect(() => {
     void refreshBillingState();
   }, []);
+
+  useEffect(() => {
+    if (!roleplayStarterDraft) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      roleplayComposerRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+        block: "center",
+      });
+    });
+  }, [roleplayStarterDraft]);
 
   useEffect(() => {
     return () => {
@@ -1765,6 +1798,61 @@ export default function ChatContainer({
     return `${prefix}-${tempIdRef.current}`;
   }
 
+  function createAssistantStreamUpdater(messageId: string) {
+    let content = "";
+    let pendingContent: string | null = null;
+    let animationFrameId: number | null = null;
+
+    function flushPendingContent() {
+      const nextContent = pendingContent;
+      pendingContent = null;
+
+      if (nextContent === null) {
+        return;
+      }
+
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.id === messageId && message.content !== nextContent
+            ? { ...message, content: nextContent }
+            : message,
+        ),
+      );
+    }
+
+    return {
+      append(chunk: string) {
+        content += chunk;
+        pendingContent = content;
+
+        if (animationFrameId !== null) {
+          return;
+        }
+
+        animationFrameId = window.requestAnimationFrame(() => {
+          animationFrameId = null;
+          flushPendingContent();
+        });
+      },
+      flush() {
+        if (animationFrameId !== null) {
+          window.cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+
+        flushPendingContent();
+      },
+      cancel() {
+        if (animationFrameId !== null) {
+          window.cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+
+        pendingContent = null;
+      },
+    };
+  }
+
   function isAbortError(error: unknown) {
     return error instanceof Error && error.name === "AbortError";
   }
@@ -1830,6 +1918,8 @@ export default function ChatContainer({
     const tempId = createTempId("temp");
     const startedWithoutSession = !activeSessionId;
     let assistantMessageId: string | null = null;
+    let streamUpdater: ReturnType<typeof createAssistantStreamUpdater> | null =
+      null;
     const { content, attachments, webSearch } = payload;
 
     const optimisticMessage: ChatMessage = {
@@ -1849,6 +1939,7 @@ export default function ChatContainer({
 
       const nextAssistantMessageId = createTempId("assistant-temp");
       assistantMessageId = nextAssistantMessageId;
+      streamUpdater = createAssistantStreamUpdater(nextAssistantMessageId);
 
       setMessages((prev) => [
         ...prev,
@@ -1916,14 +2007,10 @@ export default function ChatContainer({
 
         const chunk = decoder.decode(value);
 
-        setMessages((prev) =>
-          prev.map((message) =>
-            message.id === assistantMessageId
-              ? { ...message, content: `${message.content}${chunk}` }
-              : message,
-          ),
-        );
+        streamUpdater.append(chunk);
       }
+
+      streamUpdater.flush();
 
       const createdSessionFromNewChat =
         startedWithoutSession && Boolean(returnedSessionId);
@@ -1949,6 +2036,8 @@ export default function ChatContainer({
 
       void refreshBillingState();
     } catch (error) {
+      streamUpdater?.cancel();
+
       if (!isAbortError(error)) {
         setMessages((prev) =>
           prev.filter((message) => message.id !== assistantMessageId),
@@ -2026,6 +2115,8 @@ export default function ChatContainer({
   async function handleRegenerate() {
     if (!activeSessionId || isStreaming || isDebateCompleted) return;
     let assistantMessageId: string | null = null;
+    let streamUpdater: ReturnType<typeof createAssistantStreamUpdater> | null =
+      null;
 
     try {
       setIsStreaming(true);
@@ -2034,6 +2125,7 @@ export default function ChatContainer({
 
       const nextAssistantMessageId = createTempId("assistant-temp");
       assistantMessageId = nextAssistantMessageId;
+      streamUpdater = createAssistantStreamUpdater(nextAssistantMessageId);
 
       setMessages((prev) => [
         ...prev.slice(0, -1),
@@ -2084,16 +2176,14 @@ export default function ChatContainer({
 
         const chunk = decoder.decode(value);
 
-        setMessages((prev) =>
-          prev.map((message) =>
-            message.id === nextAssistantMessageId
-              ? { ...message, content: `${message.content}${chunk}` }
-              : message,
-          ),
-        );
+        streamUpdater.append(chunk);
       }
 
+      streamUpdater.flush();
+
     } catch (error) {
+      streamUpdater?.cancel();
+
       if (!isAbortError(error)) {
         setMessages((prev) =>
           prev.filter((message) => message.id !== assistantMessageId),
@@ -2126,6 +2216,8 @@ export default function ChatContainer({
     );
     if (cutoffIndex < 0) return;
     let assistantMessageId: string | null = null;
+    let streamUpdater: ReturnType<typeof createAssistantStreamUpdater> | null =
+      null;
 
     try {
       setIsStreaming(true);
@@ -2134,6 +2226,7 @@ export default function ChatContainer({
 
       const nextAssistantMessageId = createTempId("assistant-temp");
       assistantMessageId = nextAssistantMessageId;
+      streamUpdater = createAssistantStreamUpdater(nextAssistantMessageId);
 
       setMessages((prev) => [
         ...prev.slice(0, cutoffIndex),
@@ -2212,18 +2305,16 @@ export default function ChatContainer({
 
         const chunk = decoder.decode(value);
 
-        setMessages((prev) =>
-          prev.map((message) =>
-            message.id === nextAssistantMessageId
-              ? { ...message, content: `${message.content}${chunk}` }
-              : message,
-          ),
-        );
+        streamUpdater.append(chunk);
       }
+
+      streamUpdater.flush();
 
       setEditingMessage(null);
       setEditDraft("");
     } catch (error) {
+      streamUpdater?.cancel();
+
       if (!isAbortError(error)) {
         setMessages((prev) => prev.slice(0, cutoffIndex));
       }
@@ -2345,7 +2436,10 @@ export default function ChatContainer({
                       className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <GraduationCap size={15} />
+                        <GraduationCap
+                          size={15}
+                          className="app-mode-switch-color-socratic"
+                        />
                         Socratic
                       </span>
                       {visibleModeSelection === "SOCRATIC" ? (
@@ -2373,7 +2467,10 @@ export default function ChatContainer({
                       className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Swords size={15} />
+                        <Swords
+                          size={15}
+                          className="app-mode-switch-color-debate"
+                        />
                         Debate
                         {!billing.features.debateMode ? (
                           <Crown size={12} className="text-[#CFA43A]" />
@@ -2397,7 +2494,10 @@ export default function ChatContainer({
                       className="app-mode-switch-option inline-flex w-full items-center justify-between gap-3 rounded-[14px] px-2 py-1.5 text-[14px] transition"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <ScrollText size={15} />
+                        <ScrollText
+                          size={15}
+                          className="app-mode-switch-color-roleplay"
+                        />
                         Roleplay
                       </span>
                       {visibleModeSelection === "ROLEPLAY" ? (
@@ -2587,13 +2687,7 @@ export default function ChatContainer({
                                 <button
                                   key={prompt}
                                   type="button"
-                                  onClick={() =>
-                                    handleSend({
-                                      content: prompt,
-                                      attachments: [],
-                                      webSearch: false,
-                                    })
-                                  }
+                                  onClick={() => selectRoleplayStarterPrompt(prompt)}
                                   disabled={isStreaming}
                                   className="app-roleplay-starter-prompt flex cursor-pointer items-center gap-3 rounded-[12px] border px-3.5 py-2.5 text-left text-[12px] leading-5 transition disabled:cursor-not-allowed disabled:opacity-50"
                                 >
@@ -2606,25 +2700,29 @@ export default function ChatContainer({
                             )}
                           </div>
 
-                          <MessageInput
-                            key={`roleplay-${pendingRoleplayPhilosopher.id}`}
-                            onSend={handleSend}
-                            onRestrictionReached={(reason) =>
-                              openUpgradePrompt({ reason })
-                            }
-                            onStop={handleStopStreaming}
-                            isStreaming={isStreaming}
-                            isPremium={billing.isPremium}
-                            dailyMessagesRemaining={
-                              billing.usage.dailyMessagesRemaining
-                            }
-                            dailyImageUploadsRemaining={
-                              billing.usage.dailyImageUploadsRemaining
-                            }
-                            initialValue={undefined}
-                            variant="default"
-                            placeholder={inputPlaceholder}
-                          />
+                          <div ref={roleplayComposerRef}>
+                            <MessageInput
+                              key={`roleplay-${pendingRoleplayPhilosopher.id}-${roleplayStarterDraft?.id ?? "empty"}`}
+                              onSend={handleSend}
+                              onRestrictionReached={(reason) =>
+                                openUpgradePrompt({ reason })
+                              }
+                              onStop={handleStopStreaming}
+                              isStreaming={isStreaming}
+                              isPremium={billing.isPremium}
+                              dailyMessagesRemaining={
+                                billing.usage.dailyMessagesRemaining
+                              }
+                              dailyImageUploadsRemaining={
+                                billing.usage.dailyImageUploadsRemaining
+                              }
+                              initialValue={roleplayStarterDraft?.content}
+                              focusOnMount={Boolean(roleplayStarterDraft)}
+                              highlightOnMount={Boolean(roleplayStarterDraft)}
+                              variant="default"
+                              placeholder={inputPlaceholder}
+                            />
+                          </div>
                         </motion.div>
                       </motion.div>
                     ) : null}
@@ -2678,6 +2776,15 @@ export default function ChatContainer({
         editDraft={editDraft}
         disableRevisionActions={isDebateSession}
         topContent={roleplaySessionTopContent}
+        roleplaySpeaker={
+          isRoleplaySession && visibleRoleplayPhilosopher
+            ? {
+                name: visibleRoleplayPhilosopher.philosopherName,
+                imagePath: visibleRoleplayPhilosopher.imagePath,
+                accent: visibleRoleplayPhilosopher.accent,
+              }
+            : null
+        }
       />
 
       {!isDebateCompleted ? (

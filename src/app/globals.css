@@ -394,39 +394,77 @@ svg {
     stroke 460ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html.theme-wave-transition::view-transition-group(root) {
-  animation-timing-function: var(--expo-out);
+html.theme-fade-transition,
+html.theme-fade-transition *,
+html.theme-fade-transition *::before,
+html.theme-fade-transition *::after {
+  transition: none !important;
 }
 
-html.theme-wave-transition::view-transition-new(root) {
-  -webkit-mask: url("/assets/custom-svg.svg") top left / 0 no-repeat;
-  mask: url("/assets/custom-svg.svg") top left / 0 no-repeat;
-  -webkit-mask-origin: top left;
-  mask-origin: top left;
-  animation: themeScale 1.5s;
+html.theme-fade-transition::view-transition-group(root) {
+  animation-duration: 1300ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.theme-fade-transition::view-transition-old(root),
+html.theme-fade-transition::view-transition-new(root) {
+  animation-duration: 1300ms;
   animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  mix-blend-mode: normal;
 }
 
-html.theme-wave-transition::view-transition-old(root),
-html.app-dark.theme-wave-transition::view-transition-old(root) {
-  animation: themeScale 1.5s;
-  animation-fill-mode: both;
-  z-index: -1;
-  transform-origin: top left;
+html.theme-fade-transition::view-transition-old(root) {
+  animation-name: themeRootFadeOut;
 }
 
-@keyframes themeScale {
+html.theme-fade-transition::view-transition-new(root) {
+  animation-name: themeRootFadeIn;
+}
+
+html.theme-fade-fallback-out body,
+html.theme-fade-fallback-in body {
+  transition: opacity 650ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html.theme-fade-fallback-out body {
+  opacity: 0;
+}
+
+html.theme-fade-fallback-in body {
+  opacity: 1;
+}
+
+@keyframes themeRootFadeOut {
+  from {
+    opacity: 1;
+  }
+
   to {
-    -webkit-mask-size: 200vmax;
-    mask-size: 200vmax;
+    opacity: 0;
+  }
+}
+
+@keyframes themeRootFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.theme-wave-transition::view-transition-group(root),
-  html.theme-wave-transition::view-transition-old(root),
-  html.theme-wave-transition::view-transition-new(root) {
+  html.theme-fade-transition::view-transition-group(root),
+  html.theme-fade-transition::view-transition-old(root),
+  html.theme-fade-transition::view-transition-new(root) {
     animation-duration: 1ms;
+  }
+
+  html.theme-fade-fallback-out body,
+  html.theme-fade-fallback-in body {
+    transition-duration: 1ms !important;
   }
 }
 
@@ -711,6 +749,24 @@ html.app-dark.theme-wave-transition::view-transition-old(root) {
   stroke: currentColor;
 }
 
+.app-mode-switch-color-socratic,
+.app-mode-switch-option[data-tour-active="true"] .app-mode-switch-color-socratic {
+  color: #0d9488 !important;
+  stroke: currentColor;
+}
+
+.app-mode-switch-color-debate,
+.app-mode-switch-option[data-tour-active="true"] .app-mode-switch-color-debate {
+  color: #e11d48 !important;
+  stroke: currentColor;
+}
+
+.app-mode-switch-color-roleplay,
+.app-mode-switch-option[data-tour-active="true"] .app-mode-switch-color-roleplay {
+  color: #f59e0b !important;
+  stroke: currentColor;
+}
+
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-links"] {
   position: relative;
   z-index: 81;
@@ -742,13 +798,24 @@ html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-rolepla
   animation: none !important;
 }
 
-html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] svg,
-html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg,
-html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] span,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] span,
 html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] span {
   color: #141414 !important;
+}
+
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] svg.app-sidebar-mode-color-socratic {
+  color: #0d9488 !important;
+  stroke: currentColor;
+}
+
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg.app-sidebar-mode-color-debate {
+  color: #e11d48 !important;
+  stroke: currentColor;
+}
+
+html[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg.app-sidebar-mode-color-roleplay {
+  color: #f59e0b !important;
   stroke: currentColor;
 }
 
@@ -759,13 +826,42 @@ html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mod
   filter: brightness(1.45) contrast(1.08) saturate(1.12);
 }
 
-html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] svg,
-html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg,
-html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] span,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] span,
 html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] span {
   color: rgba(255, 255, 255, 0.94) !important;
+}
+
+html.app-dark .app-mode-switch-color-socratic,
+html.app-dark .app-mode-switch-option[data-tour-active="true"] .app-mode-switch-color-socratic {
+  color: #2dd4bf !important;
+  stroke: currentColor;
+}
+
+html.app-dark .app-mode-switch-color-debate,
+html.app-dark .app-mode-switch-option[data-tour-active="true"] .app-mode-switch-color-debate {
+  color: #fb7185 !important;
+  stroke: currentColor;
+}
+
+html.app-dark .app-mode-switch-color-roleplay,
+html.app-dark .app-mode-switch-option[data-tour-active="true"] .app-mode-switch-color-roleplay {
+  color: #fbbf24 !important;
+  stroke: currentColor;
+}
+
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-socratic"] svg.app-sidebar-mode-color-socratic {
+  color: #2dd4bf !important;
+  stroke: currentColor;
+}
+
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-debate"] svg.app-sidebar-mode-color-debate {
+  color: #fb7185 !important;
+  stroke: currentColor;
+}
+
+html.app-dark[data-app-tour-step="switching"] [data-app-tour-target="sidebar-mode-roleplay"] svg.app-sidebar-mode-color-roleplay {
+  color: #fbbf24 !important;
   stroke: currentColor;
 }
 
@@ -4103,6 +4199,39 @@ html.app-dark .app-greeting-heading .hero-caret {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.app-input-shell-draft-inserted {
+  outline: 2px solid rgba(217, 182, 111, 0.78) !important;
+  outline-offset: 3px;
+  box-shadow:
+    inset 0 0 0 1px rgba(217, 182, 111, 0.34),
+    0 14px 34px rgba(217, 182, 111, 0.22) !important;
+  animation: composerDraftInserted 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center bottom;
+}
+
+@keyframes composerDraftInserted {
+  0% {
+    filter: brightness(1);
+    transform: translateY(0) scale(1);
+  }
+
+  28% {
+    filter: brightness(1.035);
+    transform: translateY(-4px) scale(1.012);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-input-shell-draft-inserted {
+    animation-duration: 1ms;
   }
 }
 

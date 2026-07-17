@@ -31,8 +31,23 @@ const ROLEPLAY_LIBRARY_ORDER: RoleplayPhilosopherId[] = [
   "NIETZSCHE",
   "SOCRATES",
   "ARISTOTLE",
+  "BEAUVOIR",
+  "BUDDHA",
+  "WITTGENSTEIN",
+  "AYN_RAND",
+  "BERTRAND_RUSSELL",
+  "DIOGENES",
+  "VOLTAIRE",
   "PLATO",
   "KANT",
+  "FOUCAULT",
+  "CONFUCIUS",
+  "LAOZI",
+  "SUN_TZU",
+  "HANNAH_ARENDT",
+  "NUSSBAUM",
+  "SIMONE_WEIL",
+  "KAUTILYA",
   "FREUD",
   "CAMUS",
   "SARTRE",
@@ -227,7 +242,7 @@ export default function RoleplayModeSetup({
               showFilteringState();
               setQuery(event.target.value);
             }}
-            placeholder="Search philosophers..."
+            placeholder="Search philosopher or category..."
             className="app-roleplay-search-input w-full rounded-[14px] border px-11 py-3 text-[14px] outline-none transition"
           />
           {query ? (
