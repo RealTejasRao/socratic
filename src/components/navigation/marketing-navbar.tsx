@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { MarketingNavAvatar } from "@/src/components/navigation/marketing-nav-avatar";
+import { MarketingStandaloneBackLink } from "@/src/components/navigation/marketing-standalone-back-link";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { StandaloneModeGate } from "@/src/components/pwa/standalone-mode-gate";
 import { ROUTES } from "@/src/lib/routes";
@@ -14,6 +15,7 @@ type MarketingNavbarProps = {
   instrumentSerifClassName: string;
   homeHref?: string;
   sectionPrefix?: string;
+  standaloneAction?: "upgrade" | "back";
 };
 
 export async function MarketingNavbar({
@@ -21,6 +23,7 @@ export async function MarketingNavbar({
   instrumentSerifClassName,
   homeHref = ROUTES.HOME,
   sectionPrefix = "",
+  standaloneAction = "upgrade",
 }: MarketingNavbarProps) {
   const { userId: clerkUserId } = await auth();
   const billing = clerkUserId
@@ -147,12 +150,18 @@ export async function MarketingNavbar({
             priority
           />
         </a>
-        <a
-          href={pricingHref}
-          className={`${interClassName} inline-flex h-9 min-w-14 items-center justify-center rounded-full px-3 text-[0.84rem] font-semibold tracking-[0.01em] text-[#a01717] transition-colors hover:bg-[#a01717]/8`}
-        >
-          Upgrade
-        </a>
+        {standaloneAction === "back" ? (
+          <MarketingStandaloneBackLink
+            className={`${interClassName} inline-flex h-9 min-w-16 items-center justify-center gap-1.5 rounded-full px-3 text-[0.84rem] font-semibold tracking-[0.01em] text-[#a01717] transition-colors hover:bg-[#a01717]/8`}
+          />
+        ) : (
+          <a
+            href={pricingHref}
+            className={`${interClassName} inline-flex h-9 min-w-14 items-center justify-center rounded-full px-3 text-[0.84rem] font-semibold tracking-[0.01em] text-[#a01717] transition-colors hover:bg-[#a01717]/8`}
+          >
+            Upgrade
+          </a>
+        )}
       </nav>
     </header>
   );

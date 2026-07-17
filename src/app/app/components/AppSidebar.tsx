@@ -217,6 +217,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
   const [isHomeNavigating, setIsHomeNavigating] = useState(false);
   const [isNewChatNavigating, setIsNewChatNavigating] = useState(false);
+  const [isBillingNavigating, setIsBillingNavigating] = useState(false);
   const [navigatingModeLink, setNavigatingModeLink] =
     useState<SidebarModeLink | null>(null);
   const [
@@ -228,6 +229,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const newChatFeedbackTimeoutRef = useRef<number | null>(null);
+  const billingFeedbackTimeoutRef = useRef<number | null>(null);
   const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
   const billingCtaTarget = isStandalone ? undefined : "_blank";
@@ -358,8 +360,23 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       if (newChatFeedbackTimeoutRef.current !== null) {
         window.clearTimeout(newChatFeedbackTimeoutRef.current);
       }
+      if (billingFeedbackTimeoutRef.current !== null) {
+        window.clearTimeout(billingFeedbackTimeoutRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (pathname === ROUTES.PRICING || pathname === ROUTES.APP_BILLING) {
+      const timeoutId = window.setTimeout(() => {
+        setIsBillingNavigating(false);
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (!isHomeNavigating) {
@@ -601,6 +618,32 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     setIsHomeNavigating(true);
   }
 
+  function handleBillingCtaClick(event: ReactMouseEvent<HTMLAnchorElement>) {
+    if (event.defaultPrevented || isBillingNavigating) {
+      return;
+    }
+
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      billingCtaTarget === "_blank"
+    ) {
+      return;
+    }
+
+    setIsBillingNavigating(true);
+    if (billingFeedbackTimeoutRef.current !== null) {
+      window.clearTimeout(billingFeedbackTimeoutRef.current);
+    }
+    billingFeedbackTimeoutRef.current = window.setTimeout(() => {
+      setIsBillingNavigating(false);
+      billingFeedbackTimeoutRef.current = null;
+    }, 12000);
+  }
+
   const contactLink = (
     iconSize: number,
     className: string,
@@ -833,11 +876,16 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 href={billingCtaHref}
                 target={billingCtaTarget}
                 rel={billingCtaRel}
-                className="app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition"
+                onClick={handleBillingCtaClick}
+                className={`app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition ${isBillingNavigating ? "pointer-events-none opacity-90" : ""}`}
                 aria-label={billingCtaLabel}
                 data-tooltip={billingCtaLabel}
               >
-                <Crown size={17} />
+                {isBillingNavigating ? (
+                  <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
+                ) : (
+                  <Crown size={17} />
+                )}
               </Link>
               <button
                 type="button"
@@ -911,15 +959,25 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 href={billingCtaHref}
                 target={billingCtaTarget}
                 rel={billingCtaRel}
-                className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
+                onClick={handleBillingCtaClick}
+                className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isBillingNavigating ? "pointer-events-none opacity-90" : ""}`}
               >
-                <Crown size={16} className="shrink-0" />
-                {isPremium ? (
-                  <span style={{ color: "#CFA43A" }}>Socratic +</span>
+                {isBillingNavigating ? (
+                  <>
+                    <RoseCurveLoader className="h-[1.35rem] w-[1.35rem] shrink-0" />
+                    <span>Opening...</span>
+                  </>
                 ) : (
-                  <span>
-                    Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
-                  </span>
+                  <>
+                    <Crown size={16} className="shrink-0" />
+                    {isPremium ? (
+                      <span style={{ color: "#CFA43A" }}>Socratic +</span>
+                    ) : (
+                      <span>
+                        Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
+                      </span>
+                    )}
+                  </>
                 )}
               </Link>
               <button
@@ -1064,16 +1122,30 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             href={billingCtaHref}
             target={billingCtaTarget}
             rel={billingCtaRel}
-            onClick={() => setIsMobileSidebarOpen(false)}
-            className="app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px]"
+            onClick={(event) => {
+              handleBillingCtaClick(event);
+              if (billingCtaTarget === "_blank") {
+                setIsMobileSidebarOpen(false);
+              }
+            }}
+            className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isBillingNavigating ? "pointer-events-none opacity-90" : ""}`}
           >
-            <Crown size={16} className="shrink-0" />
-            {isPremium ? (
-              <span style={{ color: "#CFA43A" }}>Socratic +</span>
+            {isBillingNavigating ? (
+              <>
+                <RoseCurveLoader className="h-[1.35rem] w-[1.35rem] shrink-0" />
+                <span>Opening...</span>
+              </>
             ) : (
-              <span>
-                Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
-              </span>
+              <>
+                <Crown size={16} className="shrink-0" />
+                {isPremium ? (
+                  <span style={{ color: "#CFA43A" }}>Socratic +</span>
+                ) : (
+                  <span>
+                    Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
+                  </span>
+                )}
+              </>
             )}
           </Link>
           <button

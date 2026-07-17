@@ -45,6 +45,7 @@ export default async function PricingPage() {
           interClassName={interClassName}
           instrumentSerifClassName={instrumentSerif.className}
           sectionPrefix={ROUTES.HOME}
+          standaloneAction="back"
         />
 
         <PricingCards
