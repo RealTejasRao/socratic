@@ -3,6 +3,20 @@ import path from "node:path";
 
 export type BlogSortOrder = "newest" | "oldest";
 
+export type BlogPostCredit = {
+  name: string;
+  title?: string | undefined;
+  url: string;
+  imagePath?: string | undefined;
+  linkLabel?: string | undefined;
+  linkKind?: "linkedin" | "external" | undefined;
+  actions?: Array<{
+    label: string;
+    url: string;
+    kind?: "linkedin" | "external" | undefined;
+  }> | undefined;
+};
+
 export type BlogPostSummary = {
   slug: string;
   title: string;
@@ -12,6 +26,7 @@ export type BlogPostSummary = {
   authorUrl?: string | undefined;
   authorImagePath?: string | undefined;
   authorBio?: string | undefined;
+  credits?: BlogPostCredit[] | undefined;
   publishedAt: string;
   updatedAt: string;
   readTimeLabel: string;
@@ -33,6 +48,46 @@ type BlogPostRecord = BlogPostSummary & {
 };
 
 const BLOG_POSTS: BlogPostRecord[] = [
+  {
+    slug: "when-ai-writes-humans-must-think",
+    title: "When AI Writes, Humans Must Think",
+    category: "AI & Learning",
+    author: "Nanne H.C. Bos",
+    authorTitle:
+      "Chief Communications & Brand Officer | Corporate Affairs, Reputation & Transformation | AI, Culture & Leadership",
+    authorUrl: "https://www.linkedin.com/in/nannebos/",
+    authorImagePath: "/blog/people/nanne.webp",
+    credits: [
+      {
+        name: "Nanne H.C. Bos",
+        title:
+          "Chief Communications & Brand Officer | Corporate Affairs, Reputation & Transformation | AI, Culture & Leadership",
+        url: "https://www.linkedin.com/in/nannebos/",
+        imagePath: "/blog/people/nanne.webp",
+        linkLabel: "Follow Nanne Bos on LinkedIn",
+        linkKind: "linkedin",
+        actions: [
+          {
+            label: "Follow Nanne Bos on LinkedIn",
+            url: "https://www.linkedin.com/in/nannebos/",
+            kind: "linkedin",
+          },
+          {
+            label: "Visit Scriptorium Initiative",
+            url: "https://scriptorium-initiative.ai/",
+            kind: "external",
+          },
+        ],
+      },
+    ],
+    publishedAt: "2026-07-13T12:00:00+05:30",
+    updatedAt: "2026-07-13T12:00:00+05:30",
+    readTimeLabel: "5 min read",
+    excerpt:
+      "As AI makes communication output cheap and generic, the human premium shifts to truth, judgment, taste, and meaning.",
+    coverImagePath: "/blog/images/when-ai-writes-humans-must-think.webp",
+    contentFilePath: "public/blog/content/when_ai_writes_humans_must_think.md",
+  },
   {
     slug: "why-generative-ai-compels-us-to-reinvent-the-university",
     title:
@@ -389,6 +444,7 @@ export function getAllBlogPostSummaries(
     authorUrl: post.authorUrl,
     authorImagePath: post.authorImagePath,
     authorBio: post.authorBio,
+    credits: post.credits,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
     readTimeLabel: post.readTimeLabel,
@@ -419,6 +475,7 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     authorUrl: post.authorUrl,
     authorImagePath: post.authorImagePath,
     authorBio: post.authorBio,
+    credits: post.credits,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
     readTimeLabel: post.readTimeLabel,

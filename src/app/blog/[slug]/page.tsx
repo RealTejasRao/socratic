@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { Instrument_Serif, Inter } from "next/font/google";
-import { ArrowLeft, Instagram, Linkedin, Mail } from "lucide-react";
+import { ArrowLeft, ExternalLink, Instagram, Linkedin, Mail } from "lucide-react";
+import { FallbackPublicImage } from "@/src/components/blog/fallback-public-image";
 import { Footer } from "@/src/components/home/footer";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
+import {
+  resolveOptimizedCloudinaryPublicAsset,
+} from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 import { createBlogPostingSchema, createPageMetadata } from "@/src/lib/seo";
 import {
   getAllBlogSlugs,
   getBlogPostBySlug,
   type BlogPost,
+  type BlogPostCredit,
 } from "@/src/server/blog/posts";
 
 const inter = Inter({
@@ -245,6 +249,7 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
     "Generative Artificial Intelligence",
     "Reinvent the University",
   ],
+  "when-ai-writes-humans-must-think": ["AI Writes", "Humans Must Think"],
 };
 
 function escapeRegExp(value: string) {
@@ -357,7 +362,7 @@ function AuthorName({ post }: { post: BlogPost }) {
 }
 
 function AuthorCredit({ post }: { post: BlogPost }) {
-  if (!post.authorImagePath && !post.authorTitle) {
+  if (!post.credits && !post.authorImagePath && !post.authorTitle) {
     return (
       <p className={`${interClassName} mt-6 text-[0.84rem] text-black/56`}>
         <AuthorName post={post} /> • {post.readTimeLabel}
@@ -368,6 +373,84 @@ function AuthorCredit({ post }: { post: BlogPost }) {
   return <AuthorFollowCard post={post} className="mt-10" />;
 }
 
+function getPostCredits(post: BlogPost): BlogPostCredit[] {
+  if (post.credits && post.credits.length > 0) {
+    return post.credits;
+  }
+
+  if (!post.authorImagePath && !post.authorTitle && !post.authorUrl) {
+    return [];
+  }
+
+  return [
+    {
+      name: post.author,
+      title: post.authorTitle,
+      url: post.authorUrl ?? "#",
+      imagePath: post.authorImagePath,
+      linkLabel: `Follow ${post.author} on LinkedIn`,
+      linkKind: "linkedin",
+      actions: post.authorUrl
+        ? [
+            {
+              label: `Follow ${post.author} on LinkedIn`,
+              url: post.authorUrl,
+              kind: "linkedin",
+            },
+          ]
+        : undefined,
+    },
+  ];
+}
+
+function CreditImage({ credit }: { credit: BlogPostCredit }) {
+  if (!credit.imagePath) {
+    return null;
+  }
+
+  return (
+    <FallbackPublicImage
+      src={resolveOptimizedCloudinaryPublicAsset(credit.imagePath, {
+        width: 112,
+        height: 112,
+        crop: "fill",
+        quality: "auto:good",
+      })}
+      fallbackSrc={credit.imagePath}
+      alt={credit.name}
+      width={56}
+      height={56}
+      className="h-14 w-14 rounded-full border border-black/10 bg-white object-cover"
+    />
+  );
+}
+
+function CreditActionIcon({
+  kind,
+}: {
+  kind: BlogPostCredit["linkKind"];
+}) {
+  if (kind === "linkedin") {
+    return <Linkedin size={16} aria-hidden="true" className="text-[#0a66c2]" />;
+  }
+
+  return <ExternalLink size={16} aria-hidden="true" className="text-[#a01717]" />;
+}
+
+function getCreditActions(credit: BlogPostCredit) {
+  if (credit.actions && credit.actions.length > 0) {
+    return credit.actions;
+  }
+
+  return [
+    {
+      label: credit.linkLabel ?? credit.name,
+      url: credit.url,
+      kind: credit.linkKind,
+    },
+  ];
+}
+
 function AuthorFollowCard({
   post,
   className = "mt-14",
@@ -375,53 +458,63 @@ function AuthorFollowCard({
   post: BlogPost;
   className?: string;
 }) {
+  const credits = getPostCredits(post);
+
+  if (credits.length === 0) {
+    return null;
+  }
+
   return (
     <section
-      className={`${className} rounded-[8px] border border-black/10 bg-[#fafafa] px-5 py-5 sm:px-6`}
+      className={`${className} rounded-[8px] border border-black/10 bg-[#fafafa] px-6 py-7 sm:px-8 sm:py-8`}
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
-          {post.authorImagePath ? (
-            <Image
-              src={post.authorImagePath}
-              alt={post.author}
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-full border border-black/10 object-cover"
-            />
-          ) : null}
-          <div className={`${interClassName}`}>
-            <h3 className="text-[1rem] font-semibold text-black/90">
-              <AuthorName post={post} />
-            </h3>
-            {post.authorTitle ? (
-              <p className="mt-1 text-[0.86rem] leading-snug text-black/58">
-                {post.authorTitle}
-              </p>
-            ) : null}
-          </div>
-        </div>
-        {post.authorUrl ? (
-          <a
-            href={post.authorUrl}
-            target="_blank"
-            rel="noreferrer"
-            className={`${interClassName} inline-flex items-center justify-center gap-2 rounded-[6px] border border-black/12 bg-white px-4 py-2.5 text-[0.9rem] font-medium text-black/76 transition-colors duration-200 hover:border-[#0a66c2]/40 hover:text-[#0a66c2]`}
+      <div className="space-y-4">
+        {credits.map((credit) => (
+          <div
+            key={credit.name}
+            className="flex items-start gap-4"
           >
-            <Linkedin size={16} aria-hidden="true" className="text-[#0a66c2]" />
-            <span>
-              Follow <strong className="font-semibold">{post.author}</strong> on
-              LinkedIn
-            </span>
-          </a>
-        ) : null}
+            <CreditImage credit={credit} />
+            <div className={`${interClassName} min-w-0 flex-1`}>
+              <h3 className="text-[1rem] font-semibold text-black/90">
+                <a
+                  href={credit.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-black/74 underline decoration-black/20 underline-offset-3 transition-colors hover:text-[#a01717] hover:decoration-[#a01717]/45"
+                >
+                  {credit.name}
+                </a>
+              </h3>
+              {credit.title ? (
+                <p className="mt-1 text-[0.86rem] leading-snug text-black/58">
+                  {credit.title}
+                </p>
+              ) : null}
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 sm:gap-4">
+                {getCreditActions(credit).map((action) => (
+                  <a
+                    key={`${credit.name}-${action.label}`}
+                    href={action.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-[6px] border border-black/12 bg-white px-4 py-3 text-center text-[0.9rem] font-medium text-black/76 transition-colors duration-200 hover:border-[#0a66c2]/40 hover:text-[#0a66c2]"
+                  >
+                    <CreditActionIcon kind={action.kind} />
+                    <span>{action.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
 function AuthorEndnote({ post }: { post: BlogPost }) {
-  if (!post.authorImagePath && !post.authorTitle && !post.authorUrl) {
+  if (getPostCredits(post).length === 0) {
     return null;
   }
 
