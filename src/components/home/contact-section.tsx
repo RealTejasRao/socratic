@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import emailjs from "@emailjs/browser";
 import { motion, type Variants, useInView } from "framer-motion";
 import { Instrument_Serif } from "next/font/google";
 import {
@@ -36,10 +35,6 @@ const mobileContactSecondLineStart = Math.max(
   0,
   CONTACT_HEADING_TEXT.indexOf(MOBILE_CONTACT_SECOND_LINE_TEXT),
 );
-const EMAILJS_SERVICE_ID = process.env["NEXT_PUBLIC_EMAILJS_SERVICE_ID"] ?? "";
-const EMAILJS_TEMPLATE_ID =
-  process.env["NEXT_PUBLIC_EMAILJS_TEMPLATE_ID"] ?? "";
-const EMAILJS_PUBLIC_KEY = process.env["NEXT_PUBLIC_EMAILJS_PUBLIC_KEY"] ?? "";
 const CONTACT_EASE = [0.22, 1, 0.36, 1] as const;
 
 const leftArmVariants: Variants = {
@@ -256,15 +251,6 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
     event.preventDefault();
     if (isSending) return;
 
-    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-      setSubmitState({
-        type: "error",
-        message:
-          "Email service is not configured yet. Add EmailJS env variables.",
-      });
-      return;
-    }
-
     setNameInteracted(true);
     setEmailInteracted(true);
     setMessageInteracted(true);
@@ -309,20 +295,44 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
       setIsSending(true);
       setSubmitState({ type: "idle", message: "" });
 
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           name,
           email,
           message,
-        },
-        { publicKey: EMAILJS_PUBLIC_KEY },
-      );
+        }),
+      });
+
+      const result = (await response.json().catch(() => null)) as {
+        message?: unknown;
+      } | null;
+
+      if (!response.ok) {
+        const fallbackMessage =
+          response.status === 429
+            ? "Too many messages. Please try again later."
+            : "Could not send right now. Please try again in a moment.";
+
+        setSubmitState({
+          type: "error",
+          message:
+            typeof result?.message === "string"
+              ? result.message
+              : fallbackMessage,
+        });
+        return;
+      }
 
       setSubmitState({
         type: "success",
-        message: "Message sent successfully. Thanks for sharing!",
+        message:
+          typeof result?.message === "string"
+            ? result.message
+            : "Message sent successfully. Thanks for sharing!",
       });
       formRef.current?.reset();
       setNameValue("");
