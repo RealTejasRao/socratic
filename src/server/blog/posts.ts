@@ -49,6 +49,39 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "philosophy-is-polluting-itself",
+    title: "Philosophy Is Not Being Polluted From Outside. It Is Polluting Itself.",
+    category: "Philosophy",
+    author: "Ranjeet K Verma",
+    authorTitle: "Research Scholar in Philosophy at IIT (ISM) Dhanbad.",
+    authorUrl: "https://www.linkedin.com/in/ranjeet-k-verma-4745703a8/",
+    authorImagePath: "/blog/people/ranjeet.webp",
+    credits: [
+      {
+        name: "Ranjeet K Verma",
+        title: "Research Scholar in Philosophy at IIT (ISM) Dhanbad.",
+        url: "https://www.linkedin.com/in/ranjeet-k-verma-4745703a8/",
+        imagePath: "/blog/people/ranjeet.webp",
+        linkLabel: "Follow Ranjeet K Verma on LinkedIn",
+        linkKind: "linkedin",
+        actions: [
+          {
+            label: "Follow Ranjeet K Verma on LinkedIn",
+            url: "https://www.linkedin.com/in/ranjeet-k-verma-4745703a8/",
+            kind: "linkedin",
+          },
+        ],
+      },
+    ],
+    publishedAt: "2026-06-25T12:00:00+05:30",
+    updatedAt: "2026-06-25T12:00:00+05:30",
+    readTimeLabel: "7 min read",
+    excerpt:
+      "A call to recover philosophy's patience for unresolved questions, intellectual humility, and direct wonder.",
+    coverImagePath: "/blog/images/philosophy-is-polluting-itself.webp",
+    contentFilePath: "public/blog/content/philosophy_is_polluting_itself.md",
+  },
+  {
     slug: "when-ai-writes-humans-must-think",
     title: "When AI Writes, Humans Must Think",
     category: "AI & Learning",

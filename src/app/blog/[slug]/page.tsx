@@ -250,6 +250,11 @@ const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
     "Reinvent the University",
   ],
   "when-ai-writes-humans-must-think": ["AI Writes", "Humans Must Think"],
+  "philosophy-is-polluting-itself": [
+    "Philosophy",
+    "Polluted From Outside",
+    "Polluting Itself",
+  ],
 };
 
 function escapeRegExp(value: string) {
@@ -475,30 +480,34 @@ function AuthorFollowCard({
             className="flex items-start gap-4"
           >
             <CreditImage credit={credit} />
-            <div className={`${interClassName} min-w-0 flex-1`}>
-              <h3 className="text-[1rem] font-semibold text-black/90">
-                <a
-                  href={credit.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-black/74 underline decoration-black/20 underline-offset-3 transition-colors hover:text-[#a01717] hover:decoration-[#a01717]/45"
-                >
-                  {credit.name}
-                </a>
-              </h3>
-              {credit.title ? (
-                <p className="mt-1 text-[0.86rem] leading-snug text-black/58">
-                  {credit.title}
-                </p>
-              ) : null}
-              <div className="mt-7 grid gap-3 sm:grid-cols-2 sm:gap-4">
+            <div
+              className={`${interClassName} flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}
+            >
+              <div className="min-w-0">
+                <h3 className="text-[1rem] font-semibold text-black/90">
+                  <a
+                    href={credit.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-black/74 underline decoration-black/20 underline-offset-3 transition-colors hover:text-[#a01717] hover:decoration-[#a01717]/45"
+                  >
+                    {credit.name}
+                  </a>
+                </h3>
+                {credit.title ? (
+                  <p className="mt-1 text-[0.86rem] leading-snug text-black/58">
+                    {credit.title}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-3">
                 {getCreditActions(credit).map((action) => (
                   <a
                     key={`${credit.name}-${action.label}`}
                     href={action.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-[6px] border border-black/12 bg-white px-4 py-3 text-center text-[0.9rem] font-medium text-black/76 transition-colors duration-200 hover:border-[#0a66c2]/40 hover:text-[#0a66c2]"
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[6px] border border-black/12 bg-white px-3.5 py-2 text-center text-[0.86rem] font-medium text-black/76 transition-colors duration-200 hover:border-[#0a66c2]/40 hover:text-[#0a66c2]"
                   >
                     <CreditActionIcon kind={action.kind} />
                     <span>{action.label}</span>
