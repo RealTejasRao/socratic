@@ -720,12 +720,13 @@ export async function generateReply(params: {
       ? Math.min(maxTokens, getDebateMaxTokens(session.debateDurationPreset))
       : session.mode === "ROLEPLAY"
         ? Math.min(maxTokens, getRoleplayMaxTokens())
-      : maxTokens;
+        : maxTokens;
+  const effectiveTemperature = session.mode === "SOCRATIC" ? 0.75 : 1.2;
   const generationClient = useVisionModel ? openai : deepseek;
   const stream = await generationClient.chat.completions.stream({
     model: effectiveModel,
     messages: builtPrompt.messages,
-    temperature: 1.2,
+    temperature: effectiveTemperature,
     max_tokens: effectiveMaxTokens,
   });
   streamSetupMs = Date.now() - streamSetupStartedAtMs;
