@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const metadata: Metadata = {
-  title: "Socratic AI App",
+  title: "Philosophy & Deep Conversations",
   description: "Private Socratic AI workspace for guided dialogue sessions.",
   alternates: {
     canonical: absoluteUrl("/app"),
