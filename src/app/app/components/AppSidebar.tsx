@@ -681,8 +681,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           onClick?.();
         }}
         className={`${className} ${navigatingModeLink === "SOCRATIC" ? "pointer-events-none opacity-90" : ""}`}
-        aria-label="Socratic General Mode"
-        data-tooltip={label ? undefined : "Socratic General Mode"}
+        aria-label="Socratic Mode"
+        data-tooltip={label ? undefined : "Socratic Mode"}
         data-app-tour-target="sidebar-mode-socratic"
       >
         {navigatingModeLink === "SOCRATIC" ? (
@@ -697,7 +697,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           <span>
             {navigatingModeLink === "SOCRATIC"
               ? "Opening..."
-              : "Socratic (General) Mode"}
+              : "Socratic Mode"}
           </span>
         ) : null}
       </Link>
