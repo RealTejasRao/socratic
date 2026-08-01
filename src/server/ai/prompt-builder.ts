@@ -14,7 +14,7 @@ import {
   ROLEPLAY_PROMPT_SECTIONS,
   ROLEPLAY_PROMPT_VERSION,
   SOCRATIC_SIMPLE_CLEAR_TONE,
-  SOCRATIC_BALANCED_TONE,
+  SOCRATIC_ENCOURAGING_SUPPORTIVE_TONE,
   SOCRATIC_PROMPT_VERSION,
 } from "src/server/ai/prompt-config";
 import type { KnowledgeRoute } from "src/server/ai/source-router";
@@ -163,13 +163,23 @@ function buildUserPromptContent(
 }
 
 function buildCorePolicyMessage(tone: SocraticTone) {
-  const sectionOrder = ["SYSTEM_ROLE", "OBJECTIVE", "RULES", "STYLE", "OUTPUT"];
   const sections =
     tone === "RUTHLESS_BLUNT"
       ? SOCRATIC_RUTHLESS_BLUNT_TONE
       : tone === "SIMPLE_CLEAR"
         ? SOCRATIC_SIMPLE_CLEAR_TONE
-        : SOCRATIC_BALANCED_TONE;
+        : SOCRATIC_ENCOURAGING_SUPPORTIVE_TONE;
+  const hasCasualness = "casualness" in sections;
+  const hasBannedPhrases = "bannedPhrases" in sections;
+  const sectionOrder = [
+    "SYSTEM_ROLE",
+    "OBJECTIVE",
+    ...(hasCasualness ? ["CASUALNESS"] : []),
+    "RULES",
+    "STYLE",
+    "OUTPUT",
+    ...(hasBannedPhrases ? ["BANNED_PHRASES"] : []),
+  ];
 
   const content = [
     "SYSTEM_ROLE",
@@ -178,6 +188,7 @@ function buildCorePolicyMessage(tone: SocraticTone) {
     "OBJECTIVE",
     sections.objective,
     "",
+    ...(hasCasualness ? ["CASUALNESS", sections.casualness, ""] : []),
     "RULES",
     sections.rules,
     "",
@@ -186,6 +197,13 @@ function buildCorePolicyMessage(tone: SocraticTone) {
     "",
     "OUTPUT",
     sections.output,
+    ...(hasBannedPhrases
+      ? [
+          "",
+          "BANNED_PHRASES",
+          `Avoid these exact phrases: ${sections.bannedPhrases}`,
+        ]
+      : []),
   ].join("\n");
 
   return { content, sectionOrder };
