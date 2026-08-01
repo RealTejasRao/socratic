@@ -694,10 +694,54 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           />
         )}
         {label ? (
-          <span>
-            {navigatingModeLink === "SOCRATIC"
-              ? "Opening..."
-              : "Socratic Mode"}
+          <span className="flex min-w-0 flex-1 items-center gap-2">
+            <span className="truncate">
+              {navigatingModeLink === "SOCRATIC"
+                ? "Opening..."
+                : "Socratic Mode"}
+            </span>
+            {navigatingModeLink !== "SOCRATIC" ? (
+              <motion.span
+                initial={{ opacity: 0, scale: 0.86, y: 1 }}
+                animate={{
+                  opacity: 1,
+                  scale: [1, 1.04, 1],
+                  boxShadow: isDarkMode
+                    ? [
+                        "0 0 0 0 rgba(45, 212, 191, 0)",
+                        "0 0 0 3px rgba(45, 212, 191, 0.18)",
+                        "0 0 0 0 rgba(45, 212, 191, 0)",
+                      ]
+                    : [
+                        "0 0 0 0 rgba(13, 148, 136, 0)",
+                        "0 0 0 3px rgba(13, 148, 136, 0.14)",
+                        "0 0 0 0 rgba(13, 148, 136, 0)",
+                      ],
+                }}
+                transition={{
+                  opacity: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+                  scale: {
+                    duration: 2.4,
+                    ease: [0.22, 1, 0.36, 1],
+                    repeat: Infinity,
+                    repeatDelay: 1.2,
+                  },
+                  boxShadow: {
+                    duration: 2.4,
+                    ease: [0.22, 1, 0.36, 1],
+                    repeat: Infinity,
+                    repeatDelay: 1.2,
+                  },
+                }}
+                className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-semibold leading-none tracking-[0.08em] ${
+                  isDarkMode
+                    ? "border-teal-500/35 bg-teal-400/10 text-teal-200"
+                    : "border-teal-200 bg-teal-50 text-teal-700"
+                }`}
+              >
+                NEW
+              </motion.span>
+            ) : null}
           </span>
         ) : null}
       </Link>

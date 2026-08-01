@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import ChatContainer from "./components/ChatContainer";
 import { getUserBillingStateByClerkId } from "src/server/billing/access";
 import { BILLING_KEYS, PLAN_LIMITS } from "src/lib/billing";
@@ -45,11 +45,22 @@ function resolveMode(value: string | undefined): SessionMode {
   return "ROLEPLAY";
 }
 
+function getDisplayName(
+  user: Awaited<ReturnType<typeof currentUser>>,
+): string | null {
+  return (
+    user?.firstName?.trim() ||
+    user?.fullName?.trim() ||
+    user?.username?.trim() ||
+    null
+  );
+}
+
 export default async function AppHomePage({ searchParams }: AppHomePageProps) {
   const { userId: clerkUserId } = await auth();
-  const billing = clerkUserId
-    ? await getUserBillingStateByClerkId(clerkUserId)
-    : null;
+  const [billing, clerkUser] = clerkUserId
+    ? await Promise.all([getUserBillingStateByClerkId(clerkUserId), currentUser()])
+    : [null, null];
   const resolvedSearchParams =
     searchParams && "then" in searchParams ? await searchParams : searchParams;
   const requestedMode = resolveMode(
@@ -95,6 +106,7 @@ export default async function AppHomePage({ searchParams }: AppHomePageProps) {
       sessionMeta={{ mode: requestedMode }}
       initialAutoSendMessage={initialAutoSendMessage}
       userStorageId={clerkUserId}
+      initialUserName={getDisplayName(clerkUser)}
       initialBilling={{
         isPremium: billing?.isPremium ?? false,
         usage: {

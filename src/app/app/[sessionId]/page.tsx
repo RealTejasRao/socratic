@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
@@ -12,6 +12,17 @@ interface Props {
   params: Promise<{ sessionId: string }>;
 }
 
+function getDisplayName(
+  user: Awaited<ReturnType<typeof currentUser>>,
+): string | null {
+  return (
+    user?.firstName?.trim() ||
+    user?.fullName?.trim() ||
+    user?.username?.trim() ||
+    null
+  );
+}
+
 export default async function SessionPage({ params }: Props) {
   const { sessionId } = await params;
 
@@ -21,10 +32,13 @@ export default async function SessionPage({ params }: Props) {
     redirect(ROUTES.SIGN_IN);
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { clerkUserId },
-    select: { id: true },
-  });
+  const [dbUser, clerkUser] = await Promise.all([
+    prisma.user.findUnique({
+      where: { clerkUserId },
+      select: { id: true },
+    }),
+    currentUser(),
+  ]);
 
   if (!dbUser) {
     notFound();
@@ -117,6 +131,7 @@ export default async function SessionPage({ params }: Props) {
       sessionId={session.id}
       sessionMeta={serializeSessionMeta(session)}
       userStorageId={clerkUserId}
+      initialUserName={getDisplayName(clerkUser)}
       initialBilling={{
         isPremium: billing?.isPremium ?? false,
         usage: {
