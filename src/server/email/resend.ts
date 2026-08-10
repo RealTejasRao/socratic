@@ -361,32 +361,12 @@ function buildContactFormMessage(params: {
     to: [SOCRATIC_CONTACT_EMAIL],
     subject: CONTACT_FORM_SUBJECT,
     replyTo: params.email,
-    html: `
-<div style="margin:0;padding:28px 16px;background:#f8f6f1;font-family:Arial,Helvetica,sans-serif;color:#181512;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:620px;background:#ffffff;border:1px solid #e6e0d6;border-collapse:collapse;">
-          <tr>
-            <td style="padding:28px 32px;border-bottom:1px solid #ece7dd;">
-              <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#6f675f;">Socratic AI</p>
-              <h1 style="margin:0;font-size:22px;line-height:1.35;font-weight:600;color:#181512;">New contact form message</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 32px;">
-              <p style="margin:0 0 14px 0;font-size:14px;line-height:1.6;"><strong>Name:</strong> ${safeName}</p>
-              <p style="margin:0 0 22px 0;font-size:14px;line-height:1.6;"><strong>Email:</strong> ${safeEmail}</p>
-              <div style="height:1px;background:#ece7dd;margin:0 0 22px 0;">&nbsp;</div>
-              <p style="margin:0;font-size:15px;line-height:1.75;white-space:normal;">${safeMessage}</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</div>
-`,
+    html: [
+      "<p>New contact form message</p>",
+      `<p><strong>Name:</strong> ${safeName}</p>`,
+      `<p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>`,
+      `<p>${safeMessage}</p>`,
+    ].join("\n"),
     text: [
       "New contact form message",
       "",

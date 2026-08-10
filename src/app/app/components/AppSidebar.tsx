@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -15,6 +22,7 @@ import {
   House,
   Instagram,
   Landmark,
+  LoaderCircle,
   Linkedin,
   Mail,
   PanelLeftClose,
@@ -220,6 +228,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [isBillingNavigating, setIsBillingNavigating] = useState(false);
   const [navigatingModeLink, setNavigatingModeLink] =
     useState<SidebarModeLink | null>(null);
+  const [referralCode, setReferralCode] = useState("");
+  const [referralMessage, setReferralMessage] = useState<string | null>(null);
+  const [referralMessageTone, setReferralMessageTone] =
+    useState<"success" | "error">("success");
+  const [isReferralSubmitting, setIsReferralSubmitting] = useState(false);
   const [
     shouldCloseMobileSidebarAfterModeLoad,
     setShouldCloseMobileSidebarAfterModeLoad,
@@ -534,6 +547,48 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         detail: { size: nextSize },
       }),
     );
+  }
+
+  async function handleReferralSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const code = referralCode.trim();
+    if (!code) {
+      setReferralMessageTone("error");
+      setReferralMessage("Enter a referral code first.");
+      return;
+    }
+
+    setIsReferralSubmitting(true);
+    setReferralMessage(null);
+
+    try {
+      const response = await fetch("/api/v1/referrals/support", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+
+      if (!response.ok) {
+        setReferralMessageTone("error");
+        setReferralMessage(payload?.message ?? "Unable to record that code.");
+        return;
+      }
+
+      setReferralCode("");
+      setReferralMessageTone("success");
+      setReferralMessage(payload?.message ?? "Referral support recorded.");
+    } catch {
+      setReferralMessageTone("error");
+      setReferralMessage("Unable to record that code right now.");
+    } finally {
+      setIsReferralSubmitting(false);
+    }
   }
 
   function handleResetSettings() {
@@ -1449,6 +1504,86 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             </button>
                           </div>
                         </div>
+
+                        <form
+                          onSubmit={handleReferralSubmit}
+                          className={`border-b py-3 ${
+                            isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
+                          }`}
+                        >
+                          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <label
+                              htmlFor="settings-referral-code"
+                              className={`text-[14px] ${
+                                isDarkMode ? "text-slate-100" : "text-slate-800"
+                              }`}
+                            >
+                              Referral
+                            </label>
+                            <div className="flex min-w-0 gap-2 sm:w-[260px]">
+                              <input
+                                id="settings-referral-code"
+                                type="text"
+                                value={referralCode}
+                                onChange={(event) => {
+                                  setReferralCode(event.target.value);
+                                  setReferralMessage(null);
+                                }}
+                                placeholder="Ambassador code"
+                                maxLength={80}
+                                disabled={isReferralSubmitting}
+                                className={`min-w-0 flex-1 rounded-[14px] border px-3 py-2 text-[13px] outline-none ${smoothUiClass} ${
+                                  isDarkMode
+                                    ? "border-[#4a4b50] bg-[#25262a] text-slate-100 placeholder:text-slate-500 focus:border-[#6b6c72] focus:ring-2 focus:ring-emerald-900/30"
+                                    : "border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400 focus:border-slate-300 focus:ring-2 focus:ring-emerald-100"
+                                } disabled:cursor-not-allowed disabled:opacity-60`}
+                              />
+                              <button
+                                type="submit"
+                                aria-busy={isReferralSubmitting}
+                                disabled={
+                                  isReferralSubmitting ||
+                                  referralCode.trim().length === 0
+                                }
+                                className={`app-settings-primary-btn inline-flex min-w-[74px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[14px] px-3 py-2 text-[13px] text-white ${smoothUiClass} ${
+                                  isDarkMode
+                                    ? "bg-emerald-600 hover:bg-emerald-700"
+                                    : "bg-emerald-600 hover:bg-emerald-700"
+                                } disabled:cursor-not-allowed disabled:opacity-60`}
+                              >
+                                {isReferralSubmitting ? (
+                                  <>
+                                    <LoaderCircle
+                                      size={13}
+                                      className="animate-spin"
+                                    />
+                                    <span>Saving</span>
+                                  </>
+                                ) : (
+                                  "Support"
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                          {referralMessage ? (
+                            <p
+                              className={`mt-2 text-[12px] ${
+                                referralMessageTone === "success"
+                                  ? isDarkMode
+                                    ? "text-emerald-300"
+                                    : "text-emerald-700"
+                                  : "font-medium"
+                              }`}
+                              style={
+                                referralMessageTone === "error"
+                                  ? { color: isDarkMode ? "#f87171" : "#dc2626" }
+                                  : undefined
+                              }
+                            >
+                              {referralMessage}
+                            </p>
+                          ) : null}
+                        </form>
 
                         <label
                           className={`${isStandalone ? "hidden" : "hidden md:flex"} items-center justify-between gap-4 border-b py-3 ${
