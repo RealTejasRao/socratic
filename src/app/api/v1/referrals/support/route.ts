@@ -9,6 +9,52 @@ function normalizeReferralCode(code: string) {
   return code.toUpperCase();
 }
 
+function supportedResponse(displayName: string, status = 200) {
+  return NextResponse.json(
+    {
+      supported: true,
+      ambassadorName: displayName,
+      message: `Supporting ${displayName}`,
+    },
+    { status },
+  );
+}
+
+export async function GET() {
+  const { userId: clerkUserId } = await auth();
+
+  if (!clerkUserId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkUserId },
+    select: {
+      referralCodeSubmissions: {
+        orderBy: { createdAt: "asc" },
+        take: 1,
+        select: {
+          code: true,
+          ambassadorCode: {
+            select: {
+              displayName: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const existingSupport = dbUser?.referralCodeSubmissions[0];
+  if (!existingSupport) {
+    return NextResponse.json({ supported: false });
+  }
+
+  return supportedResponse(
+    existingSupport.ambassadorCode?.displayName ?? existingSupport.code,
+  );
+}
+
 export async function POST(request: Request) {
   const { userId: clerkUserId } = await auth();
 
@@ -39,9 +85,31 @@ export async function POST(request: Request) {
       }),
       prisma.ambassadorReferralCode.findUnique({
         where: { normalizedCode },
-        select: { id: true, code: true },
+        select: { id: true, code: true, displayName: true },
       }),
     ]);
+
+    if (existingDbUser) {
+      const existingSupport = await prisma.referralCodeSubmission.findFirst({
+        where: { userId: existingDbUser.id },
+        orderBy: { createdAt: "asc" },
+        select: {
+          code: true,
+          ambassadorCode: {
+            select: {
+              displayName: true,
+            },
+          },
+        },
+      });
+
+      if (existingSupport) {
+        return supportedResponse(
+          existingSupport.ambassadorCode?.displayName ?? existingSupport.code,
+          409,
+        );
+      }
+    }
 
     if (!ambassadorCode) {
       return NextResponse.json(
@@ -53,18 +121,46 @@ export async function POST(request: Request) {
     const dbUser = existingDbUser ?? (await ensureUserForClerkId(clerkUserId));
     const userAgent = request.headers.get("user-agent")?.slice(0, 500) ?? null;
 
-    await prisma.referralCodeSubmission.create({
-      data: {
-        userId: dbUser.id,
-        ambassadorCodeId: ambassadorCode.id,
-        clerkUserId,
-        code: ambassadorCode.code,
-        userAgent,
-      },
-    });
+    try {
+      await prisma.referralCodeSubmission.create({
+        data: {
+          userId: dbUser.id,
+          ambassadorCodeId: ambassadorCode.id,
+          clerkUserId,
+          code: ambassadorCode.code,
+          userAgent,
+        },
+      });
+    } catch (error) {
+      const existingSupport = await prisma.referralCodeSubmission.findFirst({
+        where: { userId: dbUser.id },
+        orderBy: { createdAt: "asc" },
+        select: {
+          code: true,
+          ambassadorCode: {
+            select: {
+              displayName: true,
+            },
+          },
+        },
+      });
+
+      if (existingSupport) {
+        return supportedResponse(
+          existingSupport.ambassadorCode?.displayName ?? existingSupport.code,
+          409,
+        );
+      }
+
+      throw error;
+    }
 
     return NextResponse.json(
-      { message: "Referral support recorded." },
+      {
+        supported: true,
+        ambassadorName: ambassadorCode.displayName,
+        message: `Supporting ${ambassadorCode.displayName}`,
+      },
       { status: 201 },
     );
   } catch (error) {

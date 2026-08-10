@@ -233,6 +233,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [referralMessageTone, setReferralMessageTone] =
     useState<"success" | "error">("success");
   const [isReferralSubmitting, setIsReferralSubmitting] = useState(false);
+  const [supportedAmbassadorName, setSupportedAmbassadorName] =
+    useState<string | null>(null);
   const [
     shouldCloseMobileSidebarAfterModeLoad,
     setShouldCloseMobileSidebarAfterModeLoad,
@@ -317,6 +319,43 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isResetDefaultsConfirmOpen, isSettingsOpen, isToneDropdownOpen]);
+
+  useEffect(() => {
+    if (!isSettingsOpen) {
+      return;
+    }
+
+    let isActive = true;
+
+    async function loadReferralSupport() {
+      try {
+        const response = await fetch("/api/v1/referrals/support");
+        const payload = (await response.json().catch(() => null)) as {
+          supported?: boolean;
+          ambassadorName?: string;
+          message?: string;
+        } | null;
+
+        if (!isActive || !response.ok || !payload?.supported) {
+          return;
+        }
+
+        const ambassadorName = payload.ambassadorName ?? "ambassador";
+        setSupportedAmbassadorName(ambassadorName);
+        setReferralCode("");
+        setReferralMessageTone("success");
+        setReferralMessage(payload.message ?? `Supporting ${ambassadorName}`);
+      } catch {
+        // Referral support is non-critical settings state.
+      }
+    }
+
+    void loadReferralSupport();
+
+    return () => {
+      isActive = false;
+    };
+  }, [isSettingsOpen]);
 
   useEffect(() => {
     if (!isSettingsOpen || !isToneDropdownOpen) {
@@ -571,8 +610,19 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         body: JSON.stringify({ code }),
       });
       const payload = (await response.json().catch(() => null)) as {
+        supported?: boolean;
+        ambassadorName?: string;
         message?: string;
       } | null;
+
+      if (payload?.supported) {
+        const ambassadorName = payload.ambassadorName ?? "ambassador";
+        setSupportedAmbassadorName(ambassadorName);
+        setReferralCode("");
+        setReferralMessageTone("success");
+        setReferralMessage(payload.message ?? `Supporting ${ambassadorName}`);
+        return;
+      }
 
       if (!response.ok) {
         setReferralMessageTone("error");
@@ -581,8 +631,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       }
 
       setReferralCode("");
+      setSupportedAmbassadorName(payload?.ambassadorName ?? "ambassador");
       setReferralMessageTone("success");
-      setReferralMessage(payload?.message ?? "Referral support recorded.");
+      setReferralMessage(
+        payload?.message ??
+          `Supporting ${payload?.ambassadorName ?? "ambassador"}`,
+      );
     } catch {
       setReferralMessageTone("error");
       setReferralMessage("Unable to record that code right now.");
@@ -1531,7 +1585,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 }}
                                 placeholder="Ambassador code"
                                 maxLength={80}
-                                disabled={isReferralSubmitting}
+                                disabled={
+                                  isReferralSubmitting ||
+                                  supportedAmbassadorName !== null
+                                }
                                 className={`min-w-0 flex-1 rounded-[14px] border px-3 py-2 text-[13px] outline-none ${smoothUiClass} ${
                                   isDarkMode
                                     ? "border-[#4a4b50] bg-[#25262a] text-slate-100 placeholder:text-slate-500 focus:border-[#6b6c72] focus:ring-2 focus:ring-emerald-900/30"
@@ -1543,7 +1600,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 aria-busy={isReferralSubmitting}
                                 disabled={
                                   isReferralSubmitting ||
-                                  referralCode.trim().length === 0
+                                  referralCode.trim().length === 0 ||
+                                  supportedAmbassadorName !== null
                                 }
                                 className={`app-settings-primary-btn inline-flex min-w-[74px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[14px] px-3 py-2 text-[13px] text-white ${smoothUiClass} ${
                                   isDarkMode
@@ -1551,7 +1609,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                     : "bg-emerald-600 hover:bg-emerald-700"
                                 } disabled:cursor-not-allowed disabled:opacity-60`}
                               >
-                                {isReferralSubmitting ? (
+                                {supportedAmbassadorName ? (
+                                  "Supported"
+                                ) : isReferralSubmitting ? (
                                   <>
                                     <LoaderCircle
                                       size={13}
