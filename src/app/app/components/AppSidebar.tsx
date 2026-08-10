@@ -1627,17 +1627,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                           </div>
                           {referralMessage ? (
                             <p
-                              className={`mt-2 text-[12px] ${
-                                referralMessageTone === "success"
-                                  ? isDarkMode
-                                    ? "text-emerald-300"
-                                    : "text-emerald-700"
-                                  : "font-medium"
-                              }`}
+                              className="mt-2 text-[12px] font-medium"
                               style={
-                                referralMessageTone === "error"
-                                  ? { color: isDarkMode ? "#f87171" : "#dc2626" }
-                                  : undefined
+                                referralMessageTone === "success"
+                                  ? { color: isDarkMode ? "#6ee7b7" : "#047857" }
+                                  : { color: isDarkMode ? "#f87171" : "#dc2626" }
                               }
                             >
                               {referralMessage}

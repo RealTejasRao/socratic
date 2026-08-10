@@ -9,6 +9,10 @@ function normalizeReferralCode(code: string) {
   return code.toUpperCase();
 }
 
+function getAmbassadorDisplayName(code: string) {
+  return normalizeReferralCode(code) === "REEM106" ? "Reem" : code;
+}
+
 function supportedResponse(displayName: string, status = 200) {
   return NextResponse.json(
     {
@@ -35,11 +39,6 @@ export async function GET() {
         take: 1,
         select: {
           code: true,
-          ambassadorCode: {
-            select: {
-              displayName: true,
-            },
-          },
         },
       },
     },
@@ -51,7 +50,7 @@ export async function GET() {
   }
 
   return supportedResponse(
-    existingSupport.ambassadorCode?.displayName ?? existingSupport.code,
+    getAmbassadorDisplayName(existingSupport.code),
   );
 }
 
@@ -85,7 +84,7 @@ export async function POST(request: Request) {
       }),
       prisma.ambassadorReferralCode.findUnique({
         where: { normalizedCode },
-        select: { id: true, code: true, displayName: true },
+        select: { id: true, code: true },
       }),
     ]);
 
@@ -95,19 +94,11 @@ export async function POST(request: Request) {
         orderBy: { createdAt: "asc" },
         select: {
           code: true,
-          ambassadorCode: {
-            select: {
-              displayName: true,
-            },
-          },
         },
       });
 
       if (existingSupport) {
-        return supportedResponse(
-          existingSupport.ambassadorCode?.displayName ?? existingSupport.code,
-          409,
-        );
+        return supportedResponse(getAmbassadorDisplayName(existingSupport.code), 409);
       }
     }
 
@@ -137,19 +128,11 @@ export async function POST(request: Request) {
         orderBy: { createdAt: "asc" },
         select: {
           code: true,
-          ambassadorCode: {
-            select: {
-              displayName: true,
-            },
-          },
         },
       });
 
       if (existingSupport) {
-        return supportedResponse(
-          existingSupport.ambassadorCode?.displayName ?? existingSupport.code,
-          409,
-        );
+        return supportedResponse(getAmbassadorDisplayName(existingSupport.code), 409);
       }
 
       throw error;
@@ -158,8 +141,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         supported: true,
-        ambassadorName: ambassadorCode.displayName,
-        message: `Supporting ${ambassadorCode.displayName}`,
+        ambassadorName: getAmbassadorDisplayName(ambassadorCode.code),
+        message: `Supporting ${getAmbassadorDisplayName(ambassadorCode.code)}`,
       },
       { status: 201 },
     );
