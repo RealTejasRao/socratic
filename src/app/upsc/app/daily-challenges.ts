@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 export type UpscDailyChallenge = {
   day: number;
   category: string;
@@ -8,14 +5,9 @@ export type UpscDailyChallenge = {
   dateKey: string;
 };
 
-const CHALLENGE_FILE_PATH = path.join(
-  process.cwd(),
-  "public",
-  "instruction",
-  "instruction.txt",
-);
 const INDIA_UTC_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 const CYCLE_START_DATE_KEY = "2026-08-28";
+const CHALLENGES: Omit<UpscDailyChallenge, "dateKey">[] = [];
 
 function getIndiaDateKey(now = new Date()) {
   return new Date(now.getTime() + INDIA_UTC_OFFSET_MS)
@@ -34,37 +26,13 @@ function getDayIndex(dateKey: string, challengeCount: number) {
   return elapsedDays % challengeCount;
 }
 
-function parseChallenges(source: string) {
-  return Array.from(
-    source.matchAll(/### Day\s+(\d+)\s+.\s+([^\r\n]+)\s+\*\*([^*]+)\*\*/g),
-  )
-    .map((match) => {
-      const day = Number(match[1]);
-      const category = match[2]?.trim();
-      const question = match[3]?.trim();
-
-      if (!Number.isInteger(day) || !category || !question) {
-        return null;
-      }
-
-      return { day, category, question };
-    })
-    .filter(
-      (challenge): challenge is Omit<UpscDailyChallenge, "dateKey"> =>
-        challenge !== null,
-    );
-}
-
 export async function getTodayUpscChallenge(): Promise<UpscDailyChallenge | null> {
-  const source = await readFile(CHALLENGE_FILE_PATH, "utf8");
-  const challenges = parseChallenges(source);
-
-  if (challenges.length === 0) {
+  if (CHALLENGES.length === 0) {
     return null;
   }
 
   const dateKey = getIndiaDateKey();
-  const challenge = challenges[getDayIndex(dateKey, challenges.length)];
+  const challenge = CHALLENGES[getDayIndex(dateKey, CHALLENGES.length)];
 
   if (!challenge) {
     return null;
