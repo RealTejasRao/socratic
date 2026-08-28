@@ -100,11 +100,13 @@ export async function MarketingNavbar({
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <MarketingLanguageToggle
-            locale={locale}
-            label={copy?.languageLabel ?? (locale === "hi" ? "English" : "हिंदी")}
-            className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full outline-black outline-2 bg-transparent px-2.5 text-[0.72rem] font-medium tracking-[0.01em] text-black transition-all duration-200 hover:border-[#a01717] hover:text-[#a01717] disabled:cursor-wait disabled:opacity-65 sm:px-3.5 sm:text-[0.76rem]`}
-          />
+          {copy?.languageLabel ? (
+            <MarketingLanguageToggle
+              locale={locale}
+              label={copy.languageLabel}
+              className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full outline-black outline-2 bg-transparent px-2.5 text-[0.72rem] font-medium tracking-[0.01em] text-black transition-all duration-200 hover:border-[#a01717] hover:text-[#a01717] disabled:cursor-wait disabled:opacity-65 sm:px-3.5 sm:text-[0.76rem]`}
+            />
+          ) : null}
           <AuthAwareCtaLink
             signedInHref={appHref}
             signedOutHref={appSignedOutHref}
