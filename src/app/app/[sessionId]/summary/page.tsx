@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import type { Route } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -116,7 +117,10 @@ function FeedbackTable({
   );
 }
 
-export default async function DebateSummaryPage({ params }: Props) {
+export async function DebateSummaryPageContent({
+  params,
+  appBasePath = ROUTES.APP,
+}: Props & { appBasePath?: string }) {
   const { sessionId } = await params;
   const { userId: clerkUserId } = await auth();
 
@@ -188,7 +192,7 @@ export default async function DebateSummaryPage({ params }: Props) {
       <header className="summary-topbar sticky top-0 z-20 border-b border-[#e3e1d8] bg-[#fefefc]/90 px-4 py-3 backdrop-blur md:px-6">
         <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-4">
           <Link
-            href={`/app/${session.id}`}
+            href={`${appBasePath}/${session.id}` as Route}
             className="summary-back-link inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] font-medium text-[#30342f] transition hover:bg-[#f2f0e9]"
           >
             <ArrowLeft size={15} />
@@ -381,4 +385,8 @@ export default async function DebateSummaryPage({ params }: Props) {
       </main>
     </div>
   );
+}
+
+export default async function DebateSummaryPage({ params }: Props) {
+  return <DebateSummaryPageContent params={params} />;
 }

@@ -51,6 +51,7 @@ import {
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import SidebarSearch from "./SidebarSearch";
 import SidebarSessions from "./SidebarSessions";
+import { useAppRoute } from "./app-route-context";
 
 interface Session {
   id: string;
@@ -82,11 +83,6 @@ const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
 const CONTACT_EMAIL_HREF = "mailto:contact@usesocratic.com";
-const HOME_CONTACT_HREF = "/#contact" as const;
-const SOCRATIC_MODE_HREF = `${ROUTES.APP}?mode=socratic` as const;
-const DEBATE_MODE_HREF = `${ROUTES.APP}?mode=debate` as const;
-const ROLEPLAY_MODE_HREF = `${ROUTES.APP}?mode=roleplay` as const;
-
 const SETTINGS_TABS: Array<{
   value: SettingsTab;
   label: string;
@@ -206,6 +202,17 @@ function readChatFontSizeSetting(): ChatFontSize {
 export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const {
+    appBasePath,
+    modeHref,
+    newChatHref,
+    isAppRoot,
+    marketingHomePath,
+    contactHref,
+    copy,
+  } =
+    useAppRoute();
+  const showUpscBrandGraphic = appBasePath === ROUTES.UPSC_APP;
   const isStandalone = useStandaloneMode();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -428,7 +435,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         window.clearTimeout(timeoutId);
       };
     }
-  }, [pathname]);
+  }, [isAppRoot, pathname]);
 
   useEffect(() => {
     if (!isHomeNavigating) {
@@ -459,7 +466,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   }, [isNewChatNavigating]);
 
   useEffect(() => {
-    if (pathname === ROUTES.APP) {
+    if (isAppRoot(pathname)) {
       const timeoutId = window.setTimeout(() => {
         setIsNewChatNavigating(false);
       }, 0);
@@ -468,7 +475,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         window.clearTimeout(timeoutId);
       };
     }
-  }, [pathname]);
+  }, [isAppRoot, pathname]);
 
   useEffect(() => {
     if (!navigatingModeLink) {
@@ -481,7 +488,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       (navigatingModeLink === "DEBATE" && normalizedMode === "debate") ||
       (navigatingModeLink === "ROLEPLAY" && normalizedMode === "roleplay");
 
-    if (pathname === ROUTES.APP && isMatchingMode) {
+    if (isAppRoot(pathname) && isMatchingMode) {
       const timeoutId = window.setTimeout(() => {
         setNavigatingModeLink(null);
         if (shouldCloseMobileSidebarAfterModeLoad) {
@@ -508,6 +515,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     };
   }, [
     navigatingModeLink,
+    isAppRoot,
     pathname,
     searchParams,
     shouldCloseMobileSidebarAfterModeLoad,
@@ -668,6 +676,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       return;
     }
 
+    const effectivePathname =
+      appBasePath === ROUTES.UPSC_APP && typeof window !== "undefined"
+        ? window.location.pathname
+        : pathname;
     const isPrimaryNavigationClick =
       event.button === 0 &&
       !event.metaKey &&
@@ -675,10 +687,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       !event.shiftKey &&
       !event.altKey;
 
-    if (pathname !== ROUTES.APP) {
+    if (!isAppRoot(effectivePathname)) {
       if (!isPrimaryNavigationClick) {
         return;
       }
+
       setIsNewChatNavigating(true);
       return;
     }
@@ -760,7 +773,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     label = false,
   ) => (
     <Link
-      href={isStandalone ? CONTACT_EMAIL_HREF : HOME_CONTACT_HREF}
+      href={isStandalone ? CONTACT_EMAIL_HREF : contactHref}
       target={isStandalone ? undefined : "_blank"}
       rel={isStandalone ? undefined : "noreferrer noopener"}
       onClick={onClick ?? (() => undefined)}
@@ -784,7 +797,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       data-app-tour-target="sidebar-mode-links"
     >
       <Link
-        href={SOCRATIC_MODE_HREF}
+        href={modeHref("socratic")}
         onClick={() => {
           setNavigatingModeLink("SOCRATIC");
           onClick?.();
@@ -855,7 +868,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         ) : null}
       </Link>
       <Link
-        href={DEBATE_MODE_HREF}
+        href={modeHref("debate")}
         onClick={(event) => {
           if (handleDebateModeClick(event)) {
             onClick?.();
@@ -879,14 +892,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         ) : null}
       </Link>
       <Link
-        href={ROLEPLAY_MODE_HREF}
+        href={modeHref("roleplay")}
         onClick={() => {
           setNavigatingModeLink("ROLEPLAY");
           onClick?.();
         }}
         className={`${className} ${navigatingModeLink === "ROLEPLAY" ? "pointer-events-none opacity-90" : ""}`}
-        aria-label="Talk to a philosopher"
-        data-tooltip={label ? undefined : "Talk to a philosopher"}
+        aria-label={copy.roleplayModeLabel}
+        data-tooltip={label ? undefined : copy.roleplayModeLabel}
         data-app-tour-target="sidebar-mode-roleplay"
       >
         {navigatingModeLink === "ROLEPLAY" ? (
@@ -901,7 +914,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           <span>
             {navigatingModeLink === "ROLEPLAY"
               ? "Opening..."
-              : "Talk to a philosopher"}
+              : copy.roleplayModeLabel}
           </span>
         ) : null}
       </Link>
@@ -942,7 +955,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           className={`mb-2 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}
         >
           <Link
-            href={ROUTES.APP_ROLEPLAY}
+            href={modeHref("roleplay")}
             className={
               collapsed
                 ? "flex items-center justify-center"
@@ -968,9 +981,20 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               />
             </span>
             {!collapsed && (
-              <span className="text-[20px] tracking-wide font-normal text-slate-900 font-[Georgia,serif]">
-                Socratic AI
-              </span>
+              <>
+                <span className="text-[20px] tracking-wide font-normal text-slate-900 font-[Georgia,serif]">
+                  Socratic AI
+                </span>
+                {showUpscBrandGraphic ? (
+                  <Image
+                    src="/upsc/indian-flag.webp"
+                    alt=""
+                    width={58}
+                    height={36}
+                    className="ml-4 h-9 w-14.5 rounded-[3px] object-cover"
+                  />
+                ) : null}
+              </>
             )}
           </Link>
         </div>
@@ -997,7 +1021,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           <>
             <div className="mt-1 flex flex-col items-center gap-0.5">
               <Link
-                href={ROUTES.APP_ROLEPLAY}
+                href={newChatHref}
                 onClick={handleNewChatClick}
                 className={`app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
                 aria-label="New chat"
@@ -1027,7 +1051,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             <div className="mt-auto space-y-0.5 border-t border-slate-200 pt-2">
               {!isStandalone ? (
                 <Link
-                  href={ROUTES.HOME}
+                  href={marketingHomePath}
                   onClick={handleHomeClick}
                   className={`app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
                   aria-label="Home"
@@ -1075,7 +1099,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
               <div className="mb-1 mt-1">
                 <Link
-                  href={ROUTES.APP_ROLEPLAY}
+                  href={newChatHref}
                   onClick={handleNewChatClick}
                   className={`app-sidebar-nav-item flex items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
                 >
@@ -1084,7 +1108,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   ) : (
                     <PenSquare size={16} />
                   )}
-                  <span>New Chat</span>
+                  <span>{copy.newChatLabel}</span>
                 </Link>
               </div>
 
@@ -1097,7 +1121,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
               <div className="mt-2">
                 <p className="mb-2 px-3 text-[11px] uppercase tracking-[0.14em] text-slate-500">
-                  Chats
+                  {copy.chatsHeading}
                 </p>
                 <SidebarSessions
                   sessions={sessions}
@@ -1110,7 +1134,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             <div className="mt-3 shrink-0 space-y-0.5 border-t border-slate-200 pt-2">
               {!isStandalone ? (
                 <Link
-                  href={ROUTES.HOME}
+                  href={marketingHomePath}
                   onClick={handleHomeClick}
                   className={`app-sidebar-nav-item flex w-full items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
                 >
@@ -1188,7 +1212,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       >
         <div className="mb-2.5 flex items-center justify-between">
           <Link
-            href={ROUTES.APP_ROLEPLAY}
+            href={newChatHref}
             className="flex items-center gap-2 px-0.5"
             onClick={() => setIsMobileSidebarOpen(false)}
           >
@@ -1213,6 +1237,15 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             <span className="font-[Georgia,serif] text-[21px] font-normal tracking-[0.01em] text-slate-900">
               Socratic AI
             </span>
+            {showUpscBrandGraphic ? (
+              <Image
+                src="/upsc/indian-flag.webp"
+                alt=""
+                width={58}
+                height={36}
+                className="ml-4 h-9 w-14.5 rounded-[3px] object-cover"
+              />
+            ) : null}
           </Link>
 
           <button
@@ -1230,7 +1263,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
           <div className="mb-1.5">
             <Link
-              href={ROUTES.APP_ROLEPLAY}
+              href={newChatHref}
               onClick={(event) => {
                 handleNewChatClick(event);
                 setIsMobileSidebarOpen(false);
@@ -1242,7 +1275,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               ) : (
                 <PenSquare size={18} />
               )}
-              <span>New Chat</span>
+              <span>{copy.newChatLabel}</span>
             </Link>
           </div>
 
@@ -1256,7 +1289,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
           <div className="mt-2">
             <p className="mb-2 px-2.5 text-[12px] uppercase tracking-[0.11em] text-slate-500">
-              Chats
+              {copy.chatsHeading}
             </p>
             <SidebarSessions
               sessions={sessions}
@@ -1270,7 +1303,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         <div className="mt-3 shrink-0 space-y-1 border-t border-slate-200 pt-2.5">
           {!isStandalone ? (
             <Link
-              href={ROUTES.HOME}
+              href={marketingHomePath}
               onClick={(event) => {
                 handleHomeClick(event);
                 setIsMobileSidebarOpen(false);

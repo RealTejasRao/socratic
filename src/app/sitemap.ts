@@ -14,6 +14,12 @@ const publicStaticRoutes: Array<{
 }> = [
   { path: "/", filePath: "src/app/page.tsx", changeFrequency: "weekly", priority: 1 },
   {
+    path: "/upsc",
+    filePath: "src/app/upsc/page.tsx",
+    changeFrequency: "weekly",
+    priority: 1,
+  },
+  {
     path: "/blog",
     filePath: "src/app/blog/page.tsx",
     changeFrequency: "daily",

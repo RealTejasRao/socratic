@@ -23,7 +23,7 @@ function getDisplayName(
   );
 }
 
-export default async function SessionPage({ params }: Props) {
+export async function SessionPageContent({ params }: Props) {
   const { sessionId } = await params;
 
   const { userId: clerkUserId } = await auth();
@@ -167,4 +167,8 @@ export default async function SessionPage({ params }: Props) {
       }}
     />
   );
+}
+
+export default async function SessionPage({ params }: Props) {
+  return <SessionPageContent params={params} />;
 }

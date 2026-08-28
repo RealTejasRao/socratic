@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import type { Route } from "next";
 import {
   useEffect,
   useRef,
@@ -44,7 +43,10 @@ import type {
 } from "src/types/chat";
 import type { BillingStateResponse } from "src/types/billing";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
-import { SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
+import {
+  SUGGESTION_QUESTIONS,
+  UPSC_SUGGESTION_QUESTIONS,
+} from "@/src/lib/suggestion-questions";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 import { PLAN_LIMITS } from "@/src/lib/billing";
@@ -54,6 +56,7 @@ import DebateModeSetup from "./DebateModeSetup";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 import RoleplayModeSetup from "./RoleplayModeSetup";
+import { useAppRoute } from "./app-route-context";
 
 interface Props {
   initialMessages: ChatMessage[];
@@ -65,7 +68,10 @@ interface Props {
   initialUserName?: string | null;
 }
 
-function getModeFromSearchParam(value: string | null): SessionMode {
+function getModeFromSearchParam(
+  value: string | null,
+  fallback: SessionMode = "ROLEPLAY",
+): SessionMode {
   const normalized = value?.toLowerCase().trim();
 
   if (normalized === "socratic") {
@@ -80,23 +86,7 @@ function getModeFromSearchParam(value: string | null): SessionMode {
     return "ROLEPLAY";
   }
 
-  return "ROLEPLAY";
-}
-
-function getModeHref(mode: SessionMode) {
-  if (mode === "DEBATE") {
-    return `${ROUTES.APP}?mode=debate` as Route;
-  }
-
-  if (mode === "ROLEPLAY") {
-    return `${ROUTES.APP}?mode=roleplay` as Route;
-  }
-
-  return `${ROUTES.APP}?mode=socratic` as Route;
-}
-
-function getRoleplayPhilosopherHref(philosopherId: RoleplayPhilosopherId) {
-  return `${ROUTES.APP}?mode=roleplay&philosopher=${encodeURIComponent(philosopherId)}` as Route;
+  return fallback;
 }
 
 const MORNING_GREETINGS = [
@@ -135,6 +125,15 @@ const LATE_GREETINGS = [
   "Night thoughts cut deeper, {name}",
   "Can't sleep, {name}? Or won't?",
   "Darkness is the oldest classroom, {name}.",
+];
+
+const UPSC_GREETINGS = [
+  "Future officers think differently, {name}.",
+  "What are we mastering today, {name}?",
+  "One question closer to LBSNAA, {name}.",
+  "Ready to outthink the competition, {name}?",
+  "Your rank is built one answer at a time.",
+  "Let's build the mind that clears UPSC.",
 ];
 
 const FALLBACK_STARTER_CHIPS = [
@@ -268,7 +267,7 @@ const roleplaySheetVariants: Variants = {
 
 let greetingSeedStore = 0;
 const greetingSeedListeners = new Set<() => void>();
-let starterChipStore: string[] | null = null;
+const starterChipStores = new Map<string, string[]>();
 const starterChipListeners = new Set<() => void>();
 
 function getGreetingBucket(hour: number) {
@@ -300,24 +299,31 @@ function getGreetingSeedSnapshot() {
   return greetingSeedStore;
 }
 
-function subscribeToStarterChips(listener: () => void) {
+function subscribeToStarterChips(
+  listener: () => void,
+  storeKey: string,
+  questions: readonly string[],
+  fallbackQuestions: readonly string[] = FALLBACK_STARTER_CHIPS,
+) {
   starterChipListeners.add(listener);
 
-  if (typeof window !== "undefined" && starterChipStore === null) {
+  if (typeof window !== "undefined" && !starterChipStores.has(storeKey)) {
     queueMicrotask(() => {
-      if (starterChipStore !== null) {
+      if (starterChipStores.has(storeKey)) {
         return;
       }
 
       const randomQuestions = pickRandomQuestions(
-        [...SUGGESTION_QUESTIONS],
+        [...questions],
         STARTER_CHIP_COUNT,
       );
 
-      starterChipStore =
+      starterChipStores.set(
+        storeKey,
         randomQuestions.length > 0
           ? randomQuestions
-          : pickRandomQuestions(FALLBACK_STARTER_CHIPS, STARTER_CHIP_COUNT);
+          : pickRandomQuestions([...fallbackQuestions], STARTER_CHIP_COUNT),
+      );
 
       starterChipListeners.forEach((currentListener) => currentListener());
     });
@@ -328,8 +334,8 @@ function subscribeToStarterChips(listener: () => void) {
   };
 }
 
-function getStarterChipSnapshot() {
-  return starterChipStore ?? FALLBACK_STARTER_CHIPS;
+function getStarterChipSnapshot(storeKey: string) {
+  return starterChipStores.get(storeKey) ?? FALLBACK_STARTER_CHIPS;
 }
 
 function pickRandomQuestions(questions: string[], count: number) {
@@ -934,14 +940,38 @@ export default function ChatContainer({
     },
   },
 }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const {
+    appBasePath,
+    modeHref,
+    roleplayPhilosopherHref,
+    sessionHref,
+    sessionSummaryHref,
+    draftKey,
+    isAppRoot,
+    defaultNewChatMode,
+  } = useAppRoute();
   const greetingSeed = useSyncExternalStore(
     subscribeToGreetingSeed,
     getGreetingSeedSnapshot,
     () => 0,
   );
+  const starterChipStoreKey =
+    appBasePath === ROUTES.UPSC_APP ? "upsc" : "default";
+  const starterChipQuestions =
+    appBasePath === ROUTES.UPSC_APP
+      ? UPSC_SUGGESTION_QUESTIONS
+      : SUGGESTION_QUESTIONS;
   const starterChips = useSyncExternalStore(
-    subscribeToStarterChips,
-    getStarterChipSnapshot,
+    (listener) =>
+      subscribeToStarterChips(
+        listener,
+        starterChipStoreKey,
+        starterChipQuestions,
+      ),
+    () => getStarterChipSnapshot(starterChipStoreKey),
     () => FALLBACK_STARTER_CHIPS,
   );
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
@@ -984,9 +1014,6 @@ export default function ChatContainer({
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const roleplayStartTimeoutRef = useRef<number | null>(null);
   const roleplayComposerRef = useRef<HTMLDivElement | null>(null);
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const hasMessages = messages.length > 0;
   const isDebateSession = activeSessionMeta.mode === "DEBATE";
   const isRoleplaySession = activeSessionMeta.mode === "ROLEPLAY";
@@ -1064,7 +1091,10 @@ export default function ChatContainer({
       return "";
     }
 
-    const bucket = getGreetingBucket(new Date().getHours());
+    const bucket =
+      appBasePath === ROUTES.UPSC_APP
+        ? UPSC_GREETINGS
+        : getGreetingBucket(new Date().getHours());
     const template =
       bucket[greetingSeed % bucket.length] ??
       "Clarity is just a few prompts away.";
@@ -1119,7 +1149,9 @@ export default function ChatContainer({
     setRoleplayStarterDraft(null);
 
     if (updateUrl) {
-      router.replace(getModeHref(mode), { scroll: false });
+      router.replace(modeHref(mode.toLowerCase() as "socratic" | "debate" | "roleplay"), {
+        scroll: false,
+      });
     }
   }
 
@@ -1134,7 +1166,7 @@ export default function ChatContainer({
       window.history.pushState(
         null,
         "",
-        getRoleplayPhilosopherHref(philosopherId),
+        roleplayPhilosopherHref(philosopherId),
       );
     }
 
@@ -1153,7 +1185,7 @@ export default function ChatContainer({
     setRoleplayStarterDraft(null);
 
     if (!activeSessionId && messages.length === 0) {
-      window.history.replaceState(null, "", getModeHref("ROLEPLAY"));
+      window.history.replaceState(null, "", modeHref("roleplay"));
     }
   }
 
@@ -1185,14 +1217,14 @@ export default function ChatContainer({
 
   function openRoleplayLibraryFromSession() {
     resetToRoleplayLibrary();
-    router.push(getModeHref("ROLEPLAY"), { scroll: false });
+    router.push(modeHref("roleplay"), { scroll: false });
   }
 
   function markQuickTourComplete() {
     if (!userStorageId) {
       setShowQuickTour(false);
       setIsModeMenuOpen(false);
-      selectNewChatMode("ROLEPLAY");
+      selectNewChatMode(defaultNewChatMode);
       return;
     }
 
@@ -1204,7 +1236,7 @@ export default function ChatContainer({
 
     setShowQuickTour(false);
     setIsModeMenuOpen(false);
-    selectNewChatMode("ROLEPLAY");
+    selectNewChatMode(defaultNewChatMode);
   }
 
   function moveQuickTourToStep(nextStep: number) {
@@ -1223,11 +1255,14 @@ export default function ChatContainer({
   }, [sessionMeta]);
 
   useEffect(() => {
-    const nextMode = getModeFromSearchParam(searchParams.get("mode"));
+    const nextMode = getModeFromSearchParam(
+      searchParams.get("mode"),
+      defaultNewChatMode,
+    );
     const philosopherParam = searchParams.get("philosopher");
 
     if (
-      pathname === ROUTES.APP &&
+      isAppRoot(pathname) &&
       nextMode === "ROLEPLAY" &&
       !isRoleplayPhilosopherId(philosopherParam) &&
       (activeSessionId || messages.length > 0 || isStreaming)
@@ -1255,7 +1290,14 @@ export default function ChatContainer({
     setPendingRoleplayId(null);
   // resetToRoleplayLibrary intentionally stays outside deps; this effect mirrors URL state.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSessionId, isStreaming, messages.length, pathname, searchParams]);
+  }, [
+    activeSessionId,
+    defaultNewChatMode,
+    isStreaming,
+    messages.length,
+    pathname,
+    searchParams,
+  ]);
 
   useEffect(() => {
     void refreshBillingState();
@@ -1286,7 +1328,7 @@ export default function ChatContainer({
 
   useEffect(() => {
     if (
-      pathname !== ROUTES.APP ||
+      !isAppRoot(pathname) ||
       activeSessionId ||
       messages.length > 0 ||
       initialAutoSendMessage ||
@@ -1359,7 +1401,7 @@ export default function ChatContainer({
       setMessages([]);
       setEditingMessage(null);
       setEditDraft("");
-      selectNewChatMode("ROLEPLAY");
+      selectNewChatMode(defaultNewChatMode);
       setPendingRoleplayId(null);
       setShowWinnerReveal(false);
       finalizeRequestedRef.current = false;
@@ -1900,6 +1942,7 @@ export default function ChatContainer({
     content: string;
     attachments: ChatImageAttachment[];
     webSearch: boolean;
+    mode?: SessionMode;
   }) {
     if (isStreaming || isDebateCompleted) return;
     if (!billing.isPremium && (billing.usage.dailyMessagesRemaining ?? 0) <= 0) {
@@ -1921,6 +1964,7 @@ export default function ChatContainer({
     let streamUpdater: ReturnType<typeof createAssistantStreamUpdater> | null =
       null;
     const { content, attachments, webSearch } = payload;
+    const newSessionMode = payload.mode ?? modeSelection;
 
     const optimisticMessage: ChatMessage = {
       id: tempId,
@@ -1968,7 +2012,7 @@ export default function ChatContainer({
                   mode: "ROLEPLAY",
                   roleplayPhilosopherId: pendingRoleplayPhilosopher.id,
                 }
-              : modeSelection === "SOCRATIC"
+              : newSessionMode === "SOCRATIC"
                 ? { mode: "SOCRATIC" }
                 : {}),
         }),
@@ -2016,17 +2060,17 @@ export default function ChatContainer({
         startedWithoutSession && Boolean(returnedSessionId);
 
       if (createdSessionFromNewChat && returnedSessionId) {
-        const draftFromNewChat = sessionStorage.getItem("socratic:draft:/app");
+        const draftFromNewChat = sessionStorage.getItem(draftKey());
         if (draftFromNewChat !== null) {
           sessionStorage.setItem(
-            `socratic:draft:/app/${returnedSessionId}`,
+            draftKey(returnedSessionId),
             draftFromNewChat,
           );
-          sessionStorage.removeItem("socratic:draft:/app");
+          sessionStorage.removeItem(draftKey());
         }
 
         setActiveSessionId(returnedSessionId);
-        window.history.replaceState(null, "", `/app/${returnedSessionId}`);
+        window.history.replaceState(null, "", sessionHref(returnedSessionId));
         window.dispatchEvent(
           new CustomEvent("socratic:sessions:changed", {
             detail: { activeSessionId: returnedSessionId },
@@ -2574,6 +2618,7 @@ export default function ChatContainer({
                             content: chip,
                             attachments: [],
                             webSearch: false,
+                            mode: "SOCRATIC",
                           });
                         }}
                         disabled={isStreaming || !starterChips[0]}
@@ -2591,6 +2636,7 @@ export default function ChatContainer({
                               content: chip,
                               attachments: [],
                               webSearch: false,
+                              mode: "SOCRATIC",
                             })
                           }
                           disabled={isStreaming}
@@ -2826,7 +2872,7 @@ export default function ChatContainer({
               <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
                 {activeSessionId && (
                   <Link
-                    href={`/app/${activeSessionId}/summary`}
+                    href={sessionSummaryHref(activeSessionId)}
                     target="_blank"
                     rel="noreferrer"
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
@@ -2899,7 +2945,7 @@ export default function ChatContainer({
               <div className="mt-5 flex justify-center">
                 {activeSessionId && (
                   <Link
-                    href={`/app/${activeSessionId}/summary`}
+                    href={sessionSummaryHref(activeSessionId)}
                     target="_blank"
                     rel="noreferrer"
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"

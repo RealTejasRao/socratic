@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import Image from "next/image";
 import { SignIn } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
@@ -15,18 +16,43 @@ export const metadata: Metadata = createPageMetadata({
   index: false,
 });
 
-export default async function SignInPage() {
+type SignInPageProps = {
+  searchParams?:
+    | Promise<{ redirect_url?: string | string[] }>
+    | { redirect_url?: string | string[] };
+};
+
+function getFirstSearchParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function resolveSafeRedirectPath(value: string | undefined) {
+  if (!value?.startsWith("/") || value.startsWith("//")) {
+    return ROUTES.APP_ROLEPLAY;
+  }
+
+  return value;
+}
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
   const { userId } = await auth();
+  const resolvedSearchParams =
+    searchParams && "then" in searchParams ? await searchParams : searchParams;
+  const redirectPath = resolveSafeRedirectPath(
+    getFirstSearchParam(resolvedSearchParams?.redirect_url),
+  );
 
   if (userId) {
-    redirect(ROUTES.APP_ROLEPLAY);
+    redirect(redirectPath as Route);
   }
 
   const nietzscheImageScale = 0.8; // 1 = 100% of right panel width
   const nietzscheImageMaxWidthPx = 1960;
   const nietzscheImageOffsetXPx = -80;
-  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP_ROLEPLAY}`;
-  const signUpUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_UP}`;
+  const appRedirectUrl = `${seoConfig.siteUrl}${redirectPath}`;
+  const signUpUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_UP}?redirect_url=${encodeURIComponent(
+    redirectPath,
+  )}`;
 
   const clerkGlassAppearance = {
     elements: {

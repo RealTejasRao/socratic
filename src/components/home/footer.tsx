@@ -1,17 +1,37 @@
 import Image from "next/image";
+import type { Route } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { CookiePreferencesLink } from "@/src/components/cookie-consent/cookie-preferences-link";
 import { ROUTES } from "@/src/lib/routes";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
+import type { UpscHomeCopy } from "@/src/lib/upsc-home-locale";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
 type FooterProps = {
   interClassName: string;
   sectionPrefix?: string;
+  descriptionLines?: string[];
+  ctaLabel?: string;
+  ctaSignedInHref?: Route;
+  ctaSignedOutHref?: Route;
+  appHref?: Route;
+  copy?: Partial<UpscHomeCopy["footer"]>;
 };
 
-export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps) {
+export async function Footer({
+  interClassName,
+  sectionPrefix = "",
+  descriptionLines = [
+    "Built on the greatest philosophical texts ever written.",
+    "Ask anything. Debate Everything",
+  ],
+  ctaLabel = "Try Socratic AI Now",
+  ctaSignedInHref = ROUTES.APP_ROLEPLAY,
+  ctaSignedOutHref = ROUTES.SIGN_UP,
+  appHref = ROUTES.APP_ROLEPLAY,
+  copy,
+}: FooterProps) {
   const { userId: clerkUserId } = await auth();
   const billing = clerkUserId
     ? await getUserBillingStateByClerkId(clerkUserId)
@@ -20,21 +40,38 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
   const isPremium = Boolean(billing?.isPremium);
   const withPrefix = (hash: string) =>
     sectionPrefix ? `${sectionPrefix}${hash}` : hash;
+  const footerCopy = {
+    explore: "Explore",
+    account: "Account",
+    preferences: "Preferences",
+    home: "Home",
+    features: "Features",
+    blog: "Blog",
+    contact: "Contact",
+    pricing: "Pricing",
+    goToApp: "Go to App",
+    getSocraticPlus: "Get Socratic +",
+    privacyPolicy: "Privacy Policy",
+    terms: "Terms & Conditions",
+    cookiePolicy: "Cookie Policy",
+    consentPreferences: "Consent Preferences",
+    ...copy,
+  };
   const siteMapLinks = [
-    { label: "Home", href: withPrefix("#home") },
-    { label: "Features", href: withPrefix("#features") },
-    { label: "Blog", href: ROUTES.BLOG },
-    { label: "Contact", href: withPrefix("#contact") },
+    { label: footerCopy.home, href: withPrefix("#home") },
+    { label: footerCopy.features, href: withPrefix("#features") },
+    { label: footerCopy.blog, href: ROUTES.BLOG },
+    { label: footerCopy.contact, href: withPrefix("#contact") },
   ];
   const accountLinks = !isSignedIn
     ? [
         { label: "Sign Up", href: ROUTES.SIGN_UP, className: "text-white/76 hover:text-white" },
         { label: "Sign In", href: ROUTES.SIGN_IN, className: "text-white/76 hover:text-white" },
-        { label: "Pricing", href: ROUTES.PRICING, className: "text-white/76 hover:text-white" },
+        { label: footerCopy.pricing, href: ROUTES.PRICING, className: "text-white/76 hover:text-white" },
       ]
     : isPremium
       ? [
-          { label: "Go to App", href: ROUTES.APP_ROLEPLAY, className: "text-white/76 hover:text-white" },
+          { label: footerCopy.goToApp, href: appHref, className: "text-white/76 hover:text-white" },
           {
             label: "Socratic +",
             href: ROUTES.APP_BILLING,
@@ -47,9 +84,9 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
           },
         ]
       : [
-          { label: "Go to App", href: ROUTES.APP_ROLEPLAY, className: "text-white/76 hover:text-white" },
+          { label: footerCopy.goToApp, href: appHref, className: "text-white/76 hover:text-white" },
           {
-            label: "Get Socratic +",
+            label: footerCopy.getSocraticPlus,
             href: ROUTES.PRICING,
             className: "text-[#d4a63d] hover:text-[#f3d27f]",
           },
@@ -108,7 +145,12 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
               <p
                 className={`${interClassName} mt-4 max-w-118 text-[0.9rem] leading-relaxed text-white/78 sm:text-[0.95rem]`}
               >
-                Built on the greatest philosophical texts ever written. <br></br> Ask anything. Debate Everything
+                {descriptionLines.map((line, index) => (
+                  <span key={line}>
+                    {index > 0 ? <br /> : null}
+                    {line}
+                  </span>
+                ))}
               </p>
 
               <ul className="mt-6 flex flex-wrap items-center gap-2.5">
@@ -134,12 +176,13 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
               </ul>
 
               <AuthAwareCtaLink
-                signedOutHref={ROUTES.SIGN_UP}
+                signedInHref={ctaSignedInHref}
+                signedOutHref={ctaSignedOutHref}
                 showPendingStateOnNavigate
                 pendingIndicator="roseCurve"
                 className={`${interClassName} mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] border border-[#a01717] bg-[#a01717] px-7 text-[0.86rem] font-semibold tracking-[0.04em] text-white uppercase transition-colors duration-200 hover:bg-[#871313]`}
               >
-                Try Socratic AI Now
+                {ctaLabel}
               </AuthAwareCtaLink>
             </div>
 
@@ -148,7 +191,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                 <p
                   className={`${interClassName} text-[0.76rem] tracking-[0.12em] text-white/92 uppercase`}
                 >
-                  Explore
+                  {footerCopy.explore}
                 </p>
                 <ul className="mt-4 space-y-2.5">
                   {siteMapLinks.map((link) => (
@@ -168,7 +211,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                 <p
                   className={`${interClassName} text-[0.76rem] tracking-[0.12em] text-white/92 uppercase`}
                 >
-                  Account
+                  {footerCopy.account}
                 </p>
                 <ul className="mt-4 space-y-2.5">
                   {accountLinks.map((link) => (
@@ -188,7 +231,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                 <p
                   className={`${interClassName} text-[0.76rem] tracking-[0.12em] text-white/92 uppercase`}
                 >
-                  Preferences
+                  {footerCopy.preferences}
                 </p>
                 <ul className="mt-4 space-y-2.5">
                   <li>
@@ -196,7 +239,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                       href={ROUTES.PRIVACY_POLICY}
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
-                      Privacy Policy
+                      {footerCopy.privacyPolicy}
                     </a>
                   </li>
                   <li>
@@ -204,7 +247,7 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                       href={ROUTES.TERMS}
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
-                      Terms & Conditions
+                      {footerCopy.terms}
                     </a>
                   </li>
                   <li>
@@ -212,14 +255,14 @@ export async function Footer({ interClassName, sectionPrefix = "" }: FooterProps
                       href={ROUTES.COOKIE_POLICY}
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
-                      Cookie Policy
+                      {footerCopy.cookiePolicy}
                     </a>
                   </li>
                   <li>
                     <CookiePreferencesLink
                       className={`${interClassName} text-[0.92rem] text-white/76 transition-colors duration-200 hover:text-white`}
                     >
-                      Consent Preferences
+                      {footerCopy.consentPreferences}
                     </CookiePreferencesLink>
                   </li>
                 </ul>

@@ -16,6 +16,11 @@ import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-publ
 
 type UseCasesSectionProps = {
   interClassName: string;
+  items?: UseCaseItem[];
+  headingText?: string;
+  mobileFirstLineText?: string;
+  mobileSecondLineText?: string;
+  highlightedWord?: string;
 };
 
 type UseCaseItem = {
@@ -68,17 +73,49 @@ const useCaseItems: UseCaseItem[] = [
   },
 ];
 
+export const upscUseCaseItems: UseCaseItem[] = [
+  {
+    id: "socratic-mode",
+    icon: MessagesSquare,
+    leftTitle: "Socratic Mode",
+    leftDescription:
+      "Specially designed to make you think and reason better",
+    rightTitle: "Master Every Topic From Every Angle.",
+    rightDescription:
+      "Build stronger, balanced answers for GS, Ethics and Essay by mastering every side of a question.",
+    placeholderLabel: "UPSC Socratic mode for balanced topic analysis",
+    imageSrc: "/upsc/upsc-socratic-clean.webp",
+  },
+  {
+    id: "debate-mode",
+    icon: BookOpenText,
+    leftTitle: "Debate Mode",
+    leftDescription:
+      "Debate UPSC topics and learn to think fast under pressure.",
+    rightTitle: "Make your Answer Hard to Break",
+    rightDescription:
+      "Become a master of arguments, counter arguments and rebuttals for Essay, GS and the Personality Test.",
+    placeholderLabel: "UPSC debate mode for arguments and counter arguments",
+    imageSrc: "/upsc/upsc-debate.webp",
+  },
+  {
+    id: "roleplay-mode",
+    icon: Landmark,
+    leftTitle: "Roleplay Mode",
+    leftDescription:
+      "Talk directly with history's greatest thinkers and understand their ideas by directly talking to them.",
+    rightTitle: "Learn Ethics From The Greatest Minds.",
+    rightDescription:
+      "Discuss justice, duty, morality and society with Socrates, Buddha, Chanakya and many other thinkers.",
+    placeholderLabel: "UPSC roleplay mode for ethics and philosophy",
+    imageSrc: "/upsc/upsc-roleplay.webp",
+  },
+];
+
 const USE_CASES_HEADING_TEXT = "One AI, Endless Directions";
 const MOBILE_FIRST_LINE_TEXT = "One AI";
 const MOBILE_SECOND_LINE_TEXT = "Endless Directions";
 const ENDLESS_WORD = "Endless";
-const endlessStart = Math.max(0, USE_CASES_HEADING_TEXT.indexOf(ENDLESS_WORD));
-const endlessEnd = endlessStart + ENDLESS_WORD.length;
-const mobileFirstLineLength = MOBILE_FIRST_LINE_TEXT.length;
-const mobileSecondLineStart = Math.max(
-  0,
-  USE_CASES_HEADING_TEXT.indexOf(MOBILE_SECOND_LINE_TEXT),
-);
 const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin"],
@@ -127,7 +164,14 @@ const rightPanelInView = {
   y: 0,
 };
 
-export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
+export function UseCasesSection({
+  interClassName,
+  items = useCaseItems,
+  headingText = USE_CASES_HEADING_TEXT,
+  mobileFirstLineText = MOBILE_FIRST_LINE_TEXT,
+  mobileSecondLineText = MOBILE_SECOND_LINE_TEXT,
+  highlightedWord = ENDLESS_WORD,
+}: UseCasesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
   const useCasesSceneRef = useRef<HTMLDivElement | null>(null);
@@ -135,15 +179,15 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
     once: true,
     amount: 0.3,
   });
-  const [activeId, setActiveId] = useState(useCaseItems[0]?.id ?? "");
+  const [activeId, setActiveId] = useState(items[0]?.id ?? "");
   const [visibleHeadingChars, setVisibleHeadingChars] = useState(0);
   const [restartHeadingSignal, setRestartHeadingSignal] = useState(0);
   const [restartLoadSignal, setRestartLoadSignal] = useState(0);
   const activeItem =
-    useCaseItems.find((item) => item.id === activeId) ?? useCaseItems[0]!;
+    items.find((item) => item.id === activeId) ?? items[0]!;
   const useCaseImageUrls = useMemo(
     () =>
-      useCaseItems.map((item) => ({
+      items.map((item) => ({
         id: item.id,
         url: item.imageSrc
           ? resolveOptimizedCloudinaryPublicAsset(item.imageSrc, {
@@ -153,11 +197,17 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
             })
           : undefined,
       })),
-    [],
+    [items],
   );
   const activeImageUrl = useCaseImageUrls.find(
     (item) => item.id === activeItem.id,
   )?.url;
+
+  useEffect(() => {
+    if (!items.some((item) => item.id === activeId)) {
+      setActiveId(items[0]?.id ?? "");
+    }
+  }, [activeId, items]);
 
   useEffect(() => {
     const onRestart = (event: Event) => {
@@ -189,7 +239,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
 
     const interval = window.setInterval(() => {
       setVisibleHeadingChars((count) => {
-        if (count >= USE_CASES_HEADING_TEXT.length) {
+        if (count >= headingText.length) {
           window.clearInterval(interval);
           return count;
         }
@@ -198,7 +248,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
     }, 46);
 
     return () => window.clearInterval(interval);
-  }, [headingInView, restartHeadingSignal]);
+  }, [headingInView, restartHeadingSignal, headingText.length]);
 
   useEffect(() => {
     if (!headingInView) {
@@ -213,9 +263,16 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
     }
   }, [headingInView, useCaseImageUrls]);
 
-  const typedHeading = USE_CASES_HEADING_TEXT.slice(0, visibleHeadingChars);
-  const typedEndlessStart = Math.min(typedHeading.length, endlessStart);
-  const typedEndlessEnd = Math.min(typedHeading.length, endlessEnd);
+  const highlightedStart = Math.max(0, headingText.indexOf(highlightedWord));
+  const highlightedEnd = highlightedStart + highlightedWord.length;
+  const mobileFirstLineLength = mobileFirstLineText.length;
+  const mobileSecondLineStart = Math.max(
+    0,
+    headingText.indexOf(mobileSecondLineText),
+  );
+  const typedHeading = headingText.slice(0, visibleHeadingChars);
+  const typedEndlessStart = Math.min(typedHeading.length, highlightedStart);
+  const typedEndlessEnd = Math.min(typedHeading.length, highlightedEnd);
   const typedHeadingBeforeEndless = typedHeading.slice(0, typedEndlessStart);
   const typedHeadingEndless = typedHeading.slice(
     typedEndlessStart,
@@ -253,13 +310,13 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                 className="col-start-1 row-start-1 invisible whitespace-pre-line md:hidden"
                 aria-hidden="true"
               >
-                {`${MOBILE_FIRST_LINE_TEXT}\n${MOBILE_SECOND_LINE_TEXT}`}
+                {`${mobileFirstLineText}\n${mobileSecondLineText}`}
               </span>
               <span
                 className="col-start-1 row-start-1 invisible hidden md:inline"
                 aria-hidden="true"
               >
-                {USE_CASES_HEADING_TEXT}
+                {headingText}
               </span>
               <span className="col-start-1 row-start-1 whitespace-pre-line md:hidden">
                 <span className="block">{typedMobileLineOne}</span>
@@ -309,7 +366,7 @@ export function UseCasesSection({ interClassName }: UseCasesSectionProps) {
                     ease: heroSlideEase,
                   }}
                 >
-                  {useCaseItems.map((item, index) => {
+                  {items.map((item, index) => {
                     const isActive = item.id === activeItem.id;
                     const Icon = item.icon;
 

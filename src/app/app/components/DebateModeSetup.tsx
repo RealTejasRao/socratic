@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
+import { useAppRoute } from "./app-route-context";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
   DEBATE_DURATION_OPTIONS,
@@ -37,6 +38,7 @@ interface Props {
 
 export default function DebateModeSetup({ canAccessDebate = false }: Props) {
   const router = useRouter();
+  const { sessionHref } = useAppRoute();
   const [step, setStep] = useState<Step>("tone");
   const [tone, setTone] = useState<DebateTone>("RUTHLESS_BLUNT");
   const [durationPreset, setDurationPreset] =
@@ -241,7 +243,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       }
 
       const payload = (await response.json()) as { id: string };
-      router.push(`/app/${payload.id}`);
+      router.push(sessionHref(payload.id));
       router.refresh();
       return;
     } catch {

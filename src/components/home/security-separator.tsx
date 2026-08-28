@@ -5,9 +5,30 @@ import { LockKeyhole } from "lucide-react";
 
 type SecuritySeparatorProps = {
   interClassName: string;
+  message?: string;
+  highlightedTerm?: string;
 };
 
-export function SecuritySeparator({ interClassName }: SecuritySeparatorProps) {
+export function SecuritySeparator({
+  interClassName,
+  message = "Your conversations stay private. Always.",
+  highlightedTerm = "private",
+}: SecuritySeparatorProps) {
+  const highlightedStart = message.indexOf(highlightedTerm);
+  const highlightedEnd = highlightedStart + highlightedTerm.length;
+  const renderedMessage = message.split("").map((char, index) => (
+    <span
+      key={`${char}-${index}`}
+      className={
+        highlightedStart >= 0 && index >= highlightedStart && index < highlightedEnd
+          ? "text-[#166534]"
+          : ""
+      }
+    >
+      {char}
+    </span>
+  ));
+
   return (
     <section
       aria-label="Chat security separator"
@@ -38,8 +59,7 @@ export function SecuritySeparator({ interClassName }: SecuritySeparatorProps) {
           <p
             className={`${interClassName} mt-2 text-center text-[0.8rem] font-medium tracking-[0.01em] text-black/72 sm:text-[0.82rem]`}
           >
-            Your conversations stay <span className="text-[#166534]">private</span>.
-            <span className="ml-1">Always.</span>
+            {renderedMessage}
           </p>
           <motion.div
             className="mx-auto mt-1 h-px w-full max-w-56 bg-gradient-to-r from-transparent via-[#166534]/24 to-transparent"

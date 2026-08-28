@@ -10,6 +10,7 @@ import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 
 type AuthAwareCtaLinkProps = {
   className?: string;
+  signedInHref?: Route;
   signedOutHref?: Route;
   children: React.ReactNode;
   signedInChildren?: React.ReactNode;
@@ -20,6 +21,7 @@ type AuthAwareCtaLinkProps = {
 
 export function AuthAwareCtaLink({
   className,
+  signedInHref = ROUTES.APP_ROLEPLAY,
   signedOutHref = ROUTES.SIGN_UP,
   children,
   signedInChildren,
@@ -93,7 +95,7 @@ export function AuthAwareCtaLink({
     <>
       <SignedIn>
         <Link
-          href={ROUTES.APP_ROLEPLAY}
+          href={signedInHref}
           className={resolvedClassName}
           onClick={handleClick}
           aria-busy={showPendingStateOnNavigate ? isNavigating : undefined}

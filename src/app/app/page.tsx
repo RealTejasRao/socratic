@@ -21,13 +21,17 @@ type AppHomePageProps = {
         topic?: string | string[];
         autosend?: string | string[];
       };
+  defaultMode?: SessionMode;
 };
 
 function getFirstSearchParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function resolveMode(value: string | undefined): SessionMode {
+function resolveMode(
+  value: string | undefined,
+  fallback: SessionMode = "ROLEPLAY",
+): SessionMode {
   const normalized = value?.toLowerCase().trim();
 
   if (normalized === "socratic") {
@@ -42,7 +46,7 @@ function resolveMode(value: string | undefined): SessionMode {
     return "ROLEPLAY";
   }
 
-  return "ROLEPLAY";
+  return fallback;
 }
 
 function getDisplayName(
@@ -56,7 +60,10 @@ function getDisplayName(
   );
 }
 
-export default async function AppHomePage({ searchParams }: AppHomePageProps) {
+export async function AppHomePageContent({
+  searchParams,
+  defaultMode = "ROLEPLAY",
+}: AppHomePageProps) {
   const { userId: clerkUserId } = await auth();
   const [billing, clerkUser] = clerkUserId
     ? await Promise.all([getUserBillingStateByClerkId(clerkUserId), currentUser()])
@@ -65,6 +72,7 @@ export default async function AppHomePage({ searchParams }: AppHomePageProps) {
     searchParams && "then" in searchParams ? await searchParams : searchParams;
   const requestedMode = resolveMode(
     getFirstSearchParam(resolvedSearchParams?.mode),
+    defaultMode,
   );
   const requestedTopic =
     getFirstSearchParam(resolvedSearchParams?.topic)?.trim() ?? "";
@@ -140,6 +148,14 @@ export default async function AppHomePage({ searchParams }: AppHomePageProps) {
           earlyAccess: billing?.isPremium ?? false,
         },
       }}
+    />
+  );
+}
+
+export default async function AppHomePage({ searchParams }: AppHomePageProps) {
+  return (
+    <AppHomePageContent
+      {...(searchParams === undefined ? {} : { searchParams })}
     />
   );
 }

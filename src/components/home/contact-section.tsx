@@ -11,9 +11,11 @@ import {
   useState,
 } from "react";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import type { UpscHomeCopy } from "@/src/lib/upsc-home-locale";
 
 type ContactSectionProps = {
   interClassName: string;
+  copy?: Partial<UpscHomeCopy["contact"]>;
 };
 
 const instrumentSerif = Instrument_Serif({
@@ -25,16 +27,7 @@ const CONTACT_HEADING_TEXT = "We'd love to hear from you :)";
 const MOBILE_CONTACT_FIRST_LINE_TEXT = "We'd love to";
 const MOBILE_CONTACT_SECOND_LINE_TEXT = "hear from you :)";
 const MAX_MESSAGE_WORDS = 2000;
-const NAME_REGEX = /^[A-Za-z][A-Za-z\s'-]{0,79}$/;
-const LOVE_START_INDEX = CONTACT_HEADING_TEXT.indexOf("love");
-const LOVE_END_INDEX = LOVE_START_INDEX + "love".length - 1;
-const SMILE_START_INDEX = CONTACT_HEADING_TEXT.lastIndexOf(":)");
-const SMILE_END_INDEX = SMILE_START_INDEX + ":)".length - 1;
-const mobileContactFirstLineLength = MOBILE_CONTACT_FIRST_LINE_TEXT.length;
-const mobileContactSecondLineStart = Math.max(
-  0,
-  CONTACT_HEADING_TEXT.indexOf(MOBILE_CONTACT_SECOND_LINE_TEXT),
-);
+const NAME_REGEX = /^[\p{L}][\p{L}\s'-]{0,79}$/u;
 const CONTACT_EASE = [0.22, 1, 0.36, 1] as const;
 
 const leftArmVariants: Variants = {
@@ -137,7 +130,7 @@ const isValidEmail = (value: string) => {
   return true;
 };
 
-export function ContactSection({ interClassName }: ContactSectionProps) {
+export function ContactSection({ interClassName, copy }: ContactSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
@@ -159,10 +152,26 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
     type: "idle",
     message: "",
   });
-  const typedHeading = CONTACT_HEADING_TEXT.slice(0, visibleHeadingChars);
+  const contactHeadingText = copy?.heading ?? CONTACT_HEADING_TEXT;
+  const mobileContactFirstLineText =
+    copy?.mobileFirstLine ?? MOBILE_CONTACT_FIRST_LINE_TEXT;
+  const mobileContactSecondLineText =
+    copy?.mobileSecondLine ?? MOBILE_CONTACT_SECOND_LINE_TEXT;
+  const highlightedTerms = copy?.highlightedTerms ?? ["love", ":)"];
+  const mobileContactFirstLineLength = mobileContactFirstLineText.length;
+  const mobileContactSecondLineStart = Math.max(
+    0,
+    contactHeadingText.indexOf(mobileContactSecondLineText),
+  );
+  const typedHeading = contactHeadingText.slice(0, visibleHeadingChars);
+  const highlightRanges = highlightedTerms
+    .map((term) => {
+      const start = contactHeadingText.indexOf(term);
+      return start >= 0 ? { start, end: start + term.length } : null;
+    })
+    .filter((range): range is { start: number; end: number } => range !== null);
   const isAccentChar = (index: number) =>
-    (index >= LOVE_START_INDEX && index <= LOVE_END_INDEX) ||
-    (index >= SMILE_START_INDEX && index <= SMILE_END_INDEX);
+    highlightRanges.some((range) => index >= range.start && index < range.end);
   const renderAccentedText = (text: string, absoluteStart: number) =>
     text.split("").map((char, index) => {
       const absoluteIndex = absoluteStart + index;
@@ -236,7 +245,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
 
     const interval = window.setInterval(() => {
       setVisibleHeadingChars((count) => {
-        if (count >= CONTACT_HEADING_TEXT.length) {
+        if (count >= contactHeadingText.length) {
           window.clearInterval(interval);
           return count;
         }
@@ -245,7 +254,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
     }, 52);
 
     return () => window.clearInterval(interval);
-  }, [headingInView, restartSignal]);
+  }, [contactHeadingText.length, headingInView, restartSignal]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -402,13 +411,13 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                   className="col-start-1 row-start-1 invisible whitespace-pre-line md:hidden"
                   aria-hidden="true"
                 >
-                  {`${MOBILE_CONTACT_FIRST_LINE_TEXT}\n${MOBILE_CONTACT_SECOND_LINE_TEXT}`}
+                  {`${mobileContactFirstLineText}\n${mobileContactSecondLineText}`}
                 </span>
                 <span
                   className="col-start-1 row-start-1 invisible hidden md:inline"
                   aria-hidden="true"
                 >
-                  {CONTACT_HEADING_TEXT}
+                  {contactHeadingText}
                 </span>
                 <span className="col-start-1 row-start-1 whitespace-pre-line md:hidden">
                   <span className="relative mx-auto block w-fit px-10 sm:px-0">
@@ -587,7 +596,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                 <h2
                   className={`${interClassName} relative z-10 text-center text-[1.55rem] font-semibold tracking-[0.01em] text-white md:text-[clamp(0.84rem,1.08vw,0.98rem)]`}
                 >
-                  Contact Us
+                  {copy?.title ?? "Contact Us"}
                 </h2>
               </div>
               <form
@@ -601,7 +610,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     htmlFor="contact-name"
                     className="mb-1.5 block text-[0.72rem] font-semibold tracking-[0.08em] text-black/63 uppercase md:mb-1 md:text-[0.54rem]"
                   >
-                    Name <span className="text-red-500">*</span>
+                    {copy?.name ?? "Name"} <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="contact-name"
@@ -612,7 +621,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     onChange={handleNameChange}
                     onBlur={() => setNameInteracted(true)}
                     autoComplete="name"
-                    placeholder="Your name"
+                    placeholder={copy?.namePlaceholder ?? "Your name"}
                     className={`w-full rounded-full bg-white/90 px-4 py-2.75 text-[0.96rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 md:px-3 md:py-1.75 md:text-[0.64rem] ${
                       nameStatus === "empty" || nameStatus === "invalid"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
@@ -628,7 +637,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     htmlFor="contact-email"
                     className="mb-1.5 block text-[0.72rem] font-semibold tracking-[0.08em] text-black/63 uppercase md:mb-1 md:text-[0.54rem]"
                   >
-                    Email <span className="text-red-500">*</span>
+                    {copy?.email ?? "Email"} <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="contact-email"
@@ -639,7 +648,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     onChange={handleEmailChange}
                     onBlur={() => setEmailInteracted(true)}
                     autoComplete="email"
-                    placeholder="you@example.com"
+                    placeholder={copy?.emailPlaceholder ?? "you@example.com"}
                     className={`w-full rounded-full bg-white/90 px-4 py-2.75 text-[0.96rem] text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] outline-none transition-all duration-200 placeholder:text-black/34 focus:ring-2 md:px-3 md:py-1.75 md:text-[0.64rem] ${
                       emailStatus === "invalid"
                         ? "border border-red-500/85 focus:border-red-500 focus:ring-red-500/20"
@@ -671,13 +680,16 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     htmlFor="contact-message"
                     className="mb-1.5 block text-[0.72rem] font-semibold tracking-[0.08em] text-black/63 uppercase md:mb-1 md:text-[0.54rem]"
                   >
-                    Message <span className="text-red-500">*</span>
+                    {copy?.message ?? "Message"} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="contact-message"
                     name="message"
                     rows={5}
-                    placeholder="Drop your suggestion, feedback, or anything else..."
+                    placeholder={
+                      copy?.messagePlaceholder ??
+                      "Drop your suggestion, feedback, or anything else..."
+                    }
                     value={messageValue}
                     onChange={handleMessageChange}
                     onBlur={() => setMessageInteracted(true)}
@@ -688,7 +700,7 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                     }`}
                   />
                   <p className="mt-1.5 text-right text-[0.64rem] text-black/46 md:mt-1.25 md:text-[0.52rem]">
-                    {wordsLeft} words left
+                    {copy?.wordsLeft?.(wordsLeft) ?? `${wordsLeft} words left`}
                   </p>
                 </div>
 
@@ -697,7 +709,11 @@ export function ContactSection({ interClassName }: ContactSectionProps) {
                   disabled={isSending}
                   className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full outline outline-[#A01717] bg-transparent px-4 py-2.75 text-[0.98rem] tracking-[0.02em] text-black transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a01717] hover:text-white disabled:cursor-not-allowed disabled:opacity-70 md:py-1.75 md:text-[0.62rem] md:tracking-[0.04em]"
                 >
-                  <span>{isSending ? "Sending..." : "Send Message"}</span>
+                  <span>
+                    {isSending
+                      ? (copy?.sending ?? "Sending...")
+                      : (copy?.send ?? "Send Message")}
+                  </span>
                   <span aria-hidden="true">&gt;</span>
                 </button>
 

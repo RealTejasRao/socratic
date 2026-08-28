@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { Instrument_Serif, Poppins } from "next/font/google";
 import { useEffect } from "react";
@@ -20,17 +21,21 @@ const poppins = Poppins({
 
 type TwaHomeShellProps = {
   isSignedIn: boolean;
+  appHref?: Route;
 };
 
-export function TwaHomeShell({ isSignedIn }: TwaHomeShellProps) {
+export function TwaHomeShell({
+  isSignedIn,
+  appHref = ROUTES.APP_ROLEPLAY,
+}: TwaHomeShellProps) {
   const router = useRouter();
   const isStandalone = useStandaloneMode();
 
   useEffect(() => {
     if (isStandalone && isSignedIn) {
-      router.replace(ROUTES.APP_ROLEPLAY);
+      router.replace(appHref);
     }
-  }, [isSignedIn, isStandalone, router]);
+  }, [appHref, isSignedIn, isStandalone, router]);
 
   if (isSignedIn) {
     return <div className="pwa-standalone-only min-h-svh bg-[#1e1d1b]" />;

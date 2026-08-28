@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
+import { useAppRoute } from "./app-route-context";
 
 interface Session {
   id: string;
@@ -85,6 +87,7 @@ export default function SidebarSessions({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const { appBasePath, sessionHref, isSessionPath } = useAppRoute();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [hoveredSession, setHoveredSession] = useState<{
     id: string;
@@ -134,12 +137,12 @@ export default function SidebarSessions({
     return () => {
       mediaQuery.removeEventListener("change", syncHoverPreviewAvailability);
     };
-  }, []);
+  }, [sessionHref]);
 
   useEffect(() => {
     async function refreshDisplaySessions(activeSessionId?: string) {
       if (activeSessionId) {
-        setCurrentPath(`/app/${activeSessionId}`);
+        setCurrentPath(sessionHref(activeSessionId));
       }
 
       try {
@@ -182,7 +185,7 @@ export default function SidebarSessions({
         handleSessionsChanged,
       );
     };
-  }, []);
+  }, [sessionHref]);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -354,8 +357,8 @@ export default function SidebarSessions({
         return;
       }
 
-      if (pathname === `/app/${id}`) {
-        router.push("/app");
+      if (isSessionPath(pathname, id)) {
+        router.push(appBasePath as Route);
         router.refresh();
       } else {
         router.refresh();
@@ -425,7 +428,7 @@ export default function SidebarSessions({
       return;
     }
 
-    if (pathname === `/app/${id}`) {
+    if (isSessionPath(pathname, id)) {
       setPendingSessionId(null);
       onSessionOpen?.();
       return;
@@ -461,7 +464,7 @@ export default function SidebarSessions({
       )}
 
       {displaySessions.map((session) => {
-      const isActive = currentPath === `/app/${session.id}`;
+      const isActive = currentPath === sessionHref(session.id);
         const isOpening = pendingSessionId === session.id && !isActive;
         const hoverPreview =
           session.firstMessagePreview?.trim() ||
@@ -509,7 +512,7 @@ export default function SidebarSessions({
           >
             <>
               <Link
-                href={`/app/${session.id}`}
+                href={sessionHref(session.id)}
                 className="block min-w-0 flex-1"
                 onClick={(event) => handleSessionOpen(event, session.id)}
               >

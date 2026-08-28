@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Search, X } from "lucide-react";
+import { useAppRoute } from "./app-route-context";
 
 type SearchResult = {
   id: string;
@@ -39,6 +40,7 @@ function highlightQuery(text: string, query: string) {
 
 export default function SidebarSearch() {
   const pathname = usePathname();
+  const { sessionHref, copy } = useAppRoute();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -171,7 +173,7 @@ export default function SidebarSearch() {
           className="app-sidebar-nav-item absolute inset-x-0 top-0 flex h-9 cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition-all duration-200 lg:h-9 lg:gap-2 lg:rounded-[14px] lg:px-2.5 lg:py-2 lg:text-[14px]"
         >
           <Search size={15} className="lg:h-[15px] lg:w-[15px]" />
-          <span>Search chats</span>
+          <span>{copy.searchChatsLabel}</span>
         </button>
       </div>
 
@@ -199,7 +201,7 @@ export default function SidebarSearch() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="app-sidebar-search-title text-[13px] font-medium text-slate-900">
-                  Search chats
+                  {copy.searchChatsLabel}
                 </p>
                 <p className="app-sidebar-search-subtitle mt-0.5 text-[10px] text-slate-500">
                   Search titles and message content.
@@ -249,7 +251,7 @@ export default function SidebarSearch() {
                   {results.map((result) => (
                     <Link
                       key={result.id}
-                      href={`/app/${result.id}`}
+                      href={sessionHref(result.id)}
                       className="app-card app-sidebar-search-result block rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50/60"
                     >
                       <div className="flex items-start justify-between gap-3">

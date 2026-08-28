@@ -1,13 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Route } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { MarketingNavAvatar } from "@/src/components/navigation/marketing-nav-avatar";
+import { MarketingLanguageToggle } from "@/src/components/navigation/marketing-language-toggle";
 import { MarketingStandaloneBackLink } from "@/src/components/navigation/marketing-standalone-back-link";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { StandaloneModeGate } from "@/src/components/pwa/standalone-mode-gate";
 import { ROUTES } from "@/src/lib/routes";
+import type { UpscHomeCopy, UpscHomeLocale } from "@/src/lib/upsc-home-locale";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
 type MarketingNavbarProps = {
@@ -16,6 +19,10 @@ type MarketingNavbarProps = {
   homeHref?: string;
   sectionPrefix?: string;
   standaloneAction?: "upgrade" | "back";
+  appHref?: Route;
+  appSignedOutHref?: Route;
+  locale?: UpscHomeLocale;
+  copy?: Partial<UpscHomeCopy["nav"]>;
 };
 
 export async function MarketingNavbar({
@@ -24,21 +31,25 @@ export async function MarketingNavbar({
   homeHref = ROUTES.HOME,
   sectionPrefix = "",
   standaloneAction = "upgrade",
+  appHref = ROUTES.APP_ROLEPLAY,
+  appSignedOutHref = ROUTES.SIGN_UP,
+  locale = "en",
+  copy,
 }: MarketingNavbarProps) {
   const { userId: clerkUserId } = await auth();
   const billing = clerkUserId
     ? await getUserBillingStateByClerkId(clerkUserId)
     : null;
   const isPremium = Boolean(billing?.isPremium);
-  const pricingLabel = isPremium ? "Socratic +" : "Pricing";
+  const pricingLabel = isPremium ? "Socratic +" : (copy?.pricing ?? "Pricing");
   const pricingHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
   const withPrefix = (hash: string) => (sectionPrefix ? `${sectionPrefix}${hash}` : hash);
   const navLinks = [
-    { label: "Home", href: homeHref },
-    { label: "Features", href: withPrefix("#features") },
+    { label: copy?.home ?? "Home", href: homeHref },
+    { label: copy?.features ?? "Features", href: withPrefix("#features") },
     { label: pricingLabel, href: pricingHref },
-    { label: "Blog", href: ROUTES.BLOG },
-    { label: "Contact", href: withPrefix("#contact") },
+    { label: copy?.blog ?? "Blog", href: ROUTES.BLOG },
+    { label: copy?.contact ?? "Contact", href: withPrefix("#contact") },
   ];
   const logoLabel = (
     <>
@@ -89,13 +100,19 @@ export async function MarketingNavbar({
         </div>
 
         <div className="flex items-center justify-end gap-2">
+          <MarketingLanguageToggle
+            locale={locale}
+            label={copy?.languageLabel ?? (locale === "hi" ? "English" : "हिंदी")}
+            className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full outline-black outline-2 bg-transparent px-2.5 text-[0.72rem] font-medium tracking-[0.01em] text-black transition-all duration-200 hover:border-[#a01717] hover:text-[#a01717] disabled:cursor-wait disabled:opacity-65 sm:px-3.5 sm:text-[0.76rem]`}
+          />
           <AuthAwareCtaLink
-            signedOutHref={ROUTES.SIGN_UP}
+            signedInHref={appHref}
+            signedOutHref={appSignedOutHref}
             showPendingStateOnNavigate
             pendingIndicator="roseCurve"
             className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-black px-4 text-[0.72rem] font-medium tracking-[0.03em] text-white transition-all duration-200 hover:bg-[#a01717] sm:px-5 sm:text-[0.76rem]`}
           >
-            Open App
+            {copy?.openApp ?? "Open App"}
           </AuthAwareCtaLink>
 
           {isPremium ? (
@@ -159,7 +176,7 @@ export async function MarketingNavbar({
             href={pricingHref}
             className={`${interClassName} inline-flex h-9 min-w-14 items-center justify-center rounded-full px-3 text-[0.84rem] font-semibold tracking-[0.01em] text-[#a01717] transition-colors hover:bg-[#a01717]/8`}
           >
-            Upgrade
+            {isPremium ? "Socratic +" : (copy?.pricing ?? "Upgrade")}
           </a>
         )}
       </nav>

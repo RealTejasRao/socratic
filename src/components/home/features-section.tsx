@@ -9,20 +9,27 @@ import {
   BookOpen,
   BrainCircuit,
   Lightbulb,
+  NotebookPen,
+  Scale,
+  Compass,
+  Mic,
   type LucideIcon,
 } from "lucide-react";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 
-type FeatureId = "argues-back" | "corpus" | "model-of-you" | "clarity";
-
 type FeaturesSectionProps = {
   interClassName: string;
+  headingSubject?: string;
+  headingText?: string;
+  highlightedTerms?: readonly string[];
+  cards?: FeatureCard[];
 };
 
 type FeatureCard = {
-  id: FeatureId;
+  id: string;
   title: string;
   description: string;
+  icon: LucideIcon;
 };
 
 const featureCards: FeatureCard[] = [
@@ -31,41 +38,63 @@ const featureCards: FeatureCard[] = [
     title: "It Argues Back.\nBy Design.",
     description:
       "Most AI tells you what you want to hear. This one is wired to push back readily.",
+    icon: MessageSquareWarning,
   },
   {
     id: "corpus",
     title: "A Corpus Built for\nPhilosophers",
     description:
       "Responses based on original writings, not skimmed Reddit summaries.",
+    icon: BookOpen,
   },
   {
     id: "model-of-you",
     title: "It Builds a Model,\nof You",
     description:
       "Actively tracks your beliefs and assumptions, connects them into a living model of your thinking.",
+    icon: BrainCircuit,
   },
   {
     id: "clarity",
     title: "Clarity You Can Take\nWith You",
     description:
       "Discover positions you didn't know you held, gaps you didn't know were there.",
+    icon: Lightbulb,
   },
 ];
 
-const featureIconsById: Record<FeatureId, LucideIcon> = {
-  "argues-back": MessageSquareWarning,
-  corpus: BookOpen,
-  "model-of-you": BrainCircuit,
-  clarity: Lightbulb,
-};
+export const upscFeatureCards: FeatureCard[] = [
+  {
+    id: "think-beyond-notes",
+    title: "Think Beyond\nYour Notes",
+    description:
+      "Turn what you learn into better thoughts, arguments and answers.",
+    icon: NotebookPen,
+  },
+  {
+    id: "master-ethics-essay",
+    title: "Master Ethics\n& Essay",
+    description:
+      "Answer Ethics questions and Essay topics with full confidence in Mains.",
+    icon: Scale,
+  },
+  {
+    id: "upsc-mindset",
+    title: "Build The\nUPSC Mindset",
+    description:
+      "Learn to see every issue from different sides and think with balance.",
+    icon: Compass,
+  },
+  {
+    id: "interview",
+    title: "Prepare for\nthe Interview",
+    description:
+      "Practise tough questions and learn to answer them clearly and confidently.",
+    icon: Mic,
+  },
+];
 
-const SECTION_HEADING_TEXT = "Built Different.\nBuilt For Philosophy";
 const DIFFERENT_WORD = "Different";
-const PHILOSOPHY_WORD = "Philosophy";
-const differentStart = SECTION_HEADING_TEXT.indexOf(DIFFERENT_WORD);
-const differentEnd = differentStart + DIFFERENT_WORD.length;
-const philosophyStart = SECTION_HEADING_TEXT.indexOf(PHILOSOPHY_WORD);
-const philosophyEnd = philosophyStart + PHILOSOPHY_WORD.length;
 
 const instrumentSerif = Instrument_Serif({
   weight: "400",
@@ -116,31 +145,39 @@ const separatorConfigs = [
   { position: "left-3/4", src: "/features/separator.webp" },
 ] as const;
 
-export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
+export function FeaturesSection({
+  interClassName,
+  headingSubject = "Philosophy",
+  headingText,
+  highlightedTerms,
+  cards = featureCards,
+}: FeaturesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
   const [visibleHeadingChars, setVisibleHeadingChars] = useState(0);
   const [restartSignal, setRestartSignal] = useState(0);
 
-  const typedHeading = SECTION_HEADING_TEXT.slice(0, visibleHeadingChars);
-  const typedDifferentStart = Math.min(typedHeading.length, differentStart);
-  const typedDifferentEnd = Math.min(typedHeading.length, differentEnd);
-  const typedPhilosophyStart = Math.min(typedHeading.length, philosophyStart);
-  const typedPhilosophyEnd = Math.min(typedHeading.length, philosophyEnd);
-  const typedHeadingBeforeDifferent = typedHeading.slice(0, typedDifferentStart);
-  const typedHeadingDifferent = typedHeading.slice(
-    typedDifferentStart,
-    typedDifferentEnd,
-  );
-  const typedHeadingBetweenHighlights = typedHeading.slice(
-    typedDifferentEnd,
-    typedPhilosophyStart,
-  );
-  const typedHeadingPhilosophy = typedHeading.slice(
-    typedPhilosophyStart,
-    typedPhilosophyEnd,
-  );
-  const typedHeadingAfterPhilosophy = typedHeading.slice(typedPhilosophyEnd);
+  const sectionHeadingText =
+    headingText ?? `Built Different.\nBuilt For ${headingSubject}`;
+  const resolvedHighlightedTerms =
+    highlightedTerms ?? [DIFFERENT_WORD, headingSubject];
+  const typedHeading = sectionHeadingText.slice(0, visibleHeadingChars);
+  const highlightRanges = resolvedHighlightedTerms
+    .map((term) => {
+      const start = sectionHeadingText.indexOf(term);
+      return start >= 0 ? { start, end: start + term.length } : null;
+    })
+    .filter((range): range is { start: number; end: number } => range !== null);
+  const isHighlightedChar = (index: number) =>
+    highlightRanges.some((range) => index >= range.start && index < range.end);
+  const renderedTypedHeading = typedHeading.split("").map((char, index) => (
+    <span
+      key={`${char}-${index}`}
+      className={isHighlightedChar(index) ? "text-[#a01717]" : ""}
+    >
+      {char}
+    </span>
+  ));
 
   useEffect(() => {
     const onRestart = (event: Event) => {
@@ -171,7 +208,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
 
     const interval = window.setInterval(() => {
       setVisibleHeadingChars((count) => {
-        if (count >= SECTION_HEADING_TEXT.length) {
+        if (count >= sectionHeadingText.length) {
           window.clearInterval(interval);
           return count;
         }
@@ -180,7 +217,7 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
     }, 58);
 
     return () => window.clearInterval(interval);
-  }, [headingInView, restartSignal]);
+  }, [headingInView, restartSignal, sectionHeadingText.length]);
 
   return (
     <section
@@ -203,14 +240,10 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
                 className="col-start-1 row-start-1 invisible whitespace-pre-line"
                 aria-hidden="true"
               >
-                {SECTION_HEADING_TEXT}
+                {sectionHeadingText}
               </span>
               <span className="col-start-1 row-start-1 whitespace-pre-line">
-                {typedHeadingBeforeDifferent}
-                <span className="text-[#a01717]">{typedHeadingDifferent}</span>
-                {typedHeadingBetweenHighlights}
-                <span className="text-[#a01717]">{typedHeadingPhilosophy}</span>
-                {typedHeadingAfterPhilosophy}
+                {renderedTypedHeading}
                 <span className="hero-caret" aria-hidden="true" />
               </span>
             </span>
@@ -264,8 +297,8 @@ export function FeaturesSection({ interClassName }: FeaturesSectionProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {featureCards.map((card, index) => {
-              const Icon = featureIconsById[card.id];
+            {cards.map((card, index) => {
+              const Icon = card.icon;
               return (
                 <motion.article
                   key={card.id}

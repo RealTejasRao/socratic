@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Inter } from "next/font/google";
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -29,6 +30,7 @@ import { formatDebateCountdown, getDebateDurationMeta } from "src/lib/debate";
 import { ROUTES } from "src/lib/routes";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import AppUserButton from "./AppUserButton";
+import { useAppRoute } from "./app-route-context";
 
 interface Session {
   id: string;
@@ -66,6 +68,7 @@ const inter = Inter({
 export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const { appBasePath, matchSessionPath, isSessionPath, copy } = useAppRoute();
   const isStandalone = useStandaloneMode();
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
@@ -86,7 +89,7 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const finalizeRequestedRef = useRef(false);
 
   const activeSession = useMemo(() => {
-    const matched = pathname.match(/^\/app\/([^/]+)$/);
+    const matched = matchSessionPath(pathname);
     const sessionId = matched?.[1];
 
     if (!sessionId) {
@@ -94,9 +97,9 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
     }
 
     return sessions.find((session) => session.id === sessionId) ?? null;
-  }, [pathname, sessions]);
+  }, [matchSessionPath, pathname, sessions]);
 
-  const title = activeSession?.title || "Start of a new conversation";
+  const title = activeSession?.title || copy.emptySessionTitle;
   const isDialogBusy = pendingAction !== null;
   const activeDebate = activeSession?.debate ?? null;
   const debateDurationMeta = activeDebate
@@ -521,8 +524,8 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
       setActionDialog(null);
       setRenameValue("");
 
-      if (pathname === `/app/${deletedId}`) {
-        router.push("/app");
+      if (isSessionPath(pathname, deletedId)) {
+        router.push(appBasePath as Route);
       }
 
       router.refresh();

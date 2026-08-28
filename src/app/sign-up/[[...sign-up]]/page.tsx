@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import Image from "next/image";
 import { SignUp } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
@@ -15,15 +16,40 @@ export const metadata: Metadata = createPageMetadata({
   index: false,
 });
 
-export default async function SignUpPage() {
-  const { userId } = await auth();
+type SignUpPageProps = {
+  searchParams?:
+    | Promise<{ redirect_url?: string | string[] }>
+    | { redirect_url?: string | string[] };
+};
 
-  if (userId) {
-    redirect(ROUTES.APP_ROLEPLAY);
+function getFirstSearchParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function resolveSafeRedirectPath(value: string | undefined) {
+  if (!value?.startsWith("/") || value.startsWith("//")) {
+    return ROUTES.APP_ROLEPLAY;
   }
 
-  const appRedirectUrl = `${seoConfig.siteUrl}${ROUTES.APP_ROLEPLAY}`;
-  const signInUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_IN}`;
+  return value;
+}
+
+export default async function SignUpPage({ searchParams }: SignUpPageProps) {
+  const { userId } = await auth();
+  const resolvedSearchParams =
+    searchParams && "then" in searchParams ? await searchParams : searchParams;
+  const redirectPath = resolveSafeRedirectPath(
+    getFirstSearchParam(resolvedSearchParams?.redirect_url),
+  );
+
+  if (userId) {
+    redirect(redirectPath as Route);
+  }
+
+  const appRedirectUrl = `${seoConfig.siteUrl}${redirectPath}`;
+  const signInUrl = `${seoConfig.siteUrl}${ROUTES.SIGN_IN}?redirect_url=${encodeURIComponent(
+    redirectPath,
+  )}`;
 
   const clerkGlassAppearance = {
     elements: {

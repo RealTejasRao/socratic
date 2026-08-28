@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
+import type { Route } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "src/server/db/client";
@@ -14,6 +15,8 @@ import {
 } from "src/server/billing/access";
 import AppSidebar from "./components/AppSidebar";
 import AppTopBar from "./components/AppTopBar";
+import { AppRouteProvider } from "./components/app-route-context";
+import type { SessionMode } from "src/types/chat";
 
 interface Props {
   children: ReactNode;
@@ -39,10 +42,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function AppLayout({ children }: Props) {
+type AppLayoutShellProps = Props & {
+  appBasePath?: string;
+  marketingHomePath?: Route;
+  defaultNewChatMode?: SessionMode;
+  copy?: Parameters<typeof AppRouteProvider>[0]["copy"];
+};
+
+export async function AppLayoutShell({
+  children,
+  appBasePath = ROUTES.APP,
+  marketingHomePath = ROUTES.HOME,
+  defaultNewChatMode = "ROLEPLAY",
+  copy,
+}: AppLayoutShellProps) {
   const { userId: clerkUserId } = await auth();
 
   if (!clerkUserId) {
+    if (appBasePath !== ROUTES.APP) {
+      redirect(
+        `${ROUTES.SIGN_IN}?redirect_url=${encodeURIComponent(
+          appBasePath,
+        )}`,
+      );
+    }
+
     redirect(ROUTES.SIGN_IN);
   }
 
@@ -98,25 +122,36 @@ export default async function AppLayout({ children }: Props) {
   );
 
   return (
-    <div className="app-layout h-svh bg-[#fefefc]">
-      <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-[#fefefc]">
-        <div className="flex min-h-0 flex-1">
-          <AppSidebar
-            sessions={sidebarSessions}
-            isPremium={billing?.isPremium ?? false}
-          />
-
-          <section className="app-chat-section relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#fefefc]">
-            <AppTopBar
+    <AppRouteProvider
+      appBasePath={appBasePath}
+      marketingHomePath={marketingHomePath}
+      defaultNewChatMode={defaultNewChatMode}
+      {...(copy === undefined ? {} : { copy })}
+    >
+      <div className="app-layout h-svh bg-[#fefefc]">
+        <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-[#fefefc]">
+          <div className="flex min-h-0 flex-1">
+            <AppSidebar
               sessions={sidebarSessions}
               isPremium={billing?.isPremium ?? false}
             />
-            <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
-              {children}
-            </main>
-          </section>
+
+            <section className="app-chat-section relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#fefefc]">
+              <AppTopBar
+                sessions={sidebarSessions}
+                isPremium={billing?.isPremium ?? false}
+              />
+              <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
+                {children}
+              </main>
+            </section>
+          </div>
         </div>
       </div>
-    </div>
+    </AppRouteProvider>
   );
+}
+
+export default async function AppLayout({ children }: Props) {
+  return <AppLayoutShell>{children}</AppLayoutShell>;
 }
