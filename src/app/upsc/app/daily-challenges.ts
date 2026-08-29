@@ -1,3 +1,5 @@
+import { UPSC_SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
+
 export type UpscDailyChallenge = {
   day: number;
   category: string;
@@ -7,7 +9,20 @@ export type UpscDailyChallenge = {
 
 const INDIA_UTC_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 const CYCLE_START_DATE_KEY = "2026-08-28";
-const CHALLENGES: Omit<UpscDailyChallenge, "dateKey">[] = [];
+const CHALLENGE_CATEGORIES = [
+  "Ethics",
+  "GS",
+  "Essay Thinking",
+  "Interview",
+  "Debate",
+] as const;
+const CHALLENGES: Omit<UpscDailyChallenge, "dateKey">[] =
+  UPSC_SUGGESTION_QUESTIONS.map((question, index) => ({
+    day: index + 1,
+    category:
+      CHALLENGE_CATEGORIES[index % CHALLENGE_CATEGORIES.length] ?? "GS",
+    question,
+  }));
 
 function getIndiaDateKey(now = new Date()) {
   return new Date(now.getTime() + INDIA_UTC_OFFSET_MS)

@@ -93,7 +93,7 @@ export default async function HomePage({ searchParams }: UpscPageProps) {
           />
 
           <section id={HOME_HERO_ID} className="relative h-screen w-full bg-white">
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-22 text-center sm:px-7 sm:pt-[5.8rem]">
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-5 pt-25 text-center sm:px-7 sm:pt-[5.8rem]">
               <div
                 className={`${instrumentSerif.className} pointer-events-auto flex w-full max-w-[76rem] flex-col items-center text-black/90`}
               >
@@ -184,7 +184,7 @@ export default async function HomePage({ searchParams }: UpscPageProps) {
               <div className="hero-load-up hero-load-up-image w-full">
                 <Image
                   src={resolveOptimizedCloudinaryPublicAsset(
-                    "/upsc/upsc-hero.webp",
+                    "/upsc/upsc-m-final.webp",
                     {
                       width: 750,
                       crop: "limit",

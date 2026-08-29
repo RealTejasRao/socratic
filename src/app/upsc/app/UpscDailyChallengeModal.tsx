@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Route } from "next";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -18,7 +18,7 @@ import type { UpscDailyChallenge } from "./daily-challenges";
 
 const UPSC_APP_PATH = "/upsc/app" as Route;
 const DAILY_CHALLENGE_STORAGE_KEY = "socratic:upsc:daily-challenge-started";
-const QUICK_TOUR_STORAGE_KEY = "socratic:app-quick-tour:v1";
+const DAILY_CHALLENGE_OPEN_EVENT = "socratic:upsc-daily-challenge:open";
 
 type Props = {
   challenge: UpscDailyChallenge | null;
@@ -29,8 +29,12 @@ function getStorageKey(dateKey: string) {
   return `${DAILY_CHALLENGE_STORAGE_KEY}:${dateKey}`;
 }
 
-function getQuickTourStorageKey(userId: string) {
-  return `${QUICK_TOUR_STORAGE_KEY}:${userId}`;
+function markChallengeSeen(dateKey: string) {
+  try {
+    localStorage.setItem(getStorageKey(dateKey), "1");
+  } catch {
+    // Storage can be unavailable in restricted browsers; closing should still work.
+  }
 }
 
 function formatChallengeDate(dateKey: string) {
@@ -68,11 +72,9 @@ export default function UpscDailyChallengeModal({
   userStorageId,
 }: Props) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
-  const [rootNavigationCount, setRootNavigationCount] = useState(0);
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -85,21 +87,17 @@ export default function UpscDailyChallengeModal({
         return;
       }
 
-      if (currentSearchParams.get("autosend") === "1") {
+      const activeMode = currentSearchParams.get("mode")?.toLowerCase().trim();
+
+      if (
+        currentSearchParams.get("autosend") === "1" ||
+        (activeMode && activeMode !== "socratic")
+      ) {
         setIsOpen(false);
         return;
       }
 
       try {
-        const hasCompletedQuickTour =
-          localStorage.getItem(getQuickTourStorageKey(userStorageId)) ===
-          "complete";
-
-        if (!hasCompletedQuickTour) {
-          setIsOpen(false);
-          return;
-        }
-
         setIsOpen(
           localStorage.getItem(getStorageKey(challenge.dateKey)) !== "1",
         );
@@ -111,52 +109,27 @@ export default function UpscDailyChallengeModal({
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [challenge, pathname, rootNavigationCount, searchParams, userStorageId]);
+  }, [challenge, pathname, userStorageId]);
 
   useEffect(() => {
-    if (!challenge || !userStorageId) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      try {
-        if (
-          window.location.pathname === UPSC_APP_PATH &&
-          localStorage.getItem(getQuickTourStorageKey(userStorageId)) ===
-            "complete"
-        ) {
-          setRootNavigationCount((current) => current + 1);
-          window.clearInterval(intervalId);
-        }
-      } catch {
-        window.clearInterval(intervalId);
+    function handleManualOpen() {
+      if (challenge) {
+        setIsOpen(true);
       }
-    }, 500);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [challenge, userStorageId]);
-
-  useEffect(() => {
-    function handleRootNavigation() {
-      setRootNavigationCount((current) => current + 1);
     }
 
-    window.addEventListener(
-      "socratic:upsc-app-root:navigated",
-      handleRootNavigation,
-    );
+    window.addEventListener(DAILY_CHALLENGE_OPEN_EVENT, handleManualOpen);
 
     return () => {
-      window.removeEventListener(
-        "socratic:upsc-app-root:navigated",
-        handleRootNavigation,
-      );
+      window.removeEventListener(DAILY_CHALLENGE_OPEN_EVENT, handleManualOpen);
     };
-  }, []);
+  }, [challenge]);
 
   function handleClose() {
+    if (challenge) {
+      markChallengeSeen(challenge.dateKey);
+    }
+
     setIsOpen(false);
   }
 
@@ -181,11 +154,7 @@ export default function UpscDailyChallengeModal({
         return;
       }
 
-      try {
-        localStorage.setItem(getStorageKey(challenge.dateKey), "1");
-      } catch {
-        // The challenge has already started even if storage is unavailable.
-      }
+      markChallengeSeen(challenge.dateKey);
 
       setIsOpen(false);
       router.push(`${UPSC_APP_PATH}/${payload.sessionId}` as Route, {

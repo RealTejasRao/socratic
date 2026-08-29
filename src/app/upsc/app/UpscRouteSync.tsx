@@ -119,7 +119,6 @@ export default function UpscRouteSync() {
 
       window.history.pushState(null, "", `${UPSC_APP_PATH}?mode=socratic`);
       window.dispatchEvent(new CustomEvent("socratic:new-chat:requested"));
-      window.dispatchEvent(new CustomEvent("socratic:upsc-app-root:navigated"));
     }
 
     document.addEventListener("click", handleClick, true);

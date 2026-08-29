@@ -15,6 +15,7 @@ import { Inter } from "next/font/google";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpRight,
+  CalendarCheck,
   CircleCheck,
   Crown,
   ChevronDown,
@@ -83,6 +84,7 @@ const SHOW_MODE_BADGES_KEY = "socratic:sidebar:showModeBadges";
 const SOCRATIC_TONE_KEY = "socratic:settings:socraticTone";
 const CHAT_FONT_SIZE_KEY = "socratic:chat:fontSize";
 const CONTACT_EMAIL_HREF = "mailto:contact@usesocratic.com";
+const UPSC_DAILY_CHALLENGE_OPEN_EVENT = "socratic:upsc-daily-challenge:open";
 const SETTINGS_TABS: Array<{
   value: SettingsTab;
   label: string;
@@ -766,6 +768,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     }, 12000);
   }
 
+  function handleDailyChallengeClick() {
+    window.dispatchEvent(new CustomEvent(UPSC_DAILY_CHALLENGE_OPEN_EVENT));
+  }
+
   const contactLink = (
     iconSize: number,
     className: string,
@@ -918,6 +924,69 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           </span>
         ) : null}
       </Link>
+      {showUpscBrandGraphic ? (
+        <button
+          type="button"
+          onClick={() => {
+            handleDailyChallengeClick();
+            setIsMobileSidebarOpen(false);
+            onClick?.();
+          }}
+          className={`${className} cursor-pointer`}
+          aria-label="Daily Challenge"
+          data-tooltip={label ? undefined : "Daily Challenge"}
+        >
+          <CalendarCheck
+            size={iconSize}
+            className="shrink-0 text-purple-600"
+          />
+          {label ? (
+            <span className="flex min-w-0 flex-1 items-center gap-2">
+              <span className="truncate">Daily Challenge</span>
+              <motion.span
+                initial={{ opacity: 0, scale: 0.86, y: 1 }}
+                animate={{
+                  opacity: 1,
+                  scale: [1, 1.04, 1],
+                  boxShadow: isDarkMode
+                    ? [
+                        "0 0 0 0 rgba(168, 85, 247, 0)",
+                        "0 0 0 3px rgba(168, 85, 247, 0.18)",
+                        "0 0 0 0 rgba(168, 85, 247, 0)",
+                      ]
+                    : [
+                        "0 0 0 0 rgba(147, 51, 234, 0)",
+                        "0 0 0 3px rgba(147, 51, 234, 0.14)",
+                        "0 0 0 0 rgba(147, 51, 234, 0)",
+                      ],
+                }}
+                transition={{
+                  opacity: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+                  scale: {
+                    duration: 2.4,
+                    ease: [0.22, 1, 0.36, 1],
+                    repeat: Infinity,
+                    repeatDelay: 1.2,
+                  },
+                  boxShadow: {
+                    duration: 2.4,
+                    ease: [0.22, 1, 0.36, 1],
+                    repeat: Infinity,
+                    repeatDelay: 1.2,
+                  },
+                }}
+                className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-semibold leading-none tracking-[0.08em] ${
+                  isDarkMode
+                    ? "border-purple-500/35 bg-purple-400/10 text-purple-200"
+                    : "border-purple-200 bg-purple-50 text-purple-700"
+                }`}
+              >
+                NEW
+              </motion.span>
+            </span>
+          ) : null}
+        </button>
+      ) : null}
     </div>
   );
 
