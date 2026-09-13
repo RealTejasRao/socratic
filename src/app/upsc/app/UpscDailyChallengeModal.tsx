@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   BookOpen,
+  LoaderCircle,
   Scale,
   Landmark,
   MessageSquareText,
@@ -156,10 +157,15 @@ export default function UpscDailyChallengeModal({
 
       markChallengeSeen(challenge.dateKey);
 
-      setIsOpen(false);
+      window.dispatchEvent(
+        new CustomEvent("socratic:sessions:changed", {
+          detail: { activeSessionId: payload.sessionId },
+        }),
+      );
       router.push(`${UPSC_APP_PATH}/${payload.sessionId}` as Route, {
         scroll: false,
       });
+      router.refresh();
     } catch {
       setIsStarting(false);
     }
@@ -260,15 +266,20 @@ export default function UpscDailyChallengeModal({
                     type="button"
                     onClick={handleStart}
                     disabled={isStarting}
+                    aria-busy={isStarting}
                     className="group relative inline-flex h-11 cursor-pointer items-center justify-center overflow-hidden rounded-[13px] bg-[#17202a] px-4 text-[14px] font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <span className="absolute inset-0 -translate-x-full bg-[#d99027] transition-transform duration-900 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-0" />
                     <span className="relative z-10 inline-flex items-center gap-2">
                       {isStarting ? "Starting..." : "Start now"}
-                      <ArrowRight
-                        size={16}
-                        className="transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-0.5"
-                      />
+                      {isStarting ? (
+                        <LoaderCircle size={16} className="animate-spin" />
+                      ) : (
+                        <ArrowRight
+                          size={16}
+                          className="transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-0.5"
+                        />
+                      )}
                     </span>
                   </button>
                   <button
