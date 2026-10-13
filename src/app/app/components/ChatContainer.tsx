@@ -27,11 +27,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import type { AppCopy } from "@/src/i18n/app";
-import { getDebateDurationMeta } from "src/lib/debate";
+import {
+  getLocalizedDebateDurationMeta,
+  getLocalizedRoleplayFlair,
+  getLocalizedRoleplayPhilosopherById,
+} from "@/src/i18n/app-config";
 import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
   ROLEPLAY_FLAIR_THEMES,
-  getRoleplayPhilosopherConfig,
   isRoleplayPhilosopherId,
   type RoleplayFlair,
   type RoleplayPhilosopherId,
@@ -1054,25 +1057,45 @@ export default function ChatContainer({
           ? copy.debate.draw
           : copy.debate.pending;
   const debateDurationMeta = activeSessionMeta.debate
-    ? getDebateDurationMeta(activeSessionMeta.debate.durationPreset)
+    ? getLocalizedDebateDurationMeta(
+        activeSessionMeta.debate.durationPreset,
+        copy,
+      )
     : null;
   const pendingRoleplayPhilosopher = pendingRoleplayId
-    ? getRoleplayPhilosopherConfig(pendingRoleplayId)
+    ? getLocalizedRoleplayPhilosopherById(pendingRoleplayId, copy)
     : null;
   const activeRoleplayPhilosopher = activeSessionMeta.roleplay ?? null;
   const visibleRoleplayPhilosopher = activeRoleplayPhilosopher
-    ? {
-        philosopherId: activeRoleplayPhilosopher.philosopherId,
-        philosopherName: activeRoleplayPhilosopher.philosopherName,
-        imagePath: activeRoleplayPhilosopher.imagePath,
-        flairs: activeRoleplayPhilosopher.flairs,
-        expertise: activeRoleplayPhilosopher.expertise,
-        shortDescription: activeRoleplayPhilosopher.shortDescription,
-        bestFor: activeRoleplayPhilosopher.bestFor,
-        starterPrompts: activeRoleplayPhilosopher.starterPrompts,
-        voicePreview: activeRoleplayPhilosopher.voicePreview,
-        accent: activeRoleplayPhilosopher.accent,
-      }
+    ? (() => {
+        const localized = isRoleplayPhilosopherId(
+          activeRoleplayPhilosopher.philosopherId,
+        )
+          ? getLocalizedRoleplayPhilosopherById(
+              activeRoleplayPhilosopher.philosopherId,
+              copy,
+            )
+          : null;
+
+        return {
+          philosopherId: activeRoleplayPhilosopher.philosopherId,
+          philosopherName: activeRoleplayPhilosopher.philosopherName,
+          imagePath: activeRoleplayPhilosopher.imagePath,
+          flairs: activeRoleplayPhilosopher.flairs,
+          expertise:
+            localized?.expertise ?? activeRoleplayPhilosopher.expertise,
+          shortDescription:
+            localized?.shortDescription ??
+            activeRoleplayPhilosopher.shortDescription,
+          bestFor: localized?.bestFor ?? activeRoleplayPhilosopher.bestFor,
+          starterPrompts:
+            localized?.starterPrompts ??
+            activeRoleplayPhilosopher.starterPrompts,
+          voicePreview:
+            localized?.voicePreview ?? activeRoleplayPhilosopher.voicePreview,
+          accent: activeRoleplayPhilosopher.accent,
+        };
+      })()
     : pendingRoleplayPhilosopher
       ? {
           philosopherId: pendingRoleplayPhilosopher.id,
@@ -2158,7 +2181,7 @@ export default function ChatContainer({
                 className="app-roleplay-flair-token app-roleplay-flair-badge rounded-[8px] border px-3.5 py-2 text-[13px] leading-none"
                 style={getRoleplayFlairStyle(flair)}
               >
-                {flair}
+                {getLocalizedRoleplayFlair(flair, copy)}
               </span>
             ))}
           </div>

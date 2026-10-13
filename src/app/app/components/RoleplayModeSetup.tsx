@@ -12,9 +12,12 @@ import {
 import { ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import {
+  getLocalizedRoleplayFlair,
+  getLocalizedRoleplayPhilosophers,
+} from "@/src/i18n/app-config";
+import {
   ROLEPLAY_FLAIRS,
   ROLEPLAY_FLAIR_THEMES,
-  ROLEPLAY_PHILOSOPHERS,
   type RoleplayFlair,
   type RoleplayPhilosopherId,
 } from "src/lib/roleplay";
@@ -106,6 +109,10 @@ export default function RoleplayModeSetup({
   const flairRailRef = useRef<HTMLDivElement>(null);
   const filteringTimeoutRef = useRef<number | null>(null);
   const prefersReducedMotion = useReducedMotion();
+  const localizedPhilosophers = useMemo(
+    () => getLocalizedRoleplayPhilosophers(copy),
+    [copy],
+  );
 
   const canUseDesktopCardClick = () =>
     typeof window !== "undefined" &&
@@ -145,7 +152,7 @@ export default function RoleplayModeSetup({
   const filteredPhilosophers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return ROLEPLAY_PHILOSOPHERS.filter((philosopher) => {
+    return localizedPhilosophers.filter((philosopher) => {
       const matchesFlair =
         selectedFlair === "All" ||
         (philosopher.flairs as readonly RoleplayFlair[]).includes(
@@ -161,7 +168,9 @@ export default function RoleplayModeSetup({
         philosopher.expertise,
         philosopher.shortDescription,
         philosopher.bestFor,
-        ...philosopher.flairs,
+        ...philosopher.flairs.map((flair) =>
+          getLocalizedRoleplayFlair(flair, copy),
+        ),
       ]
         .join(" ")
         .toLowerCase();
@@ -174,7 +183,7 @@ export default function RoleplayModeSetup({
 
       return firstRank - secondRank;
     });
-  }, [query, selectedFlair]);
+  }, [copy, localizedPhilosophers, query, selectedFlair]);
 
   const filterFlairs = useMemo<(RoleplayFlair | "All")[]>(() => {
     if (selectedFlair === "All") {
@@ -287,7 +296,7 @@ export default function RoleplayModeSetup({
                 className="app-roleplay-flair-token app-roleplay-flair-filter inline-flex shrink-0 cursor-pointer items-center rounded-[8px] border px-3.5 py-2 text-[13px] leading-none transition"
                 style={getFlairStyle(flair)}
               >
-                {flair}
+                {getLocalizedRoleplayFlair(flair, copy)}
               </button>
             ))}
           </div>
@@ -404,7 +413,7 @@ export default function RoleplayModeSetup({
                             className="app-roleplay-flair-token app-roleplay-flair-badge rounded-[8px] border px-3.5 py-2 text-[13px] leading-none"
                             style={getFlairStyle(flair)}
                           >
-                            {flair}
+                            {getLocalizedRoleplayFlair(flair, copy)}
                           </span>
                         ))}
                       </div>

@@ -54,15 +54,15 @@ import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { Switch } from "@/src/components/ui/switch";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
-  SOCRATIC_TONE_OPTIONS,
+  getLocalizedChatFontSizeOptions,
+  getLocalizedSocraticToneMeta,
+  getLocalizedSocraticToneOptions,
+} from "@/src/i18n/app-config";
+import {
   isSocraticTone,
   type SocraticTone,
 } from "src/lib/socratic";
-import {
-  CHAT_FONT_SIZE_OPTIONS,
-  isChatFontSize,
-  type ChatFontSize,
-} from "src/lib/chat-display";
+import { isChatFontSize, type ChatFontSize } from "src/lib/chat-display";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import SidebarSearch from "./SidebarSearch";
 import SidebarSessions from "./SidebarSessions";
@@ -2089,7 +2089,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 : "border-slate-200 bg-slate-50"
                             }`}
                           >
-                            {CHAT_FONT_SIZE_OPTIONS.map((option) => {
+                            {getLocalizedChatFontSizeOptions(copy).map((option) => {
                               const isActive = chatFontSize === option.value;
                               return (
                                 <button
@@ -2147,7 +2147,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                               isDarkMode ? "text-slate-400" : "text-slate-500"
                             }`}
                           >
-                            Applied only in Socratic mode.
+                            {copy.settings.socraticToneDescription}
                           </p>
 
                           <div ref={toneDropdownRef} className="relative mt-2">
@@ -2166,9 +2166,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                               aria-label={copy.settings.socraticTone}
                             >
                               <span>
-                                {SOCRATIC_TONE_OPTIONS.find(
-                                  (option) => option.value === socraticTone,
-                                )?.label ?? "Encouraging and Supportive"}
+                                {getLocalizedSocraticToneMeta(socraticTone, copy)
+                                  ?.label ?? "Encouraging and Supportive"}
                               </span>
                               <ChevronDown
                                 size={13}
@@ -2195,7 +2194,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                       : "border-slate-200 bg-white"
                                   }`}
                                 >
-                                  {SOCRATIC_TONE_OPTIONS.map((option) => {
+                                  {getLocalizedSocraticToneOptions(copy).map((option) => {
                                     const isLockedTone =
                                       !isPremium &&
                                       option.value === "RUTHLESS_BLUNT";
@@ -2252,9 +2251,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             }`}
                           >
                             {
-                              SOCRATIC_TONE_OPTIONS.find(
-                                (option) => option.value === socraticTone,
-                              )?.description
+                              getLocalizedSocraticToneMeta(socraticTone, copy)
+                                ?.description
                             }
                           </p>
                         </div>

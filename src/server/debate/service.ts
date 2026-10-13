@@ -1,4 +1,8 @@
 import { Prisma } from "@prisma/client";
+import {
+  DEFAULT_LOCALE,
+  type SupportedLocale,
+} from "@/src/i18n/locales";
 import type { DebateTopicSource, DebateWinner } from "src/types/chat";
 import {
   deepseek,
@@ -71,6 +75,7 @@ Return only the JSON. No markdown, no preamble.`;
 type DebateSuggestionParams = {
   tone: DebateTone;
   durationPreset: DebateDurationPreset;
+  locale?: SupportedLocale | undefined;
   userId?: string;
 };
 
@@ -80,6 +85,7 @@ type DebateOpeningParams = {
   durationPreset: DebateDurationPreset;
   userSide: string;
   aiSide: string;
+  locale?: SupportedLocale | undefined;
 };
 
 type DebateVerdictParams = {
@@ -125,6 +131,89 @@ const FALLBACK_TOPICS = [
   "Human dignity is rhetoric unless backed by material guarantees.",
 ];
 
+const FALLBACK_TOPICS_BY_LOCALE = {
+  en: FALLBACK_TOPICS,
+  it: [
+    "Il libero arbitrio è un'illusione che difendiamo per ragioni emotive.",
+    "Lo stoicismo è sopravvalutato nella vita moderna.",
+    "Il progresso morale è soprattutto un mito rassicurante.",
+    "L'autenticità è spesso solo una performance socialmente approvata.",
+    "La compassione senza una gerarchia dei doveri produce caos morale.",
+    "La maggior parte della tolleranza politica nasconde disprezzo più che rispetto.",
+    "La coscienza è teatro narrativo, non un sé stabile.",
+    "Giustizia e misericordia sono strutturalmente incompatibili nella legge.",
+    "La dignità umana è retorica se non è sostenuta da garanzie materiali.",
+  ],
+  fr: [
+    "Le libre arbitre est une illusion que nous défendons pour des raisons émotionnelles.",
+    "Le stoïcisme est surestimé dans la vie moderne.",
+    "Le progrès moral est surtout un mythe réconfortant.",
+    "L'authenticité est souvent une performance socialement approuvée.",
+    "La compassion sans hiérarchie des devoirs produit le chaos moral.",
+    "La plupart des formes de tolérance politique masquent le mépris plus que le respect.",
+    "La conscience est un théâtre narratif, pas un moi stable.",
+    "La justice et la miséricorde sont structurellement incompatibles en droit.",
+    "La dignité humaine n'est que rhétorique sans garanties matérielles.",
+  ],
+  de: [
+    "Freier Wille ist eine Illusion, die Menschen aus emotionalen Gründen verteidigen.",
+    "Stoizismus wird im modernen Leben emotional überschätzt.",
+    "Moralischer Fortschritt ist meist ein tröstlicher Mythos.",
+    "Authentizität ist oft nur gesellschaftlich akzeptierte Performance.",
+    "Mitgefühl ohne Rangordnung der Pflichten erzeugt moralisches Chaos.",
+    "Die meiste politische Toleranz verbirgt eher Verachtung als Respekt.",
+    "Bewusstsein ist narratives Theater, kein stabiles Selbst.",
+    "Gerechtigkeit und Barmherzigkeit sind im Recht strukturell unvereinbar.",
+    "Menschenwürde ist Rhetorik, wenn sie nicht materiell abgesichert wird.",
+  ],
+  "pt-BR": [
+    "O livre-arbítrio é uma ilusão que as pessoas defendem por razões emocionais.",
+    "O estoicismo é emocionalmente superestimado na vida moderna.",
+    "O progresso moral é, em grande parte, um mito reconfortante.",
+    "A autenticidade muitas vezes é só uma performance socialmente aprovada.",
+    "Compaixão sem hierarquia de deveres produz caos moral.",
+    "A maior parte da tolerância política esconde desprezo, não respeito.",
+    "A consciência é teatro narrativo, não um eu estável.",
+    "Justiça e misericórdia são estruturalmente incompatíveis na lei.",
+    "A dignidade humana é retórica sem garantias materiais.",
+  ],
+} satisfies Record<SupportedLocale, string[]>;
+
+const DEBATE_LANGUAGE_NAMES = {
+  en: "English",
+  it: "Italian",
+  fr: "French",
+  de: "German",
+  "pt-BR": "Brazilian Portuguese",
+} satisfies Record<SupportedLocale, string>;
+
+function getDebateLanguageName(locale: SupportedLocale = DEFAULT_LOCALE) {
+  return DEBATE_LANGUAGE_NAMES[locale] ?? DEBATE_LANGUAGE_NAMES[DEFAULT_LOCALE];
+}
+
+function getFallbackTopics(locale: SupportedLocale = DEFAULT_LOCALE) {
+  return FALLBACK_TOPICS_BY_LOCALE[locale] ?? FALLBACK_TOPICS;
+}
+
+function getLocalizedFallbackOpening(params: DebateOpeningParams) {
+  const userSide = params.userSide.toLowerCase();
+  const aiSide = params.aiSide.toLowerCase();
+
+  switch (params.locale) {
+    case "it":
+      return `La tua difesa di ${userSide} sembra sicura, ma poggia su una premessa non dimostrata. Io difenderò ${aiSide}, e ora devi giustificare direttamente il nucleo della tua posizione.`;
+    case "fr":
+      return `Ta défense de ${userSide} semble assurée, mais elle repose sur une prémisse non démontrée. Je vais défendre ${aiSide}, et tu dois maintenant justifier directement le coeur de ta position.`;
+    case "de":
+      return `Deine Verteidigung von ${userSide} klingt sicher, aber sie stützt sich auf eine unbelegte Prämisse. Ich werde ${aiSide} verteidigen, und du musst jetzt den Kern deiner Position direkt begründen.`;
+    case "pt-BR":
+      return `Sua defesa de ${userSide} parece confiante, mas depende de uma premissa não demonstrada. Eu vou defender ${aiSide}, e agora você precisa justificar diretamente o núcleo da sua posição.`;
+    case "en":
+    default:
+      return `Your defense of ${userSide} sounds confident, but it leans on an unproven premise. I will defend ${aiSide}, and you now need to justify your core assumption directly.`;
+  }
+}
+
 const TOPIC_DIVERSITY_LENSES = [
   "ethics",
   "political philosophy",
@@ -154,7 +243,7 @@ function pickRandomUnique<T>(items: readonly T[], count: number) {
 function topicFingerprint(topic: string) {
   return normalizeDebateTopic(topic)
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .split(/\s+/)
     .filter(
       (word) =>
@@ -463,8 +552,12 @@ export function getDebateTimeRemainingSeconds(params: {
   return Math.max(0, Math.ceil((endsAt.getTime() - now.getTime()) / 1000));
 }
 
-export async function validateDebateTopic(topic: string) {
+export async function validateDebateTopic(
+  topic: string,
+  locale: SupportedLocale = DEFAULT_LOCALE,
+) {
   const lightweight = validatePhilosophyTopicLightweight(topic);
+  const languageName = getDebateLanguageName(locale);
   const topicWordCount = lightweight.normalizedTopic
     .split(/\s+/)
     .filter((word) => word.length > 0).length;
@@ -491,6 +584,8 @@ export async function validateDebateTopic(topic: string) {
             "Reply in strict JSON with keys: isValid(boolean), reason(string), reframingSuggestions(string[]).",
             "Accept topics in ethics, metaphysics, philosophy of mind, logic, epistemology, aesthetics, existentialism, political philosophy, and philosophy of religion.",
             "Reject celebrity topics, entertainment gossip, coding, business advice, sports, and current events unless clearly reframed as philosophical claims.",
+            `The topic may be written in ${languageName}; judge the meaning, not the language.`,
+            `Write reason and reframingSuggestions in ${languageName}.`,
           ].join(" "),
         },
         {
@@ -529,6 +624,10 @@ export async function validateDebateTopic(topic: string) {
 export async function generateDebateTopicSuggestions(
   params: DebateSuggestionParams,
 ) {
+  const locale = params.locale ?? DEFAULT_LOCALE;
+  const languageName = getDebateLanguageName(locale);
+  const fallbackTopics = getFallbackTopics(locale);
+
   try {
     const durationMeta = getDebateDurationMeta(params.durationPreset);
     const toneMeta = getDebateToneMeta(params.tone);
@@ -567,6 +666,7 @@ export async function generateDebateTopicSuggestions(
           content: [
             "Generate philosophy debate topics as direct theses.",
             "Reply in strict JSON with a single key named topics whose value is an array of exactly 10 strings.",
+            `Write every topic in ${languageName}.`,
             "Each topic must be debatable, vivid, and strong enough for a one-on-one intellectual argument.",
             "Avoid generic textbook wording and avoid semantic repeats.",
             "Do not output the same thesis with rephrased wording.",
@@ -579,6 +679,7 @@ export async function generateDebateTopicSuggestions(
           content: [
             `Tone: ${toneMeta.label}.`,
             `Duration: ${durationMeta.label}.`,
+            `Output language: ${languageName}.`,
             `Use three distinct philosophical lenses: ${diversityLenses.join(", ")}.`,
             "Give topics that work well in that format.",
             recentTopicsForPrompt.length > 0
@@ -592,7 +693,7 @@ export async function generateDebateTopicSuggestions(
     const content = completion.choices[0]?.message?.content?.trim();
 
     if (!content) {
-      return FALLBACK_TOPICS;
+      return fallbackTopics;
     }
 
     const parsed = JSON.parse(content) as { topics?: string[] };
@@ -608,20 +709,21 @@ export async function generateDebateTopicSuggestions(
       return topics;
     }
 
-    const fallback = filterDistinctTopics(FALLBACK_TOPICS, [
+    const fallback = filterDistinctTopics(fallbackTopics, [
       ...recentTopics,
       ...topics,
     ]).slice(0, 3 - topics.length);
 
     return [...topics, ...fallback].slice(0, 3);
   } catch {
-    return pickRandomUnique(FALLBACK_TOPICS, 3);
+    return pickRandomUnique(fallbackTopics, 3);
   }
 }
 
 export async function generateDebateOpening(params: DebateOpeningParams) {
   const durationMeta = getDebateDurationMeta(params.durationPreset);
   const toneMeta = getDebateToneMeta(params.tone);
+  const languageName = getDebateLanguageName(params.locale);
   const isShortDebate =
     params.durationPreset === "MIN_15" ||
     params.durationPreset === "MIN_20" ||
@@ -659,9 +761,7 @@ export async function generateDebateOpening(params: DebateOpeningParams) {
     }
   })();
 
-  const fallbackOpening = isShortDebate
-    ? `Your defense of ${params.userSide.toLowerCase()} sounds confident, but it leans on an unproven premise. I will defend ${params.aiSide.toLowerCase()}, and you now need to justify your core assumption directly.`
-    : `Your position on "${params.topic}" sounds stronger than it is. You are treating ${params.userSide.toLowerCase()} as if it survives scrutiny automatically, but it collapses the moment we press its hidden premise. I will defend ${params.aiSide.toLowerCase()}, and you will need more than instinct to keep your position alive.`;
+  const fallbackOpening = getLocalizedFallbackOpening(params);
 
   const endsAsCompleteSentence = (text: string) =>
     /[.!?]["')\]]?\s*$/.test(text);
@@ -693,6 +793,7 @@ export async function generateDebateOpening(params: DebateOpeningParams) {
             "Attack the reasoning, not the person.",
             "Keep the tone premium, sharp, and controlled.",
             "Do not use bullets.",
+            `Write in ${languageName}.`,
           ].join(" "),
         },
         {
@@ -703,6 +804,7 @@ export async function generateDebateOpening(params: DebateOpeningParams) {
             `Duration mode: ${durationMeta.label}`,
             `User side: ${params.userSide}`,
             `Your side: ${params.aiSide}`,
+            `Output language: ${languageName}`,
             "Write the opening attack.",
             openingLengthInstruction,
             "Keep it complete and end on a full sentence.",
@@ -1179,6 +1281,7 @@ export async function createDebateSession(params: {
   topicSource: DebateTopicSource;
   userSide: string;
   aiSide: string;
+  locale?: SupportedLocale | undefined;
 }) {
   const normalizedTopic = normalizeDebateTopic(params.topic);
   const normalizedUserSide = normalizeDebateTopic(params.userSide);
@@ -1197,6 +1300,7 @@ export async function createDebateSession(params: {
     durationPreset: params.durationPreset,
     userSide: safeUserSide,
     aiSide: safeAiSide,
+    locale: params.locale,
   });
   const durationMeta = getDebateDurationMeta(params.durationPreset);
 

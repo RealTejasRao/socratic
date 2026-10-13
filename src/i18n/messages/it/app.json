@@ -306,6 +306,7 @@
     "light": "Chiaro",
     "dark": "Scuro",
     "socraticTone": "Tono socratico",
+    "socraticToneDescription": "Applicato solo in modalità Socratica.",
     "chatFontSize": "Dimensione del font della chat",
     "sidebar": "Barra laterale",
     "collapseByDefault": "Riduci per impostazione predefinita",
@@ -358,5 +359,570 @@
     "startMonthly": "Inizia mensile",
     "startAnnual": "Inizia annuale",
     "redirecting": "Reindirizzamento a Dodo Payments..."
+  },
+  "config": {
+    "socraticTones": {
+      "BALANCED": {
+        "label": "Incoraggiante e di Supporto",
+        "description": "Pensa con te, non a te. Onesto riguardo alle lacune, ma mai duro su di esse."
+      },
+      "RUTHLESS_BLUNT": {
+        "label": "Spietato e Diretto",
+        "description": "Pressione dura, confronto diretto, nessuna dolcezza."
+      },
+      "SIMPLE_CLEAR": {
+        "label": "Semplice e Chiaro",
+        "description": "Linguaggio semplice, logica affilata, facile da seguire."
+      }
+    },
+    "debateTones": {
+      "RUTHLESS_BLUNT": {
+        "label": "Spietato e Diretto",
+        "description": "Pressione dura, affilato, confrontazionale, zero colpi bassi."
+      },
+      "SIMPLE_CLEAR": {
+        "label": "Semplice e Chiaro",
+        "description": "Pensatore chiaro, brutalmente semplice, impossibile da fraintendere"
+      },
+      "ELITE_INTELLECTUAL_ELEGANT": {
+        "label": "Elite Intellettuale ed Elegante",
+        "description": "Vocabolario ricco, Calmo e controllato"
+      }
+    },
+    "debateDurations": {
+      "MIN_15": {
+        "label": "15 min",
+        "description": "Scambi rapidi e ad alta pressione mirati alla rivendicazione centrale."
+      },
+      "MIN_20": {
+        "label": "20 min",
+        "description": "Scambi serrati con contromosse rapide e escalation."
+      },
+      "MIN_30": {
+        "label": "30 min",
+        "description": "Ritmo bilanciato con maggiore approfondimento e confutazione."
+      },
+      "HOUR_1": {
+        "label": "1 ora",
+        "description": "Combattimento filosofico lungo con vera profondità."
+      },
+      "NO_TIMER": {
+        "label": "Nessun timer",
+        "description": "Nessun vincolo. Dibatti fino a quando una posizione non cede."
+      }
+    },
+    "roleplayFlairs": {
+      "All": "Tutti",
+      "Stoicism": "Stoicismo",
+      "Classical Greek": "Greco Classico",
+      "Feminism": "Femminismo",
+      "Power": "Potere",
+      "Existentialism": "Esistenzialismo",
+      "Cynicism": "Cinismo",
+      "Buddhism": "Buddhismo",
+      "Strategy": "Strategia",
+      "Analytic Philosophy": "Filosofia Analitica",
+      "Daoism": "Daoismo",
+      "Utilitarianism": "Utilitarismo",
+      "Politics": "Politica",
+      "Rationalism": "Razionalismo",
+      "Confucianism": "Confucianesimo",
+      "Platonism": "Platonismo",
+      "Aristotelianism": "Aristotelismo",
+      "Absurdism": "Assurdismo",
+      "Social Contract": "Contratto Sociale",
+      "Empiricism": "Empirismo",
+      "Enlightenment": "Illuminismo",
+      "Deontology": "Deontologia",
+      "Critical Theory": "Teoria Critica",
+      "Psychoanalysis": "Psicoanalisi",
+      "Pragmatism": "Pragmatismo",
+      "Transcendentalism": "Trascendentalismo",
+      "Objectivism": "Oggettivismo",
+      "Mysticism": "Misticanza",
+      "Economics": "Economia",
+      "Islamic Philosophy": "Filosofia Islamica"
+    },
+    "roleplayPhilosophers": {
+      "SOCRATES": {
+        "expertise": "Domande, definizioni, contraddizioni, chiarezza morale.",
+        "shortDescription": "Il padre della filosofia occidentale che non ha mai scritto una parola. Insegnava ponendo domande che mettevano profondamente a disagio le persone.",
+        "bestFor": "Mettere alla prova una convinzione che non hai esaminato abbastanza a fondo.",
+        "starterPrompts": [
+          "Aiutami a esaminare se sto vivendo bene.",
+          "Metti in discussione la mia convinzione che il successo conti più della virtù.",
+          "Mostrami dove la mia definizione di giustizia si rompe.",
+          "Interroga la mia paura di apparire ignorante."
+        ],
+        "voicePreview": "Non affrettiamoci. Prima dimmi cosa intendi, e poi vedremo se ci credi."
+      },
+      "PLATO": {
+        "expertise": "Forme, giustizia, educazione, anima, ordine politico.",
+        "shortDescription": "Studente di Socrate che ha trasformato le domande del suo maestro in una visione completa della realtà. Ha costruito le fondamenta del pensiero occidentale.",
+        "bestFor": "Collegare la confusione personale a ideali più grandi e forme nascoste.",
+        "starterPrompts": [
+          "Cosa richiederebbe una società giusta dai suoi cittadini?",
+          "Spiega cosa sto realmente cercando quando voglio status.",
+          "Come dovrebbe l'educazione plasmare l'anima?",
+          "È pericolosa la democrazia quando le persone sono mal formate?"
+        ],
+        "voicePreview": "La città e l'anima si somigliano più di quanto la maggior parte delle persone sospetti."
+      },
+      "ARISTOTLE": {
+        "expertise": "Virtù, carattere, scopo, politica, saggezza pratica.",
+        "shortDescription": "Il più grande studente di Platone che non era d'accordo con quasi tutto ciò che Platone diceva. Scrisse su tutto, dalla logica alla politica, fino alla natura della felicità.",
+        "bestFor": "Trasformare ideali astratti in carattere praticato.",
+        "starterPrompts": [
+          "Come posso diventare più disciplinato senza diventare severo?",
+          "Quale virtù mi manca in questa situazione: [descrivi la situazione]",
+          "Aiutami a riflettere su amicizia e lealtà.",
+          "Cosa richiede realmente il fiorire dalla vita quotidiana?"
+        ],
+        "voicePreview": "Dobbiamo guardare non solo a ciò che viene detto, ma al tipo di vita che lo produce."
+      },
+      "EPICTETUS": {
+        "expertise": "Controllo, giudizio, disciplina, agenzia, libertà interiore.",
+        "shortDescription": "Nato in schiavitù, divenne uno dei filosofi più rispettati del suo tempo. Insegnò che la libertà inizia nella mente, non nelle circostanze.",
+        "bestFor": "Ansia, risentimento, disciplina, stabilità emotiva.",
+        "starterPrompts": [
+          "Aiutami a smettere di preoccuparmi così tanto di ciò che pensano gli altri.",
+          "Cosa è realmente sotto il mio controllo qui: [descrivi cosa è successo]",
+          "Insegnami a gestire il fallimento senza autocommiserazione.",
+          "Continuo a dare la colpa alle circostanze. Correggimi."
+        ],
+        "voicePreview": "Inizia separando la cosa dal tuo giudizio sulla cosa."
+      },
+      "MARCUS_AURELIUS": {
+        "expertise": "Dovere, mortalità, leadership, moderazione, attenzione morale.",
+        "shortDescription": "Governò l'Impero Romano e trovò comunque il tempo per interrogarsi ogni giorno. Scrisse i suoi pensieri privati, senza mai intendere che qualcuno li leggesse.",
+        "bestFor": "Leadership, stress, mortalità e mantenere il carattere sotto pressione.",
+        "starterPrompts": [
+          "Come dovrei comportarmi quando le persone mi deludono?",
+          "Aiutami ad affrontare la mortalità senza panico.",
+          "Cosa dovrei ricordare prima di prendere una decisione difficile?",
+          "Come posso rimanere decente mentre perseguo l'ambizione?"
+        ],
+        "voicePreview": "Hai potere sul centro di comando. Proteggilo e fai il lavoro che ti spetta."
+      },
+      "SENECA": {
+        "expertise": "Tempo, rabbia, ricchezza, avversità, formazione morale.",
+        "shortDescription": "Consigliere degli imperatori, testimone del potere e uno degli scrittori più acuti della storia. Ossessionato da come spendiamo l'unica vita che ci è data.",
+        "bestFor": "Ansia da tempo, rabbia, ricchezza, perdita e autocontrollo.",
+        "starterPrompts": [
+          "Aiutami a smettere di sprecare il mio tempo.",
+          "Cosa dovrei fare con la rabbia prima che mi controlli?",
+          "Come dovrei pensare alla ricchezza e al comfort?",
+          "Insegnami come affrontare un contrattempo con dignità."
+        ],
+        "voicePreview": "Nessuno perde la vita tutto in una volta; la diamo via ora per ora."
+      },
+      "NIETZSCHE": {
+        "expertise": "Valori, moralità di branco, risentimento, auto-superamento.",
+        "shortDescription": "Dichiarò che i vecchi valori stavano collassando e che l'umanità aveva bisogno di nuovi. Uno dei pensatori più fraintesi e più importanti dell'era moderna.",
+        "bestFor": "Ambizione, risentimento, conformismo, significato e auto-creazione.",
+        "starterPrompts": [
+          "Dimmi dove sto vivendo secondo i valori di branco.",
+          "Diagnostica il mio risentimento verso le persone di successo.",
+          "Cosa richiederebbe da me il superamento di me stesso?",
+          "Sto usando la moralità per nascondere la debolezza?"
+        ],
+        "voicePreview": "Tu lo chiami virtù. Io chiedo se sia coraggio, o semplicemente obbedienza con un volto pulito."
+      },
+      "KANT": {
+        "expertise": "Dovere, autonomia, legge universale, persone come fini.",
+        "shortDescription": "Ha costruito uno dei sistemi di filosofia morale più rigorosi mai tentati. Credeva che la ragione, non la religione o l'emozione, fosse la base dell'azione giusta.",
+        "bestFor": "Dilemmi morali, menzogne, dovere, rispetto e azione principiata.",
+        "starterPrompts": [
+          "È mai accettabile mentire per un buon risultato?",
+          "Aiutami a trovare la massima dietro la mia decisione: [descrivi la decisione]",
+          "Sto trattando qualcuno come un mezzo piuttosto che un fine: [descrivi la situazione]",
+          "Cosa richiede il dovere quando non ho voglia di farlo?"
+        ],
+        "voicePreview": "La domanda non è prima cosa desideri, ma quale principio puoi volere."
+      },
+      "MACHIAVELLI": {
+        "expertise": "Potere, politica, inganno, strategia, arte di governo.",
+        "shortDescription": "Ha studiato il potere per quello che è realmente, non per quello che le persone fingono sia. Ha scritto il libro che i governanti leggono in privato e condannano in pubblico.",
+        "bestFor": "Politica, negoziazione, reputazione, conflitto e azione strategica.",
+        "starterPrompts": [
+          "Come dovrei gestire qualcuno di politicamente pericoloso?",
+          "Quando l'inganno è strategicamente necessario?",
+          "Dovrei essere temuto, amato o rispettato in questa situazione: [descrivi la situazione]",
+          "Analizza le dinamiche di potere nel mio posto di lavoro: [descrivi la situazione lavorativa]"
+        ],
+        "voicePreview": "Chiedi cosa è nobile. Prima chiedi chi beneficia quando ti comporti in modo nobile."
+      },
+      "DOSTOEVSKY": {
+        "expertise": "Libertà, colpa, fede, sofferenza, risentimento, psicologia morale.",
+        "shortDescription": "È sceso nella colpa, nella libertà, nella fede e negli angoli sotterranei dell'anima umana. Ha trasformato la psicologia morale in una forma di fuoco filosofico.",
+        "bestFor": "Colpa, disperazione, fede, libertà, risentimento e autoinganno.",
+        "starterPrompts": [
+          "Perché continuo ad agire contro i miei interessi?",
+          "Aiutami a capire la mia colpa senza scusarla.",
+          "Cosa rivela la sofferenza sulla libertà?",
+          "Sto usando l'intelligenza per evitare responsabilità?"
+        ],
+        "voicePreview": "Dici di volere libertà, ma forse vuoi il diritto di rovinarti e chiamarlo onestà."
+      },
+      "HOBBES": {
+        "expertise": "Ordine, paura, sovranità, sicurezza, contratto sociale.",
+        "shortDescription": "Credeva che la vita umana senza ordine fosse brutale e breve. Sosteneva che un governo forte non fosse una gabbia ma una necessità.",
+        "bestFor": "Sicurezza, autorità, conflitto sociale e ordine politico.",
+        "starterPrompts": [
+          "Perché le persone hanno bisogno di autorità?",
+          "La libertà vale l'instabilità?",
+          "Analizza questo conflitto come un problema di paura: [descrivi il conflitto]",
+          "Cosa succede quando la fiducia crolla?"
+        ],
+        "voicePreview": "Dove non c'è un potere comune, un linguaggio raffinato non può tenere gli uomini lontani l'uno dall'altro."
+      },
+      "ROUSSEAU": {
+        "expertise": "Libertà, disuguaglianza, autenticità, educazione, vita civica.",
+        "shortDescription": "Credeva che gli esseri umani fossero naturalmente buoni e che la civiltà li corrompesse lentamente. Le sue idee accese la miccia della Rivoluzione Francese.",
+        "bestFor": "Autenticità, disuguaglianza, educazione, libertà e pressione sociale.",
+        "starterPrompts": [
+          "Vengo plasmato dalla società in un modo corrotto?",
+          "Cosa significherebbe la vera libertà qui: [descrivi la situazione]",
+          "In che modo il confronto distorce i miei desideri?",
+          "Spiega la disuguaglianza senza farla sembrare naturale."
+        ],
+        "voicePreview": "L'uomo non nasce vanitoso; la società gli insegna a misurare la propria anima con gli occhi degli altri."
+      },
+      "MILL": {
+        "expertise": "Libertà, danno, utilità, individualità, progresso morale.",
+        "shortDescription": "Ha lottato per la libertà individuale in un'epoca in cui pochi filosofi si preoccupavano. Credeva che una società fosse buona solo quanto la libertà che proteggeva.",
+        "bestFor": "Libertà, parola, pressione sociale, piacere ed etica pubblica.",
+        "starterPrompts": [
+          "Dove dovrebbe finire la libertà personale?",
+          "Questa restrizione è giustificata dal danno: [descrivi la restrizione]",
+          "Come decido cosa produce il maggior bene?",
+          "Difendi l'individualità contro la pressione sociale."
+        ],
+        "voicePreview": "Il valore di una società si vede nel tipo di individualità che consente."
+      },
+      "HUME": {
+        "expertise": "Scetticismo, abitudine, causalità, sentimento, natura umana.",
+        "shortDescription": "Ha dubitato più attentamente di quasi chiunque prima di lui. Ha sfidato le fondamenta della religione, della causalità e della conoscenza umana stessa.",
+        "bestFor": "Dubbio, credenza, evidenza, emozione e natura umana.",
+        "starterPrompts": [
+          "Quale evidenza giustificherebbe realmente questa credenza: [descrivi la credenza]",
+          "Sto confondendo abitudine con ragione?",
+          "Spiega perché l'emozione è importante nella moralità.",
+          "Rendimi più scettico senza diventare cinico."
+        ],
+        "voicePreview": "Prima di ascendere nei sistemi, chiediamoci cosa ha realmente mostrato l'esperienza."
+      },
+      "SPINOZA": {
+        "expertise": "Necessità, desiderio, emozione, libertà, Dio o natura.",
+        "shortDescription": "Vedeva Dio e natura come la stessa cosa. Fu espulso dalla sua comunità per idee che il mondo moderno ha in gran parte accettato.",
+        "bestFor": "Chiarezza emotiva, determinismo, desiderio e accettazione.",
+        "starterPrompts": [
+          "Aiutami a comprendere questa emozione invece di esserne dominato: [descrivi l'emozione]",
+          "Cosa significherebbe libertà se tutto ha delle cause?",
+          "Spiega il desiderio attraverso la tua filosofia.",
+          "Come dovrei pensare a Dio o alla natura?"
+        ],
+        "voicePreview": "Un'emozione smette di dominarci in proporzione a quanto formiamo un'idea chiara di essa."
+      },
+      "SCHOPENHAUER": {
+        "expertise": "Volontà, sofferenza, desiderio, pessimismo, arte, compassione.",
+        "shortDescription": "Credeva che l'universo fosse guidato da una volontà cieca e irrazionale. Onesto riguardo alla sofferenza in un modo che la filosofia raramente si permette.",
+        "bestFor": "Desiderio, delusione, sofferenza, arte e distacco.",
+        "starterPrompts": [
+          "Perché i miei desideri continuano a rendermi infelice?",
+          "Spiega il desiderio romantico senza confortarmi.",
+          "Quale ruolo può avere l'arte nella sofferenza?",
+          "Come posso ridurre la tirannia del volere?"
+        ],
+        "voicePreview": "Il desiderio promette compimento e poi ricomincia sotto un'altra maschera."
+      },
+      "KIERKEGAARD": {
+        "expertise": "Ansia, fede, disperazione, scelta, interiorità.",
+        "shortDescription": "Ha scritto su cosa significa realmente essere un essere umano che cerca di vivere una vita significativa. Il primo filosofo a prendere sul serio l'ansia.",
+        "bestFor": "Ansia, fede, identità, impegno e paralisi esistenziale.",
+        "starterPrompts": [
+          "Perché ho paura di scegliere?",
+          "Spiega la mia ansia come un problema spirituale.",
+          "Cosa significa diventare me stesso?",
+          "Sto evitando l'impegno pensando troppo?"
+        ],
+        "voicePreview": "L'ansia è la vertigine della libertà, non semplicemente un difetto da rimuovere."
+      },
+      "CAMUS": {
+        "expertise": "Assurdità, ribellione, significato, mortalità, dignità.",
+        "shortDescription": "Ha guardato all'assurdità dell'esistenza e ha rifiutato di distogliere lo sguardo. Ha sostenuto che l'unica vera domanda filosofica è se la vita valga la pena di essere vissuta.",
+        "bestFor": "Significato, assurdità, morte, ribellione e rimanere umani.",
+        "starterPrompts": [
+          "Come posso vivere se la vita non ha un significato finale?",
+          "Spiega la ribellione senza fingere che tutto vada bene.",
+          "Cosa dovrei fare con la disperazione?",
+          "Come posso essere onesto e continuare a vivere?"
+        ],
+        "voicePreview": "L'assurdo non giustifica la resa. Chiede se puoi vivere senza appello."
+      },
+      "SARTRE": {
+        "expertise": "Libertà, cattiva fede, responsabilità, identità, autenticità.",
+        "shortDescription": "Ha detto che l'esistenza precede l'essenza, il che significa che non sei nulla fino a quando non ti fai qualcosa. Libertà totale, responsabilità totale.",
+        "bestFor": "Evasione, identità, responsabilità e scelta autentica.",
+        "starterPrompts": [
+          "Dove sto agendo in cattiva fede?",
+          "Perché la libertà sembra un peso?",
+          "Mi sto nascondendo dietro la mia personalità?",
+          "Quale responsabilità sto rifiutando?"
+        ],
+        "voicePreview": "Non sei semplicemente ciò che ti è successo; sei ciò che ne fai."
+      },
+      "FREUD": {
+        "expertise": "Motivi inconsci, repressione, desiderio, civiltà.",
+        "shortDescription": "Ha sostenuto che la maggior parte di ciò che guida il comportamento umano è sepolto sotto la consapevolezza cosciente. Ha cambiato per sempre il modo in cui il mondo pensa alla mente.",
+        "bestFor": "Motivazione, repressione, conflitto, desiderio e auto-sabotaggio.",
+        "starterPrompts": [
+          "Quale motivo inconscio potrebbe operare qui: [descrivi cosa è successo]",
+          "Perché le persone ripetono schemi autolesionisti?",
+          "Analizza la rabbia come difesa.",
+          "Cosa richiede la civiltà dal desiderio?"
+        ],
+        "voicePreview": "Dove l'interpretazione è troppo pulita, si dovrebbe cercare ciò che è stato represso."
+      },
+      "THOREAU": {
+        "expertise": "Semplicità, coscienza, natura, disobbedienza civile.",
+        "shortDescription": "Lasciò la società per due anni per vivere deliberatamente e pensare chiaramente. Scrisse sulla natura, la coscienza e il costo di vivere la vita di qualcun altro.",
+        "bestFor": "Semplicità, indipendenza, natura, coscienza e rifiuto.",
+        "starterPrompts": [
+          "Aiutami a semplificare la mia vita.",
+          "Quando dovrei rifiutare di cooperare?",
+          "Sto vivendo deliberatamente o automaticamente?",
+          "Cosa insegna la natura che la società mi fa dimenticare?"
+        ],
+        "voicePreview": "Un uomo è ricco in proporzione al numero di cose che può permettersi di trascurare."
+      },
+      "WILLIAM_JAMES": {
+        "expertise": "Fede, abitudine, scelta, verità, esperienza religiosa.",
+        "shortDescription": "Credeva che la verità fosse ciò che funzionava nella pratica, non ciò che suonava elegante in teoria. Il più umano e leggibile di tutti i grandi filosofi.",
+        "bestFor": "Decisione, abitudine, incertezza, motivazione e fede pratica.",
+        "starterPrompts": [
+          "Come dovrei agire quando la certezza è impossibile?",
+          "Aiutami a cambiare un'abitudine cambiando attenzione.",
+          "Quale credenza varrebbe la pena testare pragmaticamente?",
+          "Spiega la verità in termini di conseguenze."
+        ],
+        "voicePreview": "La domanda è quale differenza fa la credenza nel flusso della vita."
+      },
+      "ADAM_SMITH": {
+        "expertise": "Mercati, simpatia, incentivi, sentimenti morali, commercio.",
+        "shortDescription": "Spiegò come funzionano i mercati e perché l'interesse personale può servire il bene comune. Si preoccupava della moralità tanto quanto dell'economia.",
+        "bestFor": "Mercati, incentivi, lavoro, commercio, ricchezza e giudizio morale.",
+        "starterPrompts": [
+          "Analizza questo problema di incentivo: [descrivi il problema di incentivo]",
+          "Cosa ha a che fare la simpatia con la moralità?",
+          "Come dovrei pensare ai mercati senza venerarli?",
+          "Spiega l'interesse personale senza farne egoismo."
+        ],
+        "voicePreview": "Il commercio non si basa solo sul guadagno, ma su abitudini di fiducia e giudizio."
+      },
+      "AL_GHAZALI": {
+        "expertise": "Fede, ragione, certezza, etica, scetticismo, disciplina spirituale.",
+        "shortDescription": "Un grande filosofo islamico, teologo e mistico che sfidò i limiti della ragione e riportò la filosofia verso la certezza spirituale vissuta.",
+        "bestFor": "Fede, dubbio, orgoglio intellettuale, disciplina spirituale e autoesame morale.",
+        "starterPrompts": [
+          "Come dovrei gestire il dubbio senza perdere la fede?",
+          "Sto fidandomi della ragione oltre i suoi limiti appropriati?",
+          "Aiutami a esaminare l'orgoglio intellettuale in me stesso.",
+          "Cosa richiede la disciplina spirituale dalla vita quotidiana?"
+        ],
+        "voicePreview": "La ragione è una nobile lampada, ma non diventa il sole dimenticando il suo limite."
+      },
+      "BUDDHA": {
+        "expertise": "Sofferenza, desiderio, impermanenza, consapevolezza, liberazione.",
+        "shortDescription": "Insegnò che la sofferenza ha cause e che la libertà inizia quando desiderio, illusione e attaccamento vengono visti chiaramente.",
+        "bestFor": "Desiderio, ansia, attaccamento, lutto, consapevolezza e rilascio interiore.",
+        "starterPrompts": [
+          "Aiutami a capire la sofferenza dietro questo desiderio: [descrivi il desiderio]",
+          "A cosa mi sto aggrappando che continua a farmi male?",
+          "Insegnami come affrontare l'ansia senza diventarne vittima.",
+          "Come dovrei praticare la compassione senza perdere chiarezza?"
+        ],
+        "voicePreview": "Guarda attentamente il desiderio stesso; quando è conosciuto, si allenta."
+      },
+      "CONFUCIUS": {
+        "expertise": "Rituale, virtù, famiglia, dovere, educazione, armonia sociale.",
+        "shortDescription": "Vide il carattere come qualcosa da coltivare attraverso il rituale, il rispetto, l'apprendimento e la pratica quotidiana della condotta umana.",
+        "bestFor": "Conflitto familiare, leadership, dovere, rispetto, educazione e carattere.",
+        "starterPrompts": [
+          "Come dovrei agire onorevolmente in questa relazione: [descrivi la relazione]",
+          "Quale dovere sto trascurando qui: [descrivi la situazione]",
+          "Aiutami a diventare più disciplinato senza diventare freddo.",
+          "Cosa richiede il rispetto quando non sono d'accordo?"
+        ],
+        "voicePreview": "Inizia con la condotta. Un cuore disordinato raramente produce un discorso ordinato."
+      },
+      "LAOZI": {
+        "expertise": "Il Dao, wu wei, semplicità, morbidezza, non contesa.",
+        "shortDescription": "Insegnò che la forza spesso fallisce dove la morbidezza ha successo, e che la saggezza segue il corso delle cose invece di combatterlo.",
+        "bestFor": "Controllo, pensiero eccessivo, conflitto, ambizione, semplicità e pazienza.",
+        "starterPrompts": [
+          "Dove sto forzando qualcosa che dovrebbe essere lasciato sviluppare: [descrivi la situazione]",
+          "Insegnami come agire senza controllare eccessivamente.",
+          "Come può la morbidezza essere più forte dell'aggressività?",
+          "Aiutami a semplificare una decisione."
+        ],
+        "voicePreview": "Il fiume non litiga con le pietre, eppure raggiunge il mare."
+      },
+      "DIOGENES": {
+        "expertise": "Semplicità, onestà spudorata, convenzione, libertà, ipocrisia.",
+        "shortDescription": "Rifiutò status, comfort e bugie educate con disprezzo teatrale. Usò la provocazione per esporre quanto della società sia vanità.",
+        "bestFor": "Ansia da status, performance sociale, ipocrisia, consumismo e verità schietta.",
+        "starterPrompts": [
+          "Prendi in giro il gioco di status falso in cui sono intrappolato.",
+          "Quale convenzione sto seguendo senza alcun buon motivo?",
+          "Dimmi cosa sto fingendo di non sapere.",
+          "Come posso aver bisogno di meno senza farne un marchio di stile di vita?"
+        ],
+        "voicePreview": "Hai decorato la tua gabbia e ora mi chiedi se le tende sono di buon gusto."
+      },
+      "SUN_TZU": {
+        "expertise": "Strategia, conflitto, inganno, tempismo, terreno, leva.",
+        "shortDescription": "Trasformò il conflitto in una disciplina di percezione, tempismo e vantaggio. Preferì vincere prima che la battaglia iniziasse.",
+        "bestFor": "Conflitto, negoziazione, competizione, posizionamento e contenimento strategico.",
+        "starterPrompts": [
+          "Analizza questo conflitto in modo strategico: [descrivi il conflitto]",
+          "Dove si trova il mio vantaggio e dove sono esposto: [descrivi la situazione]",
+          "Come posso vincere senza confronto diretto?",
+          "Quale terreno le persone tendono a ignorare in un conflitto?"
+        ],
+        "voicePreview": "Non iniziare con il coraggio. Inizia con il terreno, il tempismo e ciò che l'altra parte non può vedere."
+      },
+      "VOLTAIRE": {
+        "expertise": "Ragione, tolleranza, satira, autorità religiosa, libertà civile.",
+        "shortDescription": "Ha combattuto superstizione, crudeltà e pigrizia intellettuale con un'intelligenza abbastanza acuta da mettere in ansia il potere.",
+        "bestFor": "Dogma, libertà di parola, ipocrisia, tolleranza e chiarezza scettica.",
+        "starterPrompts": [
+          "Rendimi meno vulnerabile al dogma.",
+          "Come dovrei difendere la tolleranza senza diventare ingenuo?",
+          "Satirizza il ragionamento errato nel mio argomento: [scrivi l'argomento]",
+          "Quale autorità sto fidando troppo facilmente?"
+        ],
+        "voicePreview": "Un cattivo argomento non migliora indossando una veste sacerdotale."
+      },
+      "WITTGENSTEIN": {
+        "expertise": "Lingua, significato, logica, forme di vita, confusione concettuale.",
+        "shortDescription": "Ha cambiato la filosofia due volte mostrando come molti problemi profondi siano nodi nel linguaggio, nell'uso e nell'attenzione.",
+        "bestFor": "Confusione concettuale, trappole linguistiche, significato, logica e chiarezza.",
+        "starterPrompts": [
+          "Mostrami come il linguaggio sta confondendo questo problema: [descrivi il problema]",
+          "Cosa intendo quando uso questa parola: [scrivi la parola]",
+          "Aiutami a sciogliere un enigma filosofico.",
+          "Dove è andato in vacanza il mio pensiero?"
+        ],
+        "voicePreview": "Non chiedere il significato nell'aria. Guarda come viene usata la parola."
+      },
+      "BERTRAND_RUSSELL": {
+        "expertise": "Logica, chiarezza, scetticismo, conoscenza, etica, ragione pubblica.",
+        "shortDescription": "Ha portato precisione matematica nella filosofia e coraggio pubblico nella politica. Odio la confusione quasi quanto la crudeltà.",
+        "bestFor": "Ragionamento chiaro, scetticismo, conoscenza, struttura dell'argomento e etica pubblica.",
+        "starterPrompts": [
+          "Rendi il mio argomento più chiaro e meno confuso: [scrivi l'argomento]",
+          "Cosa so realmente qui: [descrivi l'affermazione o la situazione]",
+          "Aiutami a separare le prove dalle emozioni.",
+          "Dove il mio ragionamento è troppo vago?"
+        ],
+        "voicePreview": "La chiarezza non è una decorazione del pensiero; è uno dei suoi doveri morali."
+      },
+      "BEAUVOIR": {
+        "expertise": "Libertà, genere, ambiguità, oppressione, responsabilità.",
+        "shortDescription": "Ha esposto come le donne siano fatte diventare l'Altro e ha sostenuto che la libertà deve essere vissuta sotto reali vincoli sociali.",
+        "bestFor": "Identità, genere, libertà, oppressione, relazioni e ambiguità morale.",
+        "starterPrompts": [
+          "Dove vengo fatto diventare l'Altro?",
+          "Come posso agire liberamente sotto vincoli sociali?",
+          "Aiutami a riflettere sulla responsabilità in questa relazione: [descrivi la relazione]",
+          "Cosa richiede l'ambiguità da me qui: [descrivi la situazione]"
+        ],
+        "voicePreview": "La libertà non è una fantasia privata; è messa alla prova nella situazione che le resiste."
+      },
+      "HANNAH_ARENDT": {
+        "expertise": "Potere, azione, pluralità, totalitarismo, giudizio, vita pubblica.",
+        "shortDescription": "Ha studiato come il male politico diventi ordinario e come l'azione pubblica mantenga viva la libertà umana.",
+        "bestFor": "Politica, responsabilità, conformismo, istituzioni, giudizio e coraggio pubblico.",
+        "starterPrompts": [
+          "Come diventa pericoloso il conformismo ordinario?",
+          "Cosa richiederebbe qui la responsabilità politica: [descrivi la situazione]",
+          "Aiutami a giudicare senza nascondermi nell'ideologia.",
+          "Qual è la differenza tra potere e violenza?"
+        ],
+        "voicePreview": "La domanda non è solo cosa pensi privatamente, ma quale mondo la tua azione aiuta a rivelare."
+      },
+      "FOUCAULT": {
+        "expertise": "Potere, conoscenza, disciplina, istituzioni, norme, soggettività.",
+        "shortDescription": "Ha mostrato come il potere funzioni attraverso la conoscenza, le categorie, le istituzioni e le abitudini ordinarie che insegnano alle persone a governarsi.",
+        "bestFor": "Istituzioni, sorveglianza, identità, norme, medicina, punizione e potere nascosto.",
+        "starterPrompts": [
+          "Quale struttura di potere è nascosta in questa situazione: [descrivi la situazione]",
+          "Come le norme addestrano le persone a trattarle come naturali?",
+          "Analizza le istituzioni senza fidarti del loro linguaggio ufficiale.",
+          "Che tipo di soggetto il potere moderno addestra le persone a diventare?"
+        ],
+        "voicePreview": "Chiedi prima chi è autorizzato a nominare la verità e cosa quella verità rende possibile."
+      },
+      "SIMONE_WEIL": {
+        "expertise": "Attenzione, afflizione, obbligo, grazia, giustizia, radicamento.",
+        "shortDescription": "Ha unito l'urgenza politica all'attenzione mistica, insistendo che la vera giustizia inizia guardando alla sofferenza senza distogliere lo sguardo.",
+        "bestFor": "Sofferenza, attenzione, dovere, giustizia, serietà spirituale e compassione.",
+        "starterPrompts": [
+          "Insegnami come prestare vera attenzione alla sofferenza.",
+          "Quale obbligo sto evitando?",
+          "Come dovrei pensare alla giustizia senza vanità?",
+          "Aiutami a distinguere la compassione dalla sentimentalità."
+        ],
+        "voicePreview": "L'attenzione è la generosità più rara perché rifiuta di rendere utile la sofferenza all'ego."
+      },
+      "AYN_RAND": {
+        "expertise": "Ragione, individualismo, interesse personale, capitalismo, ambizione morale.",
+        "shortDescription": "Ha difeso l'interesse razionale e il successo individuale contro il collettivismo, il senso di colpa e la vita di seconda mano.",
+        "bestFor": "Ambizione, indipendenza, senso di colpa, produttività, capitalismo e rispetto di sé.",
+        "starterPrompts": [
+          "Mi sto sacrificando per l'approvazione: [descrivi la situazione]",
+          "Difendi l'ambizione senza scuse.",
+          "Dove sto vivendo di seconda mano?",
+          "Cosa richiederebbe qui l'interesse razionale: [descrivi la situazione]"
+        ],
+        "voicePreview": "Non chiamarlo virtù quando cedi la tua mente al bisogno di qualcun altro."
+      },
+      "NUSSBAUM": {
+        "expertise": "Capacità, emozione, giustizia, vulnerabilità, fioritura umana.",
+        "shortDescription": "Rivisitazione dell'etica delle virtù antiche per la giustizia moderna, sostenendo che una società decente deve proteggere le reali capacità umane.",
+        "bestFor": "Giustizia, emozioni, dignità, vulnerabilità, educazione e fioritura.",
+        "starterPrompts": [
+          "Quale capacità umana viene negata qui: [descrivi la situazione]",
+          "Aiutami a prendere sul serio le emozioni senza esserne dominato.",
+          "Come dovrebbe la giustizia tenere conto della vulnerabilità?",
+          "Cosa richiede la fioritura oltre al reddito o al successo?"
+        ],
+        "voicePreview": "Una società non è giusta se loda la dignità mentre lascia le persone senza i poteri per viverla."
+      },
+      "KAUTILYA": {
+        "expertise": "Arte di governo, governance, spionaggio, incentivi, sicurezza, prudenza.",
+        "shortDescription": "Il brillante stratega e insegnante di Chandragupta Maurya (Sandrocottus) che ha forgiato uno dei più grandi imperi della storia attraverso spionaggio, diplomazia, economia e un intransigente realismo politico.",
+        "bestFor": "Leadership, strategia, negoziazione, istituzioni, rischio e realismo politico.",
+        "starterPrompts": [
+          "Analizza questo come un problema di arte di governo: [descrivi la situazione]",
+          "Quale incentivo cambierebbe effettivamente il comportamento qui: [descrivi il comportamento]",
+          "Dove ha bisogno un leader di intelligenza prima dell'azione?",
+          "Come dovrebbe un leader bilanciare prosperità e sicurezza?"
+        ],
+        "voicePreview": "Buona intenzione senza informazioni non è politica; è esposizione."
+      }
+    },
+    "chatFontSizes": {
+      "SMALL": {
+        "label": "Piccolo"
+      },
+      "MEDIUM": {
+        "label": "Medio"
+      },
+      "LARGE": {
+        "label": "Grande"
+      }
+    }
   }
 }

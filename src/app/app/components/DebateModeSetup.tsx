@@ -19,9 +19,12 @@ import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon
 import { useAppRoute } from "./app-route-context";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
 import {
-  DEBATE_DURATION_OPTIONS,
+  getLocalizedDebateDurationMeta,
+  getLocalizedDebateDurationOptions,
+  getLocalizedDebateToneOptions,
+} from "@/src/i18n/app-config";
+import {
   DEBATE_TOPIC_MAX_CHARS,
-  DEBATE_TONE_OPTIONS,
   type DebateDurationPreset,
   type DebateTone,
 } from "src/lib/debate";
@@ -38,7 +41,9 @@ interface Props {
 
 export default function DebateModeSetup({ canAccessDebate = false }: Props) {
   const router = useRouter();
-  const { sessionHref, copy } = useAppRoute();
+  const { sessionHref, copy, locale } = useAppRoute();
+  const debateToneOptions = getLocalizedDebateToneOptions(copy);
+  const debateDurationOptions = getLocalizedDebateDurationOptions(copy);
   const [step, setStep] = useState<Step>("tone");
   const [tone, setTone] = useState<DebateTone>("RUTHLESS_BLUNT");
   const [durationPreset, setDurationPreset] =
@@ -154,7 +159,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       const response = await fetch("/api/v1/chat/debates/topic/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: trimmedTopic }),
+        body: JSON.stringify({ topic: trimmedTopic, locale }),
       });
       const payload = (await response.json()) as {
         isValid: boolean;
@@ -197,7 +202,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       const response = await fetch("/api/v1/chat/debates/topic/suggest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tone, durationPreset }),
+        body: JSON.stringify({ tone, durationPreset, locale }),
       });
       const payload = (await response.json()) as { topics?: string[] };
 
@@ -232,6 +237,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
           topicSource,
           userSide: userSideLabel,
           aiSide,
+          locale,
         }),
       });
 
@@ -332,7 +338,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               </p>
 
               <div className="mt-4 space-y-2">
-                {DEBATE_TONE_OPTIONS.map((option) => (
+                {debateToneOptions.map((option) => (
                   <button
                     key={option.value}
                     type="button"
@@ -406,7 +412,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                {DEBATE_DURATION_OPTIONS.map((option) => (
+                {debateDurationOptions.map((option) => (
                   <button
                     key={option.value}
                     type="button"
@@ -654,7 +660,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   </p>
                   <p className={cn("mt-1.5 text-[13px]", surfaceTitleClass)}>
                     {
-                      DEBATE_TONE_OPTIONS.find(
+                      debateToneOptions.find(
                         (option) => option.value === tone,
                       )?.label
                     }
@@ -671,9 +677,8 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   </p>
                   <p className={cn("mt-1.5 text-[13px]", surfaceTitleClass)}>
                     {
-                      DEBATE_DURATION_OPTIONS.find(
-                        (option) => option.value === durationPreset,
-                      )?.label
+                      getLocalizedDebateDurationMeta(durationPreset, copy)
+                        ?.label
                     }
                   </p>
                 </div>

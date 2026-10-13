@@ -12,10 +12,13 @@ import {
 } from "lucide-react";
 import {
   formatDebateCountdown,
-  getDebateDurationMeta,
-  getDebateToneMeta,
 } from "src/lib/debate";
+import {
+  getLocalizedDebateDurationMeta,
+  getLocalizedDebateToneMeta,
+} from "@/src/i18n/app-config";
 import type { ChatSessionMeta } from "src/types/chat";
+import { useAppRoute } from "./app-route-context";
 
 interface Props {
   sessionMeta: ChatSessionMeta;
@@ -23,6 +26,7 @@ interface Props {
 }
 
 export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) {
+  const { copy } = useAppRoute();
   const debate = sessionMeta.debate;
   const [showSummary, setShowSummary] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
@@ -30,9 +34,9 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
   const finalizeRequestedRef = useRef(false);
 
   const durationMeta = debate
-    ? getDebateDurationMeta(debate.durationPreset)
+    ? getLocalizedDebateDurationMeta(debate.durationPreset, copy)
     : null;
-  const toneMeta = debate ? getDebateToneMeta(debate.tone) : null;
+  const toneMeta = debate ? getLocalizedDebateToneMeta(debate.tone, copy) : null;
   const remainingSeconds = (() => {
     if (
       !debate?.hasTimer ||
@@ -55,14 +59,14 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
     }
 
     if (debate.winner === "USER") {
-      return "You";
+      return copy.debate.yourSide;
     }
 
     if (debate.winner === "ASSISTANT") {
       return "Socratic AI";
     }
 
-    return "Draw";
+    return copy.debate.draw;
   })();
 
   useEffect(() => {
@@ -152,7 +156,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
           <div className="max-w-[720px]">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#d0c6b2] bg-white/70 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-[#756a52]">
               <Swords size={12} />
-              Debate
+              {copy.nav.debateModeLabel}
             </div>
             <h2 className="mt-4 text-[28px] leading-[1.04] tracking-[-0.05em] text-[#17120b] [font-family:Georgia,serif] md:text-[40px]">
               {debate.topic}
@@ -165,10 +169,10 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
                 {durationMeta?.label}
               </span>
               <span className="rounded-full border border-[#d9d2c4] bg-white/80 px-3 py-1.5">
-                You: {debate.userSide}
+                {copy.debate.yourSide}: {debate.userSide}
               </span>
               <span className="rounded-full border border-[#d9d2c4] bg-white/80 px-3 py-1.5">
-                AI: {debate.aiSide}
+                {copy.debate.aiSide}: {debate.aiSide}
               </span>
             </div>
           </div>
@@ -177,7 +181,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
             <div className="min-w-[168px] rounded-[24px] border border-[#cabd9f] bg-[#17120b] px-4 py-3 text-white shadow-[0_16px_30px_rgba(23,18,11,0.22)]">
               <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-white/56">
                 <Clock3 size={12} />
-                Timer
+                {copy.debate.timing}
               </div>
               <p className="mt-2 text-[30px] leading-none tracking-[-0.05em] [font-family:Georgia,serif]">
                 {remainingSeconds === null
@@ -186,22 +190,22 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
               </p>
               <p className="mt-2 text-[11px] leading-5 text-white/68">
                 {debate.status === "COMPLETED"
-                  ? "Debate finished."
+                  ? copy.debate.closedStatus
                   : isFinalizing
-                    ? "Finalizing verdict..."
-                    : "When the clock ends, the debate closes permanently."}
+                    ? copy.debate.pending
+                    : copy.debate.readyCopy.split("\n")[0]}
               </p>
             </div>
           ) : (
             <div className="min-w-[168px] rounded-[24px] border border-[#d9d2c4] bg-white/70 px-4 py-3 text-left">
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
-                Format
+                {copy.debate.timing}
               </p>
               <p className="mt-2 text-[24px] leading-none tracking-[-0.05em] text-[#17120b] [font-family:Georgia,serif]">
-                Untimed
+                {durationMeta?.label}
               </p>
               <p className="mt-2 text-[11px] leading-5 text-slate-600">
-                Long-form debate without a countdown.
+                {durationMeta?.description}
               </p>
             </div>
           )}
@@ -213,7 +217,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-[#17120b] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
                   <Crown size={12} />
-                  Winner: {winnerLabel}
+                  {copy.debate.winnerLabel}: {winnerLabel}
                 </div>
                 <p className="mt-3 max-w-[760px] text-[13px] leading-6 text-slate-700">
                   {debate.verdictSummary}
@@ -226,7 +230,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
                 className="inline-flex items-center gap-2 rounded-full border border-[#d9d2c4] bg-white px-3.5 py-2 text-[11px] text-slate-700 transition hover:border-[#b6ac98] hover:text-slate-950"
               >
                 <ScrollText size={13} />
-                Post-Match Report
+                {copy.debate.postMatchReport}
                 {showSummary ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
               </button>
             </div>
@@ -251,8 +255,7 @@ export default function DebateSessionBanner({ sessionMeta, onFinalize }: Props) 
 
         {debate.status !== "COMPLETED" && (
           <p className="text-[12px] leading-6 text-slate-600">
-            Keep your replies tight and thesis-driven. When the debate ends, the
-            transcript stays, but the session closes.
+            {copy.debate.readyCopy.split("\n")[0]}
           </p>
         )}
       </div>

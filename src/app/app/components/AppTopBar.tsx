@@ -26,7 +26,8 @@ import {
 import { cn } from "@/src/lib/utils";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
-import { formatDebateCountdown, getDebateDurationMeta } from "src/lib/debate";
+import { getLocalizedDebateDurationMeta } from "@/src/i18n/app-config";
+import { formatDebateCountdown } from "src/lib/debate";
 import { ROUTES } from "src/lib/routes";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import AppUserButton from "./AppUserButton";
@@ -103,7 +104,7 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const isDialogBusy = pendingAction !== null;
   const activeDebate = activeSession?.debate ?? null;
   const debateDurationMeta = activeDebate
-    ? getDebateDurationMeta(activeDebate.durationPreset)
+    ? getLocalizedDebateDurationMeta(activeDebate.durationPreset, copy)
     : null;
   const remainingSeconds =
     activeDebate?.hasTimer &&
