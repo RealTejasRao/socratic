@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "Socratic AI Blogs | Philosophy, AI & Critical Thinking",
+    "description": "Read the Socratic AI blog for essays on philosophy, strategy, and rigorous thinking.",
+    "ogAlt": "Socratic AI blog essays on philosophy, AI, and critical thinking"
+  },
+  "hero": {
+    "brand": "Socratic AI",
+    "title": "Blogs",
+    "description": "Ideas on philosophy, critical thinking, AI, learning, the future of human intelligence, and us!",
+    "imageAlt": "Socratic AI blog hero illustration about philosophy and deep thinking"
+  },
+  "listing": {
+    "heading": "Blog",
+    "description": "Ideas on philosophy, critical thinking, AI, learning, the future of human intelligence, and us!",
+    "sortBy": "Sort by:",
+    "readTime": "{minutes} min read"
+  },
+  "categories": [
+    {
+      "id": "all",
+      "sourceLabel": "All",
+      "label": "All"
+    },
+    {
+      "id": "philosophy",
+      "sourceLabel": "Philosophy",
+      "label": "Philosophy"
+    },
+    {
+      "id": "ai-learning",
+      "sourceLabel": "AI & Learning",
+      "label": "AI & Learning"
+    },
+    {
+      "id": "essays",
+      "sourceLabel": "Essays",
+      "label": "Essays"
+    },
+    {
+      "id": "about",
+      "sourceLabel": "About",
+      "label": "About"
+    }
+  ],
+  "sortOptions": {
+    "newest": "Newest",
+    "oldest": "Oldest"
+  },
+  "post": {
+    "backToBlogs": "Back to Blogs",
+    "ctaTitle": "Socratic AI",
+    "ctaBody": "Socratic AI is built on the greatest philosophical texts ever written. The thinking partner you never had, available even at 2 AM when the questions won't stop. Ask anything. Debate everything.",
+    "ctaButton": "Try Socratic AI Now"
+  }
+}

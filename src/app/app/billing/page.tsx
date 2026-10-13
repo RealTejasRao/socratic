@@ -1,5 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { getAppCopy } from "@/src/i18n/app";
+import { LOCALE_COOKIE_NAME, normalizeLocale } from "@/src/i18n/locales";
 import { ROUTES } from "src/lib/routes";
 import { getUserBillingStateByClerkId, resolveUserTierLabel } from "src/server/billing/access";
 import { SOCRATIC_PLUS_NAME } from "src/lib/billing";
@@ -19,24 +22,27 @@ export default async function BillingPage() {
   }
 
   const tierLabel = resolveUserTierLabel(billing.planTier);
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value);
+  const copy = getAppCopy(locale);
 
   return (
     <div className="mx-auto w-full max-w-160 px-4 py-8 md:px-8">
       <div className="rounded-3xl border border-[#d5cbb8] bg-[#f6f0e3] px-5 py-5 shadow-[0_16px_44px_rgba(29,23,16,0.12)]">
         <p className="text-[11px] uppercase tracking-[0.16em] text-[#7d6f5a]">
-          Billing
+          {copy.billing.eyebrow}
         </p>
         <h1 className="mt-3 text-[34px] leading-[1.04] tracking-[-0.04em] text-[#1f1a14] font-[Georgia,serif]">
-          Account & Subscription
+          {copy.billing.title}
         </h1>
         <p className="mt-2 text-[14px] leading-7 text-[#6f6250]">
-          Manage your {SOCRATIC_PLUS_NAME} subscription, renewal, and billing details.
+          {copy.billing.description.replace("{product}", SOCRATIC_PLUS_NAME)}
         </p>
 
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           <div className="rounded-2xl border border-[#d6c9b4] bg-[#f9f4e9] px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.14em] text-[#7e725e]">
-              Current Plan
+              {copy.billing.currentPlan}
             </p>
             <p className="mt-1.5 text-[20px] text-[#211b14] font-[Georgia,serif]">
               {tierLabel}
@@ -44,7 +50,7 @@ export default async function BillingPage() {
           </div>
           <div className="rounded-2xl border border-[#d6c9b4] bg-[#f9f4e9] px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.14em] text-[#7e725e]">
-              Subscription Status
+              {copy.billing.subscriptionStatus}
             </p>
             <p className="mt-1.5 text-[20px] text-[#211b14] font-[Georgia,serif]">
               {billing.planStatus}
@@ -52,20 +58,22 @@ export default async function BillingPage() {
           </div>
           <div className="rounded-2xl border border-[#d6c9b4] bg-[#f9f4e9] px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.14em] text-[#7e725e]">
-              Renews / Expires
+              {copy.billing.renewsExpires}
             </p>
             <p className="mt-1.5 text-[16px] text-[#211b14]">
               {billing.subscriptionCurrentPeriodEnd
                 ? billing.subscriptionCurrentPeriodEnd.toLocaleDateString()
-                : "N/A"}
+                : copy.billing.notAvailable}
             </p>
           </div>
           <div className="rounded-2xl border border-[#d6c9b4] bg-[#f9f4e9] px-4 py-3">
             <p className="text-[11px] uppercase tracking-[0.14em] text-[#7e725e]">
-              Cancel At Period End
+              {copy.billing.cancelAtPeriodEnd}
             </p>
             <p className="mt-1.5 text-[16px] text-[#211b14]">
-              {billing.subscriptionCancelAtPeriodEnd ? "Yes" : "No"}
+              {billing.subscriptionCancelAtPeriodEnd
+                ? copy.billing.yes
+                : copy.billing.no}
             </p>
           </div>
         </div>
@@ -76,7 +84,7 @@ export default async function BillingPage() {
             href={ROUTES.PRICING}
             className="inline-flex items-center rounded-full border border-[#cabda8] bg-[#efe5d2] px-4 py-2 text-[13px] text-[#504334] transition hover:bg-[#e8dcc7]"
           >
-            View pricing
+            {copy.billing.viewPricing}
           </a>
         </div>
 

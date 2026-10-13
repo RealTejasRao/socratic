@@ -5,7 +5,6 @@ import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { CookiePreferencesLink } from "@/src/components/cookie-consent/cookie-preferences-link";
 import { ROUTES } from "@/src/lib/routes";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
-import type { UpscHomeCopy } from "@/src/lib/upsc-home-locale";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
 type FooterProps = {
@@ -16,7 +15,33 @@ type FooterProps = {
   ctaSignedInHref?: Route;
   ctaSignedOutHref?: Route;
   appHref?: Route;
-  copy?: Partial<UpscHomeCopy["footer"]>;
+  pricingHref?: Route;
+  billingHref?: Route;
+  blogHref?: Route;
+  copy?: Partial<FooterCopy>;
+};
+
+type FooterCopy = {
+  descriptionLines: readonly string[];
+  cta: string;
+  explore: string;
+  account: string;
+  preferences: string;
+  home: string;
+  features: string;
+  blog: string;
+  contact: string;
+  pricing: string;
+  goToApp: string;
+  getSocraticPlus: string;
+  signUp: string;
+  signIn: string;
+  manageSubscription: string;
+  privacyPolicy: string;
+  terms: string;
+  cookiePolicy: string;
+  consentPreferences: string;
+  allRightsReserved: string;
 };
 
 export async function Footer({
@@ -30,6 +55,9 @@ export async function Footer({
   ctaSignedInHref = ROUTES.APP_ROLEPLAY,
   ctaSignedOutHref = ROUTES.SIGN_UP,
   appHref = ROUTES.APP_ROLEPLAY,
+  pricingHref = ROUTES.PRICING,
+  billingHref = ROUTES.APP_BILLING,
+  blogHref = ROUTES.BLOG,
   copy,
 }: FooterProps) {
   const { userId: clerkUserId } = await auth();
@@ -41,6 +69,8 @@ export async function Footer({
   const withPrefix = (hash: string) =>
     sectionPrefix ? `${sectionPrefix}${hash}` : hash;
   const footerCopy = {
+    descriptionLines,
+    cta: ctaLabel,
     explore: "Explore",
     account: "Account",
     preferences: "Preferences",
@@ -51,35 +81,39 @@ export async function Footer({
     pricing: "Pricing",
     goToApp: "Go to App",
     getSocraticPlus: "Get Socratic +",
+    signUp: "Sign Up",
+    signIn: "Sign In",
+    manageSubscription: "Manage Subscription",
     privacyPolicy: "Privacy Policy",
     terms: "Terms & Conditions",
     cookiePolicy: "Cookie Policy",
     consentPreferences: "Consent Preferences",
+    allRightsReserved: "All rights reserved.",
     ...copy,
   };
   const siteMapLinks = [
     { label: footerCopy.home, href: withPrefix("#home") },
     { label: footerCopy.features, href: withPrefix("#features") },
-    { label: footerCopy.blog, href: ROUTES.BLOG },
+    { label: footerCopy.blog, href: blogHref },
     { label: footerCopy.contact, href: withPrefix("#contact") },
   ];
   const accountLinks = !isSignedIn
     ? [
-        { label: "Sign Up", href: ROUTES.SIGN_UP, className: "text-white/76 hover:text-white" },
-        { label: "Sign In", href: ROUTES.SIGN_IN, className: "text-white/76 hover:text-white" },
-        { label: footerCopy.pricing, href: ROUTES.PRICING, className: "text-white/76 hover:text-white" },
+        { label: footerCopy.signUp, href: ROUTES.SIGN_UP, className: "text-white/76 hover:text-white" },
+        { label: footerCopy.signIn, href: ROUTES.SIGN_IN, className: "text-white/76 hover:text-white" },
+        { label: footerCopy.pricing, href: pricingHref, className: "text-white/76 hover:text-white" },
       ]
     : isPremium
       ? [
           { label: footerCopy.goToApp, href: appHref, className: "text-white/76 hover:text-white" },
           {
             label: "Socratic +",
-            href: ROUTES.APP_BILLING,
+            href: billingHref,
             className: "text-[#d4a63d] hover:text-[#f3d27f]",
           },
           {
-            label: "Manage Subscription",
-            href: ROUTES.APP_BILLING,
+            label: footerCopy.manageSubscription,
+            href: billingHref,
             className: "text-white/76 hover:text-white",
           },
         ]
@@ -87,7 +121,7 @@ export async function Footer({
           { label: footerCopy.goToApp, href: appHref, className: "text-white/76 hover:text-white" },
           {
             label: footerCopy.getSocraticPlus,
-            href: ROUTES.PRICING,
+            href: pricingHref,
             className: "text-[#d4a63d] hover:text-[#f3d27f]",
           },
         ];
@@ -145,7 +179,7 @@ export async function Footer({
               <p
                 className={`${interClassName} mt-4 max-w-118 text-[0.9rem] leading-relaxed text-white/78 sm:text-[0.95rem]`}
               >
-                {descriptionLines.map((line, index) => (
+                {footerCopy.descriptionLines.map((line, index) => (
                   <span key={line}>
                     {index > 0 ? <br /> : null}
                     {line}
@@ -182,7 +216,7 @@ export async function Footer({
                 pendingIndicator="roseCurve"
                 className={`${interClassName} mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] border border-[#a01717] bg-[#a01717] px-7 text-[0.86rem] font-semibold tracking-[0.04em] text-white uppercase transition-colors duration-200 hover:bg-[#871313]`}
               >
-                {ctaLabel}
+                {footerCopy.cta}
               </AuthAwareCtaLink>
             </div>
 
@@ -274,7 +308,7 @@ export async function Footer({
             <p
               className={`${interClassName} text-center text-[0.74rem] text-white/56`}
             >
-              © 2026 Socratic AI. All rights reserved.
+              © 2026 Socratic AI. {footerCopy.allRightsReserved}
             </p>
             <p
               className={`${interClassName} mt-1.5 text-center text-[0.73rem] text-white/42`}

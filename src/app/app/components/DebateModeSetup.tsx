@@ -38,7 +38,7 @@ interface Props {
 
 export default function DebateModeSetup({ canAccessDebate = false }: Props) {
   const router = useRouter();
-  const { sessionHref } = useAppRoute();
+  const { sessionHref, copy } = useAppRoute();
   const [step, setStep] = useState<Step>("tone");
   const [tone, setTone] = useState<DebateTone>("RUTHLESS_BLUNT");
   const [durationPreset, setDurationPreset] =
@@ -57,11 +57,14 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
 
   const topic = selectedTopic || topicInput.trim();
   const aiSide =
-    userSide === "AFFIRM" ? "Reject the thesis" : "Affirm the thesis";
+    userSide === "AFFIRM" ? copy.debate.aiReject : copy.debate.aiAffirm;
   const userSideLabel =
-    userSide === "AFFIRM" ? "Affirm the thesis" : "Reject the thesis";
+    userSide === "AFFIRM" ? copy.debate.affirmTitle : copy.debate.rejectTitle;
   const currentStepIndex = stepOrder.indexOf(step);
-  const stepLabel = `Step ${currentStepIndex + 1}`;
+  const stepLabel = copy.debate.step.replace(
+    "{number}",
+    String(currentStepIndex + 1),
+  );
 
   const stepTextClass = "app-debate-step-label text-[11px] uppercase tracking-[0.18em]";
   const cardClass =
@@ -140,7 +143,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
     const trimmedTopic = topicInput.trim();
 
     if (!trimmedTopic) {
-      setError("Enter a philosophy topic or generate one.");
+      setError(copy.debate.enterTopicError);
       return;
     }
 
@@ -166,8 +169,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
         );
 
         setError(
-          payload.reason ||
-            "That topic does not fit debate mode yet. Reframe it philosophically.",
+          payload.reason || copy.debate.invalidTopicFallback,
         );
         setTopicSuggestions(suggestions);
         setPendingSuggestedTopic("");
@@ -181,7 +183,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       setShowTopicSuggestionsDialog(false);
       goToNextStep("side");
     } catch {
-      setError("Topic validation failed. Try again.");
+      setError(copy.debate.validationFailed);
     } finally {
       setIsBusy(false);
     }
@@ -204,7 +206,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       setShowTopicSuggestionsDialog((payload.topics?.length ?? 0) > 0);
       setTopicSource("AI_GENERATED");
     } catch {
-      setError("Topic generation failed. Try again.");
+      setError(copy.debate.generationFailed);
     } finally {
       setIsBusy(false);
     }
@@ -212,7 +214,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
 
   async function handleStartDebate() {
     if (!topic) {
-      setError("Choose a topic before starting.");
+      setError(copy.debate.chooseTopicBeforeStart);
       return;
     }
 
@@ -237,7 +239,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
         const payload = (await response.json().catch(() => null)) as {
           reason?: string;
         } | null;
-        setError(payload?.reason || "Could not start the debate.");
+        setError(payload?.reason || copy.debate.startFailed);
         setIsBusy(false);
         return;
       }
@@ -247,7 +249,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       router.refresh();
       return;
     } catch {
-      setError("Could not start the debate.");
+      setError(copy.debate.startFailed);
       setIsBusy(false);
     }
   }
@@ -257,20 +259,19 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
       <div className="app-card app-upgrade-modal mx-auto w-full max-w-135 rounded-2xl border border-[#d9cec0] bg-[#fbf6ed] px-6 py-6 shadow-[0_22px_70px_rgba(33,24,12,0.16)]">
         <h2 className="app-upgrade-title inline-flex items-center gap-2 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif]">
           <span>
-            Go Unlimited with{" "}
+            {copy.upgrade.goUnlimitedTitle}{" "}
             <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
           </span>
           <PremiumCrownIcon className="text-[36px]" />
         </h2>
         <p className="app-upgrade-copy mt-2 text-[13px] leading-6 text-[#746758]">
-          Free accounts keep full core chat access. Upgrade to Socratic+ for
-          timed debates, ruthless sparring, and detailed post-debate feedback.
+          {copy.upgrade.goUnlimitedCopy}
         </p>
         <a
           href={ROUTES.PRICING}
           className="app-upgrade-primary mt-5 inline-flex items-center gap-1.5 rounded-[14px] border border-[#e7c98f] bg-[#f4ddb1] px-4 py-2 text-[13px] text-[#302111] transition hover:bg-[#ebd1a3]"
         >
-          View Pricing
+          {copy.upgrade.viewPricing}
           <ArrowUpRight size={13} />
         </a>
       </div>
@@ -319,7 +320,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   headingClass,
                 )}
               >
-                Choose your opponent&apos;s tone.
+                {copy.debate.chooseToneTitle}
               </h2>
               <p
                 className={cn(
@@ -327,8 +328,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   mutedClass,
                 )}
               >
-                Choose how Socratic AI should sound while challenging your
-                argument.
+                {copy.debate.chooseToneCopy}
               </p>
 
               <div className="mt-4 space-y-2">
@@ -375,7 +375,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                     "group relative inline-flex h-5 w-5 items-center justify-center rounded-full border transition",
                     infoButtonClass,
                   )}
-                  aria-label="Explain timing options"
+                  aria-label={copy.debate.timingInfoLabel}
                 >
                   <Info size={11} />
                   <div
@@ -384,8 +384,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                       infoPopoverClass,
                     )}
                   >
-                    Short formats are faster and sharper. Longer formats go
-                    deeper and become more layered.
+                    {copy.debate.timingInfo}
                   </div>
                 </button>
               </div>
@@ -395,7 +394,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   headingClass,
                 )}
               >
-                Choose the clock.
+                {copy.debate.chooseClockTitle}
               </h2>
               <p
                 className={cn(
@@ -403,7 +402,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   mutedClass,
                 )}
               >
-                Duration changes both the timer and the style of the debate.
+                {copy.debate.chooseClockCopy}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
@@ -447,7 +446,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   headingClass,
                 )}
               >
-                Set the topic.
+                {copy.debate.topicTitle}
               </h2>
               <p
                 className={cn(
@@ -455,7 +454,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   mutedClass,
                 )}
               >
-                Enter your own philosophy thesis or generate one.
+                {copy.debate.topicCopy}
               </p>
 
               <div className="mt-4">
@@ -465,7 +464,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                     labelClass,
                   )}
                 >
-                  Debate topic
+                  {copy.debate.topicLabel}
                 </label>
                 <textarea
                   value={topicInput}
@@ -476,7 +475,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   }}
                   maxLength={DEBATE_TOPIC_MAX_CHARS}
                   rows={4}
-                  placeholder="Example: Moral progress is mostly a myth societies tell themselves."
+                  placeholder={copy.debate.topicPlaceholder}
                   className={cn(
                     "mt-2 block w-full resize-none rounded-xl border px-3.5 py-2.5 text-[13px] leading-6 outline-none transition",
                     fieldClass,
@@ -507,7 +506,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   ) : (
                     <ArrowRight size={13} />
                   )}
-                  Use this topic
+                  {copy.debate.useTopic}
                 </button>
                 <button
                   type="button"
@@ -519,7 +518,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   )}
                 >
                   <Sparkles size={13} />
-                  Generate topics
+                  {copy.debate.generateTopics}
                 </button>
               </div>
             </div>
@@ -533,7 +532,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   headingClass,
                 )}
               >
-                Choose your side.
+                {copy.debate.sideTitle}
               </h2>
               <p
                 className={cn(
@@ -541,7 +540,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   mutedClass,
                 )}
               >
-                Pick whether you defend the thesis or attack it.
+                {copy.debate.sideCopy}
               </p>
 
               <div
@@ -556,7 +555,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                     labelClass,
                   )}
                 >
-                  Confirmed topic
+                  {copy.debate.confirmedTopic}
                 </p>
                 <p
                   className={cn(
@@ -572,13 +571,13 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                 {[
                   {
                     value: "AFFIRM" as const,
-                    title: "Affirm the thesis",
-                    body: "You defend the claim. Socratic AI attacks it.",
+                    title: copy.debate.affirmTitle,
+                    body: copy.debate.affirmBody,
                   },
                   {
                     value: "REJECT" as const,
-                    title: "Reject the thesis",
-                    body: "You attack the claim. Socratic AI defends it.",
+                    title: copy.debate.rejectTitle,
+                    body: copy.debate.rejectBody,
                   },
                 ].map((option) => (
                   <button
@@ -622,7 +621,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   headingClass,
                 )}
               >
-                Ready to begin?
+                {copy.debate.readyTitle}
               </h2>
               <p
                 className={cn(
@@ -630,10 +629,12 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   mutedClass,
                 )}
               >
-                Timed debates end permanently when the clock runs out.
-                <br />
-                After the debate ends, you&apos;ll be able to view your debate
-                summary and feedback.
+                {copy.debate.readyCopy.split("\n").map((line, index) => (
+                  <span key={line}>
+                    {index > 0 ? <br /> : null}
+                    {line}
+                  </span>
+                ))}
               </p>
 
               <div
@@ -649,7 +650,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                       labelClass,
                     )}
                   >
-                    Tone
+                    {copy.debate.tone}
                   </p>
                   <p className={cn("mt-1.5 text-[13px]", surfaceTitleClass)}>
                     {
@@ -666,7 +667,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                       labelClass,
                     )}
                   >
-                    Timing
+                    {copy.debate.timing}
                   </p>
                   <p className={cn("mt-1.5 text-[13px]", surfaceTitleClass)}>
                     {
@@ -683,7 +684,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                       labelClass,
                     )}
                   >
-                    Thesis
+                    {copy.debate.thesis}
                   </p>
                   <p
                     className={cn(
@@ -701,7 +702,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                       labelClass,
                     )}
                   >
-                    Your side
+                    {copy.debate.yourSide}
                   </p>
                   <p className={cn("mt-1.5 text-[13px]", surfaceTitleClass)}>
                     {userSideLabel}
@@ -714,7 +715,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                       labelClass,
                     )}
                   >
-                    AI side
+                    {copy.debate.aiSide}
                   </p>
                   <p className={cn("mt-1.5 text-[13px]", surfaceTitleClass)}>
                     {aiSide}
@@ -749,7 +750,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               secondaryButtonClass,
             )}
           >
-            Back
+            {copy.debate.back}
           </button>
         )}
 
@@ -762,7 +763,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               primaryButtonClass,
             )}
           >
-            Continue
+            {copy.debate.continue}
             <ArrowRight size={13} />
           </button>
         )}
@@ -776,7 +777,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               primaryButtonClass,
             )}
           >
-            Continue
+            {copy.debate.continue}
             <ArrowRight size={13} />
           </button>
         )}
@@ -791,7 +792,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               primaryButtonClass,
             )}
           >
-            Continue
+            {copy.debate.continue}
             <ArrowRight size={13} />
           </button>
         )}
@@ -805,7 +806,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
               primaryButtonClass,
             )}
           >
-            Continue
+            {copy.debate.continue}
             <ArrowRight size={13} />
           </button>
         )}
@@ -825,7 +826,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
             ) : (
               <Swords size={13} />
             )}
-            Begin debate
+            {copy.debate.begin}
           </button>
         )}
       </div>
@@ -838,7 +839,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
           )}
           role="dialog"
           aria-modal="true"
-          aria-label="Suggested debate topics"
+          aria-label={copy.debate.suggestedTopicsTitle}
           onClick={() => {
             if (!isBusy) {
               setShowTopicSuggestionsDialog(false);
@@ -860,10 +861,10 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                     headingClass,
                   )}
                 >
-                  Suggested topics
+                  {copy.debate.suggestedTopicsTitle}
                 </p>
                 <p className={cn("mt-1.5 text-[12px] leading-5", mutedClass)}>
-                  Pick one thesis to drop into the debate setup.
+                  {copy.debate.suggestedTopicsCopy}
                 </p>
               </div>
               <button
@@ -874,7 +875,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   "cursor-pointer rounded-full p-1 transition disabled:cursor-not-allowed disabled:opacity-40",
                   modalCloseClass,
                 )}
-                aria-label="Close dialog"
+                aria-label={copy.debate.closeDialog}
               >
                 <X size={12} />
               </button>
@@ -904,7 +905,10 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                           : optionMetaClass,
                       )}
                     >
-                      Topic {index + 1}
+                      {copy.debate.topicNumber.replace(
+                        "{number}",
+                        String(index + 1),
+                      )}
                     </p>
                     <Sparkles
                       size={12}
@@ -932,7 +936,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                   secondaryButtonClass,
                 )}
               >
-                Cancel
+                {copy.debate.cancel}
               </button>
               <button
                 type="button"
@@ -954,7 +958,7 @@ export default function DebateModeSetup({ canAccessDebate = false }: Props) {
                 )}
               >
                 <Check size={11} />
-                Confirm
+                {copy.debate.confirm}
               </button>
             </div>
           </div>

@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "Socratic AI Blogs | Philosophie, KI & Kritisches Denken",
+    "description": "Lesen Sie den Socratic AI Blog für Essays über Philosophie, Strategie und rigoroses Denken.",
+    "ogAlt": "Socratic AI Blog-Essays über Philosophie, KI und kritisches Denken"
+  },
+  "hero": {
+    "brand": "Socratic AI",
+    "title": "Blogs",
+    "description": "Ideen zu Philosophie, kritischem Denken, KI, Lernen, der Zukunft der menschlichen Intelligenz und uns!",
+    "imageAlt": "Socratic AI Blog-Heldengrafik über Philosophie und tiefes Denken"
+  },
+  "listing": {
+    "heading": "Blog",
+    "description": "Ideen zu Philosophie, kritischem Denken, KI, Lernen, der Zukunft der menschlichen Intelligenz und uns!",
+    "sortBy": "Sortieren nach:",
+    "readTime": "{minutes} min Lesezeit"
+  },
+  "categories": [
+    {
+      "id": "all",
+      "sourceLabel": "All",
+      "label": "Alle"
+    },
+    {
+      "id": "philosophy",
+      "sourceLabel": "Philosophy",
+      "label": "Philosophie"
+    },
+    {
+      "id": "ai-learning",
+      "sourceLabel": "AI & Learning",
+      "label": "KI & Lernen"
+    },
+    {
+      "id": "essays",
+      "sourceLabel": "Essays",
+      "label": "Essays"
+    },
+    {
+      "id": "about",
+      "sourceLabel": "About",
+      "label": "Über"
+    }
+  ],
+  "sortOptions": {
+    "newest": "Neueste",
+    "oldest": "Älteste"
+  },
+  "post": {
+    "backToBlogs": "Zurück zu den Blogs",
+    "ctaTitle": "Socratic AI",
+    "ctaBody": "Socratic AI basiert auf den größten philosophischen Texten, die je geschrieben wurden. Der Denkpartner, den Sie nie hatten, verfügbar sogar um 2 Uhr morgens, wenn die Fragen nicht aufhören. Fragen Sie alles. Debattieren Sie alles.",
+    "ctaButton": "Jetzt Socratic AI ausprobieren"
+  }
+}

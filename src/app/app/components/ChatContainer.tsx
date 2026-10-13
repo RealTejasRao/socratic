@@ -26,6 +26,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import type { AppCopy } from "@/src/i18n/app";
 import { getDebateDurationMeta } from "src/lib/debate";
 import { isSocraticTone, type SocraticTone } from "src/lib/socratic";
 import {
@@ -43,10 +44,7 @@ import type {
 } from "src/types/chat";
 import type { BillingStateResponse } from "src/types/billing";
 import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
-import {
-  SUGGESTION_QUESTIONS,
-  UPSC_SUGGESTION_QUESTIONS,
-} from "@/src/lib/suggestion-questions";
+import { UPSC_SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
 import { PLAN_LIMITS } from "@/src/lib/billing";
@@ -210,16 +208,6 @@ type ErrorToastState = {
   isLeaving: boolean;
 } | null;
 
-const DEFAULT_UPGRADE_PROMPT_TEXT =
-  "Fellow human, this feature requires a premium plan.";
-const DAILY_MESSAGES_UPGRADE_PROMPT_TEXT =
-  `Fellow human, you've reached the free limit of ${PLAN_LIMITS.FREE_DAILY_MESSAGES} messages for today.`;
-const DAILY_UPLOADS_UPGRADE_PROMPT_TEXT =
-  `Fellow human, you've reached the free limit of ${PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS} image uploads for today.`;
-const DAILY_MESSAGES_LIMIT_REASON =
-  "Daily free limit reached. Upgrade to Socratic+ for unlimited messages.";
-const DAILY_IMAGE_UPLOAD_LIMIT_REASON =
-  "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.";
 const roleplayContentTransition = {
   duration: 0.24,
   ease: [0.22, 1, 0.36, 1],
@@ -275,6 +263,13 @@ function getGreetingBucket(hour: number) {
   if (hour >= 12 && hour < 17) return AFTERNOON_GREETINGS;
   if (hour >= 17 && hour < 21) return EVENING_GREETINGS;
   return LATE_GREETINGS;
+}
+
+function getLocalizedGreetingBucket(copy: AppCopy, hour: number) {
+  if (hour >= 5 && hour < 12) return copy.socratic.greetings.morning;
+  if (hour >= 12 && hour < 17) return copy.socratic.greetings.afternoon;
+  if (hour >= 17 && hour < 21) return copy.socratic.greetings.evening;
+  return copy.socratic.greetings.late;
 }
 
 function subscribeToGreetingSeed(listener: () => void) {
@@ -338,6 +333,13 @@ function getStarterChipSnapshot(storeKey: string) {
   return starterChipStores.get(storeKey) ?? FALLBACK_STARTER_CHIPS;
 }
 
+function getStarterChipSnapshotWithFallback(
+  storeKey: string,
+  fallbackQuestions: readonly string[],
+) {
+  return starterChipStores.get(storeKey) ?? fallbackQuestions;
+}
+
 function pickRandomQuestions(questions: string[], count: number) {
   const uniqueQuestions = Array.from(new Set(questions));
 
@@ -384,10 +386,12 @@ function getQuickTourStorageKey(userId: string) {
 
 function AppQuickTour({
   activeStep,
+  copy,
   onStepChange,
   onClose,
 }: {
   activeStep: number;
+  copy: AppCopy["quickTour"];
   onStepChange: (nextStep: number) => void;
   onClose: () => void;
 }) {
@@ -417,6 +421,11 @@ function AppQuickTour({
   const measureFrameRef = useRef<number | null>(null);
   const step =
     APP_QUICK_TOUR_STEPS[activeStep] ?? APP_QUICK_TOUR_STEPS[0]!;
+  const localizedStep =
+    copy.steps[activeStep] ?? copy.steps[0] ?? {
+      title: step.title,
+      detail: step.detail,
+    };
   const isLastStep = activeStep === APP_QUICK_TOUR_STEPS.length - 1;
 
   useEffect(() => {
@@ -789,7 +798,7 @@ function AppQuickTour({
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="text-[29px] leading-[0.95] tracking-[-0.035em] font-[Georgia,serif] md:text-[32px]">
-                    {step.title}
+                    {localizedStep.title}
                   </h2>
                 </div>
 
@@ -797,7 +806,7 @@ function AppQuickTour({
                   type="button"
                   onClick={onClose}
                   className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center text-white/62 transition hover:text-white"
-                  aria-label="Skip app tour"
+                  aria-label={copy.close}
                 >
                   <X size={19} strokeWidth={1.7} />
                 </button>
@@ -805,7 +814,7 @@ function AppQuickTour({
 
               <div className="mt-2">
                 <p className="text-[13px] leading-5 text-white/76 md:text-[14px] md:leading-6">
-                  {step.detail}
+                  {localizedStep.detail}
                 </p>
               </div>
             </motion.div>
@@ -834,7 +843,9 @@ function AppQuickTour({
                 <span className="relative inline-flex h-4 w-4 items-center justify-center rounded-full text-[12px]">
                   {index + 1}
                 </span>
-                <span className="relative leading-3.5">{tourStep.title}</span>
+                <span className="relative leading-3.5">
+                  {copy.steps[index]?.title ?? tourStep.title}
+                </span>
               </button>
             ))}
           </div>
@@ -846,7 +857,7 @@ function AppQuickTour({
               disabled={activeStep === 0}
               className="cursor-pointer rounded-full px-2.5 py-1.5 text-[11px] font-medium text-white/56 transition hover:bg-white/[0.07] hover:text-white disabled:pointer-events-none disabled:opacity-35"
             >
-              Back
+              {copy.back}
             </button>
 
             <button
@@ -861,7 +872,7 @@ function AppQuickTour({
               }}
               className="app-tour-primary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold text-[#06120f] transition"
             >
-              {isLastStep ? "Finish" : "Next"}
+              {isLastStep ? copy.done : copy.next}
               {!isLastStep ? <ArrowUpRight size={13} /> : null}
             </button>
           </div>
@@ -952,6 +963,7 @@ export default function ChatContainer({
     draftKey,
     isAppRoot,
     defaultNewChatMode,
+    copy,
   } = useAppRoute();
   const greetingSeed = useSyncExternalStore(
     subscribeToGreetingSeed,
@@ -959,20 +971,31 @@ export default function ChatContainer({
     () => 0,
   );
   const starterChipStoreKey =
-    appBasePath === ROUTES.UPSC_APP ? "upsc" : "default";
+    appBasePath === ROUTES.UPSC_APP
+      ? "upsc"
+      : `default:${copy.locale.label}`;
   const starterChipQuestions =
     appBasePath === ROUTES.UPSC_APP
       ? UPSC_SUGGESTION_QUESTIONS
-      : SUGGESTION_QUESTIONS;
+      : copy.socratic.starterQuestions;
+  const starterChipFallbackQuestions =
+    appBasePath === ROUTES.UPSC_APP
+      ? FALLBACK_STARTER_CHIPS
+      : copy.socratic.starterFallback;
   const starterChips = useSyncExternalStore(
     (listener) =>
       subscribeToStarterChips(
         listener,
         starterChipStoreKey,
         starterChipQuestions,
+        starterChipFallbackQuestions,
       ),
-    () => getStarterChipSnapshot(starterChipStoreKey),
-    () => FALLBACK_STARTER_CHIPS,
+    () =>
+      getStarterChipSnapshotWithFallback(
+        starterChipStoreKey,
+        starterChipFallbackQuestions,
+      ),
+    () => starterChipFallbackQuestions,
   );
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -998,7 +1021,7 @@ export default function ChatContainer({
   const [isPricingNavigationPending, setIsPricingNavigationPending] =
     useState(false);
   const [upgradePromptSmallText, setUpgradePromptSmallText] = useState(
-    DEFAULT_UPGRADE_PROMPT_TEXT,
+    copy.upgrade.defaultPrompt,
   );
   const [showQuickTour, setShowQuickTour] = useState(false);
   const [quickTourStep, setQuickTourStep] = useState(0);
@@ -1028,8 +1051,8 @@ export default function ChatContainer({
       : completedDebate?.winner === "ASSISTANT"
         ? "Socratic AI"
         : completedDebate?.winner === "DRAW"
-          ? "Draw"
-          : "Pending";
+          ? copy.debate.draw
+          : copy.debate.pending;
   const debateDurationMeta = activeSessionMeta.debate
     ? getDebateDurationMeta(activeSessionMeta.debate.durationPreset)
     : null;
@@ -1080,12 +1103,15 @@ export default function ChatContainer({
         )
       : null;
   const inputPlaceholder = isDebateSession
-    ? "Defend your side."
+    ? copy.input.debatePlaceholder
     : visibleRoleplayPhilosopher
-      ? `Message ${visibleRoleplayPhilosopher.philosopherName}.`
+      ? copy.input.roleplayPlaceholder.replace(
+          "{name}",
+          visibleRoleplayPhilosopher.philosopherName,
+        )
       : name === "friend"
-        ? "What's on your mind?"
-        : `What's on your mind, ${name}?`;
+        ? copy.input.placeholder
+        : copy.input.namedPlaceholder.replace("{name}", name);
   const greetingLine = (() => {
     if (greetingSeed === 0) {
       return "";
@@ -1094,9 +1120,10 @@ export default function ChatContainer({
     const bucket =
       appBasePath === ROUTES.UPSC_APP
         ? UPSC_GREETINGS
-        : getGreetingBucket(new Date().getHours());
+        : getLocalizedGreetingBucket(copy, new Date().getHours());
     const template =
       bucket[greetingSeed % bucket.length] ??
+      copy.socratic.greetings.morning[1] ??
       "Clarity is just a few prompts away.";
 
     return template.replace("{name}", name);
@@ -1685,7 +1712,7 @@ export default function ChatContainer({
 
   function resolveUpgradePromptSmallText(reason?: string) {
     if (!reason) {
-      return DEFAULT_UPGRADE_PROMPT_TEXT;
+      return copy.upgrade.defaultPrompt;
     }
 
     const normalized = reason.toLowerCase();
@@ -1694,17 +1721,23 @@ export default function ChatContainer({
       normalized.includes("image upload limit") ||
       normalized.includes("unlimited image uploads")
     ) {
-      return DAILY_UPLOADS_UPGRADE_PROMPT_TEXT;
+      return copy.upgrade.dailyUploadsPrompt.replace(
+        "{count}",
+        String(PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS),
+      );
     }
 
     if (
       normalized.includes("daily free limit reached") ||
       normalized.includes("unlimited messages")
     ) {
-      return DAILY_MESSAGES_UPGRADE_PROMPT_TEXT;
+      return copy.upgrade.dailyMessagesPrompt.replace(
+        "{count}",
+        String(PLAN_LIMITS.FREE_DAILY_MESSAGES),
+      );
     }
 
-    return DEFAULT_UPGRADE_PROMPT_TEXT;
+    return copy.upgrade.defaultPrompt;
   }
 
   async function readUpgradeReason(response: Response) {
@@ -1946,7 +1979,7 @@ export default function ChatContainer({
   }) {
     if (isStreaming || isDebateCompleted) return;
     if (!billing.isPremium && (billing.usage.dailyMessagesRemaining ?? 0) <= 0) {
-      openUpgradePrompt({ reason: DAILY_MESSAGES_LIMIT_REASON });
+      openUpgradePrompt({ reason: copy.input.dailyMessagesLimit });
       return;
     }
     if (
@@ -1954,7 +1987,7 @@ export default function ChatContainer({
       payload.attachments.length > 0 &&
       (billing.usage.dailyImageUploadsRemaining ?? 0) <= 0
     ) {
-      openUpgradePrompt({ reason: DAILY_IMAGE_UPLOAD_LIMIT_REASON });
+      openUpgradePrompt({ reason: copy.input.dailyUploadsLimit });
       return;
     }
 
@@ -2149,7 +2182,7 @@ export default function ChatContainer({
             className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
           >
             <ArrowLeft size={13} />
-            Back
+            {copy.roleplay.back}
           </button>
         </div>
         {roleplayIntro}
@@ -2441,10 +2474,10 @@ export default function ChatContainer({
                 </span>
                 <span className="app-mode-switch-label">
                   {visibleModeSelection === "SOCRATIC"
-                    ? "Socratic"
+                    ? copy.nav.socraticModeLabel
                     : visibleModeSelection === "DEBATE"
-                      ? "Debate"
-                      : "Roleplay"}
+                      ? copy.sessions.debateBadge
+                      : copy.sessions.roleplayBadge}
                 </span>
                 <ChevronDown
                   size={14}
@@ -2580,7 +2613,8 @@ export default function ChatContainer({
                         className="inline"
                       />
                     ) : (
-                      "Clarity is just a few prompts away."
+                      (copy.socratic.greetings.morning[1] ??
+                        "Clarity is just a few prompts away.")
                     )}
                   </h2>
                 </div>
@@ -2698,7 +2732,7 @@ export default function ChatContainer({
                           type="button"
                           className="absolute inset-0 cursor-default"
                           onClick={returnToRoleplayLibrary}
-                          aria-label="Return to philosopher library"
+                          aria-label={copy.roleplay.returnToLibrary}
                         />
                         <motion.div
                           key={`roleplay-ready-${pendingRoleplayPhilosopher.id}`}
@@ -2717,14 +2751,14 @@ export default function ChatContainer({
                               className="app-change-philosopher-btn app-roleplay-secondary-btn inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] transition hover:bg-slate-50 hover:text-slate-900"
                             >
                               <ArrowLeft size={13} />
-                              Back
+                              {copy.roleplay.back}
                             </button>
                           </div>
                           {roleplayIntro}
 
                           <div className="mb-2.5">
                             <p className="app-roleplay-prompts-label text-[12px] font-semibold">
-                              Suggested Messages:
+                              {copy.roleplay.suggestedMessages}
                             </p>
                           </div>
                           <div className="mb-4 grid gap-1.5">
@@ -2782,6 +2816,7 @@ export default function ChatContainer({
           {showQuickTour ? (
             <AppQuickTour
               activeStep={quickTourStep}
+              copy={copy.quickTour}
               onStepChange={moveQuickTourToStep}
               onClose={markQuickTourComplete}
             />
@@ -2857,16 +2892,15 @@ export default function ChatContainer({
             <div className="app-card app-debate-card app-debate-ended-card rounded-3xl border border-[#ddd5c7] bg-[#f7f4ee] px-5 py-5 text-center shadow-[0_16px_42px_rgba(31,27,21,0.08)]">
               <div className="app-debate-status-chip inline-flex items-center gap-2 rounded-md border border-[#d6cec0] bg-transparent px-3 py-1 text-[13px] font-medium text-[#756d60]">
                 <Swords size={12} />
-                Debate Closed
+                {copy.debate.closedStatus}
               </div>
 
               <h3 className="app-debate-ended-title mt-4 text-[26px] leading-[1.08] tracking-[-0.04em] text-[#1f1b15] font-[Georgia,serif] md:text-[32px]">
-                Time up! Debate has ended.
+                {copy.debate.endedTitle}
               </h3>
 
               <p className="app-debate-ended-copy mt-3 text-[13px] leading-6 text-[#6f6658]">
-                The clock has run out. Review the Post-Match Report or reveal
-                the verdict here.
+                {copy.debate.endedCopy}
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
@@ -2878,7 +2912,7 @@ export default function ChatContainer({
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
                   >
                     <ScrollText size={14} />
-                    Post-Match Report
+                    {copy.debate.postMatchReport}
                   </Link>
                 )}
 
@@ -2888,7 +2922,7 @@ export default function ChatContainer({
                   className="app-debate-ended-secondary inline-flex items-center gap-2 rounded-full border border-[#cfc4b2] bg-[#ece6d9] px-4 py-2 text-[13px] text-[#5d5447] transition hover:bg-[#e5dece] hover:text-[#29231b]"
                 >
                   <Crown size={14} />
-                  Reveal Winner
+                  {copy.debate.revealWinner}
                   <ChevronDown size={14} />
                 </button>
               </div>
@@ -2916,21 +2950,21 @@ export default function ChatContainer({
               className="app-card app-debate-card app-debate-winner-modal relative w-full max-w-110 rounded-[28px] border border-[#d6cec0] bg-[#f7f4ee] px-5 py-5 text-center shadow-[0_22px_70px_rgba(31,27,21,0.16)]"
               role="dialog"
               aria-modal="true"
-              aria-label="Debate winner"
+              aria-label={copy.debate.winnerLabel}
               onClick={(event) => event.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={() => setShowWinnerReveal(false)}
                 className="app-debate-winner-close absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#d6cec0] bg-[#f1ecdf] text-[#7a7164] transition hover:bg-[#e5dece] hover:text-[#2a241c]"
-                aria-label="Close winner reveal"
+                aria-label={copy.debate.closeWinnerReveal}
               >
                 <X size={14} />
               </button>
 
               <div className="app-debate-winner-chip inline-flex items-center gap-2 rounded-full border border-[#cfbf9f] bg-[#efe4d0] px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-[#7a5f39]">
                 <Crown size={12} />
-                Winner Revealed
+                {copy.debate.winnerRevealed}
               </div>
 
               <h3 className="app-debate-winner-title mt-4 text-[30px] leading-[1.04] tracking-[-0.05em] text-[#1f1b15] font-[Georgia,serif]">
@@ -2939,7 +2973,7 @@ export default function ChatContainer({
 
               <p className="app-debate-winner-copy mt-3 text-[14px] leading-7 text-[#6f6658]">
                 {completedDebate.verdictSummary ||
-                  "The verdict is available in the Post-Match Report."}
+                  copy.debate.winnerFallback}
               </p>
 
               <div className="mt-5 flex justify-center">
@@ -2951,7 +2985,7 @@ export default function ChatContainer({
                     className="app-debate-ended-primary inline-flex items-center gap-2 rounded-full border border-[#3a3126] bg-[#3a3126] px-4 py-2 text-[13px] text-[#f6f2e8] transition hover:bg-[#30291f] hover:text-[#f6f2e8]"
                   >
                     <ScrollText size={14} />
-                    Open Post-Match Report
+                    {copy.debate.openPostMatchReport}
                   </Link>
                 )}
               </div>

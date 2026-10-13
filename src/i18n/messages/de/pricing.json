@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "title": "Preise",
+    "description": "Wählen Sie einen Plan für Socratic +.",
+    "ogAlt": "Preismodelle von Socratic AI"
+  },
+  "hero": {
+    "titlePrefix": "Gehen Sie weiter mit",
+    "titleProduct": "Socratic Plus",
+    "description": "Ein Plan für Neugier. Einer für echte Denker!",
+    "subtitle": "Transparente Preise"
+  },
+  "plans": {
+    "basic": {
+      "title": "Basis",
+      "description": "Ein durchdachter Raum für alltägliche Neugier. Eingeschränkter Zugang zu Funktionen.",
+      "features": {
+        "dailyMessages": "{count} Nachrichten pro Tag",
+        "socraticMode": "Sokratischer Modus",
+        "roleplayMode": "Rollenspielmodus",
+        "imageUploads": "{count} Bild-Uploads",
+        "debateMode": "Debattenmodus",
+        "detailedDebateFeedback": "Detailliertes Debatten-Feedback",
+        "ruthlessTone": "Rücksichtsloser, direkter Tonmodus",
+        "globalMemory": "Globale Erinnerung",
+        "longerHistory": "Längere Gesprächshistorie",
+        "newFeatureAccess": "Zugang zu neuen Funktionen",
+        "unlimitedImageUploads": "Unbegrenzte Bild-Uploads"
+      }
+    },
+    "premium": {
+      "title": "Socratic Plus",
+      "description": "Für tiefere Gedanken ohne Grenzen. Unbegrenzter Zugang zu allen Funktionen.",
+      "badge": "Am Beliebtesten",
+      "features": {
+        "everythingBasic": "Alles im Basis-Modus",
+        "unlimitedMessages": "Unbegrenzte Nachrichten",
+        "socraticMode": "Sokratischer Modus",
+        "roleplayMode": "Rollenspielmodus",
+        "unlimitedImageUploads": "Unbegrenzte Bild-Uploads",
+        "debateMode": "Debattenmodus",
+        "detailedDebateFeedback": "Detailliertes Debatten-Feedback",
+        "ruthlessTone": "Rücksichtsloser, direkter Tonmodus",
+        "globalMemory": "Globale Erinnerung",
+        "longerHistory": "Längere Gesprächshistorie",
+        "newFeatureAccess": "Zugang zu neuen Funktionen"
+      }
+    }
+  },
+  "buttons": {
+    "signInToContinue": "Anmelden, um fortzufahren",
+    "currentPlan": "Aktueller Plan",
+    "useBasic": "Basisversion verwenden",
+    "signInToUpgrade": "Anmelden, um zu upgraden",
+    "startPremium": "Socratic + starten",
+    "manageSubscription": "Abonnement verwalten",
+    "openBillingDashboard": "Abrechnungsdashboard öffnen"
+  },
+  "billing": {
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "save": "Sparen",
+    "perYear": "/Jahr",
+    "perMonth": "/Monat",
+    "percentOff": "Rabatt",
+    "premiumPrice": "Premiumpreis"
+  },
+  "status": {
+    "openingCheckout": "Sicheren Checkout öffnen...",
+    "customerPortalError": "Konnte das Kundenportal nicht öffnen.",
+    "portalUrlMissing": "Keine Portal-URL zurückgegeben.",
+    "checkoutError": "Konnte den Checkout nicht starten.",
+    "checkoutUrlMissing": "Keine Checkout-URL zurückgegeben."
+  }
+}

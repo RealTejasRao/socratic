@@ -23,16 +23,23 @@ type FeaturesSectionProps = {
   headingText?: string;
   highlightedTerms?: readonly string[];
   cards?: FeatureCard[];
+  cardCopy?: readonly FeatureCardCopy[];
 };
 
-type FeatureCard = {
+export type FeatureCard = {
   id: string;
   title: string;
   description: string;
   icon: LucideIcon;
 };
 
-const featureCards: FeatureCard[] = [
+type FeatureCardCopy = {
+  id: string;
+  title: string;
+  description: string;
+};
+
+export const homeFeatureCards: FeatureCard[] = [
   {
     id: "argues-back",
     title: "It Argues Back.\nBy Design.",
@@ -150,7 +157,8 @@ export function FeaturesSection({
   headingSubject = "Philosophy",
   headingText,
   highlightedTerms,
-  cards = featureCards,
+  cards = homeFeatureCards,
+  cardCopy,
 }: FeaturesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
@@ -162,6 +170,19 @@ export function FeaturesSection({
   const resolvedHighlightedTerms =
     highlightedTerms ?? [DIFFERENT_WORD, headingSubject];
   const typedHeading = sectionHeadingText.slice(0, visibleHeadingChars);
+  const resolvedCards = cardCopy
+    ? cards.map((card) => {
+        const localized = cardCopy.find((item) => item.id === card.id);
+
+        return localized
+          ? {
+              ...card,
+              title: localized.title,
+              description: localized.description,
+            }
+          : card;
+      })
+    : cards;
   const highlightRanges = resolvedHighlightedTerms
     .map((term) => {
       const start = sectionHeadingText.indexOf(term);
@@ -297,7 +318,7 @@ export function FeaturesSection({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {cards.map((card, index) => {
+            {resolvedCards.map((card, index) => {
               const Icon = card.icon;
               return (
                 <motion.article

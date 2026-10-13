@@ -2,7 +2,16 @@ import type { MetadataRoute } from "next";
 import fs from "node:fs";
 import path from "node:path";
 import { absoluteUrl } from "@/src/lib/seo";
-import { getBlogPostSitemapEntries } from "@/src/server/blog/posts";
+import {
+  getBlogPostSitemapEntries,
+  getTranslatedBlogPostSitemapEntries,
+} from "@/src/server/blog/posts";
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  getHomePathForLocale,
+  getLocalizedPath,
+} from "@/src/i18n/locales";
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
@@ -74,6 +83,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
+  const localizedHomeEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .map((locale) => ({
+      url: absoluteUrl(getHomePathForLocale(locale)),
+      lastModified: getFileLastModified("src/app/page.tsx"),
+      changeFrequency: "weekly",
+      priority: 0.95,
+    }));
+  const localizedPricingEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .map((locale) => ({
+      url: absoluteUrl(getLocalizedPath("/pricing", locale)),
+      lastModified: getFileLastModified("src/app/pricing/page.tsx"),
+      changeFrequency: "weekly",
+      priority: 0.75,
+    }));
+  const localizedBlogEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .map((locale) => ({
+      url: absoluteUrl(getLocalizedPath("/blog", locale)),
+      lastModified:
+        latestBlogLastModified ?? getFileLastModified("src/app/blog/page.tsx"),
+      changeFrequency: "daily",
+      priority: 0.85,
+    }));
 
   const dynamicEntries: MetadataRoute.Sitemap = blogEntries.map((entry) => ({
     url: absoluteUrl(`/blog/${entry.slug}`),
@@ -81,6 +115,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "monthly",
     priority: 0.7,
   }));
+  const localizedBlogPostEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .flatMap((locale) =>
+      getTranslatedBlogPostSitemapEntries(locale).map((entry) => ({
+        url: absoluteUrl(getLocalizedPath(`/blog/${entry.slug}`, locale)),
+        lastModified: entry.lastModified,
+        changeFrequency: "monthly",
+        priority: 0.65,
+      })),
+    );
 
-  return [...staticEntries, ...dynamicEntries];
+  return [
+    ...staticEntries,
+    ...localizedHomeEntries,
+    ...localizedPricingEntries,
+    ...localizedBlogEntries,
+    ...dynamicEntries,
+    ...localizedBlogPostEntries,
+  ];
 }

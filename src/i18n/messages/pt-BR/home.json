@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "title": "Socratic AI | Filosofia, Pensamento Crítico & Conversas Profundas",
+    "description": "Socratic AI: Um parceiro de pensamento em IA para filosofia, pensamento crítico e conversas profundas. Baseado no diálogo socrático, desafia seu raciocínio, aguça seus argumentos e ajuda você a pensar com mais clareza.",
+    "ogAlt": "Socratic AI - IA para filosofia e pensamento estratégico"
+  },
+  "nav": {
+    "home": "Início",
+    "features": "Recursos",
+    "pricing": "Preços",
+    "blog": "Blog",
+    "contact": "Contato",
+    "openApp": "Abrir App",
+    "language": "Idioma",
+    "menuTagline": "Sua IA Pessoal para Filosofia."
+  },
+  "hero": {
+    "srOnly": "Socratic AI: Sua IA Pessoal Para Filosofia, Conversas Profundas, Sabedoria e Crescimento.",
+    "headlinePrefix": "Socratic AI: Sua IA Pessoal Para",
+    "words": [
+      "Filosofia",
+      "Conversas Profundas",
+      "Sabedoria",
+      "Crescimento"
+    ],
+    "signedOutCta": "Experimente o Socratic AI",
+    "signedInCta": "Entre no Socratic AI",
+    "mobileImageAlt": "Ilustração hero do Socratic AI para filosofia e pensamento estratégico",
+    "desktopImageAlt": "Ilustração hero do Socratic AI para filosofia e pensamento estratégico"
+  },
+  "features": {
+    "headingSubject": "Filosofia",
+    "headingText": "Construído de Forma Diferente.\nConstruído Para Filosofia",
+    "highlightedTerms": [
+      "Diferente",
+      "Filosofia"
+    ],
+    "cards": [
+      {
+        "id": "argues-back",
+        "title": "Ele Argumenta de Volta.\nPor Design.",
+        "description": "A maioria das IAs diz o que você quer ouvir. Esta está programada para contestar prontamente."
+      },
+      {
+        "id": "corpus",
+        "title": "Um Corpus Construído para\nFilósofos",
+        "description": "Respostas baseadas em escritos originais, não em resumos superficiais do Reddit."
+      },
+      {
+        "id": "model-of-you",
+        "title": "Ele Constrói um Modelo,\nde Você",
+        "description": "Acompanha ativamente suas crenças e suposições, conectando-as em um modelo vivo do seu pensamento."
+      },
+      {
+        "id": "clarity",
+        "title": "Clareza que Você Pode Levar\nCom Você",
+        "description": "Descubra posições que você não sabia que tinha, lacunas que você não sabia que existiam."
+      }
+    ]
+  },
+  "security": {
+    "message": "Suas conversas permanecem privadas. Sempre.",
+    "highlightedTerm": "privadas",
+    "ariaLabel": "Separador de segurança do chat"
+  },
+  "useCases": {
+    "headingText": "Uma IA, Direções Infinitas",
+    "mobileFirstLine": "Uma IA",
+    "mobileSecondLine": "Direções Infinitas",
+    "highlightedWord": "Infinitas",
+    "items": [
+      {
+        "id": "deep-conversations",
+        "leftTitle": "Conversas Profundas",
+        "leftDescription": "Tenha as discussões que sua vida diária não permite.",
+        "rightTitle": "Finalmente Alguém para Pensar em Voz Alta Com.",
+        "rightDescription": "Tenha as conversas profundas que sempre quis, a qualquer hora, com alguém que leva você a sério. Sem julgamentos, sem distrações. Apenas pensando. Juntos.",
+        "placeholderLabel": "Cena de conversa filosófica para diálogo profundo"
+      },
+      {
+        "id": "debate-drills",
+        "leftTitle": "Exercícios de Debate",
+        "leftDescription": "Debata com nossa IA que nunca vai fácil com você, para que a coisa real pareça sem esforço.",
+        "rightTitle": "Transforme Suas Ideias em Argumentos Poderosos.",
+        "rightDescription": "Ela mapeia cada afirmação que você faz, rastreia sua lógica em tempo real e responde com o contra-argumento mais preciso que pode encontrar; depois, se volta e o guia em direção à versão mais forte disso.",
+        "placeholderLabel": "Visualização de prática de debate com argumentos estruturados"
+      },
+      {
+        "id": "all-of-philosophy",
+        "leftTitle": "Toda a Filosofia",
+        "leftDescription": "Mergulhe em qualquer ideia ou pensador filosófico e realmente saia entendendo.",
+        "rightTitle": "Toda a História do Pensamento Humano, Pronta para Discutir.",
+        "rightDescription": "Entenda qualquer filósofo, qualquer ideia, da maneira que sempre deveria ser - através da conversa, não de um livro didático. Dos antigos gregos aos existencialistas modernos, do estoicismo ao niilismo.",
+        "placeholderLabel": "Arquitetura clássica representando a história da filosofia"
+      }
+    ]
+  },
+  "contact": {
+    "heading": "Adoraríamos ouvir de você :)",
+    "mobileFirstLine": "Adoraríamos",
+    "mobileSecondLine": "ouvir de você :)",
+    "highlightedTerms": [
+      "adorar",
+      ":)"
+    ],
+    "title": "Entre em Contato Conosco",
+    "name": "Nome",
+    "namePlaceholder": "Seu nome",
+    "email": "Email",
+    "emailPlaceholder": "voce@exemplo.com",
+    "message": "Mensagem",
+    "messagePlaceholder": "Deixe sua sugestão, feedback ou qualquer outra coisa...",
+    "wordsLeft": "{count} palavras restantes",
+    "send": "Enviar Mensagem",
+    "sending": "Enviando...",
+    "requiredError": "Por favor, complete todos os campos obrigatórios.",
+    "invalidFieldError": "Por favor, corrija os campos destacados antes de enviar.",
+    "invalidEmailError": "Por favor, insira um endereço de e-mail válido.",
+    "tooLongError": "A mensagem é muito longa. O máximo permitido é 2000 palavras.",
+    "rateLimitError": "Muitas mensagens. Por favor, tente novamente mais tarde.",
+    "sendError": "Não foi possível enviar agora. Por favor, tente novamente em um momento.",
+    "successMessage": "Mensagem enviada com sucesso. Obrigado por compartilhar!",
+    "emailInvalidHint": "Insira um e-mail válido (exemplo@dominio.com).",
+    "emailValidHint": "O e-mail parece bom."
+  },
+  "footer": {
+    "descriptionLines": [
+      "Construído sobre os maiores textos filosóficos já escritos.",
+      "Pergunte qualquer coisa. Debata tudo."
+    ],
+    "cta": "Experimente o Socratic AI Agora",
+    "explore": "Explorar",
+    "account": "Conta",
+    "preferences": "Preferências",
+    "home": "Início",
+    "features": "Recursos",
+    "blog": "Blog",
+    "contact": "Contato",
+    "pricing": "Preços",
+    "goToApp": "Ir para o App",
+    "getSocraticPlus": "Obter Socratic +",
+    "signUp": "Inscrever-se",
+    "signIn": "Entrar",
+    "manageSubscription": "Gerenciar Assinatura",
+    "privacyPolicy": "Política de Privacidade",
+    "terms": "Termos e Condições",
+    "cookiePolicy": "Política de Cookies",
+    "consentPreferences": "Preferências de Consentimento",
+    "allRightsReserved": "Todos os direitos reservados."
+  },
+  "standalone": {
+    "headline": "Sua mente foi feita para mais",
+    "body": "Seu lugar secreto para pensamentos profundos e conversas que mudam você, longe das distrações do mundo.",
+    "createAccount": "Criar Conta",
+    "login": "Entrar",
+    "imageAlt": "Livros e escultura cercados por flores"
+  }
+}

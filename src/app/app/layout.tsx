@@ -2,7 +2,13 @@ import { ReactNode } from "react";
 import type { Metadata } from "next";
 import type { Route } from "next";
 import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getAppCopy } from "@/src/i18n/app";
+import {
+  LOCALE_COOKIE_NAME,
+  normalizeLocale,
+} from "@/src/i18n/locales";
 import { prisma } from "src/server/db/client";
 import { ensureUserForClerkId } from "src/server/auth/ensure-user";
 import { ROUTES } from "src/lib/routes";
@@ -71,6 +77,9 @@ export async function AppLayoutShell({
   }
 
   const dbUser = await ensureUserForClerkId(clerkUserId);
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value);
+  const resolvedCopy = copy ?? getAppCopy(locale);
   const [billing, allVisibleSessions] = await Promise.all([
     getUserBillingStateByUserId(dbUser.id),
     prisma.chatSession.findMany({
@@ -126,7 +135,8 @@ export async function AppLayoutShell({
       appBasePath={appBasePath}
       marketingHomePath={marketingHomePath}
       defaultNewChatMode={defaultNewChatMode}
-      {...(copy === undefined ? {} : { copy })}
+      locale={locale}
+      copy={resolvedCopy}
     >
       <div className="app-layout h-svh bg-[#fefefc]">
         <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-[#fefefc]">

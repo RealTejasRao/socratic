@@ -26,6 +26,7 @@ import { cn } from "@/src/lib/utils";
 import { buildChatAttachmentThumbnailUrl } from "@/src/lib/cloudinary";
 import { isChatFontSize, type ChatFontSize } from "src/lib/chat-display";
 import ImagePreviewDialog from "./ImagePreviewDialog";
+import { useAppRoute } from "./app-route-context";
 
 interface Props {
   messages: ChatMessage[];
@@ -213,6 +214,7 @@ export default function MessageList({
   roleplaySpeaker = null,
 }: Props) {
   const { user } = useUser();
+  const { copy } = useAppRoute();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -738,7 +740,10 @@ export default function MessageList({
                               })
                             }
                             className="block cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300"
-                            aria-label={`Open ${attachment.name} preview`}
+                            aria-label={copy.input.openPreview.replace(
+                              "{name}",
+                              attachment.name,
+                            )}
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -795,8 +800,12 @@ export default function MessageList({
                   <button
                     onClick={() => handleCopy(message.id, message.content)}
                     className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
-                    aria-label="Copy message"
-                    data-tooltip="Copy message"
+                    aria-label={copy.messageActions.copy}
+                    data-tooltip={
+                      copiedMessageId === message.id
+                        ? copy.messageActions.copied
+                        : copy.messageActions.copy
+                    }
                   >
                     {copiedMessageId === message.id ? (
                       <Check size={14} />
@@ -813,8 +822,8 @@ export default function MessageList({
                             speakMessage(message.id, message.content)
                           }
                           className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
-                          aria-label="Speak response"
-                          data-tooltip="Speak response"
+                          aria-label={copy.messageActions.speak}
+                          data-tooltip={copy.messageActions.speak}
                         >
                           <Volume2 size={14} />
                         </button>
@@ -824,10 +833,14 @@ export default function MessageList({
                             onClick={togglePauseSpeech}
                             className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
                             aria-label={
-                              isSpeechPaused ? "Resume speech" : "Pause speech"
+                              isSpeechPaused
+                                ? copy.messageActions.resumeSpeech
+                                : copy.messageActions.pauseSpeech
                             }
                             data-tooltip={
-                              isSpeechPaused ? "Resume speech" : "Pause speech"
+                              isSpeechPaused
+                                ? copy.messageActions.resumeSpeech
+                                : copy.messageActions.pauseSpeech
                             }
                           >
                             {isSpeechPaused ? (
@@ -839,8 +852,8 @@ export default function MessageList({
                           <button
                             onClick={stopSpeech}
                             className="msg-action-btn inline-flex h-8 w-8 cursor-pointer items-center justify-center text-slate-400 transition hover:text-slate-700"
-                            aria-label="Stop speech"
-                            data-tooltip="Stop speech"
+                            aria-label={copy.messageActions.stopSpeech}
+                            data-tooltip={copy.messageActions.stopSpeech}
                           >
                             <Square size={13} />
                           </button>
@@ -861,8 +874,8 @@ export default function MessageList({
                             ? "cursor-not-allowed opacity-40"
                             : "text-slate-400 transition hover:text-slate-700",
                         )}
-                        aria-label="Regenerate response"
-                        data-tooltip="Regenerate response"
+                        aria-label={copy.messageActions.regenerate}
+                        data-tooltip={copy.messageActions.regenerate}
                       >
                         <RotateCcw size={14} />
                       </button>
@@ -879,8 +892,8 @@ export default function MessageList({
                             ? "cursor-not-allowed opacity-40"
                             : "text-slate-400 transition hover:text-slate-700",
                         )}
-                        aria-label="Edit message"
-                        data-tooltip="Edit message"
+                        aria-label={copy.messageActions.edit}
+                        data-tooltip={copy.messageActions.edit}
                       >
                         <PenLine size={14} />
                       </button>
@@ -893,8 +906,8 @@ export default function MessageList({
                             ? "cursor-not-allowed opacity-40"
                             : "text-slate-400 transition hover:text-slate-700",
                         )}
-                        aria-label="Regenerate response"
-                        data-tooltip="Regenerate response"
+                        aria-label={copy.messageActions.regenerate}
+                        data-tooltip={copy.messageActions.regenerate}
                       >
                         <RotateCcw size={14} />
                       </button>

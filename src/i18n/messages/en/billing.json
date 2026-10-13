@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Billing",
+    "description": "Manage your Socratic+ subscription and billing settings.",
+    "ogAlt": "Socratic Plus billing settings"
+  },
+  "hero": {
+    "welcome": "Welcome to",
+    "product": "Socratic Plus",
+    "description": "Manage your Socratic+ subscription, renewal, and billing details."
+  },
+  "summary": {
+    "status": "Status",
+    "active": "Active",
+    "free": "Free",
+    "plan": "Plan",
+    "renewsOn": "Renews on",
+    "notAvailable": "Not available",
+    "notApplicable": "Not applicable",
+    "monthlyPlan": "Socratic + Monthly",
+    "annualPlan": "Socratic + Annual",
+    "freePlan": "Free"
+  },
+  "actions": {
+    "openingPortal": "Opening billing portal...",
+    "manageSubscription": "Manage Subscription",
+    "manageSubscriptionDescription": "Update payment method, billing details, or cancel.",
+    "explorePerks": "Explore Perks",
+    "explorePerksDescription": "See what's included in your plan.",
+    "goToApp": "Go to App",
+    "goToAppDescription": "Return to your workspace and chats."
+  },
+  "statusLine": {
+    "prefix": "Billing status:",
+    "cancellationQueued": "Cancellation queued at period end."
+  },
+  "errors": {
+    "portalUrlMissing": "No portal URL returned.",
+    "portalOpenFailed": "Could not open billing portal."
+  }
+}

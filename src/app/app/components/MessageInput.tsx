@@ -21,6 +21,7 @@ import {
 import { cn } from "@/src/lib/utils";
 import type { ChatImageAttachment } from "src/types/chat";
 import ImagePreviewDialog from "./ImagePreviewDialog";
+import { useAppRoute } from "./app-route-context";
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 
@@ -104,10 +105,6 @@ interface UploadSignErrorPayload {
 
 const MAX_ATTACHMENTS = 3;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-const DAILY_MESSAGES_LIMIT_REASON =
-  "Daily free limit reached. Upgrade to Socratic+ for unlimited messages.";
-const DAILY_IMAGE_UPLOAD_LIMIT_REASON =
-  "Daily free image upload limit reached. Upgrade to Socratic+ for unlimited image uploads.";
 
 export default function MessageInput({
   onSend,
@@ -121,11 +118,12 @@ export default function MessageInput({
   focusOnMount = false,
   highlightOnMount = false,
   variant = "default",
-  placeholder = "What's on your mind?",
+  placeholder,
   showWebSearch = true,
   allowImageAttachments = true,
 }: Props) {
   const pathname = usePathname();
+  const { copy } = useAppRoute();
   const storageKey = `socratic:draft:${pathname}`;
   const draftContent = useSyncExternalStore(
     subscribeToClientSnapshot,
@@ -177,6 +175,7 @@ export default function MessageInput({
     () => null,
   );
   const content = contentOverride ?? draftContent;
+  const resolvedPlaceholder = placeholder ?? copy.input.placeholder;
   const attachments = composerAttachments
     .filter((item) => item.status === "ready" && item.attachment)
     .map((item) => item.attachment as ChatImageAttachment);
@@ -187,9 +186,9 @@ export default function MessageInput({
   const canShowActionMenu = allowImageAttachments || showWebSearch;
   const composerStatusMessage =
     content.length >= 3000
-      ? "Max limit reached"
+      ? copy.input.maxLimit
       : isUploadingAttachments
-        ? "Uploading images..."
+        ? copy.input.uploadingImages
         : attachmentError || voiceError || "";
   const composerStatusTone = isUploadingAttachments ? "neutral" : "warning";
   const showMobileComposerStatus =
@@ -426,12 +425,12 @@ export default function MessageInput({
 
       const nextError =
         event.error === "not-allowed"
-          ? "Microphone permission was denied."
+          ? copy.input.microphoneDenied
           : event.error === "audio-capture"
-            ? "No microphone was detected."
+            ? copy.input.microphoneMissing
           : event.error === "no-speech"
-            ? "I couldn't hear anything. Try again."
-            : "Voice dictation ran into a problem.";
+            ? copy.input.noSpeech
+            : copy.input.voiceProblem;
 
       setVoiceError(nextError);
       setIsListening(false);
@@ -447,7 +446,7 @@ export default function MessageInput({
 
   function canStartVoiceInput() {
     if (!window.isSecureContext) {
-      setVoiceError("Voice input needs HTTPS or localhost.");
+      setVoiceError(copy.input.voiceNeedsSecure);
       return false;
     }
 
@@ -462,7 +461,7 @@ export default function MessageInput({
     const recognition = getRecognition();
 
     if (!recognition) {
-      setVoiceError("Sorry, this feature is not supported by your browser :(");
+      setVoiceError(copy.input.voiceUnsupportedDetail);
       return;
     }
 
@@ -490,7 +489,7 @@ export default function MessageInput({
       }
 
       setIsListening(false);
-      setVoiceError("Voice dictation could not start.");
+      setVoiceError(copy.input.voiceCouldNotStart);
     }
   }
 
@@ -504,7 +503,7 @@ export default function MessageInput({
     }
 
     if (!isPremium && (dailyMessagesRemaining ?? 0) <= 0) {
-      onRestrictionReached?.(DAILY_MESSAGES_LIMIT_REASON);
+      onRestrictionReached?.(copy.input.dailyMessagesLimit);
       return;
     }
 
@@ -513,7 +512,7 @@ export default function MessageInput({
       composerAttachments.length > 0 &&
       (dailyImageUploadsRemaining ?? 0) <= 0
     ) {
-      onRestrictionReached?.(DAILY_IMAGE_UPLOAD_LIMIT_REASON);
+      onRestrictionReached?.(copy.input.dailyUploadsLimit);
       return;
     }
 
@@ -557,7 +556,7 @@ export default function MessageInput({
     });
 
     if (!signRes.ok) {
-      let errorMessage = "Could not initialize image upload.";
+      let errorMessage = copy.input.uploadInitFailed;
       const contentType = signRes.headers.get("content-type") ?? "";
 
       if (contentType.includes("application/json")) {
@@ -597,7 +596,7 @@ export default function MessageInput({
     );
 
     if (!uploadRes.ok) {
-      throw new Error("Image upload failed.");
+      throw new Error(copy.input.uploadFailedDetail);
     }
 
     const uploaded = (await uploadRes.json()) as {
@@ -609,7 +608,7 @@ export default function MessageInput({
     };
 
     if (!uploaded.secure_url) {
-      throw new Error("Image upload did not return a valid URL.");
+      throw new Error(copy.input.uploadInvalidUrl);
     }
 
     const attachment: ChatImageAttachment = {
@@ -651,26 +650,30 @@ export default function MessageInput({
     );
 
     if (availableSlots === 0) {
-      setAttachmentError(`You can attach up to ${MAX_ATTACHMENTS} images.`);
+      setAttachmentError(
+        copy.input.tooManyImages.replace("{count}", String(MAX_ATTACHMENTS)),
+      );
       return;
     }
 
     const selectedFiles = filesArray.slice(0, availableSlots);
 
     if (filesArray.length > availableSlots) {
-      setAttachmentError(`You can attach up to ${MAX_ATTACHMENTS} images.`);
+      setAttachmentError(
+        copy.input.tooManyImages.replace("{count}", String(MAX_ATTACHMENTS)),
+      );
     } else {
       setAttachmentError("");
     }
 
     for (const file of selectedFiles) {
       if (!file.type.startsWith("image/")) {
-        setAttachmentError("Only image files are supported.");
+        setAttachmentError(copy.input.onlyImages);
         continue;
       }
 
       if (file.size > MAX_IMAGE_BYTES) {
-        setAttachmentError("Each image must be under 5 MB.");
+        setAttachmentError(copy.input.imageTooLarge);
         continue;
       }
 
@@ -734,7 +737,7 @@ export default function MessageInput({
           ),
         );
 
-        const fallbackMessage = "One or more images failed to upload.";
+        const fallbackMessage = copy.input.oneOrMoreFailed;
         const detail =
           error instanceof Error && error.message.trim()
             ? error.message.trim()
@@ -816,7 +819,7 @@ export default function MessageInput({
             type="button"
             className="app-input-mobile-status-close"
             onClick={() => setDismissedComposerStatus(composerStatusMessage)}
-            aria-label="Dismiss message"
+            aria-label={copy.input.dismiss}
           >
             <X size={13} aria-hidden="true" />
           </button>
@@ -859,7 +862,10 @@ export default function MessageInput({
                       ? "cursor-zoom-in"
                       : "cursor-default",
                   )}
-                  aria-label={`Open ${attachment.name} preview`}
+                  aria-label={copy.input.openPreview.replace(
+                    "{name}",
+                    attachment.name,
+                  )}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -880,7 +886,7 @@ export default function MessageInput({
                 )}
                 {attachment.status === "error" && (
                   <div className="absolute inset-0 grid place-items-center bg-rose-50/90 text-[10px] font-medium text-rose-700">
-                    Failed
+                    {copy.input.uploadFailed}
                   </div>
                 )}
                 <button
@@ -890,7 +896,10 @@ export default function MessageInput({
                     removeAttachmentById(attachment.id);
                   }}
                   className="app-input-attachment-remove-btn absolute top-1 right-1 cursor-pointer rounded-xl p-1 shadow-sm transition"
-                  aria-label={`Remove ${attachment.name}`}
+                  aria-label={copy.input.removeAttachment.replace(
+                    "{name}",
+                    attachment.name,
+                  )}
                 >
                   <X size={12} />
                 </button>
@@ -904,7 +913,7 @@ export default function MessageInput({
           value={content}
           onChange={(event) => setContentOverride(event.target.value)}
           onPaste={handleTextareaPaste}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           maxLength={3000}
           rows={1}
           className={cn(
@@ -963,8 +972,8 @@ export default function MessageInput({
                         ? "h-10 w-10 rounded-xl md:h-10 md:w-10"
                         : "h-10 w-10 rounded-xl md:h-7.5 md:w-7.5",
                     )}
-                    aria-label="Open actions"
-                    data-tooltip="Attach files and more..."
+                    aria-label={copy.input.openActions}
+                    data-tooltip={copy.input.actionsTooltip}
                     aria-expanded={isActionMenuOpen}
                   >
                     <Plus
@@ -987,11 +996,11 @@ export default function MessageInput({
                             fileInputRef.current?.click();
                           }}
                           className="flex w-full cursor-pointer items-center gap-2 rounded-[12px] px-2.5 py-2 text-left text-[13px] text-slate-700 transition hover:bg-slate-50 md:py-2 md:text-[13px]"
-                          data-tooltip="Attach photos"
+                          data-tooltip={copy.input.attachPhotos}
                         >
                           <Paperclip size={16} className="md:hidden" />
                           <Paperclip size={16} className="hidden md:block" />
-                          Attach photos
+                          {copy.input.attachPhotos}
                         </button>
                       )}
                       {showWebSearch && (
@@ -1009,13 +1018,13 @@ export default function MessageInput({
                           )}
                           data-tooltip={
                             webSearchEnabled
-                              ? "Disable web search"
-                              : "Enable web search"
+                              ? copy.input.disableWebSearch
+                              : copy.input.enableWebSearch
                           }
                         >
                           <Globe size={16} className="md:hidden" />
                           <Globe size={16} className="hidden md:block" />
-                          Web search
+                          {copy.input.webSearch}
                         </button>
                       )}
                     </div>
@@ -1028,14 +1037,14 @@ export default function MessageInput({
                 type="button"
                 onClick={() => setWebSearchEnabled(false)}
                 className="app-websearch-pill group inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-[14px] text-sky-700 transition hover:border-sky-300 hover:bg-sky-100 md:gap-1.5 md:px-3 md:py-2 md:text-[14px]"
-                aria-label="Disable web search"
-                data-tooltip="Disable web search"
+                aria-label={copy.input.disableWebSearch}
+                data-tooltip={copy.input.disableWebSearch}
               >
                 <span className="grid place-items-center">
                   <Globe size={16} className="group-hover:hidden" />
                   <X size={16} className="hidden group-hover:block" />
                 </span>
-                <span>Web search</span>
+                <span>{copy.input.webSearch}</span>
               </button>
             )}
             {supportsWebSpeech === false ? (
@@ -1045,9 +1054,10 @@ export default function MessageInput({
                   disabled
                   aria-disabled="true"
                   className="relative inline-flex cursor-not-allowed items-center gap-1.5 rounded-xl px-1.5 py-1 text-[14px] text-slate-400 md:text-[10px]"
-                  data-tooltip="Voice input not supported on this browser"
+                  data-tooltip={copy.input.voiceUnsupported}
                 >
-                  <Mic size={16} className="md:h-2.75 md:w-2.75" /> Voice
+                  <Mic size={16} className="md:h-2.75 md:w-2.75" />{" "}
+                  {copy.input.voice}
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute top-1/2 left-1/2 h-5 w-px -translate-x-1/2 -translate-y-1/2 rotate-[-36deg] bg-red-500"
@@ -1055,7 +1065,7 @@ export default function MessageInput({
                 </button>
 
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden w-56 -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-[10px] leading-4 text-white shadow-[0_12px_30px_rgba(15,23,42,0.22)] group-hover:block group-focus-within:block">
-                  Sorry, this feature is not supported by your browser :(
+                  {copy.input.voiceUnsupportedDetail}
                   <div
                     aria-hidden="true"
                     className="absolute top-full left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-slate-900"
@@ -1074,7 +1084,7 @@ export default function MessageInput({
                     : "h-9 gap-1.5 rounded-xl px-2 md:h-7 md:gap-1 md:px-2",
                 )}
                 data-tooltip={
-                  isListening ? "Stop listening" : "Start voice input"
+                  isListening ? copy.input.stopListening : copy.input.startVoice
                 }
               >
                 <Mic
@@ -1084,7 +1094,7 @@ export default function MessageInput({
                     isListening && "text-sky-600",
                   )}
                 />{" "}
-                {isListening ? "Listening..." : "Voice"}
+                {isListening ? copy.input.listening : copy.input.voice}
               </button>
             )}
           </div>
@@ -1092,12 +1102,12 @@ export default function MessageInput({
           <div className="flex items-center gap-2">
             {content.length >= 3000 && (
               <span className="app-input-inline-status app-input-max-limit-error text-[12px] leading-4 text-amber-700 md:text-[11px]">
-                Max limit reached
+                {copy.input.maxLimit}
               </span>
             )}
             {isUploadingAttachments && content.length < 3000 && (
               <span className="app-input-inline-status text-[10px] text-slate-500">
-                Uploading images...
+                {copy.input.uploadingImages}
               </span>
             )}
             {attachmentError &&
@@ -1134,8 +1144,10 @@ export default function MessageInput({
                     ? "cursor-pointer transition hover:bg-rose-700"
                     : "cursor-pointer transition hover:bg-slate-800",
               )}
-              aria-label={isStreaming ? "Stop generating" : "Send"}
-              data-tooltip={isStreaming ? "Stop generating" : "Send message"}
+              aria-label={isStreaming ? copy.input.stopGenerating : copy.input.send}
+              data-tooltip={
+                isStreaming ? copy.input.stopGenerating : copy.input.sendMessage
+              }
             >
               {isStreaming ? (
                 <Square

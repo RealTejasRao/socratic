@@ -10,6 +10,7 @@ import {
 } from "@/src/lib/billingsdk-config";
 import type { PlanTier, BillingSubscriptionStatus } from "@prisma/client";
 import type { CurrentPlan } from "@/src/lib/billingsdk-config";
+import { useAppRoute } from "../components/app-route-context";
 
 type Props = {
   planTier: PlanTier;
@@ -35,6 +36,7 @@ export default function BillingManagementPanel({
   planStatus,
   subscriptionCurrentPeriodEnd,
 }: Props) {
+  const { copy } = useAppRoute();
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState("");
   const currentPlan = getBillingSdkPlanByTier(planTier);
@@ -52,8 +54,8 @@ export default function BillingManagementPanel({
       type: cycleType,
       nextBillingDate: subscriptionCurrentPeriodEnd
         ? new Date(subscriptionCurrentPeriodEnd).toLocaleDateString()
-        : "N/A",
-      paymentMethod: "Managed in Dodo Payments",
+        : copy.billing.notAvailable,
+      paymentMethod: copy.billing.managedInDodo,
       status: mapStatus(planStatus),
     };
 
@@ -65,7 +67,7 @@ export default function BillingManagementPanel({
     }
 
     return base;
-  }, [currentPlan, planStatus, planTier, subscriptionCurrentPeriodEnd]);
+  }, [copy.billing.managedInDodo, copy.billing.notAvailable, currentPlan, planStatus, planTier, subscriptionCurrentPeriodEnd]);
 
   async function openPortal() {
     setIsBusy(true);
@@ -73,15 +75,15 @@ export default function BillingManagementPanel({
     try {
       const response = await fetch("/api/v1/billing/portal", { method: "POST" });
       if (!response.ok) {
-        throw new Error("Could not open customer portal");
+        throw new Error(copy.billing.portalCustomerFailed);
       }
       const payload = (await response.json()) as { portalUrl?: string };
       if (!payload.portalUrl) {
-        throw new Error("No portal URL returned");
+        throw new Error(copy.billing.portalUrlMissing);
       }
       window.location.href = payload.portalUrl;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Portal error");
+      setError(err instanceof Error ? err.message : copy.billing.portalError);
       setIsBusy(false);
     }
   }
@@ -100,11 +102,11 @@ export default function BillingManagementPanel({
       }
       const payload = (await response.json()) as { checkoutUrl?: string };
       if (!payload.checkoutUrl) {
-        throw new Error("No checkout URL returned");
+        throw new Error(copy.billing.checkoutUrlMissing);
       }
       window.location.href = payload.checkoutUrl;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout error");
+      setError(err instanceof Error ? err.message : copy.billing.checkoutError);
       setIsBusy(false);
     }
   }
@@ -133,19 +135,17 @@ export default function BillingManagementPanel({
             onPlanChange: (planId) => {
               void handlePlanChange(planId);
             },
-            triggerText: "Change Plan",
-            title: "Switch your Socratic+ plan",
+            triggerText: copy.billing.changePlan,
+            title: copy.billing.switchPlan,
           }}
           cancelSubscription={{
-            title: "Cancel or manage subscription",
-            description:
-              "For subscription cancellation and payment-method updates, continue in the secure Dodo customer portal.",
+            title: copy.billing.cancelManage,
+            description: copy.billing.cancelDescription,
             plan: currentPlan,
-            warningTitle: "You can still keep using the free tier.",
-            warningText:
-              "If you cancel, premium features remain active until the end of the paid period.",
-            continueButtonText: "Continue to portal",
-            confirmButtonText: "Open Dodo portal",
+            warningTitle: copy.billing.warningTitle,
+            warningText: copy.billing.warningText,
+            continueButtonText: copy.billing.continueToPortal,
+            confirmButtonText: copy.billing.openDodoPortal,
             onCancel: async () => {
               await openPortal();
             },
@@ -155,8 +155,7 @@ export default function BillingManagementPanel({
       ) : (
         <div className="rounded-2xl border border-[#d8c9ad] bg-[#f9f4e8] px-4 py-4">
           <p className="text-[12px] text-[#6f6250]">
-            No active premium subscription yet. Upgrade to Socratic+ to unlock
-            unlimited messages, debate mode, and global memory.
+            {copy.billing.noPremium}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button
@@ -164,14 +163,14 @@ export default function BillingManagementPanel({
               onClick={() => void startCheckout("monthly")}
               className="rounded-full border border-[#c9b79a] bg-[#efe5d2] px-3 py-1.5 text-[12px] text-[#3d3224] transition hover:bg-[#e8dbc3]"
             >
-              Start monthly
+              {copy.billing.startMonthly}
             </button>
             <button
               type="button"
               onClick={() => void startCheckout("annual")}
               className="rounded-full border border-[#cab287] bg-[#f0d9af] px-3 py-1.5 text-[12px] text-[#342516] transition hover:bg-[#e7cb98]"
             >
-              Start annual
+              {copy.billing.startAnnual}
             </button>
           </div>
         </div>
@@ -180,7 +179,7 @@ export default function BillingManagementPanel({
       {isBusy ? (
         <p className="inline-flex items-center gap-2 text-[12px] text-[#6f6250]">
           <LoaderCircle size={13} className="animate-spin" />
-          Redirecting to Dodo Payments...
+          {copy.billing.redirecting}
         </p>
       ) : null}
 

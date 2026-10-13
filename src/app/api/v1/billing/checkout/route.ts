@@ -1,7 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
+import type DodoPayments from "dodopayments";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { getDodoClient } from "src/server/billing/dodo-client";
+import { AMBASSADOR_SUPPORT_DISCOUNT } from "src/lib/billing";
 import { ROUTES } from "src/lib/routes";
 
 type CheckoutPlan = "monthly" | "annual";
@@ -11,6 +13,68 @@ function resolveProductId(plan: CheckoutPlan) {
     return process.env["DODO_PRODUCT_ANNUAL"];
   }
   return process.env["DODO_PRODUCT_MONTHLY"];
+}
+
+function getConfiguredProductIds(currentProductId: string) {
+  return Array.from(
+    new Set(
+      [
+        process.env["DODO_PRODUCT_MONTHLY"],
+        process.env["DODO_PRODUCT_ANNUAL"],
+        currentProductId,
+      ].filter((value): value is string => Boolean(value)),
+    ),
+  );
+}
+
+async function ensureAmbassadorSupportDiscount(
+  dodo: DodoPayments,
+  productIds: string[],
+) {
+  try {
+    const existingDiscount = await dodo.discounts.retrieveByCode(
+      AMBASSADOR_SUPPORT_DISCOUNT.code,
+    );
+    const isMissingProductRestriction =
+      existingDiscount.restricted_to.length > 0 &&
+      productIds.some(
+        (productId) => !existingDiscount.restricted_to.includes(productId),
+      );
+
+    if (
+      existingDiscount.type !== "percentage" ||
+      existingDiscount.amount !== AMBASSADOR_SUPPORT_DISCOUNT.basisPoints ||
+      isMissingProductRestriction
+    ) {
+      await dodo.discounts.update(existingDiscount.discount_id, {
+        type: "percentage",
+        amount: AMBASSADOR_SUPPORT_DISCOUNT.basisPoints,
+        restricted_to: productIds,
+        preserve_on_plan_change: true,
+        metadata: {
+          source: "socratic_ambassador_support",
+          percent: String(AMBASSADOR_SUPPORT_DISCOUNT.percent),
+        },
+      });
+    }
+  } catch {
+    try {
+      await dodo.discounts.create({
+        code: AMBASSADOR_SUPPORT_DISCOUNT.code,
+        name: "Ambassador Support 10%",
+        type: "percentage",
+        amount: AMBASSADOR_SUPPORT_DISCOUNT.basisPoints,
+        restricted_to: productIds,
+        preserve_on_plan_change: true,
+        metadata: {
+          source: "socratic_ambassador_support",
+          percent: String(AMBASSADOR_SUPPORT_DISCOUNT.percent),
+        },
+      });
+    } catch {
+      await dodo.discounts.retrieveByCode(AMBASSADOR_SUPPORT_DISCOUNT.code);
+    }
+  }
 }
 
 export async function POST(req: Request) {
@@ -44,6 +108,20 @@ export async function POST(req: Request) {
       clerkUserId: true,
       email: true,
       dodoCustomerId: true,
+      referralCodeSubmissions: {
+        orderBy: { createdAt: "asc" },
+        take: 1,
+        select: {
+          ambassadorCodeId: true,
+          code: true,
+          ambassadorCode: {
+            select: {
+              normalizedCode: true,
+              displayName: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -56,16 +134,42 @@ export async function POST(req: Request) {
   const cancelUrl = `${origin}/pricing?checkout=cancelled`;
 
   const dodo = getDodoClient();
+  const referralSupport = dbUser.referralCodeSubmissions[0] ?? null;
+  const hasAmbassadorSupport = Boolean(referralSupport);
+  if (hasAmbassadorSupport) {
+    await ensureAmbassadorSupportDiscount(
+      dodo,
+      getConfiguredProductIds(productId),
+    );
+  }
+
+  const checkoutMetadata = {
+    appUserId: dbUser.id,
+    clerkUserId: dbUser.clerkUserId,
+    plan,
+    ...(referralSupport
+      ? {
+          ambassadorDiscountCode: AMBASSADOR_SUPPORT_DISCOUNT.code,
+          ambassadorDiscountPercent: String(
+            AMBASSADOR_SUPPORT_DISCOUNT.percent,
+          ),
+          ambassadorCodeId: referralSupport.ambassadorCodeId ?? "",
+          ambassadorCode:
+            referralSupport.ambassadorCode?.normalizedCode ??
+            referralSupport.code.toUpperCase(),
+          ambassadorDisplayName:
+            referralSupport.ambassadorCode?.displayName ??
+            referralSupport.code,
+        }
+      : {}),
+  };
 
   const customerPayload = dbUser.dodoCustomerId
     ? { customer_id: dbUser.dodoCustomerId }
     : dbUser.email
       ? {
           email: dbUser.email,
-          metadata: {
-            appUserId: dbUser.id,
-            clerkUserId: dbUser.clerkUserId,
-          },
+          metadata: checkoutMetadata,
         }
       : null;
 
@@ -80,11 +184,10 @@ export async function POST(req: Request) {
     customer: customerPayload,
     return_url: returnUrl,
     cancel_url: cancelUrl,
-    metadata: {
-      appUserId: dbUser.id,
-      clerkUserId: dbUser.clerkUserId,
-      plan,
-    },
+    ...(hasAmbassadorSupport
+      ? { discount_codes: [AMBASSADOR_SUPPORT_DISCOUNT.code] }
+      : {}),
+    metadata: checkoutMetadata,
     customization: {
       theme: "dark",
     },

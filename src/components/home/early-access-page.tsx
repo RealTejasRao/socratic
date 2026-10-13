@@ -21,6 +21,63 @@ const poppins = Poppins({
   weight: "500",
 });
 
+function ThemeToggleButton({
+  className = "",
+  isLight,
+  toggleButtonClassName,
+  onToggle,
+}: {
+  className?: string;
+  isLight: boolean;
+  toggleButtonClassName: string;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
+      className={`${toggleButtonClassName} ${className}`.trim()}
+    >
+      <span
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-45 scale-75 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4.5 w-4.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4.2" />
+          <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6M18.8 18.8l-1.6-1.6M6.8 6.8L5.2 5.2" />
+        </svg>
+      </span>
+      <span
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-0 scale-100 opacity-100" : "-rotate-45 scale-75 opacity-0"}`}
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4.5 w-4.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
+        </svg>
+      </span>
+    </button>
+  );
+}
+
 export default function EarlyAccessPage() {
   const [theme, setTheme] = useState<ThemeMode>("dark");
 
@@ -81,51 +138,8 @@ export default function EarlyAccessPage() {
   const loopClassName = isLight
     ? `${instrumentSerif.className} fill-slate-900/90 tracking-[0.04em] text-[3rem] transition-colors duration-500 ease-out sm:text-xl`
     : `${instrumentSerif.className} fill-white/90 tracking-[0.04em] text-[3rem] transition-colors duration-500 ease-out sm:text-xl`;
-
-  const ThemeToggleButton = ({ className = "" }: { className?: string }) => (
-    <button
-      type="button"
-      onClick={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-      aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
-      className={`${toggleButtonClassName} ${className}`.trim()}
-    >
-      <span
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-45 scale-75 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
-        aria-hidden="true"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          className="h-4.5 w-4.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="4.2" />
-          <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6M18.8 18.8l-1.6-1.6M6.8 6.8L5.2 5.2" />
-        </svg>
-      </span>
-      <span
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-350 ease-out ${isLight ? "rotate-0 scale-100 opacity-100" : "-rotate-45 scale-75 opacity-0"}`}
-        aria-hidden="true"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          className="h-4.5 w-4.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
-        </svg>
-      </span>
-    </button>
-  );
+  const toggleTheme = () =>
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
 
   return (
     <main className="relative flex h-full min-h-screen w-full items-center justify-center overflow-hidden transition-colors duration-500 ease-out">
@@ -158,7 +172,12 @@ export default function EarlyAccessPage() {
           >
             About
           </Link>
-          <ThemeToggleButton className="hidden sm:inline-flex" />
+          <ThemeToggleButton
+            className="hidden sm:inline-flex"
+            isLight={isLight}
+            toggleButtonClassName={toggleButtonClassName}
+            onToggle={toggleTheme}
+          />
         </div>
       </div>
 
@@ -212,7 +231,12 @@ export default function EarlyAccessPage() {
             </a>
           </div>
           <div className="flex justify-end sm:hidden">
-            <ThemeToggleButton className="inline-flex" />
+            <ThemeToggleButton
+              className="inline-flex"
+              isLight={isLight}
+              toggleButtonClassName={toggleButtonClassName}
+              onToggle={toggleTheme}
+            />
           </div>
           <Link
             href={ROUTES.HOME}

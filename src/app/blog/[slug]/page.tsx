@@ -7,7 +7,15 @@ import { ArrowLeft, ExternalLink, Instagram, Linkedin, Mail } from "lucide-react
 import { FallbackPublicImage } from "@/src/components/blog/fallback-public-image";
 import { Footer } from "@/src/components/home/footer";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
+import { MarketingLocaleSwitcher } from "@/src/components/navigation/marketing-locale-switcher";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
+import { getBlogCopy } from "@/src/i18n/blog";
+import { getHomeCopy } from "@/src/i18n/home";
+import {
+  DEFAULT_LOCALE,
+  getLocalizedPath,
+  type SupportedLocale,
+} from "@/src/i18n/locales";
 import {
   resolveOptimizedCloudinaryPublicAsset,
 } from "@/src/lib/cloudinary-public-assets";
@@ -261,15 +269,57 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function renderStyledPostTitle(post: BlogPost) {
-  const phrases = TITLE_HIGHLIGHTS_BY_SLUG[post.slug];
-  if (!phrases || phrases.length === 0) {
-    return post.title;
+function getLocalizedTitleHighlights(displayTitle: string) {
+  const highlights: string[] = [];
+  const colonMatch = displayTitle.match(/^(.+?[:：])\s*/);
+  const questionMatch = displayTitle.match(/^(.+?[?？])\s*/);
+  const sentenceMatch = displayTitle.match(/^(.+?[.!])\s+/);
+  const commaMatch = displayTitle.match(/,\s*(.+)$/);
+  const genericPattern =
+    /\b(Socratic AI|Debate AI|AI|IA|KI|Intelligenza Artificiale|intelligence artificielle|künstliche Intelligenz|Inteligência Artificial|Filosofia|filosofia|Philosophie|philosophie|Stoicismo|Stoïcisme|Stoizismus|Estoicismo|Nietzsche|Søren Kierkegaard|Marco Aurelio|Marc Aurèle|Marcus Aurelius|Platon|Platone|Platão|Aristoteles|Aristotele|Aristote|Aristóteles|Socrate|Sokrates|Sócrates|Bewusstsein|Coscienza|conscience|Consciência|Dio|Dieu|Gott|Deus|Morte|Mort|Tod|Determinismo|Déterminisme|Determinismus)\b/gi;
+
+  if (colonMatch?.[1]) {
+    highlights.push(colonMatch[1].trim());
+  }
+
+  if (questionMatch?.[1]) {
+    highlights.push(questionMatch[1].trim());
+  }
+
+  if (sentenceMatch?.[1] && sentenceMatch[1].length <= 90) {
+    highlights.push(sentenceMatch[1].trim());
+  }
+
+  if (commaMatch?.[1] && commaMatch[1].length <= 90) {
+    highlights.push(commaMatch[1].trim());
+  }
+
+  for (const match of displayTitle.matchAll(genericPattern)) {
+    highlights.push(match[0]);
+  }
+
+  return Array.from(new Set(highlights))
+    .filter((phrase) => phrase.length > 1 && displayTitle.includes(phrase))
+    .sort((first, second) => second.length - first.length);
+}
+
+function getTitleHighlights(post: BlogPost, displayTitle: string) {
+  if (displayTitle === post.title) {
+    return TITLE_HIGHLIGHTS_BY_SLUG[post.slug] ?? [];
+  }
+
+  return getLocalizedTitleHighlights(displayTitle);
+}
+
+function renderStyledPostTitle(post: BlogPost, displayTitle = post.title) {
+  const phrases = getTitleHighlights(post, displayTitle);
+  if (phrases.length === 0) {
+    return displayTitle;
   }
 
   const highlightSet = new Set(phrases.map((phrase) => phrase.toLowerCase()));
   const pattern = new RegExp(`(${phrases.map(escapeRegExp).join("|")})`, "gi");
-  const parts = post.title.split(pattern);
+  const parts = displayTitle.split(pattern);
 
   return parts.map((part, index) => {
     if (highlightSet.has(part.toLowerCase())) {
@@ -347,6 +397,27 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
 
 function normalizeHeadingText(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+export function getMarkdownTitle(markdown: string) {
+  const heading = markdown
+    .split(/\r?\n/)
+    .find((line) => line.trim().startsWith("# "));
+
+  return heading ? heading.trim().slice(2).trim() : null;
+}
+
+export function getMarkdownExcerpt(markdown: string, fallback: string) {
+  const paragraph = markdown
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line && !line.startsWith("#") && line !== "---");
+
+  if (!paragraph) {
+    return fallback;
+  }
+
+  return paragraph.length > 260 ? `${paragraph.slice(0, 257).trim()}...` : paragraph;
 }
 
 function AuthorName({ post }: { post: BlogPost }) {
@@ -530,7 +601,19 @@ function AuthorEndnote({ post }: { post: BlogPost }) {
   return <AuthorFollowCard post={post} />;
 }
 
-function PostContent({ post }: { post: BlogPost }) {
+function PostContent({
+  post,
+  displayTitle,
+  ctaTitle,
+  ctaBody,
+  ctaButton,
+}: {
+  post: BlogPost;
+  displayTitle: string;
+  ctaTitle: string;
+  ctaBody: string;
+  ctaButton: string;
+}) {
   const rawBlocks = toMarkdownBlocks(post.markdown).filter((block) => {
     if (block.type !== "p") {
       return true;
@@ -555,7 +638,7 @@ function PostContent({ post }: { post: BlogPost }) {
     return true;
   });
 
-  const normalizedPostTitle = normalizeHeadingText(post.title);
+  const normalizedPostTitle = normalizeHeadingText(displayTitle);
   const firstHeadingIndex = rawBlocks.findIndex((block) => block.type === "h1");
   const blocks = rawBlocks.filter((block, index) => {
     if (index !== firstHeadingIndex || block.type !== "h1") {
@@ -581,14 +664,12 @@ function PostContent({ post }: { post: BlogPost }) {
             <h3
               className={`${interClassName} text-[2rem] font-semibold text-black/92`}
             >
-              Socratic AI
+              {ctaTitle}
             </h3>
             <p
               className={`${interClassName} mt-3 max-w-180 text-[1.02rem] leading-[1.85] text-black/76 sm:text-[1.06rem]`}
             >
-              Socratic AI is built on the greatest philosophical texts ever
-              written. The thinking partner you never had, available even at 2 AM
-              when the questions won&apos;t stop. Ask anything. Debate everything.
+              {ctaBody}
             </p>
           </div>
 
@@ -598,7 +679,7 @@ function PostContent({ post }: { post: BlogPost }) {
             pendingIndicator="roseCurve"
             className={`${interClassName} inline-flex w-full min-w-62 items-center justify-center rounded-[3px] border border-[#a01717] bg-[#a01717] px-6 py-4 text-[1rem] font-semibold text-white transition-colors duration-220 hover:bg-[#8f1414] lg:w-auto`}
           >
-            Try Socratic AI Now
+            {ctaButton}
           </AuthAwareCtaLink>
         </div>
       </div>
@@ -608,22 +689,51 @@ function PostContent({ post }: { post: BlogPost }) {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+
+  return <LocalizedBlogPostPage slug={slug} locale={DEFAULT_LOCALE} />;
+}
+
+export async function LocalizedBlogPostPage({
+  slug,
+  locale,
+}: {
+  slug: string;
+  locale: SupportedLocale;
+}) {
+  const post = getBlogPostBySlug(slug, locale);
 
   if (!post) {
     notFound();
   }
 
+  const homeCopy = getHomeCopy(locale);
+  const blogCopy = getBlogCopy(locale);
+  const homeHref = getLocalizedPath("/", locale);
+  const pricingHref = getLocalizedPath("/pricing", locale);
+  const billingHref = getLocalizedPath("/billing", locale);
+  const blogHref = getLocalizedPath("/blog", locale);
+  const postPath = getLocalizedPath(`/blog/${post.slug}`, locale);
+  const displayTitle =
+    locale === DEFAULT_LOCALE
+      ? post.title
+      : (getMarkdownTitle(post.markdown) ?? post.title);
+  const displayExcerpt =
+    locale === DEFAULT_LOCALE
+      ? post.excerpt
+      : getMarkdownExcerpt(post.markdown, post.excerpt);
+
   const blogPostingSchema = createBlogPostingSchema({
     slug: post.slug,
-    title: post.title,
-    description: post.excerpt,
+    title: displayTitle,
+    description: displayExcerpt,
     category: post.category,
     author: post.author,
     authorUrl: post.authorUrl,
     coverImagePath: post.coverImagePath,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
+    path: postPath,
+    inLanguage: locale,
   });
 
   const shareItems = [
@@ -663,17 +773,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <MarketingNavbar
         interClassName={interClassName}
         instrumentSerifClassName={instrumentSerif.className}
-        sectionPrefix={ROUTES.HOME}
+        homeHref={homeHref}
+        sectionPrefix={homeHref}
+        pricingHref={pricingHref}
+        billingHref={billingHref}
+        blogHref={blogHref}
+        copy={homeCopy.nav}
+        languageSwitcher={
+          <MarketingLocaleSwitcher
+            locale={locale}
+            label={homeCopy.nav.language}
+            path={`/blog/${post.slug}`}
+            className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full outline-black outline-2 bg-transparent px-2.5 text-[0.72rem] font-medium tracking-[0.01em] text-black transition-all duration-200 hover:border-[#a01717] hover:text-[#a01717] disabled:cursor-wait disabled:opacity-65 sm:px-3.5 sm:text-[0.76rem]`}
+          />
+        }
       />
 
       <section className="px-5 pt-30 pb-20 sm:px-7 sm:pt-34">
         <div className="mx-auto w-full max-w-365">
           <Link
-            href={ROUTES.BLOG}
+            href={blogHref}
             className={`${interClassName} inline-flex items-center gap-2 rounded-full border border-black/16 bg-[#2f2f2f] px-4 py-2 text-[0.82rem] font-semibold tracking-[0.01em] text-white transition-all duration-220 hover:-translate-y-0.5 hover:border-[#a01717]/45 hover:bg-[#a01717]`}
           >
             <ArrowLeft size={14} />
-            Back to Blogs
+            {blogCopy.post.backToBlogs}
           </Link>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-[56px_minmax(0,1fr)] lg:gap-16">
@@ -704,24 +827,37 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <h1
                 className={`${instrumentSerif.className} mt-4 text-[clamp(2.6rem,6vw,5.5rem)] leading-[1.02] tracking-normal text-black`}
               >
-                {renderStyledPostTitle(post)}
+                {renderStyledPostTitle(post, displayTitle)}
               </h1>
               <p
                 className={`${interClassName} mt-5 max-w-190 text-[clamp(1rem,1.95vw,1.28rem)] leading-[1.68] tracking-normal text-black/74`}
               >
-                {post.excerpt}
+                {displayExcerpt}
               </p>
               <AuthorCredit post={post} />
 
               <div className="mt-12 border-t border-black/10 pt-6">
-                <PostContent post={post} />
+                <PostContent
+                  post={post}
+                  displayTitle={displayTitle}
+                  ctaTitle={blogCopy.post.ctaTitle}
+                  ctaBody={blogCopy.post.ctaBody}
+                  ctaButton={blogCopy.post.ctaButton}
+                />
               </div>
             </article>
           </div>
         </div>
       </section>
 
-      <Footer interClassName={interClassName} sectionPrefix={ROUTES.HOME} />
+      <Footer
+        interClassName={interClassName}
+        sectionPrefix={homeHref}
+        pricingHref={pricingHref}
+        billingHref={billingHref}
+        blogHref={blogHref}
+        copy={homeCopy.footer}
+      />
       </main>
     </>
   );

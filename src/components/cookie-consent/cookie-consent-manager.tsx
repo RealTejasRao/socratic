@@ -161,6 +161,15 @@ function createDeclinedPreferences(): CookieConsentPreferences {
   };
 }
 
+function getInitialCookieConsentState() {
+  const stored = readStoredCookieConsent();
+
+  return {
+    hasDecision: Boolean(stored),
+    preferences: stored?.preferences ?? COOKIE_CONSENT_DEFAULT_PREFERENCES,
+  };
+}
+
 function CookieCategoryRow({
   category,
   checked,
@@ -212,29 +221,35 @@ function CookieCategoryRow({
 export function CookieConsentManager() {
   const pathname = usePathname();
   const isStandalone = useStandaloneMode();
+  const initialConsent = useMemo(() => getInitialCookieConsentState(), []);
   const [isReady, setIsReady] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const [hasDecision, setHasDecision] = useState(false);
+  const [hasDecision, setHasDecision] = useState(initialConsent.hasDecision);
   const [detailCategory, setDetailCategory] = useState<CookieConsentCategory | null>(null);
   const [preferences, setPreferences] = useState<CookieConsentPreferences>(
-    COOKIE_CONSENT_DEFAULT_PREFERENCES,
-  );
-
-  const detailCategoryConfig = useMemo(
-    () => COOKIE_CATEGORIES.find((category) => category.id === detailCategory) ?? null,
-    [detailCategory],
+    initialConsent.preferences,
   );
   const isPolicyPage =
     pathname === ROUTES.COOKIE_POLICY || pathname === ROUTES.PRIVACY_POLICY;
+  const isPreferencesVisible = isPreferencesOpen && !isPolicyPage;
+  const detailCategoryConfig = useMemo(
+    () =>
+      isPolicyPage
+        ? null
+        : (COOKIE_CATEGORIES.find((category) => category.id === detailCategory) ?? null),
+    [detailCategory, isPolicyPage],
+  );
 
   useEffect(() => {
-    const stored = readStoredCookieConsent();
-    if (stored) {
-      setPreferences(stored.preferences);
-      setHasDecision(true);
-    }
+    const readinessFrame = window.requestAnimationFrame(() => {
+      const stored = readStoredCookieConsent();
+      if (stored) {
+        setPreferences(stored.preferences);
+        setHasDecision(true);
+      }
 
-    setIsReady(true);
+      setIsReady(true);
+    });
 
     const handleOpen = () => {
       if (isPolicyPage) {
@@ -246,20 +261,14 @@ export function CookieConsentManager() {
     };
 
     window.addEventListener(COOKIE_CONSENT_OPEN_EVENT, handleOpen);
-    return () => window.removeEventListener(COOKIE_CONSENT_OPEN_EVENT, handleOpen);
+    return () => {
+      window.cancelAnimationFrame(readinessFrame);
+      window.removeEventListener(COOKIE_CONSENT_OPEN_EVENT, handleOpen);
+    };
   }, [isPolicyPage]);
 
   useEffect(() => {
-    if (!isPolicyPage) {
-      return;
-    }
-
-    setDetailCategory(null);
-    setIsPreferencesOpen(false);
-  }, [isPolicyPage]);
-
-  useEffect(() => {
-    if (!isPreferencesOpen) {
+    if (!isPreferencesVisible) {
       return;
     }
 
@@ -272,10 +281,10 @@ export function CookieConsentManager() {
 
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
-  }, [isPreferencesOpen]);
+  }, [isPreferencesVisible]);
 
   useEffect(() => {
-    if (!isPreferencesOpen) {
+    if (!isPreferencesVisible) {
       return;
     }
 
@@ -285,9 +294,9 @@ export function CookieConsentManager() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isPreferencesOpen]);
+  }, [isPreferencesVisible]);
 
-  const showBanner = isReady && !hasDecision && !isPreferencesOpen && !isPolicyPage;
+  const showBanner = isReady && !hasDecision && !isPreferencesVisible && !isPolicyPage;
 
   if (isStandalone) {
     return null;
@@ -402,7 +411,7 @@ export function CookieConsentManager() {
         </section>
       ) : null}
 
-      {isPreferencesOpen ? (
+      {isPreferencesVisible ? (
         <section
           className="fixed inset-0 z-130 flex items-end justify-center bg-black/45 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
           aria-modal="true"

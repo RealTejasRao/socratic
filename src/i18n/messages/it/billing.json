@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Fatturazione",
+    "description": "Gestisci il tuo abbonamento e le impostazioni di fatturazione di Socratic+.",
+    "ogAlt": "Impostazioni di fatturazione di Socratic Plus"
+  },
+  "hero": {
+    "welcome": "Benvenuto in",
+    "product": "Socratic Plus",
+    "description": "Gestisci il tuo abbonamento, il rinnovo e i dettagli di fatturazione di Socratic+."
+  },
+  "summary": {
+    "status": "Stato",
+    "active": "Attivo",
+    "free": "Gratuito",
+    "plan": "Piano",
+    "renewsOn": "Si rinnova il",
+    "notAvailable": "Non disponibile",
+    "notApplicable": "Non applicabile",
+    "monthlyPlan": "Socratic + Mensile",
+    "annualPlan": "Socratic + Annuale",
+    "freePlan": "Gratuito"
+  },
+  "actions": {
+    "openingPortal": "Apertura del portale di fatturazione...",
+    "manageSubscription": "Gestisci Abbonamento",
+    "manageSubscriptionDescription": "Aggiorna il metodo di pagamento, i dettagli di fatturazione o annulla.",
+    "explorePerks": "Esplora Vantaggi",
+    "explorePerksDescription": "Scopri cosa è incluso nel tuo piano.",
+    "goToApp": "Vai all'App",
+    "goToAppDescription": "Torna al tuo spazio di lavoro e alle chat."
+  },
+  "statusLine": {
+    "prefix": "Stato di fatturazione:",
+    "cancellationQueued": "Cancellazione in coda alla fine del periodo."
+  },
+  "errors": {
+    "portalUrlMissing": "Nessun URL del portale restituito.",
+    "portalOpenFailed": "Impossibile aprire il portale di fatturazione."
+  }
+}

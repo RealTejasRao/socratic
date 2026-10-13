@@ -15,6 +15,7 @@ type StaggeredMenuProps = {
   closeOnClickAway?: boolean;
   className?: string;
   triggerVariant?: "text" | "hamburger";
+  footerText?: string | undefined;
 };
 
 export function StaggeredMenu({
@@ -22,6 +23,7 @@ export function StaggeredMenu({
   closeOnClickAway = true,
   className,
   triggerVariant = "text",
+  footerText = "Your Personal AI for Philosophy.",
 }: StaggeredMenuProps) {
   const [open, setOpen] = useState(false);
   const [renderPanel, setRenderPanel] = useState(false);
@@ -213,7 +215,7 @@ export function StaggeredMenu({
               <p className="text-[0.8rem] leading-6 tracking-[0.02em] text-black/55 md:text-[0.72rem] md:leading-5.5 md:text-black/52">
                 Socratic AI
                 <br />
-                Your Personal AI for Philosophy.
+                {footerText}
               </p>
             </div>
           </aside>

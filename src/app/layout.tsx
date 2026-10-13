@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { headers } from "next/headers";
 import ClickPulse from "@/src/components/ClickPulse";
 import { CookieConsentManager } from "@/src/components/cookie-consent/cookie-consent-manager";
 import {
@@ -10,6 +11,11 @@ import {
   websiteSchema,
 } from "@/src/lib/seo";
 import { STANDALONE_MODE_INIT_SCRIPT } from "@/src/lib/pwa-standalone";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_DIRECTIONS,
+  normalizeLocale,
+} from "@/src/i18n/locales";
 import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(() => {
@@ -97,13 +103,20 @@ export const metadata: Metadata = {
 
 const structuredData = [organizationSchema, websiteSchema, softwareApplicationSchema];
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headerStore = await headers();
+  const locale = normalizeLocale(headerStore.get("x-socratic-locale") ?? DEFAULT_LOCALE);
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang={locale}
+      dir={LOCALE_DIRECTIONS[locale]}
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{

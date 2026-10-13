@@ -87,7 +87,7 @@ export default function SidebarSessions({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const { appBasePath, sessionHref, isSessionPath } = useAppRoute();
+  const { appBasePath, sessionHref, isSessionPath, copy } = useAppRoute();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [hoveredSession, setHoveredSession] = useState<{
     id: string;
@@ -282,7 +282,7 @@ export default function SidebarSessions({
     setActionDialog({
       mode: "rename",
       sessionId: session.id,
-      currentTitle: session.title || "Untitled Session",
+      currentTitle: session.title || copy.sessions.untitled,
     });
     setRenameValue(session.title || "");
   }
@@ -312,7 +312,7 @@ export default function SidebarSessions({
       );
       setActionDialog(null);
       setRenameValue("");
-      showSuccessToast("Renamed successfully");
+      showSuccessToast(copy.sessions.renamedToast);
 
       const res = await fetch(`/api/v1/chat/sessions/${id}`, {
         method: "PATCH",
@@ -346,7 +346,7 @@ export default function SidebarSessions({
       );
       setActionDialog(null);
       setRenameValue("");
-      showSuccessToast("Deleted successfully");
+      showSuccessToast(copy.sessions.deletedToast);
 
       const res = await fetch(`/api/v1/chat/sessions/${id}`, {
         method: "DELETE",
@@ -469,7 +469,7 @@ export default function SidebarSessions({
         const hoverPreview =
           session.firstMessagePreview?.trim() ||
           session.title ||
-          "Untitled Session";
+          copy.sessions.untitled;
 
         return (
           <div
@@ -533,11 +533,13 @@ export default function SidebarSessions({
                     )
                   )}
                   <p className="truncate text-[14px] leading-5 lg:text-[14px] lg:leading-5">
-                    {session.title || "Untitled Session"}
+                    {session.title || copy.sessions.untitled}
                   </p>
                   {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (
                     <span className="hidden rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-medium text-slate-500 transition-[background-color,border-color,color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] lg:inline-flex">
-                      {session.mode === "DEBATE" ? "Debate" : "Roleplay"}
+                      {session.mode === "DEBATE"
+                        ? copy.sessions.debateBadge
+                        : copy.sessions.roleplayBadge}
                     </span>
                   )}
                 </div>
@@ -545,7 +547,7 @@ export default function SidebarSessions({
               {isOpening ? (
                 <div className="app-session-opening-chip ml-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/90 px-2 py-1 text-[11px] text-slate-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
                   <LoaderCircle size={11} className="animate-spin" />
-                  <span className="font-medium">Opening</span>
+                  <span className="font-medium">{copy.sessions.opening}</span>
                 </div>
               ) : (
                 <div
@@ -567,7 +569,7 @@ export default function SidebarSessions({
                       });
                     }}
                     className="app-session-menu-trigger cursor-pointer rounded-md p-1.5 text-slate-400 opacity-100 transition-[opacity,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] lg:p-2 lg:opacity-0 lg:group-hover:opacity-100"
-                    aria-label="Open chat actions"
+                    aria-label={copy.sessions.actionsLabel}
                   >
                     <MoreHorizontal size={16} className="lg:h-4.25 lg:w-4.25" />
                   </button>
@@ -587,7 +589,7 @@ export default function SidebarSessions({
                         className="flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2 py-1.5 text-left text-[14px] text-[#1A1A1A] transition hover:bg-[#F6F6F3]"
                       >
                         <Pencil size={15} />
-                        Rename
+                        {copy.sessions.rename}
                       </button>
                       <button
                         type="button"
@@ -597,13 +599,13 @@ export default function SidebarSessions({
                           setActionDialog({
                             mode: "delete",
                             sessionId: session.id,
-                            currentTitle: session.title || "Untitled Session",
+                            currentTitle: session.title || copy.sessions.untitled,
                           });
                         }}
                         className="flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2 py-1.5 text-left text-[14px] text-[#EF4444] transition hover:bg-rose-50"
                       >
                         <Trash2 size={15} />
-                        Delete
+                        {copy.sessions.delete}
                       </button>
                     </div>
                   )}
@@ -616,7 +618,7 @@ export default function SidebarSessions({
 
       {displaySessions.length === 0 && (
         <div className="rounded-lg border border-dashed border-slate-300 bg-white/50 px-3 py-3 text-[12px] text-slate-500 lg:py-2.5 lg:text-[10px]">
-          Chats will appear here.
+          {copy.sessions.empty}
         </div>
       )}
 
@@ -640,7 +642,9 @@ export default function SidebarSessions({
           role="dialog"
           aria-modal="true"
           aria-label={
-            actionDialog.mode === "rename" ? "Rename chat" : "Delete chat"
+            actionDialog.mode === "rename"
+              ? copy.sessions.renameChat
+              : copy.sessions.deleteChat
           }
           onClick={() => {
             if (!isDialogBusy) {
@@ -656,13 +660,13 @@ export default function SidebarSessions({
               <div>
                 <p className="text-[20px] leading-none tracking-[-0.04em] text-slate-900 font-[Georgia,serif]">
                   {actionDialog.mode === "rename"
-                    ? "Rename chat"
-                    : "Delete chat"}
+                    ? copy.sessions.renameChat
+                    : copy.sessions.deleteChat}
                 </p>
                 <p className="mt-1.5 text-[12px] leading-5 text-slate-500">
                   {actionDialog.mode === "rename"
-                    ? "Give this chat a cleaner title."
-                    : "This removes the chat permanently."}
+                    ? copy.sessions.renameDescription
+                    : copy.sessions.deleteDescription}
                 </p>
               </div>
               <button
@@ -670,7 +674,7 @@ export default function SidebarSessions({
                 onClick={closeActionDialog}
                 disabled={isDialogBusy}
                 className="cursor-pointer rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Close dialog"
+                aria-label={copy.sessions.closeDialog}
               >
                 <X size={12} />
               </button>
@@ -699,7 +703,7 @@ export default function SidebarSessions({
                     disabled={isDialogBusy}
                     className="app-session-dialog-cancel cursor-pointer rounded-[14px] border border-slate-300 px-3 py-2 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    Cancel
+                    {copy.sessions.cancel}
                   </button>
                   <button
                     type="button"
@@ -710,11 +714,11 @@ export default function SidebarSessions({
                     className="app-session-dialog-save inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-slate-900 px-3 py-2 text-[13px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {pendingAction === "rename" ? (
-                      renderPendingLabel("Saving...")
+                      renderPendingLabel(copy.sessions.saving)
                     ) : (
                       <>
                         <Check size={12} />
-                        Save
+                        {copy.sessions.save}
                       </>
                     )}
                   </button>
@@ -732,7 +736,7 @@ export default function SidebarSessions({
                     disabled={isDialogBusy}
                     className="app-session-dialog-cancel cursor-pointer rounded-[14px] border border-slate-300 px-3 py-2 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    Cancel
+                    {copy.sessions.cancel}
                   </button>
                   <button
                     type="button"
@@ -741,11 +745,11 @@ export default function SidebarSessions({
                     className="app-session-dialog-delete inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-rose-600 px-3 py-2 text-[13px] text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {pendingAction === "delete" ? (
-                      renderPendingLabel("Deleting...")
+                      renderPendingLabel(copy.sessions.deleting)
                     ) : (
                       <>
                         <Trash2 size={12} />
-                        Delete
+                        {copy.sessions.delete}
                       </>
                     )}
                   </button>

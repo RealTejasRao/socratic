@@ -173,7 +173,7 @@ export default function SidebarSearch() {
           className="app-sidebar-nav-item absolute inset-x-0 top-0 flex h-9 cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] transition-all duration-200 lg:h-9 lg:gap-2 lg:rounded-[14px] lg:px-2.5 lg:py-2 lg:text-[14px]"
         >
           <Search size={15} className="lg:h-[15px] lg:w-[15px]" />
-          <span>{copy.searchChatsLabel}</span>
+          <span>{copy.nav.searchChatsLabel}</span>
         </button>
       </div>
 
@@ -201,17 +201,17 @@ export default function SidebarSearch() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="app-sidebar-search-title text-[13px] font-medium text-slate-900">
-                  {copy.searchChatsLabel}
+                  {copy.nav.searchChatsLabel}
                 </p>
                 <p className="app-sidebar-search-subtitle mt-0.5 text-[10px] text-slate-500">
-                  Search titles and message content.
+                  {copy.search.subtitle}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="app-sidebar-search-close inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Close search"
+                aria-label={copy.search.close}
               >
                 <X size={14} />
               </button>
@@ -226,7 +226,7 @@ export default function SidebarSearch() {
                 ref={inputRef}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search through your chats"
+                placeholder={copy.search.placeholder}
                 autoComplete="off"
                 spellCheck={false}
                 className="app-sidebar-search-input h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-[13px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-300 focus:bg-white"
@@ -236,15 +236,15 @@ export default function SidebarSearch() {
             <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
               {!query.trim() ? (
                 <div className="app-sidebar-search-state rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
-                  Start typing to search titles and message content.
+                  {copy.search.empty}
                 </div>
               ) : isLoading ? (
                 <div className="app-sidebar-search-state rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] text-slate-500">
-                  Searching...
+                  {copy.search.loading}
                 </div>
               ) : results.length === 0 ? (
                 <div className="app-sidebar-search-state rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-center text-[11px] leading-5 text-slate-500">
-                  No matching chats found.
+                  {copy.search.noResults}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -261,7 +261,7 @@ export default function SidebarSearch() {
                         {result.matchType === "message" && (
                           <span className="app-sidebar-search-result-badge inline-flex items-center gap-1 rounded-full bg-sky-50 px-1.5 py-0.5 text-[9px] text-sky-700">
                             <Globe size={9} />
-                            In chat
+                            {copy.search.inChat}
                           </span>
                         )}
                       </div>

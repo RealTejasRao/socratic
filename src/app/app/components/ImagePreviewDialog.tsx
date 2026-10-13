@@ -3,6 +3,7 @@
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { buildChatAttachmentPreviewUrl } from "@/src/lib/cloudinary";
+import { useAppRoute } from "./app-route-context";
 
 interface ImagePreviewDialogProps {
   image: {
@@ -16,6 +17,7 @@ export default function ImagePreviewDialog({
   image,
   onClose,
 }: ImagePreviewDialogProps) {
+  const { copy } = useAppRoute();
   const portalTarget = typeof document === "undefined" ? null : document.body;
 
   if (!portalTarget) {
@@ -33,7 +35,7 @@ export default function ImagePreviewDialog({
       }}
       role="dialog"
       aria-modal="true"
-      aria-label={`Preview of ${image.name}`}
+      aria-label={copy.messageActions.previewOf.replace("{name}", image.name)}
       onClick={onClose}
     >
       <button
@@ -44,8 +46,8 @@ export default function ImagePreviewDialog({
           right: "calc(1rem + env(safe-area-inset-right))",
         }}
         onClick={onClose}
-        aria-label="Close image preview"
-        data-tooltip="Close image preview"
+        aria-label={copy.messageActions.closeImagePreview}
+        data-tooltip={copy.messageActions.closeImagePreview}
       >
         <X size={18} />
       </button>

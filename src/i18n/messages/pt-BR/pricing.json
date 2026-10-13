@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "title": "Preços",
+    "description": "Escolha um plano para Socratic +.",
+    "ogAlt": "Planos de preços do Socratic AI"
+  },
+  "hero": {
+    "titlePrefix": "Vá mais longe com",
+    "titleProduct": "Socratic Plus",
+    "description": "Um plano para a curiosidade. Um para pensadores de verdade!",
+    "subtitle": "Preços Transparentes"
+  },
+  "plans": {
+    "basic": {
+      "title": "Básico",
+      "description": "Um espaço reflexivo para a curiosidade do dia a dia. Acesso limitado a recursos.",
+      "features": {
+        "dailyMessages": "{count} mensagens por dia",
+        "socraticMode": "Modo socrático",
+        "roleplayMode": "Modo de interpretação",
+        "imageUploads": "{count} uploads de imagem",
+        "debateMode": "Modo de debate",
+        "detailedDebateFeedback": "Feedback detalhado de debate",
+        "ruthlessTone": "Modo de tom implacável e direto",
+        "globalMemory": "Memória global",
+        "longerHistory": "Histórico de conversas mais longo",
+        "newFeatureAccess": "Acesso a novos recursos",
+        "unlimitedImageUploads": "Uploads de imagem ilimitados"
+      }
+    },
+    "premium": {
+      "title": "Socratic Plus",
+      "description": "Construído para um pensamento mais profundo sem limites. Acesso ilimitado a todos os recursos.",
+      "badge": "Mais Popular",
+      "features": {
+        "everythingBasic": "Tudo no modo Básico",
+        "unlimitedMessages": "Mensagens ilimitadas",
+        "socraticMode": "Modo socrático",
+        "roleplayMode": "Modo de interpretação",
+        "unlimitedImageUploads": "Uploads de imagem ilimitados",
+        "debateMode": "Modo de debate",
+        "detailedDebateFeedback": "Feedback detalhado de debate",
+        "ruthlessTone": "Modo de tom implacável e direto",
+        "globalMemory": "Memória global",
+        "longerHistory": "Histórico de conversas mais longo",
+        "newFeatureAccess": "Acesso a novos recursos"
+      }
+    }
+  },
+  "buttons": {
+    "signInToContinue": "Faça login para continuar",
+    "currentPlan": "Plano atual",
+    "useBasic": "Usar Básico",
+    "signInToUpgrade": "Faça login para atualizar",
+    "startPremium": "Comece o Socratic +",
+    "manageSubscription": "Gerenciar assinatura",
+    "openBillingDashboard": "Abrir painel de cobrança"
+  },
+  "billing": {
+    "monthly": "Mensal",
+    "yearly": "Anual",
+    "save": "Salvar",
+    "perYear": "/ano",
+    "perMonth": "/mês",
+    "percentOff": "desconto",
+    "premiumPrice": "Preço Premium"
+  },
+  "status": {
+    "openingCheckout": "Abrindo checkout seguro...",
+    "customerPortalError": "Não foi possível abrir o portal do cliente.",
+    "portalUrlMissing": "Nenhuma URL de portal retornada.",
+    "checkoutError": "Não foi possível iniciar o checkout.",
+    "checkoutUrlMissing": "Nenhuma URL de checkout retornada."
+  }
+}

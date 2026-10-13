@@ -186,8 +186,10 @@ export function createBlogPostingSchema(post: {
   coverImagePath: string;
   publishedAt: string;
   updatedAt: string;
+  path?: string;
+  inLanguage?: string;
 }) {
-  const url = absoluteUrl(`/blog/${post.slug}`);
+  const url = absoluteUrl(post.path ?? `/blog/${post.slug}`);
   const imageUrl = absoluteUrl(post.coverImagePath);
 
   return {
@@ -216,6 +218,6 @@ export function createBlogPostingSchema(post: {
       "@id": absoluteUrl("/#website"),
     },
     articleSection: post.category,
-    inLanguage: "en",
+    inLanguage: post.inLanguage ?? "en",
   };
 }

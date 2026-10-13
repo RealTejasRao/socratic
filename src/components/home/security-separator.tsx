@@ -7,12 +7,14 @@ type SecuritySeparatorProps = {
   interClassName: string;
   message?: string;
   highlightedTerm?: string;
+  ariaLabel?: string;
 };
 
 export function SecuritySeparator({
   interClassName,
   message = "Your conversations stay private. Always.",
   highlightedTerm = "private",
+  ariaLabel = "Chat security separator",
 }: SecuritySeparatorProps) {
   const highlightedStart = message.indexOf(highlightedTerm);
   const highlightedEnd = highlightedStart + highlightedTerm.length;
@@ -31,7 +33,7 @@ export function SecuritySeparator({
 
   return (
     <section
-      aria-label="Chat security separator"
+      aria-label={ariaLabel}
       className="relative z-10 -mb-2.5 -mt-5 -translate-y-4 bg-transparent px-5 py-2.5 sm:-mb-3 sm:-mt-10 sm:px-7 sm:py-3"
     >
       <div className="mx-auto w-full max-w-280">

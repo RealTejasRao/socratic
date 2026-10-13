@@ -1,6 +1,10 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  DEFAULT_LOCALE,
+  getLocaleFromPathname,
+} from "@/src/i18n/locales";
 
 const PUBLIC_FILE_REGEX =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|json|map|png|svg|txt|webm|webp|woff|woff2|xml)$/i;
@@ -10,6 +14,7 @@ const NON_CANONICAL_HOST = "usesocratic.com";
 const CANONICAL_HOST = "www.usesocratic.com";
 const TWA_LAUNCH_SEARCH_PARAM = "twa";
 const AUTH_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/sso-callback"];
+const LOCALE_HEADER = "x-socratic-locale";
 const OAUTH_CALLBACK_SEARCH_PARAMS = [
   "__clerk_status",
   "__clerk_created_session",
@@ -52,6 +57,14 @@ function isTwaLaunchRequest(req: NextRequest): boolean {
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set(LOCALE_HEADER, getLocaleFromPathname(pathname) ?? DEFAULT_LOCALE);
+  const nextWithLocale = () =>
+    NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   const isOAuthCallbackRequest =
     isAuthRoute(pathname) && hasOAuthCallbackSearchParams(req);
   const env = process.env["VERCEL_TARGET_ENV"] ?? process.env["VERCEL_ENV"];
@@ -63,7 +76,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   };
 
   if (!isProduction) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   const requestHostHeader =
@@ -92,37 +105,37 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   if (pathname === "/") {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (isAuthRoute(pathname)) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (pathname.startsWith("/api/webhooks/clerk")) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (pathname.startsWith("/api/early-access")) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (pathname.startsWith("/_next/")) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (PUBLIC_FILE_REGEX.test(pathname)) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (!matchesRoutePrefix(normalizedPathname, APP_ROUTE_PREFIX)) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   const { userId } = await auth();
 
   if (userId) {
-    return NextResponse.next();
+    return nextWithLocale();
   }
 
   if (isTwaLaunchRequest(req)) {

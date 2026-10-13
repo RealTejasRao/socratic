@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Facturation",
+    "description": "Gérez votre abonnement et vos paramètres de facturation Socratic+.",
+    "ogAlt": "Paramètres de facturation Socratic Plus"
+  },
+  "hero": {
+    "welcome": "Bienvenue à",
+    "product": "Socratic Plus",
+    "description": "Gérez votre abonnement Socratic+, le renouvellement et les détails de facturation."
+  },
+  "summary": {
+    "status": "Statut",
+    "active": "Actif",
+    "free": "Gratuit",
+    "plan": "Plan",
+    "renewsOn": "Se renouvelle le",
+    "notAvailable": "Non disponible",
+    "notApplicable": "Non applicable",
+    "monthlyPlan": "Socratic + Mensuel",
+    "annualPlan": "Socratic + Annuel",
+    "freePlan": "Gratuit"
+  },
+  "actions": {
+    "openingPortal": "Ouverture du portail de facturation...",
+    "manageSubscription": "Gérer l'abonnement",
+    "manageSubscriptionDescription": "Mettre à jour le mode de paiement, les détails de facturation ou annuler.",
+    "explorePerks": "Explorer les avantages",
+    "explorePerksDescription": "Découvrez ce qui est inclus dans votre plan.",
+    "goToApp": "Aller à l'application",
+    "goToAppDescription": "Retournez à votre espace de travail et à vos discussions."
+  },
+  "statusLine": {
+    "prefix": "Statut de facturation :",
+    "cancellationQueued": "Annulation en attente à la fin de la période."
+  },
+  "errors": {
+    "portalUrlMissing": "Aucune URL de portail retournée.",
+    "portalOpenFailed": "Impossible d'ouvrir le portail de facturation."
+  }
+}

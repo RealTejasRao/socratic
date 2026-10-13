@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Abrechnung",
+    "description": "Verwalten Sie Ihr Socratic+ Abonnement und die Abrechnungseinstellungen.",
+    "ogAlt": "Socratic Plus Abrechnungseinstellungen"
+  },
+  "hero": {
+    "welcome": "Willkommen bei",
+    "product": "Socratic Plus",
+    "description": "Verwalten Sie Ihr Socratic+ Abonnement, die Verlängerung und die Abrechnungsdetails."
+  },
+  "summary": {
+    "status": "Status",
+    "active": "Aktiv",
+    "free": "Kostenlos",
+    "plan": "Plan",
+    "renewsOn": "Erneuert am",
+    "notAvailable": "Nicht verfügbar",
+    "notApplicable": "Nicht zutreffend",
+    "monthlyPlan": "Socratic + Monatlich",
+    "annualPlan": "Socratic + Jährlich",
+    "freePlan": "Kostenlos"
+  },
+  "actions": {
+    "openingPortal": "Abrechnungsportal wird geöffnet...",
+    "manageSubscription": "Abonnement verwalten",
+    "manageSubscriptionDescription": "Zahlungsmethode, Abrechnungsdetails aktualisieren oder kündigen.",
+    "explorePerks": "Vorteile erkunden",
+    "explorePerksDescription": "Sehen Sie, was in Ihrem Plan enthalten ist.",
+    "goToApp": "Zur App gehen",
+    "goToAppDescription": "Zurück zu Ihrem Arbeitsbereich und Ihren Chats."
+  },
+  "statusLine": {
+    "prefix": "Abrechnungsstatus:",
+    "cancellationQueued": "Kündigung zum Ende der Periode in Warteschlange."
+  },
+  "errors": {
+    "portalUrlMissing": "Keine Portal-URL zurückgegeben.",
+    "portalOpenFailed": "Konnte das Abrechnungsportal nicht öffnen."
+  }
+}

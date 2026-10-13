@@ -10,12 +10,15 @@ import {
   BILLINGSDK_PLAN_IDS,
   type Plan,
 } from "@/src/lib/billingsdk-config";
-import { PLAN_LIMITS } from "@/src/lib/billing";
+import { AMBASSADOR_SUPPORT_DISCOUNT, PLAN_LIMITS } from "@/src/lib/billing";
 import { ROUTES } from "@/src/lib/routes";
+import type { PricingCopy } from "@/src/i18n/pricing";
 
 type Props = {
   isSignedIn: boolean;
   currentPlanTier: "FREE" | "PREMIUM_MONTHLY" | "PREMIUM_ANNUAL";
+  hasAmbassadorSupport: boolean;
+  copy: PricingCopy;
 };
 
 type CheckoutPlan = "monthly" | "annual";
@@ -25,93 +28,113 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
 });
 
-export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
+function applyDiscount(price: number) {
+  const discountMultiplier = 1 - AMBASSADOR_SUPPORT_DISCOUNT.percent / 100;
+  return (price * discountMultiplier).toFixed(2);
+}
+
+export default function PricingCards({
+  isSignedIn,
+  currentPlanTier,
+  hasAmbassadorSupport,
+  copy,
+}: Props) {
   const [loadingPlan, setLoadingPlan] = useState<CheckoutPlan | null>(null);
   const [error, setError] = useState("");
 
   const pricingPlans = useMemo(() => {
     const basicButtonText = !isSignedIn
-      ? "Sign in to continue"
+      ? copy.buttons.signInToContinue
       : currentPlanTier === "FREE"
-        ? "Current plan"
-        : "Use Basic";
+        ? copy.buttons.currentPlan
+        : copy.buttons.useBasic;
 
     const premiumButtonText = !isSignedIn
-      ? "Sign in to upgrade"
+      ? copy.buttons.signInToUpgrade
       : currentPlanTier === "FREE"
-        ? "Start Socratic +"
-        : "Manage subscription";
+        ? copy.buttons.startPremium
+        : copy.buttons.manageSubscription;
+    const formatCount = (value: string, count: number) =>
+      value.replace("{count}", String(count));
+    const premiumMonthlyPrice = hasAmbassadorSupport ? applyDiscount(9) : "9";
+    const premiumYearlyPrice = hasAmbassadorSupport ? applyDiscount(84) : "84";
 
     return [
       {
         id: BILLINGSDK_PLAN_IDS.FREE,
-        title: "Basic",
-        description:
-          "A thoughtful space for everyday curiosity. Limited Access to features.",
+        title: copy.plans.basic.title,
+        description: copy.plans.basic.description,
         currency: "$",
         monthlyPrice: "0",
         yearlyPrice: "0",
         buttonText: basicButtonText,
         features: [
           {
-            name: `${PLAN_LIMITS.FREE_DAILY_MESSAGES} messages per day`,
+            name: formatCount(
+              copy.plans.basic.features.dailyMessages,
+              PLAN_LIMITS.FREE_DAILY_MESSAGES,
+            ),
             icon: "check",
           },
-          { name: "Socratic mode", icon: "check" },
-          { name: "Roleplay mode", icon: "check" },
+          { name: copy.plans.basic.features.socraticMode, icon: "check" },
+          { name: copy.plans.basic.features.roleplayMode, icon: "check" },
           {
-            name: `${PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS} image uploads`,
+            name: formatCount(
+              copy.plans.basic.features.imageUploads,
+              PLAN_LIMITS.FREE_DAILY_IMAGE_UPLOADS,
+            ),
             icon: "check",
           },
-          { name: "Debate mode", icon: "minus" },
-          { name: "Detailed Debate Feedback", icon: "minus" },
-          { name: "Ruthless, blunt tone mode", icon: "minus" },
-          { name: "Global Memory", icon: "minus" },
-          { name: "Longer conversation history", icon: "minus" },
-          { name: "New feature access", icon: "minus" },
-          { name: "Unlimited image uploads", icon: "minus" },
+          { name: copy.plans.basic.features.debateMode, icon: "minus" },
+          { name: copy.plans.basic.features.detailedDebateFeedback, icon: "minus" },
+          { name: copy.plans.basic.features.ruthlessTone, icon: "minus" },
+          { name: copy.plans.basic.features.globalMemory, icon: "minus" },
+          { name: copy.plans.basic.features.longerHistory, icon: "minus" },
+          { name: copy.plans.basic.features.newFeatureAccess, icon: "minus" },
+          { name: copy.plans.basic.features.unlimitedImageUploads, icon: "minus" },
         ],
       },
       {
         id: BILLINGSDK_PLAN_IDS.PREMIUM_MONTHLY,
-        title: "Socratic Plus",
-        description:
-          "Built for deeper thinking without limits. Unlimited Access to all features.",
+        title: copy.plans.premium.title,
+        description: copy.plans.premium.description,
         currency: "$",
-        monthlyPrice: "9",
-        yearlyPrice: "84",
+        monthlyPrice: premiumMonthlyPrice,
+        yearlyPrice: premiumYearlyPrice,
         buttonText: premiumButtonText,
         highlight: true,
-        badge: "Most Popular",
+        badge: hasAmbassadorSupport
+          ? `${AMBASSADOR_SUPPORT_DISCOUNT.percent}% off`
+          : copy.plans.premium.badge,
         features: [
-          { name: "Everything in Basic mode", icon: "check" },
-          { name: "Unlimited messages", icon: "check" },
-          { name: "Socratic mode", icon: "check" },
-          { name: "Roleplay mode", icon: "check" },
-          { name: "Unlimited image uploads", icon: "check" },
-          { name: "Debate mode", icon: "check" },
-          { name: "Detailed Debate Feedback", icon: "check" },
-          { name: "Ruthless, blunt tone mode", icon: "check" },
-          { name: "Global Memory", icon: "check" },
-          { name: "Longer conversation history", icon: "check" },
-          { name: "New feature access", icon: "check" },
+          { name: copy.plans.premium.features.everythingBasic, icon: "check" },
+          { name: copy.plans.premium.features.unlimitedMessages, icon: "check" },
+          { name: copy.plans.premium.features.socraticMode, icon: "check" },
+          { name: copy.plans.premium.features.roleplayMode, icon: "check" },
+          { name: copy.plans.premium.features.unlimitedImageUploads, icon: "check" },
+          { name: copy.plans.premium.features.debateMode, icon: "check" },
+          { name: copy.plans.premium.features.detailedDebateFeedback, icon: "check" },
+          { name: copy.plans.premium.features.ruthlessTone, icon: "check" },
+          { name: copy.plans.premium.features.globalMemory, icon: "check" },
+          { name: copy.plans.premium.features.longerHistory, icon: "check" },
+          { name: copy.plans.premium.features.newFeatureAccess, icon: "check" },
         ],
       },
     ] satisfies Plan[];
-  }, [currentPlanTier, isSignedIn]);
+  }, [copy, currentPlanTier, hasAmbassadorSupport, isSignedIn]);
 
   async function openPortal() {
     setError("");
     setLoadingPlan(null);
     const response = await fetch("/api/v1/billing/portal", { method: "POST" });
     if (!response.ok) {
-      setError("Could not open customer portal.");
+      setError(copy.status.customerPortalError);
       return;
     }
 
     const payload = (await response.json()) as { portalUrl?: string };
     if (!payload.portalUrl) {
-      setError("No portal URL returned.");
+      setError(copy.status.portalUrlMissing);
       return;
     }
     window.location.href = payload.portalUrl;
@@ -129,18 +152,18 @@ export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
 
       if (!response.ok) {
         const reason = await response.text();
-        setError(reason || "Could not start checkout.");
+        setError(reason || copy.status.checkoutError);
         return;
       }
 
       const payload = (await response.json()) as { checkoutUrl?: string };
       if (!payload.checkoutUrl) {
-        setError("No checkout URL returned.");
+        setError(copy.status.checkoutUrlMissing);
         return;
       }
       window.location.href = payload.checkoutUrl;
     } catch {
-      setError("Could not start checkout.");
+      setError(copy.status.checkoutError);
     } finally {
       setLoadingPlan(null);
     }
@@ -176,23 +199,30 @@ export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
           plans={pricingPlans}
           title={
             <span className={`${instrumentSerif.className} text-[clamp(2.8rem,6.4vw,4.6rem)] font-normal tracking-[-0.022em] text-[#1f1b1b]`}>
-              Go Further With{" "}
+              {copy.hero.titlePrefix}{" "}
               <span className="pwa-mobile-standalone-next-line inline-flex items-center gap-[0.18em] leading-none text-[#b8860b]">
-                <span>Socratic Plus</span>
+                <span>{copy.hero.titleProduct}</span>
                 <PremiumCrownIcon className="h-[0.8em] w-[0.8em] shrink-0 translate-y-[0.06em]" />
               </span>
             </span>
           }
-          description="One plan for curiosity. One for actual thinkers!"
-          subtitle="Transparent Pricing"
+          description={copy.hero.description}
+          subtitle={copy.hero.subtitle}
           onPlanSelect={handlePlanSelect}
           size="medium"
           theme="classic"
           className="w-full py-0"
           showBillingToggle={true}
           billingToggleLabels={{
-            monthly: "Monthly",
-            yearly: "Yearly",
+            monthly: copy.billing.monthly,
+            yearly: copy.billing.yearly,
+          }}
+          priceLabels={{
+            save: copy.billing.save,
+            perYear: copy.billing.perYear,
+            perMonth: copy.billing.perMonth,
+            percentOff: copy.billing.percentOff,
+            premiumPrice: copy.billing.premiumPrice,
           }}
         />
       </div>
@@ -200,7 +230,7 @@ export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
       {isLoading ? (
         <p className="hero-load-up hero-load-up-hero-copy mx-auto mt-4 inline-flex items-center gap-2 text-[13px] text-black/60">
           <LoaderCircle size={14} className="animate-spin" />
-          Opening secure checkout...
+          {copy.status.openingCheckout}
         </p>
       ) : null}
 
@@ -211,13 +241,13 @@ export default function PricingCards({ isSignedIn, currentPlanTier }: Props) {
             onClick={() => void openPortal()}
             className="inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-[13px] text-black transition hover:bg-[#f4f4f3]"
           >
-            Manage subscription
+            {copy.buttons.manageSubscription}
           </button>
           <Link
             href={ROUTES.APP_BILLING}
             className="inline-flex rounded-full border border-black/15 bg-white px-4 py-2 text-[13px] text-black transition hover:bg-[#f4f4f3]"
           >
-            Open billing dashboard
+            {copy.buttons.openBillingDashboard}
           </Link>
         </div>
       ) : null}

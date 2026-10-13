@@ -11,11 +11,36 @@ import {
   useState,
 } from "react";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
-import type { UpscHomeCopy } from "@/src/lib/upsc-home-locale";
 
 type ContactSectionProps = {
   interClassName: string;
-  copy?: Partial<UpscHomeCopy["contact"]>;
+  copy?: Partial<ContactCopy>;
+};
+
+type ContactCopy = {
+  heading: string;
+  mobileFirstLine: string;
+  mobileSecondLine: string;
+  highlightedTerms: readonly string[];
+  title: string;
+  name: string;
+  namePlaceholder: string;
+  email: string;
+  emailPlaceholder: string;
+  message: string;
+  messagePlaceholder: string;
+  wordsLeft: string | ((count: number) => string);
+  send: string;
+  sending: string;
+  requiredError: string;
+  invalidFieldError: string;
+  invalidEmailError: string;
+  tooLongError: string;
+  rateLimitError: string;
+  sendError: string;
+  successMessage: string;
+  emailInvalidHint: string;
+  emailValidHint: string;
 };
 
 const instrumentSerif = Instrument_Serif({
@@ -215,6 +240,16 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
       : isValidEmail(emailValue)
         ? "valid"
         : "invalid";
+  const formatWordsLeft = (count: number) => {
+    if (typeof copy?.wordsLeft === "function") {
+      return copy.wordsLeft(count);
+    }
+
+    return (copy?.wordsLeft ?? "{count} words left").replace(
+      "{count}",
+      String(count),
+    );
+  };
 
   useEffect(() => {
     const onRestart = (event: Event) => {
@@ -271,7 +306,7 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
     if (!name || !email || !message) {
       setSubmitState({
         type: "error",
-        message: "Please complete all required fields.",
+        message: copy?.requiredError ?? "Please complete all required fields.",
       });
       return;
     }
@@ -279,7 +314,9 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
     if (!NAME_REGEX.test(name)) {
       setSubmitState({
         type: "error",
-        message: "Please fix highlighted fields before sending.",
+        message:
+          copy?.invalidFieldError ??
+          "Please fix highlighted fields before sending.",
       });
       return;
     }
@@ -287,7 +324,7 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
     if (!isValidEmail(email)) {
       setSubmitState({
         type: "error",
-        message: "Please enter a valid email address.",
+        message: copy?.invalidEmailError ?? "Please enter a valid email address.",
       });
       return;
     }
@@ -295,7 +332,9 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
     if (countWords(message) > MAX_MESSAGE_WORDS) {
       setSubmitState({
         type: "error",
-        message: "Message is too long. Maximum allowed is 2000 words.",
+        message:
+          copy?.tooLongError ??
+          "Message is too long. Maximum allowed is 2000 words.",
       });
       return;
     }
@@ -323,8 +362,9 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
       if (!response.ok) {
         const fallbackMessage =
           response.status === 429
-            ? "Too many messages. Please try again later."
-            : "Could not send right now. Please try again in a moment.";
+            ? (copy?.rateLimitError ?? "Too many messages. Please try again later.")
+            : (copy?.sendError ??
+              "Could not send right now. Please try again in a moment.");
 
         setSubmitState({
           type: "error",
@@ -341,7 +381,8 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
         message:
           typeof result?.message === "string"
             ? result.message
-            : "Message sent successfully. Thanks for sharing!",
+            : (copy?.successMessage ??
+              "Message sent successfully. Thanks for sharing!"),
       });
       formRef.current?.reset();
       setNameValue("");
@@ -353,7 +394,9 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
     } catch {
       setSubmitState({
         type: "error",
-        message: "Could not send right now. Please try again in a moment.",
+        message:
+          copy?.sendError ??
+          "Could not send right now. Please try again in a moment.",
       });
     } finally {
       setIsSending(false);
@@ -668,9 +711,10 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
                     aria-live="polite"
                   >
                     {emailStatus === "invalid"
-                      ? "Enter a valid email (example@domain.com)."
+                      ? (copy?.emailInvalidHint ??
+                        "Enter a valid email (example@domain.com).")
                       : emailStatus === "valid"
-                        ? "Email looks good."
+                        ? (copy?.emailValidHint ?? "Email looks good.")
                         : "."}
                   </p>
                 </div>
@@ -700,7 +744,7 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
                     }`}
                   />
                   <p className="mt-1.5 text-right text-[0.64rem] text-black/46 md:mt-1.25 md:text-[0.52rem]">
-                    {copy?.wordsLeft?.(wordsLeft) ?? `${wordsLeft} words left`}
+                    {formatWordsLeft(wordsLeft)}
                   </p>
                 </div>
 

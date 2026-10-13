@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "title": "Pricing",
+    "description": "Choose a plan for Socratic +.",
+    "ogAlt": "Socratic AI pricing plans"
+  },
+  "hero": {
+    "titlePrefix": "Go Further With",
+    "titleProduct": "Socratic Plus",
+    "description": "One plan for curiosity. One for actual thinkers!",
+    "subtitle": "Transparent Pricing"
+  },
+  "plans": {
+    "basic": {
+      "title": "Basic",
+      "description": "A thoughtful space for everyday curiosity. Limited Access to features.",
+      "features": {
+        "dailyMessages": "{count} messages per day",
+        "socraticMode": "Socratic mode",
+        "roleplayMode": "Roleplay mode",
+        "imageUploads": "{count} image uploads",
+        "debateMode": "Debate mode",
+        "detailedDebateFeedback": "Detailed Debate Feedback",
+        "ruthlessTone": "Ruthless, blunt tone mode",
+        "globalMemory": "Global Memory",
+        "longerHistory": "Longer conversation history",
+        "newFeatureAccess": "New feature access",
+        "unlimitedImageUploads": "Unlimited image uploads"
+      }
+    },
+    "premium": {
+      "title": "Socratic Plus",
+      "description": "Built for deeper thinking without limits. Unlimited Access to all features.",
+      "badge": "Most Popular",
+      "features": {
+        "everythingBasic": "Everything in Basic mode",
+        "unlimitedMessages": "Unlimited messages",
+        "socraticMode": "Socratic mode",
+        "roleplayMode": "Roleplay mode",
+        "unlimitedImageUploads": "Unlimited image uploads",
+        "debateMode": "Debate mode",
+        "detailedDebateFeedback": "Detailed Debate Feedback",
+        "ruthlessTone": "Ruthless, blunt tone mode",
+        "globalMemory": "Global Memory",
+        "longerHistory": "Longer conversation history",
+        "newFeatureAccess": "New feature access"
+      }
+    }
+  },
+  "buttons": {
+    "signInToContinue": "Sign in to continue",
+    "currentPlan": "Current plan",
+    "useBasic": "Use Basic",
+    "signInToUpgrade": "Sign in to upgrade",
+    "startPremium": "Start Socratic +",
+    "manageSubscription": "Manage subscription",
+    "openBillingDashboard": "Open billing dashboard"
+  },
+  "billing": {
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save",
+    "perYear": "/year",
+    "perMonth": "/month",
+    "percentOff": "off",
+    "premiumPrice": "Premium price"
+  },
+  "status": {
+    "openingCheckout": "Opening secure checkout...",
+    "customerPortalError": "Could not open customer portal.",
+    "portalUrlMissing": "No portal URL returned.",
+    "checkoutError": "Could not start checkout.",
+    "checkoutUrlMissing": "No checkout URL returned."
+  }
+}

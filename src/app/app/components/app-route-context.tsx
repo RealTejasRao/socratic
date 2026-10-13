@@ -2,34 +2,37 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 import type { Route } from "next";
+import enAppCopy from "@/src/i18n/messages/en/app.json";
+import type { AppCopy } from "@/src/i18n/app";
+import { DEFAULT_LOCALE, type SupportedLocale } from "@/src/i18n/locales";
 import { ROUTES } from "@/src/lib/routes";
 import type { SessionMode } from "@/src/types/chat";
+
+type LegacyAppCopyOverrides = Partial<{
+  emptySessionTitle: string;
+  newChatLabel: string;
+  searchChatsLabel: string;
+  roleplayModeLabel: string;
+  chatsHeading: string;
+}>;
+
+export type AppRouteCopyOverrides = Partial<AppCopy> & LegacyAppCopyOverrides;
 
 type AppRouteContextValue = {
   appBasePath: string;
   marketingHomePath: Route;
   defaultNewChatMode: SessionMode;
-  copy: {
-    emptySessionTitle: string;
-    newChatLabel: string;
-    searchChatsLabel: string;
-    roleplayModeLabel: string;
-    chatsHeading: string;
-  };
+  locale: SupportedLocale;
+  copy: AppCopy;
 };
 
-const DEFAULT_APP_COPY: AppRouteContextValue["copy"] = {
-  emptySessionTitle: "Start of a new conversation",
-  newChatLabel: "New Chat",
-  searchChatsLabel: "Search chats",
-  roleplayModeLabel: "Talk to a philosopher",
-  chatsHeading: "Chats",
-};
+const DEFAULT_APP_COPY = enAppCopy as AppCopy;
 
 const AppRouteContext = createContext<AppRouteContextValue>({
   appBasePath: ROUTES.APP,
   marketingHomePath: ROUTES.HOME,
   defaultNewChatMode: "ROLEPLAY",
+  locale: DEFAULT_LOCALE,
   copy: DEFAULT_APP_COPY,
 });
 
@@ -37,19 +40,45 @@ export function AppRouteProvider({
   appBasePath = ROUTES.APP,
   marketingHomePath = ROUTES.HOME,
   defaultNewChatMode = "ROLEPLAY",
+  locale = DEFAULT_LOCALE,
   copy,
   children,
 }: {
   appBasePath?: string;
   marketingHomePath?: Route;
   defaultNewChatMode?: SessionMode;
-  copy?: Partial<AppRouteContextValue["copy"]>;
+  locale?: SupportedLocale;
+  copy?: AppRouteCopyOverrides;
   children: React.ReactNode;
 }) {
-  const resolvedCopy = useMemo(
-    () => ({ ...DEFAULT_APP_COPY, ...copy }),
-    [copy],
-  );
+  const resolvedCopy = useMemo(() => {
+    if (!copy) {
+      return DEFAULT_APP_COPY;
+    }
+
+    const {
+      emptySessionTitle,
+      newChatLabel,
+      searchChatsLabel,
+      roleplayModeLabel,
+      chatsHeading,
+      ...copyOverrides
+    } = copy;
+
+    return {
+      ...DEFAULT_APP_COPY,
+      ...copyOverrides,
+      nav: {
+        ...DEFAULT_APP_COPY.nav,
+        ...copyOverrides.nav,
+        ...(emptySessionTitle === undefined ? {} : { emptySessionTitle }),
+        ...(newChatLabel === undefined ? {} : { newChatLabel }),
+        ...(searchChatsLabel === undefined ? {} : { searchChatsLabel }),
+        ...(roleplayModeLabel === undefined ? {} : { roleplayModeLabel }),
+        ...(chatsHeading === undefined ? {} : { chatsHeading }),
+      },
+    } as AppCopy;
+  }, [copy]);
 
   return (
     <AppRouteContext.Provider
@@ -57,6 +86,7 @@ export function AppRouteProvider({
         appBasePath,
         marketingHomePath,
         defaultNewChatMode,
+        locale,
         copy: resolvedCopy,
       }}
     >
@@ -66,7 +96,7 @@ export function AppRouteProvider({
 }
 
 export function useAppRoute() {
-  const { appBasePath, marketingHomePath, defaultNewChatMode, copy } =
+  const { appBasePath, marketingHomePath, defaultNewChatMode, locale, copy } =
     useContext(AppRouteContext);
 
   const escapedBasePath = useMemo(
@@ -126,6 +156,7 @@ export function useAppRoute() {
     appBasePath,
     marketingHomePath,
     defaultNewChatMode,
+    locale,
     copy,
     contactHref,
     sessionHref,

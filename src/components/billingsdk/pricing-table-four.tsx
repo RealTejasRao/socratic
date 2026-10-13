@@ -199,6 +199,13 @@ export interface PricingTableFourProps extends VariantProps<typeof sectionVarian
     monthly: string;
     yearly: string;
   };
+  priceLabels?: {
+    save: string;
+    perYear: string;
+    perMonth: string;
+    percentOff: string;
+    premiumPrice: string;
+  };
 }
 
 const defaultIcons = {
@@ -224,6 +231,13 @@ export function PricingTableFour({
   billingToggleLabels = {
     monthly: "Monthly",
     yearly: "Yearly",
+  },
+  priceLabels = {
+    save: "Save",
+    perYear: "/year",
+    perMonth: "/month",
+    percentOff: "off",
+    premiumPrice: "Premium price",
   },
 }: PricingTableFourProps) {
   const [isAnnually, setIsAnnually] = useState(false);
@@ -326,7 +340,7 @@ export function PricingTableFour({
                     {billingToggleLabels.yearly}
                     {yearlyPriceDiscount > 0 && (
                       <span className="ml-1 rounded border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                        Save {yearlyPriceDiscount}%
+                        {priceLabels.save} {yearlyPriceDiscount}%
                       </span>
                     )}
                   </Label>
@@ -420,7 +434,7 @@ export function PricingTableFour({
                           <div className="flex items-baseline gap-1">
                             <span className={cn(priceTextVariants({ size, theme }))}>
                               {plan.highlight && (
-                                <span className="sr-only">Premium price </span>
+                                <span className="sr-only">{priceLabels.premiumPrice} </span>
                               )}
                               <span
                                 className={cn(
@@ -435,7 +449,7 @@ export function PricingTableFour({
                               {plan.yearlyPrice}
                               </span>
                             </span>
-                            <span className="text-muted-foreground text-sm">/year</span>
+                            <span className="text-muted-foreground text-sm">{priceLabels.perYear}</span>
                             {calculateDiscount(plan.monthlyPrice, plan.yearlyPrice) > 0 && (
                               <span
                                 className={cn(
@@ -445,7 +459,7 @@ export function PricingTableFour({
                                     : "text-primary font-medium",
                                 )}
                               >
-                                {calculateDiscount(plan.monthlyPrice, plan.yearlyPrice)}% off
+                                {calculateDiscount(plan.monthlyPrice, plan.yearlyPrice)}% {priceLabels.percentOff}
                               </span>
                             )}
                           </div>
@@ -453,7 +467,7 @@ export function PricingTableFour({
                           <div className="flex items-baseline gap-1">
                             <span className={cn(priceTextVariants({ size, theme }))}>
                               {plan.highlight && (
-                                <span className="sr-only">Premium price </span>
+                                <span className="sr-only">{priceLabels.premiumPrice} </span>
                               )}
                               <span
                                 className={cn(
@@ -468,7 +482,7 @@ export function PricingTableFour({
                               {plan.monthlyPrice}
                               </span>
                             </span>
-                            <span className="text-muted-foreground text-sm">/month</span>
+                            <span className="text-muted-foreground text-sm">{priceLabels.perMonth}</span>
                           </div>
                         )}
                       </motion.div>

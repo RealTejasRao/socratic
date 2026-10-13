@@ -1,0 +1,147 @@
+{
+  "metadata": {
+    "title": "Socratic AI | Philosophy, Critical Thinking & Deep Conversations",
+    "description": "Socratic AI: An AI thinking partner for philosophy, critical thinking, and deep conversation. Built on Socratic dialogue, it challenges your reasoning, sharpens your arguments, and helps you think more clearly.",
+    "ogAlt": "Socratic AI - AI for philosophy and strategic thinking"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "contact": "Contact",
+    "openApp": "Open App",
+    "language": "Language",
+    "menuTagline": "Your Personal AI for Philosophy."
+  },
+  "hero": {
+    "srOnly": "Socratic AI: Your Personal AI For Philosophy, Deep Convos, Wisdom, and Growth.",
+    "headlinePrefix": "Socratic AI: Your Personal AI For",
+    "words": ["Philosophy", "Deep Convos", "Wisdom", "Growth"],
+    "signedOutCta": "Try Socratic AI",
+    "signedInCta": "Enter Socratic AI",
+    "mobileImageAlt": "Socratic AI hero illustration for philosophy and strategic thinking",
+    "desktopImageAlt": "Socratic AI hero illustration for philosophy and strategic thinking"
+  },
+  "features": {
+    "headingSubject": "Philosophy",
+    "headingText": "Built Different.\nBuilt For Philosophy",
+    "highlightedTerms": ["Different", "Philosophy"],
+    "cards": [
+      {
+        "id": "argues-back",
+        "title": "It Argues Back.\nBy Design.",
+        "description": "Most AI tells you what you want to hear. This one is wired to push back readily."
+      },
+      {
+        "id": "corpus",
+        "title": "A Corpus Built for\nPhilosophers",
+        "description": "Responses based on original writings, not skimmed Reddit summaries."
+      },
+      {
+        "id": "model-of-you",
+        "title": "It Builds a Model,\nof You",
+        "description": "Actively tracks your beliefs and assumptions, connects them into a living model of your thinking."
+      },
+      {
+        "id": "clarity",
+        "title": "Clarity You Can Take\nWith You",
+        "description": "Discover positions you didn't know you held, gaps you didn't know were there."
+      }
+    ]
+  },
+  "security": {
+    "message": "Your conversations stay private. Always.",
+    "highlightedTerm": "private",
+    "ariaLabel": "Chat security separator"
+  },
+  "useCases": {
+    "headingText": "One AI, Endless Directions",
+    "mobileFirstLine": "One AI",
+    "mobileSecondLine": "Endless Directions",
+    "highlightedWord": "Endless",
+    "items": [
+      {
+        "id": "deep-conversations",
+        "leftTitle": "Deep Conversations",
+        "leftDescription": "Have the discussions your daily life doesn't make room for.",
+        "rightTitle": "Finally Someone to Think Out Loud With.",
+        "rightDescription": "Have the deep conversations you've always wanted, at any hour, with someone who takes you seriously. No judgment, no distraction. Just thinking. Together.",
+        "placeholderLabel": "Philosophy conversation scene for deep dialogue"
+      },
+      {
+        "id": "debate-drills",
+        "leftTitle": "Debate Drills",
+        "leftDescription": "Debate with our AI that never goes easy on you, so the real thing feels effortless.",
+        "rightTitle": "Turn Your Ideas Into Powerful Arguments.",
+        "rightDescription": "It maps every claim you make, tracks your logic in real time, and fires back with the most precise counter it can find; then turns around and guides you toward the stronger version of it.",
+        "placeholderLabel": "Debate practice visualization with structured arguments"
+      },
+      {
+        "id": "all-of-philosophy",
+        "leftTitle": "All of Philosophy",
+        "leftDescription": "Dive into any philosophical idea or thinker and actually come out understanding it.",
+        "rightTitle": "The Entire History of Human Thought, Ready to Discuss.",
+        "rightDescription": "Understand any philosopher, any idea, the way it was always meant to be - through conversation, not a textbook. From the ancient Greeks to modern existentialists, from Stoicism to Nihilism.",
+        "placeholderLabel": "Classical architecture visual representing the history of philosophy"
+      }
+    ]
+  },
+  "contact": {
+    "heading": "We'd love to hear from you :)",
+    "mobileFirstLine": "We'd love to",
+    "mobileSecondLine": "hear from you :)",
+    "highlightedTerms": ["love", ":)"],
+    "title": "Contact Us",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "message": "Message",
+    "messagePlaceholder": "Drop your suggestion, feedback, or anything else...",
+    "wordsLeft": "{count} words left",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "requiredError": "Please complete all required fields.",
+    "invalidFieldError": "Please fix highlighted fields before sending.",
+    "invalidEmailError": "Please enter a valid email address.",
+    "tooLongError": "Message is too long. Maximum allowed is 2000 words.",
+    "rateLimitError": "Too many messages. Please try again later.",
+    "sendError": "Could not send right now. Please try again in a moment.",
+    "successMessage": "Message sent successfully. Thanks for sharing!",
+    "emailInvalidHint": "Enter a valid email (example@domain.com).",
+    "emailValidHint": "Email looks good."
+  },
+  "footer": {
+    "descriptionLines": [
+      "Built on the greatest philosophical texts ever written.",
+      "Ask anything. Debate Everything"
+    ],
+    "cta": "Try Socratic AI Now",
+    "explore": "Explore",
+    "account": "Account",
+    "preferences": "Preferences",
+    "home": "Home",
+    "features": "Features",
+    "blog": "Blog",
+    "contact": "Contact",
+    "pricing": "Pricing",
+    "goToApp": "Go to App",
+    "getSocraticPlus": "Get Socratic +",
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "manageSubscription": "Manage Subscription",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "cookiePolicy": "Cookie Policy",
+    "consentPreferences": "Consent Preferences",
+    "allRightsReserved": "All rights reserved."
+  },
+  "standalone": {
+    "headline": "Your mind was meant for more",
+    "body": "Your secret place for deep thoughts and conversations that change you, away from the distractions of the world.",
+    "createAccount": "Create Account",
+    "login": "Login",
+    "imageAlt": "Books and sculpture surrounded by flowers"
+  }
+}

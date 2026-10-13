@@ -22,11 +22,19 @@ const poppins = Poppins({
 type TwaHomeShellProps = {
   isSignedIn: boolean;
   appHref?: Route;
+  copy?: Partial<{
+    headline: string;
+    body: string;
+    createAccount: string;
+    login: string;
+    imageAlt: string;
+  }>;
 };
 
 export function TwaHomeShell({
   isSignedIn,
   appHref = ROUTES.APP_ROLEPLAY,
+  copy,
 }: TwaHomeShellProps) {
   const router = useRouter();
   const isStandalone = useStandaloneMode();
@@ -48,7 +56,7 @@ export function TwaHomeShell({
       >
         <Image
           src="/twa/intro/first.webp"
-          alt="Books and sculpture surrounded by flowers"
+          alt={copy?.imageAlt ?? "Books and sculpture surrounded by flowers"}
           fill
           priority
           sizes="100vw"
@@ -68,11 +76,11 @@ export function TwaHomeShell({
             <h1
               className={`${instrumentSerif.className} text-[1.78rem] leading-[1.02] tracking-[0.018em] text-[#fbf4eb] sm:text-[2rem]`}
             >
-              Your mind was meant for more
+              {copy?.headline ?? "Your mind was meant for more"}
             </h1>
             <p className="mt-4 text-[0.8rem] leading-[1.65] text-white/80 sm:text-[0.8rem]">
-              Your secret place for deep thoughts and conversations that change
-              you, away from the distractions of the world.
+              {copy?.body ??
+                "Your secret place for deep thoughts and conversations that change you, away from the distractions of the world."}
             </p>
           </div>
 
@@ -81,13 +89,13 @@ export function TwaHomeShell({
               href={ROUTES.SIGN_UP}
               className="inline-flex min-h-15 w-full items-center justify-center rounded-full bg-[#f6f2ea] px-6 text-[1rem] font-medium text-[#122638] shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform duration-200 active:scale-[0.985]"
             >
-              Create Account
+              {copy?.createAccount ?? "Create Account"}
             </Link>
             <Link
               href={ROUTES.SIGN_IN}
               className="inline-flex min-h-15 w-full items-center justify-center rounded-full border border-white/18 bg-black/14 px-6 text-[1rem] font-medium text-white/94 backdrop-blur-sm transition-colors duration-200 hover:bg-black/20 active:scale-[0.985]"
             >
-              Login
+              {copy?.login ?? "Login"}
             </Link>
           </div>
         </section>

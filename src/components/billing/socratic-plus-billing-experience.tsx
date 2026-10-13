@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import {
   CreditCard,
@@ -11,6 +12,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
+import type { BillingCopy } from "@/src/i18n/billing";
+import type { SupportedLocale } from "@/src/i18n/locales";
 import { ROUTES } from "@/src/lib/routes";
 import { cn } from "@/src/lib/utils";
 
@@ -87,28 +90,34 @@ type BillingExperienceProps = {
   subscriptionCurrentPeriodEndIso: string | null;
   subscriptionCancelAtPeriodEnd: boolean;
   welcomeRequested: boolean;
+  locale: SupportedLocale;
+  copy: BillingCopy;
+  pricingHref: Route;
 };
 
-function formatDate(dateIso: string | null) {
+function formatDate(dateIso: string | null, locale: SupportedLocale, fallback: string) {
   if (!dateIso) {
-    return "Not available";
+    return fallback;
   }
 
-  return new Date(dateIso).toLocaleDateString(undefined, {
+  return new Date(dateIso).toLocaleDateString(locale, {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 }
 
-function resolvePlanLabel(planTier: BillingExperienceProps["planTier"]) {
+function resolvePlanLabel(
+  planTier: BillingExperienceProps["planTier"],
+  copy: BillingCopy,
+) {
   if (planTier === "PREMIUM_ANNUAL") {
-    return "Socratic + Annual";
+    return copy.summary.annualPlan;
   }
   if (planTier === "PREMIUM_MONTHLY") {
-    return "Socratic + Monthly";
+    return copy.summary.monthlyPlan;
   }
-  return "Free";
+  return copy.summary.freePlan;
 }
 
 export function SocraticPlusBillingExperience({
@@ -120,11 +129,18 @@ export function SocraticPlusBillingExperience({
   subscriptionCurrentPeriodEndIso,
   subscriptionCancelAtPeriodEnd,
   welcomeRequested,
+  locale,
+  copy,
+  pricingHref,
 }: BillingExperienceProps) {
   const [isPortalLoading, setIsPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState("");
   const shouldReduceMotion = useReducedMotion();
-  const renewalDateLabel = formatDate(subscriptionCurrentPeriodEndIso);
+  const renewalDateLabel = formatDate(
+    subscriptionCurrentPeriodEndIso,
+    locale,
+    copy.summary.notAvailable,
+  );
 
   useEffect(() => {
     if (!welcomeRequested || !isPremium) {
@@ -143,12 +159,12 @@ export function SocraticPlusBillingExperience({
       }
       const payload = (await response.json()) as { portalUrl?: string };
       if (!payload.portalUrl) {
-        throw new Error("No portal URL returned.");
+        throw new Error(copy.errors.portalUrlMissing);
       }
       window.location.href = payload.portalUrl;
     } catch (error) {
       setPortalError(
-        error instanceof Error ? error.message : "Could not open billing portal.",
+        error instanceof Error ? error.message : copy.errors.portalOpenFailed,
       );
       setIsPortalLoading(false);
     }
@@ -169,12 +185,12 @@ export function SocraticPlusBillingExperience({
           )}
           variants={heroTextVariants}
         >
-          <motion.span variants={itemVariants}>Welcome to</motion.span>
+          <motion.span variants={itemVariants}>{copy.hero.welcome}</motion.span>
           <motion.span
             className="pwa-mobile-standalone-next-line inline-flex items-center gap-[0.18em] leading-none text-[#b8860b]"
             variants={itemVariants}
           >
-            <span>Socratic Plus</span>
+            <span>{copy.hero.product}</span>
             <PremiumCrownIcon className="h-[0.88em] w-[0.88em] shrink-0 translate-y-[0.06em]" />
           </motion.span>
         </motion.h1>
@@ -182,7 +198,7 @@ export function SocraticPlusBillingExperience({
           className={`${interClassName} mt-3 text-center text-[0.97rem] text-[#6f6b64]`}
           variants={heroTextVariants}
         >
-          Manage your Socratic+ subscription, renewal, and billing details.
+          {copy.hero.description}
         </motion.p>
 
         <motion.div
@@ -191,23 +207,23 @@ export function SocraticPlusBillingExperience({
         >
           <div className="grid gap-4 border-b border-[#ece9e4] px-5 py-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#ece9e4] sm:px-6">
             <motion.div className="sm:pr-6" variants={itemVariants}>
-              <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>Status</p>
+              <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>{copy.summary.status}</p>
               <span
                 className={`${interClassName} mt-2 inline-flex rounded-md bg-[#e5f4e9] px-2.5 py-1 text-[0.75rem] font-medium text-[#2f8e48]`}
               >
-                {isPremium ? "Active" : "Free"}
+                {isPremium ? copy.summary.active : copy.summary.free}
               </span>
             </motion.div>
             <motion.div className="sm:px-6" variants={itemVariants}>
-              <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>Plan</p>
+              <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>{copy.summary.plan}</p>
               <p className={`${interClassName} mt-2 text-[1.06rem] font-medium text-[#292723]`}>
-                {resolvePlanLabel(planTier)}
+                {resolvePlanLabel(planTier, copy)}
               </p>
             </motion.div>
             <motion.div className="sm:pl-6" variants={itemVariants}>
-              <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>Renews on</p>
+              <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>{copy.summary.renewsOn}</p>
               <p className={`${interClassName} mt-2 text-[1.06rem] font-medium text-[#292723]`}>
-                {isPremium ? renewalDateLabel : "Not applicable"}
+                {isPremium ? renewalDateLabel : copy.summary.notApplicable}
               </p>
             </motion.div>
           </div>
@@ -229,10 +245,10 @@ export function SocraticPlusBillingExperience({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className={`${interClassName} block text-[0.94rem] font-medium text-[#23211e]`}>
-                    {isPortalLoading ? "Opening billing portal..." : "Manage Subscription"}
+                    {isPortalLoading ? copy.actions.openingPortal : copy.actions.manageSubscription}
                   </span>
                   <span className={`${interClassName} mt-0.5 block text-[0.82rem] text-[#7b7670]`}>
-                    Update payment method, billing details, or cancel.
+                    {copy.actions.manageSubscriptionDescription}
                   </span>
                 </span>
                 <ChevronRight size={17} className="text-[#8a847c] transition-transform group-hover:translate-x-0.5" />
@@ -241,7 +257,7 @@ export function SocraticPlusBillingExperience({
 
             <motion.div variants={itemVariants}>
               <Link
-                href={ROUTES.PRICING}
+                href={pricingHref}
                 className="group flex w-full items-center gap-4 px-5 py-4 transition-colors hover:bg-[#faf9f7] sm:px-6"
               >
                 <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[#e7e3dc] bg-[#f6f4f0] text-[#4f4a43]">
@@ -249,10 +265,10 @@ export function SocraticPlusBillingExperience({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className={`${interClassName} block text-[0.94rem] font-medium text-[#23211e]`}>
-                    Explore Perks
+                    {copy.actions.explorePerks}
                   </span>
                   <span className={`${interClassName} mt-0.5 block text-[0.82rem] text-[#7b7670]`}>
-                    See what's included in your plan.
+                    {copy.actions.explorePerksDescription}
                   </span>
                 </span>
                 <ChevronRight size={17} className="text-[#8a847c] transition-transform group-hover:translate-x-0.5" />
@@ -269,10 +285,10 @@ export function SocraticPlusBillingExperience({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className={`${interClassName} block text-[0.94rem] font-medium text-[#23211e]`}>
-                    Go to App
+                    {copy.actions.goToApp}
                   </span>
                   <span className={`${interClassName} mt-0.5 block text-[0.82rem] text-[#7b7670]`}>
-                    Return to your workspace and chats.
+                    {copy.actions.goToAppDescription}
                   </span>
                 </span>
                 <ChevronRight size={17} className="text-[#8a847c] transition-transform group-hover:translate-x-0.5" />
@@ -285,9 +301,9 @@ export function SocraticPlusBillingExperience({
           className={`${interClassName} mt-3 text-[0.82rem] text-[#7b7670]`}
           variants={itemVariants}
         >
-          Billing status: {planStatus}
+          {copy.statusLine.prefix} {planStatus}
           {isPremium && subscriptionCancelAtPeriodEnd
-            ? " • Cancellation queued at period end."
+            ? ` - ${copy.statusLine.cancellationQueued}`
             : ""}
         </motion.p>
 

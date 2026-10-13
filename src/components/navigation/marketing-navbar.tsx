@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
+import type { ReactNode } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { StaggeredMenu } from "@/src/components/home/staggered-menu";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
@@ -10,8 +11,19 @@ import { MarketingStandaloneBackLink } from "@/src/components/navigation/marketi
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { StandaloneModeGate } from "@/src/components/pwa/standalone-mode-gate";
 import { ROUTES } from "@/src/lib/routes";
-import type { UpscHomeCopy, UpscHomeLocale } from "@/src/lib/upsc-home-locale";
+import type { UpscHomeLocale } from "@/src/lib/upsc-home-locale";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
+
+type MarketingNavCopy = {
+  home: string;
+  features: string;
+  pricing: string;
+  blog: string;
+  contact: string;
+  openApp: string;
+  languageLabel?: string;
+  menuTagline?: string;
+};
 
 type MarketingNavbarProps = {
   interClassName: string;
@@ -21,8 +33,12 @@ type MarketingNavbarProps = {
   standaloneAction?: "upgrade" | "back";
   appHref?: Route;
   appSignedOutHref?: Route;
+  pricingHref?: Route;
+  billingHref?: Route;
+  blogHref?: Route;
   locale?: UpscHomeLocale;
-  copy?: Partial<UpscHomeCopy["nav"]>;
+  copy?: Partial<MarketingNavCopy>;
+  languageSwitcher?: ReactNode;
 };
 
 export async function MarketingNavbar({
@@ -33,8 +49,12 @@ export async function MarketingNavbar({
   standaloneAction = "upgrade",
   appHref = ROUTES.APP_ROLEPLAY,
   appSignedOutHref = ROUTES.SIGN_UP,
+  pricingHref: pricingHrefProp,
+  billingHref = ROUTES.APP_BILLING,
+  blogHref = ROUTES.BLOG,
   locale = "en",
   copy,
+  languageSwitcher,
 }: MarketingNavbarProps) {
   const { userId: clerkUserId } = await auth();
   const billing = clerkUserId
@@ -42,13 +62,13 @@ export async function MarketingNavbar({
     : null;
   const isPremium = Boolean(billing?.isPremium);
   const pricingLabel = isPremium ? "Socratic +" : (copy?.pricing ?? "Pricing");
-  const pricingHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
+  const pricingHref = isPremium ? billingHref : (pricingHrefProp ?? ROUTES.PRICING);
   const withPrefix = (hash: string) => (sectionPrefix ? `${sectionPrefix}${hash}` : hash);
   const navLinks = [
     { label: copy?.home ?? "Home", href: homeHref },
     { label: copy?.features ?? "Features", href: withPrefix("#features") },
     { label: pricingLabel, href: pricingHref },
-    { label: copy?.blog ?? "Blog", href: ROUTES.BLOG },
+    { label: copy?.blog ?? "Blog", href: blogHref },
     { label: copy?.contact ?? "Contact", href: withPrefix("#contact") },
   ];
   const logoLabel = (
@@ -100,6 +120,7 @@ export async function MarketingNavbar({
         </div>
 
         <div className="flex items-center justify-end gap-2">
+          {languageSwitcher}
           {copy?.languageLabel ? (
             <MarketingLanguageToggle
               locale={locale}
@@ -119,7 +140,7 @@ export async function MarketingNavbar({
 
           {isPremium ? (
             <Link
-              href={ROUTES.APP_BILLING}
+              href={billingHref}
               aria-label="Manage your billing"
               className="hero-load-up hero-load-up-nav-cta inline-flex h-11 w-11 items-center justify-center rounded-full p-0 transition-transform duration-250 hover:-translate-y-0.5 lg:h-12 lg:w-12"
             >
@@ -136,6 +157,7 @@ export async function MarketingNavbar({
           <StaggeredMenu
             className="hero-load-up hero-load-up-nav-menu lg:hidden"
             triggerVariant="hamburger"
+            footerText={copy?.menuTagline}
             items={navLinks.map((link) => ({
               label: link.label,
               link: link.href,

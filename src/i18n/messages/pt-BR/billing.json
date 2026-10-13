@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Cobrança",
+    "description": "Gerencie sua assinatura e configurações de cobrança do Socratic+.",
+    "ogAlt": "Configurações de cobrança do Socratic Plus"
+  },
+  "hero": {
+    "welcome": "Bem-vindo ao",
+    "product": "Socratic Plus",
+    "description": "Gerencie sua assinatura, renovação e detalhes de cobrança do Socratic+."
+  },
+  "summary": {
+    "status": "Status",
+    "active": "Ativo",
+    "free": "Gratuito",
+    "plan": "Plano",
+    "renewsOn": "Renova em",
+    "notAvailable": "Não disponível",
+    "notApplicable": "Não aplicável",
+    "monthlyPlan": "Socratic + Mensal",
+    "annualPlan": "Socratic + Anual",
+    "freePlan": "Gratuito"
+  },
+  "actions": {
+    "openingPortal": "Abrindo portal de cobrança...",
+    "manageSubscription": "Gerenciar Assinatura",
+    "manageSubscriptionDescription": "Atualizar método de pagamento, detalhes de cobrança ou cancelar.",
+    "explorePerks": "Explorar Benefícios",
+    "explorePerksDescription": "Veja o que está incluído no seu plano.",
+    "goToApp": "Ir para o App",
+    "goToAppDescription": "Retornar ao seu espaço de trabalho e chats."
+  },
+  "statusLine": {
+    "prefix": "Status de cobrança:",
+    "cancellationQueued": "Cancelamento na fila para o final do período."
+  },
+  "errors": {
+    "portalUrlMissing": "Nenhuma URL de portal retornada.",
+    "portalOpenFailed": "Não foi possível abrir o portal de cobrança."
+  }
+}

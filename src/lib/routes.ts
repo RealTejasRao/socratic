@@ -16,6 +16,4 @@ export const ROUTES = {
   UPSC_APP_SOCRATIC: "/upsc/app?mode=socratic" as Route,
   UPSC_APP_ROLEPLAY: "/upsc/app?mode=roleplay" as Route,
   APP_BILLING: "/billing" as Route,
-  NOTIFICATIONS: "/notifications" as Route,
-  SETTINGS_APP: "/settings-app" as Route,
 };

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
+import { useAppRoute } from "./app-route-context";
 
 export default function BillingPortalButton() {
+  const { copy } = useAppRoute();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,19 +20,19 @@ export default function BillingPortalButton() {
 
       if (!response.ok) {
         const text = await response.text();
-        setError(text || "Could not open billing portal.");
+        setError(text || copy.billing.portalOpenFailed);
         return;
       }
 
       const payload = (await response.json()) as { portalUrl?: string };
       if (!payload.portalUrl) {
-        setError("No portal link was returned.");
+        setError(copy.billing.portalMissing);
         return;
       }
 
       window.location.href = payload.portalUrl;
     } catch {
-      setError("Could not open billing portal.");
+      setError(copy.billing.portalOpenFailed);
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +49,7 @@ export default function BillingPortalButton() {
         {isLoading ? (
           <LoaderCircle size={14} className="animate-spin" />
         ) : null}
-        Manage subscription
+        {copy.billing.manageSubscription}
       </button>
       {error ? (
         <p className="mt-2 text-[12px] text-rose-500">{error}</p>

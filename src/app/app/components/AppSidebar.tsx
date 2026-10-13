@@ -4,18 +4,21 @@ import {
   useEffect,
   useRef,
   useState,
+  useTransition,
   type FormEvent,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Inter } from "next/font/google";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpRight,
   CalendarCheck,
+  Check,
   CircleCheck,
   Crown,
   ChevronDown,
@@ -23,6 +26,7 @@ import {
   House,
   Instagram,
   Landmark,
+  Languages,
   LoaderCircle,
   Linkedin,
   Mail,
@@ -31,11 +35,21 @@ import {
   PenSquare,
   Search,
   Settings,
+  Share2,
+  SlidersHorizontal,
   Swords,
+  type LucideIcon,
   X,
   Youtube,
 } from "lucide-react";
 import { ROUTES } from "src/lib/routes";
+import {
+  LOCALE_COOKIE_MAX_AGE_SECONDS,
+  LOCALE_COOKIE_NAME,
+  LOCALE_LABELS,
+  SUPPORTED_LOCALES,
+  type SupportedLocale,
+} from "@/src/i18n/locales";
 import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { Switch } from "@/src/components/ui/switch";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
@@ -68,7 +82,7 @@ interface Props {
   isPremium?: boolean;
 }
 
-type SettingsTab = "GENERAL" | "SOCIAL";
+type SettingsTab = "GENERAL" | "LANGUAGE" | "SOCIAL";
 type SidebarModeLink = "SOCRATIC" | "DEBATE" | "ROLEPLAY";
 
 const inter = Inter({
@@ -87,33 +101,21 @@ const CONTACT_EMAIL_HREF = "mailto:contact@usesocratic.com";
 const UPSC_DAILY_CHALLENGE_OPEN_EVENT = "socratic:upsc-daily-challenge:open";
 const SETTINGS_TABS: Array<{
   value: SettingsTab;
-  label: string;
+  icon: LucideIcon;
 }> = [
   {
     value: "GENERAL",
-    label: "General",
+    icon: SlidersHorizontal,
+  },
+  {
+    value: "LANGUAGE",
+    icon: Languages,
   },
   {
     value: "SOCIAL",
-    label: "Social",
+    icon: Share2,
   },
 ];
-
-const SETTINGS_TAB_META: Record<
-  SettingsTab,
-  { title: string; description: string; serif?: boolean }
-> = {
-  GENERAL: {
-    title: "General",
-    description: "Display and workspace preferences for your daily flow.",
-    serif: true,
-  },
-  SOCIAL: {
-    title: "Social",
-    description:
-      "Follow Socratic AI across platforms for news, updates & Special offers.",
-  },
-};
 
 type SocialLink = {
   label: string;
@@ -203,6 +205,7 @@ function readChatFontSizeSetting(): ChatFontSize {
 
 export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const {
     appBasePath,
@@ -211,6 +214,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     isAppRoot,
     marketingHomePath,
     contactHref,
+    locale,
     copy,
   } =
     useAppRoute();
@@ -229,6 +233,16 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const [activeSettingsTab, setActiveSettingsTab] =
     useState<SettingsTab>("GENERAL");
   const [isToneDropdownOpen, setIsToneDropdownOpen] = useState(false);
+  const [isLocaleDropdownOpen, setIsLocaleDropdownOpen] = useState(false);
+  const [localeMenuPosition, setLocaleMenuPosition] = useState<{
+    left: number;
+    top: number;
+    width: number;
+  } | null>(null);
+  const [pendingLocale, setPendingLocale] = useState<SupportedLocale | null>(
+    null,
+  );
+  const [isLocaleTransitionPending, startLocaleTransition] = useTransition();
   const [isResetDefaultsConfirmOpen, setIsResetDefaultsConfirmOpen] =
     useState(false);
   const [showResetSuccessToast, setShowResetSuccessToast] = useState(false);
@@ -250,15 +264,45 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   ] = useState(false);
   const toneDropdownRef = useRef<HTMLDivElement | null>(null);
   const toneDropdownMenuRef = useRef<HTMLDivElement | null>(null);
+  const localeDropdownRef = useRef<HTMLDivElement | null>(null);
+  const localeDropdownMenuRef = useRef<HTMLDivElement | null>(null);
   const settingsScrollAreaRef = useRef<HTMLDivElement | null>(null);
   const resetToastTimeoutRef = useRef<number | null>(null);
   const newChatFeedbackTimeoutRef = useRef<number | null>(null);
   const billingFeedbackTimeoutRef = useRef<number | null>(null);
   const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
-  const billingCtaLabel = isPremium ? "Socratic +" : "Upgrade to Socratic Plus";
+  const billingCtaLabel = isPremium ? copy.nav.billingLabel : copy.nav.upgradeLabel;
   const billingCtaTarget = isStandalone ? undefined : "_blank";
   const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
-  const activeSettingsMeta = SETTINGS_TAB_META[activeSettingsTab];
+  const isLocaleChanging =
+    pendingLocale !== null || isLocaleTransitionPending;
+  const displayedLocale = pendingLocale ?? locale;
+  const settingsTabLabels: Record<SettingsTab, string> = {
+    GENERAL: copy.settings.generalTab,
+    LANGUAGE: copy.settings.languageTitle,
+    SOCIAL: copy.settings.socialTab,
+  };
+  const activeSettingsMeta = (() => {
+    if (activeSettingsTab === "GENERAL") {
+      return {
+        title: copy.settings.generalTitle,
+        description: copy.settings.generalDescription,
+        serif: true,
+      };
+    }
+
+    if (activeSettingsTab === "LANGUAGE") {
+      return {
+        title: copy.settings.languageTitle,
+        description: copy.settings.languageDescription,
+      };
+    }
+
+    return {
+      title: copy.settings.socialTitle,
+      description: copy.settings.socialDescription,
+    };
+  })();
 
   useEffect(() => {
     const rafId = window.requestAnimationFrame(() => {
@@ -309,6 +353,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        if (isLocaleChanging) {
+          return;
+        }
+
         if (isResetDefaultsConfirmOpen) {
           setIsResetDefaultsConfirmOpen(false);
           return;
@@ -316,6 +364,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
         if (isToneDropdownOpen) {
           setIsToneDropdownOpen(false);
+          return;
+        }
+
+        if (isLocaleDropdownOpen) {
+          setIsLocaleDropdownOpen(false);
           return;
         }
 
@@ -327,7 +380,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isResetDefaultsConfirmOpen, isSettingsOpen, isToneDropdownOpen]);
+  }, [
+    isLocaleDropdownOpen,
+    isLocaleChanging,
+    isResetDefaultsConfirmOpen,
+    isSettingsOpen,
+    isToneDropdownOpen,
+  ]);
 
   useEffect(() => {
     if (!isSettingsOpen) {
@@ -353,7 +412,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         setSupportedAmbassadorName(ambassadorName);
         setReferralCode("");
         setReferralMessageTone("success");
-        setReferralMessage(payload.message ?? `Supporting ${ambassadorName}`);
+        setReferralMessage(
+          payload.message ??
+            copy.settings.supporting.replace("{name}", ambassadorName),
+        );
       } catch {
         // Referral support is non-critical settings state.
       }
@@ -382,6 +444,72 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       document.removeEventListener("mousedown", handlePointerDown);
     };
   }, [isSettingsOpen, isToneDropdownOpen]);
+
+  useEffect(() => {
+    if (!isSettingsOpen || !isLocaleDropdownOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as Node;
+      if (
+        !localeDropdownRef.current?.contains(target) &&
+        !localeDropdownMenuRef.current?.contains(target)
+      ) {
+        setIsLocaleDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [isLocaleDropdownOpen, isSettingsOpen]);
+
+  useEffect(() => {
+    if (!isSettingsOpen || !isLocaleDropdownOpen) {
+      return;
+    }
+
+    function syncLocaleMenuPosition() {
+      updateLocaleMenuPosition();
+    }
+
+    window.addEventListener("resize", syncLocaleMenuPosition);
+    window.addEventListener("scroll", syncLocaleMenuPosition, true);
+    return () => {
+      window.removeEventListener("resize", syncLocaleMenuPosition);
+      window.removeEventListener("scroll", syncLocaleMenuPosition, true);
+    };
+  }, [isLocaleDropdownOpen, isSettingsOpen]);
+
+  useEffect(() => {
+    if (!pendingLocale || locale !== pendingLocale) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setPendingLocale(null);
+    }, 240);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [locale, pendingLocale]);
+
+  useEffect(() => {
+    if (!pendingLocale) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setPendingLocale(null);
+    }, 4000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [pendingLocale]);
 
   useEffect(() => {
     if (!isSettingsOpen || !isToneDropdownOpen || activeSettingsTab !== "GENERAL") {
@@ -575,9 +703,66 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     window.dispatchEvent(new CustomEvent("socratic:upgrade-prompt:open"));
   }
 
+  function updateLocaleMenuPosition() {
+    const trigger = localeDropdownRef.current;
+    if (!trigger) {
+      return;
+    }
+
+    const rect = trigger.getBoundingClientRect();
+    const viewportPadding = 12;
+    const menuGap = 8;
+    const estimatedMenuHeight = 240;
+    const maxLeft = window.innerWidth - rect.width - viewportPadding;
+    const top =
+      window.innerHeight - rect.bottom - viewportPadding >= estimatedMenuHeight
+        ? rect.bottom + menuGap
+        : Math.max(viewportPadding, rect.top - estimatedMenuHeight - menuGap);
+
+    setLocaleMenuPosition({
+      left: Math.max(viewportPadding, Math.min(rect.left, maxLeft)),
+      top,
+      width: rect.width,
+    });
+  }
+
+  function handleLocaleDropdownToggle() {
+    if (isLocaleChanging) {
+      return;
+    }
+
+    setIsLocaleDropdownOpen((current) => {
+      const nextOpen = !current;
+      if (nextOpen) {
+        updateLocaleMenuPosition();
+      }
+      return nextOpen;
+    });
+  }
+
   function handleSettingsTabChange(nextTab: SettingsTab) {
+    if (isLocaleChanging) {
+      return;
+    }
+
     setActiveSettingsTab(nextTab);
     setIsToneDropdownOpen(false);
+    setIsLocaleDropdownOpen(false);
+  }
+
+  function handleLocaleChange(nextLocale: SupportedLocale) {
+    if (nextLocale === locale || isLocaleChanging) {
+      setIsLocaleDropdownOpen(false);
+      return;
+    }
+
+    setPendingLocale(nextLocale);
+    setIsLocaleDropdownOpen(false);
+    // eslint-disable-next-line react-hooks/immutability -- intentional browser cookie write from a settings control.
+    document.cookie = `${LOCALE_COOKIE_NAME}=${nextLocale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
+    startLocaleTransition(() => {
+      router.refresh();
+    });
   }
 
   function handleThemePreference(nextTheme: "light" | "dark") {
@@ -601,10 +786,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   async function handleReferralSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (isLocaleChanging) {
+      return;
+    }
+
     const code = referralCode.trim();
     if (!code) {
       setReferralMessageTone("error");
-      setReferralMessage("Enter a referral code first.");
+      setReferralMessage(copy.settings.enterReferral);
       return;
     }
 
@@ -630,13 +819,16 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         setSupportedAmbassadorName(ambassadorName);
         setReferralCode("");
         setReferralMessageTone("success");
-        setReferralMessage(payload.message ?? `Supporting ${ambassadorName}`);
+        setReferralMessage(
+          payload.message ??
+            copy.settings.supporting.replace("{name}", ambassadorName),
+        );
         return;
       }
 
       if (!response.ok) {
         setReferralMessageTone("error");
-        setReferralMessage(payload?.message ?? "Unable to record that code.");
+        setReferralMessage(payload?.message ?? copy.settings.recordReferralFailed);
         return;
       }
 
@@ -645,11 +837,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       setReferralMessageTone("success");
       setReferralMessage(
         payload?.message ??
-          `Supporting ${payload?.ambassadorName ?? "ambassador"}`,
+          copy.settings.supporting.replace(
+            "{name}",
+            payload?.ambassadorName ?? "ambassador",
+          ),
       );
     } catch {
       setReferralMessageTone("error");
-      setReferralMessage("Unable to record that code right now.");
+      setReferralMessage(copy.settings.recordReferralFailedNow);
     } finally {
       setIsReferralSubmitting(false);
     }
@@ -784,9 +979,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       rel={isStandalone ? undefined : "noreferrer noopener"}
       onClick={onClick ?? (() => undefined)}
       className={className}
-      aria-label="Contact us"
+      aria-label={copy.nav.contactLabel}
     >
-      <Mail size={iconSize} /> {label ? <span>Send Us a Message</span> : null}
+      <Mail size={iconSize} />{" "}
+      {label ? <span>{copy.nav.sendMessageLabel}</span> : null}
     </Link>
   );
 
@@ -809,8 +1005,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           onClick?.();
         }}
         className={`${className} ${navigatingModeLink === "SOCRATIC" ? "pointer-events-none opacity-90" : ""}`}
-        aria-label="Socratic Mode"
-        data-tooltip={label ? undefined : "Socratic Mode"}
+        aria-label={copy.nav.socraticModeLabel}
+        data-tooltip={label ? undefined : copy.nav.socraticModeLabel}
         data-app-tour-target="sidebar-mode-socratic"
       >
         {navigatingModeLink === "SOCRATIC" ? (
@@ -825,8 +1021,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           <span className="flex min-w-0 flex-1 items-center gap-2">
             <span className="truncate">
               {navigatingModeLink === "SOCRATIC"
-                ? "Opening..."
-                : "Socratic Mode"}
+                ? copy.nav.openingLabel
+                : copy.nav.socraticModeLabel}
             </span>
             {navigatingModeLink !== "SOCRATIC" ? (
               <motion.span
@@ -881,8 +1077,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           }
         }}
         className={`${className} ${navigatingModeLink === "DEBATE" ? "pointer-events-none opacity-90" : ""}`}
-        aria-label="Debate mode"
-        data-tooltip={label ? undefined : "Debate mode"}
+        aria-label={copy.nav.debateModeLabel}
+        data-tooltip={label ? undefined : copy.nav.debateModeLabel}
         data-app-tour-target="sidebar-mode-debate"
       >
         {navigatingModeLink === "DEBATE" ? (
@@ -894,7 +1090,11 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           />
         )}
         {label ? (
-          <span>{navigatingModeLink === "DEBATE" ? "Opening..." : "Debate mode"}</span>
+          <span>
+            {navigatingModeLink === "DEBATE"
+              ? copy.nav.openingLabel
+              : copy.nav.debateModeLabel}
+          </span>
         ) : null}
       </Link>
       <Link
@@ -904,8 +1104,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           onClick?.();
         }}
         className={`${className} ${navigatingModeLink === "ROLEPLAY" ? "pointer-events-none opacity-90" : ""}`}
-        aria-label={copy.roleplayModeLabel}
-        data-tooltip={label ? undefined : copy.roleplayModeLabel}
+        aria-label={copy.nav.roleplayModeLabel}
+        data-tooltip={label ? undefined : copy.nav.roleplayModeLabel}
         data-app-tour-target="sidebar-mode-roleplay"
       >
         {navigatingModeLink === "ROLEPLAY" ? (
@@ -919,8 +1119,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         {label ? (
           <span>
             {navigatingModeLink === "ROLEPLAY"
-              ? "Opening..."
-              : copy.roleplayModeLabel}
+              ? copy.nav.openingLabel
+              : copy.nav.roleplayModeLabel}
           </span>
         ) : null}
       </Link>
@@ -933,8 +1133,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             onClick?.();
           }}
           className={`${className} cursor-pointer`}
-          aria-label="Daily Challenge"
-          data-tooltip={label ? undefined : "Daily Challenge"}
+          aria-label={copy.nav.dailyChallengeLabel}
+          data-tooltip={label ? undefined : copy.nav.dailyChallengeLabel}
         >
           <CalendarCheck
             size={iconSize}
@@ -942,7 +1142,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           />
           {label ? (
             <span className="flex min-w-0 flex-1 items-center gap-2">
-              <span className="truncate">Daily Challenge</span>
+              <span className="truncate">{copy.nav.dailyChallengeLabel}</span>
               <motion.span
                 initial={{ opacity: 0, scale: 0.86, y: 1 }}
                 animate={{
@@ -1007,7 +1207,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 className="app-session-success-toast-icon text-emerald-600"
               />
               <span className="app-session-success-toast-text">
-                Reset successfully
+                {copy.settings.resetSuccess}
               </span>
             </div>
           </motion.div>
@@ -1076,8 +1276,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               ? "border-slate-300 bg-slate-200 text-slate-600 hover:bg-slate-300 hover:text-slate-900"
               : "border-[#e3e1d8] bg-[#eceae3] text-[#6b6a66] hover:bg-[#e2dfd6] hover:text-[#1f1f1d]"
           }`}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          data-tooltip={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={
+            collapsed ? copy.nav.expandSidebar : copy.nav.collapseSidebar
+          }
+          data-tooltip={
+            collapsed ? copy.nav.expandSidebar : copy.nav.collapseSidebar
+          }
         >
           {collapsed ? (
             <PanelLeftOpen size={15} />
@@ -1093,7 +1297,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 href={newChatHref}
                 onClick={handleNewChatClick}
                 className={`app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition ${isNewChatNavigating ? "pointer-events-none opacity-90" : ""}`}
-                aria-label="New chat"
+                aria-label={copy.nav.newChatLabel}
               >
                 {isNewChatNavigating ? (
                   <RoseCurveLoader className="h-[1.65rem] w-[1.65rem]" />
@@ -1105,7 +1309,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 type="button"
                 onClick={() => setCollapsed(false)}
                 className="app-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-lg transition"
-                aria-label="Expand search and sidebar"
+                aria-label={copy.nav.expandSearchSidebar}
               >
                 <Search size={17} />
               </button>
@@ -1123,7 +1327,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   href={marketingHomePath}
                   onClick={handleHomeClick}
                   className={`app-sidebar-nav-item mx-auto flex h-10 w-10 items-center justify-center rounded-lg transition ${isHomeNavigating ? "pointer-events-none opacity-90" : ""}`}
-                  aria-label="Home"
+                  aria-label={copy.nav.homeLabel}
                 >
                   {isHomeNavigating ? (
                     <RoseCurveLoader className="h-8 w-8" />
@@ -1151,7 +1355,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
                 className={`app-sidebar-nav-item mx-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg ${smoothUiClass}`}
-                aria-label="Settings"
+                aria-label={copy.nav.settingsLabel}
               >
                 <Settings size={17} />
               </button>
@@ -1177,7 +1381,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   ) : (
                     <PenSquare size={16} />
                   )}
-                  <span>{copy.newChatLabel}</span>
+                  <span>{copy.nav.newChatLabel}</span>
                 </Link>
               </div>
 
@@ -1190,7 +1394,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
               <div className="mt-2">
                 <p className="mb-2 px-3 text-[11px] uppercase tracking-[0.14em] text-slate-500">
-                  {copy.chatsHeading}
+                  {copy.nav.chatsHeading}
                 </p>
                 <SidebarSessions
                   sessions={sessions}
@@ -1212,7 +1416,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   ) : (
                     <House size={16} />
                   )}{" "}
-                  Home
+                  {copy.nav.homeLabel}
                 </Link>
               ) : null}
               <Link
@@ -1225,16 +1429,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 {isBillingNavigating ? (
                   <>
                     <RoseCurveLoader className="h-[1.35rem] w-[1.35rem] shrink-0" />
-                    <span>Opening...</span>
+                    <span>{copy.nav.openingLabel}</span>
                   </>
                 ) : (
                   <>
                     <Crown size={16} className="shrink-0" />
                     {isPremium ? (
-                      <span style={{ color: "#CFA43A" }}>Socratic +</span>
+                      <span style={{ color: "#CFA43A" }}>{copy.nav.billingLabel}</span>
                     ) : (
                       <span>
-                        Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
+                        {copy.nav.upgradeLabel.replace("Socratic Plus", "")}
+                        <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
                       </span>
                     )}
                   </>
@@ -1245,7 +1450,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 onClick={() => setIsSettingsOpen(true)}
                 className={`app-sidebar-nav-item flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${smoothUiClass}`}
               >
-                <Settings size={16} /> Settings
+                <Settings size={16} /> {copy.nav.settingsLabel}
               </button>
               {contactLink(
                 16,
@@ -1267,7 +1472,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
           isMobileSidebarOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
         onClick={() => setIsMobileSidebarOpen(false)}
-        aria-label="Close sidebar"
+        aria-label={copy.nav.closeSidebar}
         aria-hidden={!isMobileSidebarOpen}
       />
 
@@ -1321,7 +1526,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             type="button"
             onClick={() => setIsMobileSidebarOpen(false)}
             className="inline-flex cursor-pointer items-center justify-center p-1 text-slate-700 transition hover:text-slate-900"
-            aria-label="Close sidebar"
+            aria-label={copy.nav.closeSidebar}
           >
             <PanelLeftClose size={20} />
           </button>
@@ -1344,7 +1549,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               ) : (
                 <PenSquare size={18} />
               )}
-              <span>{copy.newChatLabel}</span>
+              <span>{copy.nav.newChatLabel}</span>
             </Link>
           </div>
 
@@ -1358,7 +1563,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
           <div className="mt-2">
             <p className="mb-2 px-2.5 text-[12px] uppercase tracking-[0.11em] text-slate-500">
-              {copy.chatsHeading}
+              {copy.nav.chatsHeading}
             </p>
             <SidebarSessions
               sessions={sessions}
@@ -1384,7 +1589,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               ) : (
                 <House size={18} />
               )}{" "}
-              Home
+              {copy.nav.homeLabel}
             </Link>
           ) : null}
           <Link
@@ -1402,16 +1607,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             {isBillingNavigating ? (
               <>
                 <RoseCurveLoader className="h-[1.35rem] w-[1.35rem] shrink-0" />
-                <span>Opening...</span>
+                <span>{copy.nav.openingLabel}</span>
               </>
             ) : (
               <>
                 <Crown size={16} className="shrink-0" />
                 {isPremium ? (
-                  <span style={{ color: "#CFA43A" }}>Socratic +</span>
+                  <span style={{ color: "#CFA43A" }}>{copy.nav.billingLabel}</span>
                 ) : (
                   <span>
-                    Upgrade to <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
+                    {copy.nav.upgradeLabel.replace("Socratic Plus", "")}
+                    <span style={{ color: "#CFA43A" }}>Socratic Plus</span>
                   </span>
                 )}
               </>
@@ -1425,7 +1631,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
             }}
             className={`app-sidebar-nav-item flex w-full cursor-pointer items-center gap-2 rounded-[14px] px-2.5 py-2 text-[14px] ${smoothUiClass}`}
           >
-            <Settings size={18} /> Settings
+            <Settings size={18} /> {copy.nav.settingsLabel}
           </button>
           {contactLink(
             18,
@@ -1448,6 +1654,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               isDarkMode ? "bg-black/45" : "bg-slate-950/16"
             }`}
             onClick={() => {
+              if (isLocaleChanging) {
+                return;
+              }
               setIsToneDropdownOpen(false);
               setIsSettingsOpen(false);
             }}
@@ -1459,16 +1668,54 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
               exit={{ opacity: 0, y: 14, scale: 0.985 }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
               style={{ willChange: "transform, opacity" }}
-              className={`app-card app-settings-panel relative z-121 flex h-[min(82svh,640px)] w-[min(88vw,420px)] flex-col overflow-hidden rounded-2xl border shadow-[0_22px_70px_rgba(15,23,42,0.24)] md:h-[min(520px,82vh)] md:w-[min(760px,90vw)] md:flex-row ${
+              className={`app-card app-settings-panel relative z-121 flex h-[min(82svh,640px)] w-[min(88vw,420px)] flex-col overflow-hidden rounded-2xl border shadow-[0_22px_70px_rgba(15,23,42,0.24)] md:h-[min(520px,82vh)] md:w-[min(760px,90vw)] ${
                 isDarkMode
                   ? "border-[#3d3d42] bg-[#262624]"
                   : "border-slate-200 bg-white"
               }`}
               role="dialog"
               aria-modal="true"
-              aria-label="Settings"
+              aria-label={copy.nav.settingsLabel}
               onClick={(event) => event.stopPropagation()}
             >
+              <div
+                className={`relative flex h-9 shrink-0 items-center justify-center border-b ${
+                  isDarkMode
+                    ? "border-[#3d3d42] bg-[rgba(87,242,207,0.08)]"
+                    : "border-[#ddd5c7] bg-[#f7f4ee]"
+                }`}
+              >
+                <p
+                  className={`text-[13px] font-semibold ${
+                    isDarkMode ? "text-slate-100" : "text-[#1f1b15]"
+                  }`}
+                >
+                  {copy.nav.settingsLabel}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isLocaleChanging) {
+                      setIsSettingsOpen(false);
+                    }
+                  }}
+                  disabled={isLocaleChanging}
+                  className={`app-settings-close absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1.5 ${smoothUiClass} ${
+                    isDarkMode
+                      ? "text-slate-500 hover:bg-white/8 hover:text-slate-200"
+                      : "text-[#7f7566] hover:bg-black/5 hover:text-[#1f1b15]"
+                  } ${
+                    isLocaleChanging
+                      ? "cursor-wait opacity-45"
+                      : "cursor-pointer"
+                  }`}
+                  aria-label={copy.settings.close}
+                >
+                  <X size={15} />
+                </button>
+              </div>
+
+              <div className="flex min-h-0 flex-1 flex-col md:flex-row">
               <aside
                 className={`app-settings-sidebar hidden w-46 shrink-0 border-r p-3 md:block ${
                   isDarkMode
@@ -1476,22 +1723,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                     : "border-slate-200 bg-slate-50/65"
                 }`}
                 >
-                  <p
-                    className={`px-2 pb-2 text-[11px] uppercase tracking-[0.12em] ${
-                      isDarkMode ? "text-slate-500" : "text-slate-400"
-                  }`}
-                  >
-                    Settings
-                  </p>
                   <div className="space-y-1">
                     {SETTINGS_TABS.map((tab) => {
                       const isActive = activeSettingsTab === tab.value;
+                      const TabIcon = tab.icon;
                       return (
                         <button
                           key={tab.value}
                           type="button"
                           onClick={() => handleSettingsTabChange(tab.value)}
-                          className={`app-settings-tab-btn w-full cursor-pointer rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
+                          disabled={isLocaleChanging}
+                          className={`app-settings-tab-btn flex w-full items-center gap-2 rounded-[14px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
                             isActive
                               ? isDarkMode
                                 ? "bg-[#35363a] text-slate-100"
@@ -1499,9 +1741,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                               : isDarkMode
                                 ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
                                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                          } ${
+                            isLocaleChanging
+                              ? "cursor-wait opacity-50"
+                              : "cursor-pointer"
                           }`}
                         >
-                          <span className="block">{tab.label}</span>
+                          <TabIcon size={15} className="shrink-0" />
+                          <span className="block">{settingsTabLabels[tab.value]}</span>
                         </button>
                       );
                     })}
@@ -1533,12 +1780,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                 <div className="mt-3 flex flex-wrap items-center gap-1.5 md:hidden">
                   {SETTINGS_TABS.map((tab) => {
                     const isActive = activeSettingsTab === tab.value;
+                    const TabIcon = tab.icon;
                     return (
                       <button
                         key={tab.value}
                         type="button"
                         onClick={() => handleSettingsTabChange(tab.value)}
-                        className={`app-settings-tab-btn rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
+                        disabled={isLocaleChanging}
+                        className={`app-settings-tab-btn inline-flex items-center gap-1.5 rounded-[14px] px-3 py-2 text-[13px] ${smoothUiClass} ${
                           isActive
                             ? isDarkMode
                               ? "bg-[#35363a] text-slate-100"
@@ -1546,26 +1795,18 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             : isDarkMode
                               ? "text-slate-300 hover:bg-[#2d2e32] hover:text-slate-100"
                               : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        } ${
+                          isLocaleChanging
+                            ? "cursor-wait opacity-50"
+                            : "cursor-pointer"
                         }`}
                       >
-                        {tab.label}
+                        <TabIcon size={14} className="shrink-0" />
+                        {settingsTabLabels[tab.value]}
                       </button>
                     );
                   })}
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => setIsSettingsOpen(false)}
-                  className={`app-settings-close absolute right-5 top-4 cursor-pointer rounded-full p-1.5 ${smoothUiClass} ${
-                    isDarkMode
-                      ? "text-slate-400 hover:bg-[#36373b] hover:text-slate-200"
-                      : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                  }`}
-                  aria-label="Close settings"
-                >
-                  <X size={15} />
-                </button>
 
                 <div
                   ref={settingsScrollAreaRef}
@@ -1594,7 +1835,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
-                              Theme
+                              {copy.settings.themeTitle}
                             </p>
                           </div>
                           <div
@@ -1607,11 +1848,12 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             <button
                               type="button"
                               onClick={() => handleThemePreference("light")}
-                              className={`app-settings-segmented-option relative cursor-pointer overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
+                              disabled={isLocaleChanging}
+                              className={`app-settings-segmented-option relative overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
                                 !isDarkMode
                                   ? "text-slate-900"
                                   : "text-slate-400 hover:text-slate-200"
-                              }`}
+                              } ${isLocaleChanging ? "cursor-wait opacity-50" : "cursor-pointer"}`}
                             >
                               {!isDarkMode && (
                                 <motion.span
@@ -1629,16 +1871,19 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                   }}
                                 />
                               )}
-                              <span className="relative z-10">Light</span>
+                              <span className="relative z-10">
+                                {copy.settings.light}
+                              </span>
                             </button>
                             <button
                               type="button"
                               onClick={() => handleThemePreference("dark")}
-                              className={`app-settings-segmented-option relative cursor-pointer overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
+                              disabled={isLocaleChanging}
+                              className={`app-settings-segmented-option relative overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
                                 isDarkMode
                                   ? "text-slate-100"
                                   : "text-slate-500 hover:text-slate-700"
-                              }`}
+                              } ${isLocaleChanging ? "cursor-wait opacity-50" : "cursor-pointer"}`}
                             >
                               {isDarkMode && (
                                 <motion.span
@@ -1656,7 +1901,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                   }}
                                 />
                               )}
-                              <span className="relative z-10">Dark</span>
+                              <span className="relative z-10">
+                                {copy.settings.dark}
+                              </span>
                             </button>
                           </div>
                         </div>
@@ -1674,7 +1921,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
-                              Referral
+                              {copy.settings.referral}
                             </label>
                             <div className="flex min-w-0 gap-2 sm:w-[260px]">
                               <input
@@ -1685,9 +1932,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                   setReferralCode(event.target.value);
                                   setReferralMessage(null);
                                 }}
-                                placeholder="Ambassador code"
+                                placeholder={copy.settings.referralPlaceholder}
                                 maxLength={80}
                                 disabled={
+                                  isLocaleChanging ||
                                   isReferralSubmitting ||
                                   supportedAmbassadorName !== null
                                 }
@@ -1701,6 +1949,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 type="submit"
                                 aria-busy={isReferralSubmitting}
                                 disabled={
+                                  isLocaleChanging ||
                                   isReferralSubmitting ||
                                   referralCode.trim().length === 0 ||
                                   supportedAmbassadorName !== null
@@ -1712,17 +1961,20 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 } disabled:cursor-not-allowed disabled:opacity-60`}
                               >
                                 {supportedAmbassadorName ? (
-                                  "Supported"
+                                  copy.settings.supporting.replace(
+                                    "{name}",
+                                    supportedAmbassadorName,
+                                  )
                                 ) : isReferralSubmitting ? (
                                   <>
                                     <LoaderCircle
                                       size={13}
                                       className="animate-spin"
                                     />
-                                    <span>Saving</span>
+                                    <span>{copy.sessions.saving}</span>
                                   </>
                                 ) : (
-                                  "Support"
+                                  copy.settings.support
                                 )}
                               </button>
                             </div>
@@ -1752,13 +2004,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
-                              Collapsed Sidebar
+                              {copy.settings.collapseByDefault}
                             </p>
                           </div>
                           <Switch
                             checked={collapseByDefault}
-                            onCheckedChange={handleCollapseDefaultChange}
-                            aria-label="Start with collapsed sidebar"
+                            onCheckedChange={(nextValue) => {
+                              if (!isLocaleChanging) {
+                                handleCollapseDefaultChange(nextValue);
+                              }
+                            }}
+                            aria-label={copy.settings.collapseByDefault}
                           />
                         </label>
 
@@ -1773,13 +2029,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
-                              Chat Hover Previews on Sidebar
+                              {copy.settings.hoverPreviews}
                             </p>
                           </div>
                           <Switch
                             checked={showHoverPreviews}
-                            onCheckedChange={handleHoverPreviewsChange}
-                            aria-label="Show chat preview on hover"
+                            onCheckedChange={(nextValue) => {
+                              if (!isLocaleChanging) {
+                                handleHoverPreviewsChange(nextValue);
+                              }
+                            }}
+                            aria-label={copy.settings.hoverPreviews}
                           />
                         </label>
 
@@ -1794,13 +2054,17 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
-                              Show mode badges on Sidebar
+                              {copy.settings.modeBadges}
                             </p>
                           </div>
                           <Switch
                             checked={showModeBadges}
-                            onCheckedChange={handleModeBadgesChange}
-                            aria-label="Show mode badges in chat list"
+                            onCheckedChange={(nextValue) => {
+                              if (!isLocaleChanging) {
+                                handleModeBadgesChange(nextValue);
+                              }
+                            }}
+                            aria-label={copy.settings.modeBadges}
                           />
                         </label>
 
@@ -1815,7 +2079,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 isDarkMode ? "text-slate-100" : "text-slate-800"
                               }`}
                             >
-                              Chat text size
+                              {copy.settings.chatFontSize}
                             </p>
                           </div>
                           <div
@@ -1834,7 +2098,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                   onClick={() =>
                                     handleChatFontSizeChange(option.value)
                                   }
-                                  className={`app-settings-segmented-option relative cursor-pointer overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
+                                  disabled={isLocaleChanging}
+                                  className={`app-settings-segmented-option relative overflow-hidden rounded-[14px] px-3 py-1.5 text-[13px] ${smoothUiClass} ${
                                     isActive
                                       ? isDarkMode
                                         ? "text-slate-100"
@@ -1842,7 +2107,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                       : isDarkMode
                                         ? "text-slate-400 hover:text-slate-200"
                                         : "text-slate-500 hover:text-slate-700"
-                                  }`}
+                                  } ${isLocaleChanging ? "cursor-wait opacity-50" : "cursor-pointer"}`}
                                 >
                                   {isActive && (
                                     <motion.span
@@ -1875,7 +2140,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                               isDarkMode ? "text-slate-100" : "text-slate-800"
                             }`}
                           >
-                            Tone
+                            {copy.settings.socraticTone}
                           </p>
                           <p
                             className={`mt-0.5 text-[12px] ${
@@ -1891,13 +2156,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                               onClick={() =>
                                 setIsToneDropdownOpen((current) => !current)
                               }
-                              className={`app-settings-dropdown-trigger flex w-full cursor-pointer items-center justify-between rounded-[14px] border px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
+                              disabled={isLocaleChanging}
+                              className={`app-settings-dropdown-trigger flex w-full items-center justify-between rounded-[14px] border px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
                                 isDarkMode
                                   ? "border-[#4a4b50] bg-[#25262a] text-slate-100 hover:border-[#5b5c62] hover:bg-[#2d2e33]"
                                   : "border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-300 hover:bg-slate-100"
-                              }`}
+                              } ${isLocaleChanging ? "cursor-wait opacity-50" : "cursor-pointer"}`}
                               aria-expanded={isToneDropdownOpen}
-                              aria-label="Select Socratic tone"
+                              aria-label={copy.settings.socraticTone}
                             >
                               <span>
                                 {SOCRATIC_TONE_OPTIONS.find(
@@ -1993,6 +2259,164 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                           </p>
                         </div>
                       </motion.div>
+                    ) : activeSettingsTab === "LANGUAGE" ? (
+                      <motion.div
+                        key="settings-language-tab"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        className={`border-t ${
+                          isDarkMode ? "border-[#444444]" : "border-[#d0d7e2]"
+                        }`}
+                      >
+                        <div
+                          className={`flex justify-end border-b py-3 ${
+                            isDarkMode ? "border-[#3a3a3a]" : "border-[#d8dee7]"
+                          }`}
+                        >
+                          <div
+                            ref={localeDropdownRef}
+                            className="relative w-full sm:w-52"
+                          >
+                            <button
+                              type="button"
+                              onClick={handleLocaleDropdownToggle}
+                              disabled={isLocaleChanging}
+                              className={`group flex h-11 w-full cursor-pointer items-center justify-between rounded-[14px] border px-3 text-left text-[13px] shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none ${smoothUiClass} ${
+                                isDarkMode
+                                  ? "border-[#3b3c40] bg-[#242529] text-slate-100 hover:border-[#56575d] hover:bg-[#2b2c30] focus-visible:ring-2 focus-visible:ring-[#57f2cf]/20"
+                                  : "border-[#d8dee7] bg-white text-slate-900 hover:border-[#cbd4df] hover:bg-[#fbfaf7] focus-visible:ring-2 focus-visible:ring-[#d6cec0]"
+                              } disabled:cursor-wait disabled:opacity-80`}
+                              aria-label={copy.locale.changeLabel}
+                              aria-haspopup="listbox"
+                              aria-expanded={isLocaleDropdownOpen}
+                            >
+                              <span className="inline-flex min-w-0 items-center gap-2">
+                                <Languages
+                                  size={15}
+                                  className={
+                                    isDarkMode
+                                      ? "text-slate-400"
+                                      : "text-slate-500"
+                                  }
+                                />
+                                <span className="truncate font-medium">
+                                  {LOCALE_LABELS[displayedLocale]}
+                                </span>
+                              </span>
+                              {isLocaleChanging ? (
+                                <LoaderCircle
+                                  size={15}
+                                  className={`shrink-0 animate-spin ${
+                                    isDarkMode
+                                      ? "text-[#57f2cf]"
+                                      : "text-[#8a6f2a]"
+                                  }`}
+                                />
+                              ) : (
+                                <ChevronDown
+                                  size={15}
+                                  className={`shrink-0 transition-transform duration-200 ${
+                                    isLocaleDropdownOpen
+                                      ? "rotate-180"
+                                      : "rotate-0"
+                                  } ${
+                                    isDarkMode
+                                      ? "text-slate-500 group-hover:text-slate-300"
+                                      : "text-slate-500 group-hover:text-slate-700"
+                                  }`}
+                                />
+                              )}
+                            </button>
+
+                            {typeof document !== "undefined"
+                              ? createPortal(
+                                  <AnimatePresence>
+                                    {isLocaleDropdownOpen &&
+                                    localeMenuPosition ? (
+                                      <motion.div
+                                        ref={localeDropdownMenuRef}
+                                        style={{
+                                          position: "fixed",
+                                          left: localeMenuPosition.left,
+                                          top: localeMenuPosition.top,
+                                          width: localeMenuPosition.width,
+                                          zIndex: 10000,
+                                        }}
+                                        initial={{
+                                          opacity: 0,
+                                          y: -6,
+                                          scale: 0.98,
+                                        }}
+                                        animate={{
+                                          opacity: 1,
+                                          y: 0,
+                                          scale: 1,
+                                        }}
+                                        exit={{
+                                          opacity: 0,
+                                          y: -4,
+                                          scale: 0.98,
+                                        }}
+                                        transition={{
+                                          duration: 0.16,
+                                          ease: [0.22, 1, 0.36, 1],
+                                        }}
+                                        className={`overflow-hidden rounded-[14px] border p-1 shadow-[0_18px_44px_rgba(15,23,42,0.16)] ${
+                                          isDarkMode
+                                            ? "border-[#3f4045] bg-[#202125]"
+                                            : "border-[#d8dee7] bg-white"
+                                        }`}
+                                        role="listbox"
+                                      >
+                                        {SUPPORTED_LOCALES.map((option) => {
+                                          const isSelected =
+                                            option === locale;
+                                          return (
+                                            <button
+                                              key={option}
+                                              type="button"
+                                              onClick={() =>
+                                                handleLocaleChange(option)
+                                              }
+                                              className={`flex w-full cursor-pointer items-center justify-between rounded-[11px] px-3 py-2 text-left text-[13px] ${smoothUiClass} ${
+                                                isSelected
+                                                  ? isDarkMode
+                                                    ? "bg-[#303236] text-slate-100"
+                                                    : "bg-[#f1ecdf] text-[#1f1b15]"
+                                                  : isDarkMode
+                                                    ? "text-slate-300 hover:bg-[#2a2b30] hover:text-slate-100"
+                                                    : "text-slate-700 hover:bg-[#f7f4ee] hover:text-slate-950"
+                                              }`}
+                                              role="option"
+                                              aria-selected={isSelected}
+                                            >
+                                              <span>
+                                                {LOCALE_LABELS[option]}
+                                              </span>
+                                              {isSelected ? (
+                                                <Check
+                                                  size={14}
+                                                  className={
+                                                    isDarkMode
+                                                      ? "text-[#57f2cf]"
+                                                      : "text-[#8a6f2a]"
+                                                  }
+                                                />
+                                              ) : null}
+                                            </button>
+                                          );
+                                        })}
+                                      </motion.div>
+                                    ) : null}
+                                  </AnimatePresence>,
+                                  document.body,
+                                )
+                              : null}
+                          </div>
+                        </div>
+                      </motion.div>
                     ) : (
                       <motion.div
                         key="settings-social-tab"
@@ -2060,24 +2484,38 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   <button
                     type="button"
                     onClick={() => setIsResetDefaultsConfirmOpen(true)}
-                    className={`app-settings-secondary-btn cursor-pointer rounded-[14px] border px-3 py-2 text-[13px] ${smoothUiClass} ${
+                    disabled={isLocaleChanging}
+                    className={`app-settings-secondary-btn rounded-[14px] border px-3 py-2 text-[13px] ${smoothUiClass} ${
                       isDarkMode
                         ? "border-[#4a4b50] text-slate-300 hover:bg-[#121212] hover:text-slate-100"
                         : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    } ${
+                      isLocaleChanging
+                        ? "cursor-wait opacity-50"
+                        : "cursor-pointer"
                     }`}
                   >
-                    Reset defaults
+                    {copy.settings.resetDefaults}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setIsSettingsOpen(false)}
-                    className={`app-settings-primary-btn cursor-pointer rounded-[14px] px-3 py-2 text-[13px] text-white ${smoothUiClass} ${
+                    onClick={() => {
+                      if (!isLocaleChanging) {
+                        setIsSettingsOpen(false);
+                      }
+                    }}
+                    disabled={isLocaleChanging}
+                    className={`app-settings-primary-btn rounded-[14px] px-3 py-2 text-[13px] text-white ${smoothUiClass} ${
                       isDarkMode
                         ? "bg-emerald-600 hover:bg-emerald-700"
                         : "bg-emerald-600 hover:bg-emerald-700"
+                    } ${
+                      isLocaleChanging
+                        ? "cursor-wait opacity-50"
+                        : "cursor-pointer"
                     }`}
                   >
-                    Done
+                    {copy.settings.close}
                   </button>
                 </div>
 
@@ -2113,7 +2551,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             isDarkMode ? "text-slate-100" : "text-slate-900"
                           }`}
                         >
-                          Reset all settings to default?
+                          {copy.settings.resetConfirmTitle}
                         </p>
 
                         <div className="mt-4 flex justify-end gap-2">
@@ -2126,7 +2564,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                 : "border-slate-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                             }`}
                           >
-                            Cancel
+                            {copy.sessions.cancel}
                           </button>
                           <button
                             type="button"
@@ -2137,7 +2575,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                             }}
                             className={`inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-rose-600 px-3 py-2 text-[13px] text-white hover:bg-rose-700 ${smoothUiClass}`}
                           >
-                            Reset
+                            {copy.settings.reset}
                           </button>
                         </div>
                       </motion.div>
@@ -2145,6 +2583,13 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                   )}
                 </AnimatePresence>
               </section>
+              </div>
+              {isLocaleChanging ? (
+                <div
+                  className="absolute inset-0 z-[125] cursor-wait"
+                  aria-hidden="true"
+                />
+              ) : null}
             </motion.div>
           </motion.div>
         )}

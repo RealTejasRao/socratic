@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "title": "Socratic AI | Philosophie, Pensée Critique & Conversations Profondes",
+    "description": "Socratic AI : Un partenaire de pensée IA pour la philosophie, la pensée critique et la conversation profonde. Basé sur le dialogue socratique, il remet en question votre raisonnement, aiguise vos arguments et vous aide à penser plus clairement.",
+    "ogAlt": "Socratic AI - IA pour la philosophie et la pensée stratégique"
+  },
+  "nav": {
+    "home": "Accueil",
+    "features": "Fonctionnalités",
+    "pricing": "Tarification",
+    "blog": "Blog",
+    "contact": "Contact",
+    "openApp": "Ouvrir l'App",
+    "language": "Langue",
+    "menuTagline": "Votre IA personnelle pour la philosophie."
+  },
+  "hero": {
+    "srOnly": "Socratic AI : Votre IA personnelle pour la philosophie, les conversations profondes, la sagesse et la croissance.",
+    "headlinePrefix": "Socratic AI : Votre IA personnelle pour",
+    "words": [
+      "Philosophie",
+      "Conversations Profondes",
+      "Sagesse",
+      "Croissance"
+    ],
+    "signedOutCta": "Essayez Socratic AI",
+    "signedInCta": "Entrez dans Socratic AI",
+    "mobileImageAlt": "Illustration héroïque de Socratic AI pour la philosophie et la pensée stratégique",
+    "desktopImageAlt": "Illustration héroïque de Socratic AI pour la philosophie et la pensée stratégique"
+  },
+  "features": {
+    "headingSubject": "Philosophie",
+    "headingText": "Construit Différemment.\nConstruit Pour la Philosophie",
+    "highlightedTerms": [
+      "Différent",
+      "Philosophie"
+    ],
+    "cards": [
+      {
+        "id": "argues-back",
+        "title": "Il Répond.\nPar Conception.",
+        "description": "La plupart des IA vous disent ce que vous voulez entendre. Celle-ci est conçue pour vous contredire facilement."
+      },
+      {
+        "id": "corpus",
+        "title": "Un Corpus Construit pour\nles Philosophes",
+        "description": "Réponses basées sur des écrits originaux, pas sur des résumés Reddit survolés."
+      },
+      {
+        "id": "model-of-you",
+        "title": "Elle Construit un Modèle,\nde Vous",
+        "description": "Suit activement vos croyances et hypothèses, les connecte en un modèle vivant de votre pensée."
+      },
+      {
+        "id": "clarity",
+        "title": "Clarté que Vous Pouvez Emporter\nAvec Vous",
+        "description": "Découvrez des positions que vous ne saviez pas que vous teniez, des lacunes que vous ne saviez pas qu'il y avait."
+      }
+    ]
+  },
+  "security": {
+    "message": "Vos conversations restent privées. Toujours.",
+    "highlightedTerm": "privé",
+    "ariaLabel": "Séparateur de sécurité de chat"
+  },
+  "useCases": {
+    "headingText": "Une IA, Des Directions Infinies",
+    "mobileFirstLine": "Une IA",
+    "mobileSecondLine": "Des Directions Infinies",
+    "highlightedWord": "Infinies",
+    "items": [
+      {
+        "id": "deep-conversations",
+        "leftTitle": "Conversations Profondes",
+        "leftDescription": "Ayez les discussions que votre vie quotidienne ne permet pas.",
+        "rightTitle": "Enfin Quelqu'un avec Qui Penser à Voix Haute.",
+        "rightDescription": "Ayez les conversations profondes que vous avez toujours voulues, à toute heure, avec quelqu'un qui vous prend au sérieux. Pas de jugement, pas de distraction. Juste penser. Ensemble.",
+        "placeholderLabel": "Scène de conversation philosophique pour un dialogue profond"
+      },
+      {
+        "id": "debate-drills",
+        "leftTitle": "Exercices de Débat",
+        "leftDescription": "Débattez avec notre IA qui ne vous facilite jamais la tâche, afin que la vraie chose semble sans effort.",
+        "rightTitle": "Transformez Vos Idées en Arguments Puissants.",
+        "rightDescription": "Elle cartographie chaque affirmation que vous faites, suit votre logique en temps réel, et réplique avec le contre-argument le plus précis qu'elle puisse trouver ; puis elle se retourne et vous guide vers la version plus forte de celle-ci.",
+        "placeholderLabel": "Visualisation de pratique de débat avec des arguments structurés"
+      },
+      {
+        "id": "all-of-philosophy",
+        "leftTitle": "Toute la Philosophie",
+        "leftDescription": "Plongez dans n'importe quelle idée ou penseur philosophique et sortez réellement en comprenant.",
+        "rightTitle": "Toute l'Histoire de la Pensée Humaine, Prête à Discuter.",
+        "rightDescription": "Comprenez n'importe quel philosophe, n'importe quelle idée, comme cela a toujours été prévu - à travers la conversation, pas un manuel. Des Grecs anciens aux existentialistes modernes, du stoïcisme au nihilisme.",
+        "placeholderLabel": "Visualisation d'architecture classique représentant l'histoire de la philosophie"
+      }
+    ]
+  },
+  "contact": {
+    "heading": "Nous aimerions avoir de vos nouvelles :)",
+    "mobileFirstLine": "Nous aimerions",
+    "mobileSecondLine": "avoir de vos nouvelles :)",
+    "highlightedTerms": [
+      "aimer",
+      ":)"
+    ],
+    "title": "Contactez-Nous",
+    "name": "Nom",
+    "namePlaceholder": "Votre nom",
+    "email": "Email",
+    "emailPlaceholder": "vous@exemple.com",
+    "message": "Message",
+    "messagePlaceholder": "Laissez votre suggestion, retour, ou autre...",
+    "wordsLeft": "{count} mots restants",
+    "send": "Envoyer le Message",
+    "sending": "Envoi...",
+    "requiredError": "Veuillez remplir tous les champs obligatoires.",
+    "invalidFieldError": "Veuillez corriger les champs surlignés avant d'envoyer.",
+    "invalidEmailError": "Veuillez entrer une adresse email valide.",
+    "tooLongError": "Le message est trop long. Le maximum autorisé est de 2000 mots.",
+    "rateLimitError": "Trop de messages. Veuillez réessayer plus tard.",
+    "sendError": "Impossible d'envoyer pour le moment. Veuillez réessayer dans un instant.",
+    "successMessage": "Message envoyé avec succès. Merci de partager !",
+    "emailInvalidHint": "Entrez un email valide (exemple@domaine.com).",
+    "emailValidHint": "L'email semble bon."
+  },
+  "footer": {
+    "descriptionLines": [
+      "Construit sur les plus grands textes philosophiques jamais écrits.",
+      "Posez n'importe quelle question. Débattez de Tout"
+    ],
+    "cta": "Essayez Socratic AI Maintenant",
+    "explore": "Explorer",
+    "account": "Compte",
+    "preferences": "Préférences",
+    "home": "Accueil",
+    "features": "Fonctionnalités",
+    "blog": "Blog",
+    "contact": "Contact",
+    "pricing": "Tarification",
+    "goToApp": "Aller à l'App",
+    "getSocraticPlus": "Obtenez Socratic +",
+    "signUp": "S'inscrire",
+    "signIn": "Se Connecter",
+    "manageSubscription": "Gérer l'Abonnement",
+    "privacyPolicy": "Politique de Confidentialité",
+    "terms": "Conditions Générales",
+    "cookiePolicy": "Politique de Cookies",
+    "consentPreferences": "Préférences de Consentement",
+    "allRightsReserved": "Tous droits réservés."
+  },
+  "standalone": {
+    "headline": "Votre esprit était fait pour plus",
+    "body": "Votre endroit secret pour des pensées profondes et des conversations qui vous changent, loin des distractions du monde.",
+    "createAccount": "Créer un Compte",
+    "login": "Connexion",
+    "imageAlt": "Livres et sculpture entourés de fleurs"
+  }
+}

@@ -26,6 +26,12 @@ export const DODO_PRODUCTS = {
   annual: "DODO_PRODUCT_ANNUAL",
 } as const;
 
+export const AMBASSADOR_SUPPORT_DISCOUNT = {
+  code: "AMBASSADOR10",
+  percent: 10,
+  basisPoints: 1000,
+} as const;
+
 export const FREE_DAILY_QUOTAS = {
   messages: 25,
   imageUploads: 4,

@@ -460,6 +460,25 @@ function readMarkdownFile(relativePath: string) {
   return fs.readFileSync(absolutePath, "utf8");
 }
 
+function getTranslatedMarkdownPath(relativePath: string, locale: string) {
+  return path.join(
+    process.cwd(),
+    "public",
+    "blog",
+    "content",
+    locale,
+    path.basename(relativePath),
+  );
+}
+
+function translatedMarkdownExists(relativePath: string, locale: string) {
+  return fs.existsSync(getTranslatedMarkdownPath(relativePath, locale));
+}
+
+function readTranslatedMarkdownFile(relativePath: string, locale: string) {
+  return fs.readFileSync(getTranslatedMarkdownPath(relativePath, locale), "utf8");
+}
+
 function getFileLastModified(relativePath: string) {
   const absolutePath = path.join(process.cwd(), relativePath);
   return fs.statSync(absolutePath).mtime;
@@ -493,9 +512,19 @@ export function getAllBlogPostSummaries(
   return sorted;
 }
 
-export function getBlogPostBySlug(slug: string): BlogPost | null {
+export function getBlogPostBySlug(slug: string, locale = "en"): BlogPost | null {
   const post = BLOG_POSTS.find((entry) => entry.slug === slug);
   if (!post) {
+    return null;
+  }
+  const markdown =
+    locale === "en"
+      ? readMarkdownFile(post.contentFilePath)
+      : translatedMarkdownExists(post.contentFilePath, locale)
+        ? readTranslatedMarkdownFile(post.contentFilePath, locale)
+        : null;
+
+  if (!markdown) {
     return null;
   }
 
@@ -514,7 +543,7 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     readTimeLabel: post.readTimeLabel,
     excerpt: post.excerpt,
     coverImagePath: post.coverImagePath,
-    markdown: readMarkdownFile(post.contentFilePath),
+    markdown,
   };
 }
 
@@ -522,9 +551,43 @@ export function getAllBlogSlugs() {
   return BLOG_POSTS.map((post) => post.slug);
 }
 
+export function hasTranslatedBlogPost(slug: string, locale: string) {
+  const post = BLOG_POSTS.find((entry) => entry.slug === slug);
+  return Boolean(
+    post &&
+      locale !== "en" &&
+      translatedMarkdownExists(post.contentFilePath, locale),
+  );
+}
+
+export function getTranslatedBlogPostSlugs(locale: string) {
+  if (locale === "en") {
+    return getAllBlogSlugs();
+  }
+
+  return BLOG_POSTS.filter((post) =>
+    translatedMarkdownExists(post.contentFilePath, locale),
+  ).map((post) => post.slug);
+}
+
 export function getBlogPostSitemapEntries(): BlogPostSitemapEntry[] {
   return BLOG_POSTS.map((post) => ({
     slug: post.slug,
     lastModified: getFileLastModified(post.contentFilePath),
+  }));
+}
+
+export function getTranslatedBlogPostSitemapEntries(
+  locale: string,
+): BlogPostSitemapEntry[] {
+  if (locale === "en") {
+    return getBlogPostSitemapEntries();
+  }
+
+  return BLOG_POSTS.filter((post) =>
+    translatedMarkdownExists(post.contentFilePath, locale),
+  ).map((post) => ({
+    slug: post.slug,
+    lastModified: fs.statSync(getTranslatedMarkdownPath(post.contentFilePath, locale)).mtime,
   }));
 }

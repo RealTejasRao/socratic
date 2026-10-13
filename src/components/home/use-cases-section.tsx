@@ -17,13 +17,14 @@ import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-publ
 type UseCasesSectionProps = {
   interClassName: string;
   items?: UseCaseItem[];
+  itemCopy?: readonly UseCaseItemCopy[];
   headingText?: string;
   mobileFirstLineText?: string;
   mobileSecondLineText?: string;
   highlightedWord?: string;
 };
 
-type UseCaseItem = {
+export type UseCaseItem = {
   id: string;
   icon: LucideIcon;
   leftTitle: string;
@@ -34,7 +35,16 @@ type UseCaseItem = {
   imageSrc?: string;
 };
 
-const useCaseItems: UseCaseItem[] = [
+type UseCaseItemCopy = {
+  id: string;
+  leftTitle: string;
+  leftDescription: string;
+  rightTitle: string;
+  rightDescription: string;
+  placeholderLabel: string;
+};
+
+export const homeUseCaseItems: UseCaseItem[] = [
   {
     id: "deep-conversations",
     icon: MessagesSquare,
@@ -166,7 +176,8 @@ const rightPanelInView = {
 
 export function UseCasesSection({
   interClassName,
-  items = useCaseItems,
+  items = homeUseCaseItems,
+  itemCopy,
   headingText = USE_CASES_HEADING_TEXT,
   mobileFirstLineText = MOBILE_FIRST_LINE_TEXT,
   mobileSecondLineText = MOBILE_SECOND_LINE_TEXT,
@@ -183,11 +194,31 @@ export function UseCasesSection({
   const [visibleHeadingChars, setVisibleHeadingChars] = useState(0);
   const [restartHeadingSignal, setRestartHeadingSignal] = useState(0);
   const [restartLoadSignal, setRestartLoadSignal] = useState(0);
+  const resolvedItems = useMemo(
+    () =>
+      itemCopy
+        ? items.map((item) => {
+            const localized = itemCopy.find((entry) => entry.id === item.id);
+
+            return localized
+              ? {
+                  ...item,
+                  leftTitle: localized.leftTitle,
+                  leftDescription: localized.leftDescription,
+                  rightTitle: localized.rightTitle,
+                  rightDescription: localized.rightDescription,
+                  placeholderLabel: localized.placeholderLabel,
+                }
+              : item;
+          })
+        : items,
+    [itemCopy, items],
+  );
   const activeItem =
-    items.find((item) => item.id === activeId) ?? items[0]!;
+    resolvedItems.find((item) => item.id === activeId) ?? resolvedItems[0]!;
   const useCaseImageUrls = useMemo(
     () =>
-      items.map((item) => ({
+      resolvedItems.map((item) => ({
         id: item.id,
         url: item.imageSrc
           ? resolveOptimizedCloudinaryPublicAsset(item.imageSrc, {
@@ -197,17 +228,17 @@ export function UseCasesSection({
             })
           : undefined,
       })),
-    [items],
+    [resolvedItems],
   );
   const activeImageUrl = useCaseImageUrls.find(
     (item) => item.id === activeItem.id,
   )?.url;
 
   useEffect(() => {
-    if (!items.some((item) => item.id === activeId)) {
-      setActiveId(items[0]?.id ?? "");
+    if (!resolvedItems.some((item) => item.id === activeId)) {
+      setActiveId(resolvedItems[0]?.id ?? "");
     }
-  }, [activeId, items]);
+  }, [activeId, resolvedItems]);
 
   useEffect(() => {
     const onRestart = (event: Event) => {
@@ -366,7 +397,7 @@ export function UseCasesSection({
                     ease: heroSlideEase,
                   }}
                 >
-                  {items.map((item, index) => {
+                  {resolvedItems.map((item, index) => {
                     const isActive = item.id === activeItem.id;
                     const Icon = item.icon;
 

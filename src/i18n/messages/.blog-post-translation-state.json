@@ -1,0 +1,842 @@
+{
+  "it": {
+    "philosophy-is-polluting-itself": {
+      "contentFilePath": "public/blog/content/philosophy_is_polluting_itself.md",
+      "sourceHash": "36d6e395aca8e917312a1eb28194e0b90ab973da2cfaf89633dda833c02e69a3",
+      "targetHash": "7050b3f1e8688d1e89cf7d536384306b4c6301411ebebe87e8d849e5941baeb4",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.752Z"
+    },
+    "when-ai-writes-humans-must-think": {
+      "contentFilePath": "public/blog/content/when_ai_writes_humans_must_think.md",
+      "sourceHash": "f6a46698b222044efe72d1c71bcf4320ee9666b73097f84a98fba59d8b2c0b1d",
+      "targetHash": "a6433365f3c26099cd1721e966016bf0e6603bbe3acf1e2bab97d4a9c6ad6d44",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.756Z"
+    },
+    "why-generative-ai-compels-us-to-reinvent-the-university": {
+      "contentFilePath": "public/blog/content/why_generative_ai_compels_us_to_reinvent_the_university.md",
+      "sourceHash": "c12fb1688b8df25976e17f8ce257cdcb6bfd1ef76cba7e735f951bf203590153",
+      "targetHash": "73139d54a06c0c31c57595e28e222795908a760c80190692ab5d55fe7b3de436",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.760Z"
+    },
+    "ai-boosted-religion-neolithic-art-spirituality": {
+      "contentFilePath": "public/blog/content/ai_boosted_religion_neolithic_art_spirituality.md",
+      "sourceHash": "9809dcbc4d0986708973b47ace7cd81787f7c4339e9118bcb364d56ce7e70177",
+      "targetHash": "14011df55cae2a1ebfad19a15c44cdfb26da29f6779ac8b365b67f5db7b1feed",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.763Z"
+    },
+    "why-self-help-replaced-philosophy": {
+      "contentFilePath": "public/blog/content/self_help_replaced_philosophy.md",
+      "sourceHash": "5d517d24f905d9b6c4c7e2e318ebda639ff948a6b4ea8f9579cd0b4ff89f78b4",
+      "targetHash": "0e6fb4c82ee6d9fa5bee4db65df15943274d92dbd50896e3fa47a96393011628",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.765Z"
+    },
+    "philosophy-of-power": {
+      "contentFilePath": "public/blog/content/philosophy_of_power.md",
+      "sourceHash": "9d9852eb8a4c8ceedef504a2b0fb880ab903ddae9acc29114755eab9316110fc",
+      "targetHash": "bb0df5342b8aef07b6783bb2aaed1a36b8b6209adfdd5fc4c05708d524def35b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.426Z"
+    },
+    "plato-vs-aristotle": {
+      "contentFilePath": "public/blog/content/plato_vs_aristotle.md",
+      "sourceHash": "b3a250eb2abe582a95d1f3f0fa43f619c32ab2cf114a683c387d4e748f78b239",
+      "targetHash": "179c4842db5938e8c2ce9ec8c7d73e4878923e41ae98e8818db1d54c94103512",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.433Z"
+    },
+    "what-is-epistemology": {
+      "contentFilePath": "public/blog/content/what_is_epistemology.md",
+      "sourceHash": "12ac371b63a551f5670771bf01da53cc14c1c6d830890580d3990efe426257ab",
+      "targetHash": "f44b29e4b9371dff2f29ac00c1db83cd5ea0581cff54f64c4d80f6ba1b2e711e",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.437Z"
+    },
+    "the-background-story": {
+      "contentFilePath": "public/blog/content/socratic_ai_story.md",
+      "sourceHash": "5346c8b147c9d17eb3e923c4d7759b9be91f88c5e6e086b5996c48c9337f26f9",
+      "targetHash": "31bb6a8fc543414c7c99f179115466b8d4b3b09be502d31834863815c3768584",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.441Z"
+    },
+    "critical-thinking-in-ai-era": {
+      "contentFilePath": "public/blog/content/critical-thinking-ai-era.md",
+      "sourceHash": "ab073ee091e610736338bb8a76b7adb99866bfe6cecf0fc57e4157650f90c8d5",
+      "targetHash": "bf2a58eb04836826319a1e2c299c6f4bddfefdd30fad0c80765b7c536f1dfb85",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.446Z"
+    },
+    "what-is-consciousness": {
+      "contentFilePath": "public/blog/content/what_is_consciousness.md",
+      "sourceHash": "76a1fefc85070026107fac099aad70c16ed5e23b28a637d2de7163d3cbdd8f27",
+      "targetHash": "c9b2919180f1a49a2dec3ab7215cead6ef100ecc6dd662288052dee713f8f337",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.643Z"
+    },
+    "debate-ai": {
+      "contentFilePath": "public/blog/content/debate_ai.md",
+      "sourceHash": "a010d97c6edf7ea438cda338549760dbeb8e59ebd33e9f4a8c9ffc356cf12159",
+      "targetHash": "a50a8d5dde9a2faac6e0ef023b3f2f8019f932469097b966876a7dea01be723f",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.648Z"
+    },
+    "does-god-exist": {
+      "contentFilePath": "public/blog/content/does_god_exists.md",
+      "sourceHash": "eaa0dbaac745419c44ffc4477a6712e1c2cc0f5bb7a1dae22747c7dfe150927a",
+      "targetHash": "ba03e9c5b1ee9bd09816ac9e87db240b520cb3146f1b1213074c23ba4b64ffdf",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.651Z"
+    },
+    "soren-kierkegaard-and-existentialism": {
+      "contentFilePath": "public/blog/content/søren_kierkegaard_and_existentialism.md",
+      "sourceHash": "c7fef2f3fdba01a1cb169039a8948d789b02a5b9b3bd778faaffb032b35a721f",
+      "targetHash": "d9ea311a0f2a9ebd883779d3d6db504d510043c84dfd157f277597bdd16cb2ab",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.654Z"
+    },
+    "think-like-a-philosopher": {
+      "contentFilePath": "public/blog/content/think_like_a_philosopher.md",
+      "sourceHash": "4e857471ab776a5fb0e3d9bce5c390b651c3f98e114a3dbfc5efce351a7d1e7f",
+      "targetHash": "a7c1273c1aaafa6f4488a4f245fe0cb6725d3a4c69d1ef69697918bac1ea15c2",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.657Z"
+    },
+    "philosophy-of-death": {
+      "contentFilePath": "public/blog/content/philosophy-of-death.md",
+      "sourceHash": "6207be10ce5c687a7862e9977c148eb8ee9392faece8c8aea1e0d3d9b77c4a94",
+      "targetHash": "3d6501bc16564943d230a1e58e0720c259b48bdd1451961938bef19de67d18bd",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.649Z"
+    },
+    "meaning-of-life": {
+      "contentFilePath": "public/blog/content/meaning-of-life.md",
+      "sourceHash": "911654bfcbe40be02cb57b945a509f967365cc44d376c103083b82e36cb44461",
+      "targetHash": "ac9f89cf183705855ea558d469ecef2d0ebb78f540583b6c0a44b276c5424bfe",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.653Z"
+    },
+    "is-ai-making-us-dumber": {
+      "contentFilePath": "public/blog/content/is_ai_making_us_dumber.md",
+      "sourceHash": "27be8976151b8797128c9a11e5b1f88dd51053997106d5e007fa4d6b1f78858c",
+      "targetHash": "256c3b9822bd649bddbe321a8af90f866ac83ff2f64b9ed8bb61c2f790540a1e",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.657Z"
+    },
+    "marcus-aurelius-and-stoicism": {
+      "contentFilePath": "public/blog/content/marcus_aurelius_stoicism.md",
+      "sourceHash": "d4ecbb2a468a8c1d773321d166e08dd1bf7ec0f4e3706990238b4333ef3a8e31",
+      "targetHash": "228b31271782b27e7f9eff34de37672eacf4073ea3de9332a84562d05d769e82",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.660Z"
+    },
+    "what-is-philosophy": {
+      "contentFilePath": "public/blog/content/what_is_philosophy.md",
+      "sourceHash": "236c3bdb782b7413318952c7832dbefd9499787201de3de061073cd31d7329fb",
+      "targetHash": "de1769433d2c938fdeee38f5f28c39c02c9faf18f9afdbb380683dcc29a7d471",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.663Z"
+    },
+    "free-will-vs-determinism": {
+      "contentFilePath": "public/blog/content/Free_will_vs_determinism.md",
+      "sourceHash": "4228193aa803db6fb6775e304b46d37bf1ef407e8eed3e658bb6404b37cda988",
+      "targetHash": "3a579eeded1dd9fc51f52fe4d71bc4df61bb4aba9da41c9fc2d6a4ac9be0c09a",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.667Z"
+    },
+    "ai-and-critical-thinking": {
+      "contentFilePath": "public/blog/content/ai_will_never_replace_thinking.md",
+      "sourceHash": "5b90cfa06451126010d6e5c2bb9a0c42f7d9c8cb40a50d53c0c57e7c9c0df8ed",
+      "targetHash": "573133f96277a61f6c64cb0362c7ecaac3a78197f6907fa8a64e34e8476d8811",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.670Z"
+    },
+    "nietzsche-philosophy": {
+      "contentFilePath": "public/blog/content/nietzsche_blog.md",
+      "sourceHash": "a5fc4439d50dd71b693ef33e4cf52c29dfb6e0cd9a5e741d5a7fea2b0f405ac7",
+      "targetHash": "7e6ab8e9759e2bb33ef89a5771ae0e918196636fa9fb08366125ac83d975499d",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.673Z"
+    },
+    "socratic-method": {
+      "contentFilePath": "public/blog/content/socratic_method_blog.md",
+      "sourceHash": "bfc4b743e317c198fd175f8f6f556bbbe61ab47c2d812bb9404a4aa8b3abd5e7",
+      "targetHash": "fba54bc0110c09ffc3276afcbbc904609ab19b68b5ff80b56e181d9f741ca370",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.676Z"
+    },
+    "what-is-socratic-ai": {
+      "contentFilePath": "public/blog/content/what_is_socratic_ai_blog.md",
+      "sourceHash": "2dd5e9d1bb7e456bea76f1645f791b4a06e89cb52fb717e1102736aa7eb3340d",
+      "targetHash": "0302c2072399034448753168357475509c60d852739ca9b80a3f7de6237d5ac7",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.680Z"
+    },
+    "what-is-stoicism": {
+      "contentFilePath": "public/blog/content/stoicism_blog_final.md",
+      "sourceHash": "5a9a189e4e07a39403275ccf59140c56434232acb46134a5678dd11277c0b51b",
+      "targetHash": "c76f5e2a30b0a45a250dab272c7164fa0daa66c49a7e9e715ebc3256a9e25a19",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.684Z"
+    }
+  },
+  "fr": {
+    "philosophy-is-polluting-itself": {
+      "contentFilePath": "public/blog/content/philosophy_is_polluting_itself.md",
+      "sourceHash": "36d6e395aca8e917312a1eb28194e0b90ab973da2cfaf89633dda833c02e69a3",
+      "targetHash": "01d1ae6b4d478bf963fb9f6417a233796d6637a5bb0f257dfb6d92564ef3fa6e",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.767Z"
+    },
+    "when-ai-writes-humans-must-think": {
+      "contentFilePath": "public/blog/content/when_ai_writes_humans_must_think.md",
+      "sourceHash": "f6a46698b222044efe72d1c71bcf4320ee9666b73097f84a98fba59d8b2c0b1d",
+      "targetHash": "5786dfbe1eea42a195ae01b5fabed8aa8bd9c2408f641f3c9151f3d09ad5dd8e",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.770Z"
+    },
+    "why-generative-ai-compels-us-to-reinvent-the-university": {
+      "contentFilePath": "public/blog/content/why_generative_ai_compels_us_to_reinvent_the_university.md",
+      "sourceHash": "c12fb1688b8df25976e17f8ce257cdcb6bfd1ef76cba7e735f951bf203590153",
+      "targetHash": "61da4623f1e0097ddab874142316b35a9f76e3631c22b8b02bf2bf97741aabdf",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.771Z"
+    },
+    "ai-boosted-religion-neolithic-art-spirituality": {
+      "contentFilePath": "public/blog/content/ai_boosted_religion_neolithic_art_spirituality.md",
+      "sourceHash": "9809dcbc4d0986708973b47ace7cd81787f7c4339e9118bcb364d56ce7e70177",
+      "targetHash": "8e84f24643ccd26a068e44d490b1eaf08f4544df8a9b5aa47864bf7263812059",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.775Z"
+    },
+    "why-self-help-replaced-philosophy": {
+      "contentFilePath": "public/blog/content/self_help_replaced_philosophy.md",
+      "sourceHash": "5d517d24f905d9b6c4c7e2e318ebda639ff948a6b4ea8f9579cd0b4ff89f78b4",
+      "targetHash": "601553119f8dafe731528249f6bb573a8d3accfdb7e9872098a53f2379417c12",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.777Z"
+    },
+    "philosophy-of-power": {
+      "contentFilePath": "public/blog/content/philosophy_of_power.md",
+      "sourceHash": "9d9852eb8a4c8ceedef504a2b0fb880ab903ddae9acc29114755eab9316110fc",
+      "targetHash": "d878d69ac40308006a9d108528d2af134f7fc796906aa2861d6d5501876df281",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.451Z"
+    },
+    "plato-vs-aristotle": {
+      "contentFilePath": "public/blog/content/plato_vs_aristotle.md",
+      "sourceHash": "b3a250eb2abe582a95d1f3f0fa43f619c32ab2cf114a683c387d4e748f78b239",
+      "targetHash": "d5ec496d57670f9768add30c8df0cfa42b19beb20130e2def6e5004944fa7409",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.458Z"
+    },
+    "what-is-epistemology": {
+      "contentFilePath": "public/blog/content/what_is_epistemology.md",
+      "sourceHash": "12ac371b63a551f5670771bf01da53cc14c1c6d830890580d3990efe426257ab",
+      "targetHash": "a0d21892e1f4ee443780b9e4e0d27b1a290c32377b0e8220dc36ac05a3a8c9b5",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.464Z"
+    },
+    "the-background-story": {
+      "contentFilePath": "public/blog/content/socratic_ai_story.md",
+      "sourceHash": "5346c8b147c9d17eb3e923c4d7759b9be91f88c5e6e086b5996c48c9337f26f9",
+      "targetHash": "18275a4133b43a8c0351fff39c653bd257df04dfb346014ec89a33486a35ee39",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.470Z"
+    },
+    "critical-thinking-in-ai-era": {
+      "contentFilePath": "public/blog/content/critical-thinking-ai-era.md",
+      "sourceHash": "ab073ee091e610736338bb8a76b7adb99866bfe6cecf0fc57e4157650f90c8d5",
+      "targetHash": "c2c2efc97234b4c8a13a96e1e37d3df4b30c3560b09b0c2a7af826125c8ded56",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.476Z"
+    },
+    "what-is-consciousness": {
+      "contentFilePath": "public/blog/content/what_is_consciousness.md",
+      "sourceHash": "76a1fefc85070026107fac099aad70c16ed5e23b28a637d2de7163d3cbdd8f27",
+      "targetHash": "a5ed14c3b4ccd7a6dc0967b4e89a1323f162e85255a01b98ee06ac6432247dad",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.660Z"
+    },
+    "debate-ai": {
+      "contentFilePath": "public/blog/content/debate_ai.md",
+      "sourceHash": "a010d97c6edf7ea438cda338549760dbeb8e59ebd33e9f4a8c9ffc356cf12159",
+      "targetHash": "beb266505b4b08dcb4d581d778cb987a3903784eb1d035f41b4da0523aadc5d7",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.666Z"
+    },
+    "does-god-exist": {
+      "contentFilePath": "public/blog/content/does_god_exists.md",
+      "sourceHash": "eaa0dbaac745419c44ffc4477a6712e1c2cc0f5bb7a1dae22747c7dfe150927a",
+      "targetHash": "35835d21cda651d8485a4e5b0042f2634849dd46247e30ec86b8ee50bde132c0",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.670Z"
+    },
+    "soren-kierkegaard-and-existentialism": {
+      "contentFilePath": "public/blog/content/søren_kierkegaard_and_existentialism.md",
+      "sourceHash": "c7fef2f3fdba01a1cb169039a8948d789b02a5b9b3bd778faaffb032b35a721f",
+      "targetHash": "ed40153930dc6a12418af9a9ed702ff1b842ee6d9c27df7c2915eb5a589a38ea",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.673Z"
+    },
+    "think-like-a-philosopher": {
+      "contentFilePath": "public/blog/content/think_like_a_philosopher.md",
+      "sourceHash": "4e857471ab776a5fb0e3d9bce5c390b651c3f98e114a3dbfc5efce351a7d1e7f",
+      "targetHash": "be8dd0ba0e6f14c6cd4a7200d35eab47819db90f0f4178e9e9c0ae24d848bab9",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.676Z"
+    },
+    "philosophy-of-death": {
+      "contentFilePath": "public/blog/content/philosophy-of-death.md",
+      "sourceHash": "6207be10ce5c687a7862e9977c148eb8ee9392faece8c8aea1e0d3d9b77c4a94",
+      "targetHash": "0dcd38166c1a445929024d06991d5bd332825aba9be641f37c2b39cf99b51f22",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.688Z"
+    },
+    "meaning-of-life": {
+      "contentFilePath": "public/blog/content/meaning-of-life.md",
+      "sourceHash": "911654bfcbe40be02cb57b945a509f967365cc44d376c103083b82e36cb44461",
+      "targetHash": "cd72a01f4d34f242afe9db01dfc27ab62132f6b9215f1dbb9b7fb13b08f10e27",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.692Z"
+    },
+    "is-ai-making-us-dumber": {
+      "contentFilePath": "public/blog/content/is_ai_making_us_dumber.md",
+      "sourceHash": "27be8976151b8797128c9a11e5b1f88dd51053997106d5e007fa4d6b1f78858c",
+      "targetHash": "1e58971e6b08a9bdb07a6d2576a7b9a281ecf5c518b425ec7522d04fddf9f93d",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.696Z"
+    },
+    "marcus-aurelius-and-stoicism": {
+      "contentFilePath": "public/blog/content/marcus_aurelius_stoicism.md",
+      "sourceHash": "d4ecbb2a468a8c1d773321d166e08dd1bf7ec0f4e3706990238b4333ef3a8e31",
+      "targetHash": "222657db11af4cf5957a08d57bdb2ae988a45e91ed1a456fbc0d40deae169a5c",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.700Z"
+    },
+    "what-is-philosophy": {
+      "contentFilePath": "public/blog/content/what_is_philosophy.md",
+      "sourceHash": "236c3bdb782b7413318952c7832dbefd9499787201de3de061073cd31d7329fb",
+      "targetHash": "59c237770976ea5fb9b45028e5a49828f605d55e591e4b79b9f4cd2dbc6d6b7c",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.704Z"
+    },
+    "free-will-vs-determinism": {
+      "contentFilePath": "public/blog/content/Free_will_vs_determinism.md",
+      "sourceHash": "4228193aa803db6fb6775e304b46d37bf1ef407e8eed3e658bb6404b37cda988",
+      "targetHash": "e0aae4d1b01ea4f7e3a1c55f22fe961d24579887baa93560538ea98a1339f29a",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.707Z"
+    },
+    "ai-and-critical-thinking": {
+      "contentFilePath": "public/blog/content/ai_will_never_replace_thinking.md",
+      "sourceHash": "5b90cfa06451126010d6e5c2bb9a0c42f7d9c8cb40a50d53c0c57e7c9c0df8ed",
+      "targetHash": "611df7238ba182dfe36d7cde0bd856166e822177ac166043d1d1f6db1c6cbb0d",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.711Z"
+    },
+    "nietzsche-philosophy": {
+      "contentFilePath": "public/blog/content/nietzsche_blog.md",
+      "sourceHash": "a5fc4439d50dd71b693ef33e4cf52c29dfb6e0cd9a5e741d5a7fea2b0f405ac7",
+      "targetHash": "018ece6b64cf16135752efa5538b75c2a29ce4cd1e4e3fb8131de16489a0190b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.715Z"
+    },
+    "socratic-method": {
+      "contentFilePath": "public/blog/content/socratic_method_blog.md",
+      "sourceHash": "bfc4b743e317c198fd175f8f6f556bbbe61ab47c2d812bb9404a4aa8b3abd5e7",
+      "targetHash": "2d4af82e9a1be3c39ba64086d93e9be6085c560200f28293e9858231dea4de6d",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.718Z"
+    },
+    "what-is-socratic-ai": {
+      "contentFilePath": "public/blog/content/what_is_socratic_ai_blog.md",
+      "sourceHash": "2dd5e9d1bb7e456bea76f1645f791b4a06e89cb52fb717e1102736aa7eb3340d",
+      "targetHash": "522ae4b2832f0642c7d352c6aa5409fda0221db962cbdbfe9c490131d1c262f8",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.721Z"
+    },
+    "what-is-stoicism": {
+      "contentFilePath": "public/blog/content/stoicism_blog_final.md",
+      "sourceHash": "5a9a189e4e07a39403275ccf59140c56434232acb46134a5678dd11277c0b51b",
+      "targetHash": "27ef4a507fc0f1133622ff5608b961bd870fa9b6cc5c742535d14c3f86607924",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.725Z"
+    }
+  },
+  "de": {
+    "philosophy-is-polluting-itself": {
+      "contentFilePath": "public/blog/content/philosophy_is_polluting_itself.md",
+      "sourceHash": "36d6e395aca8e917312a1eb28194e0b90ab973da2cfaf89633dda833c02e69a3",
+      "targetHash": "aebb67780b8a9150547261a333e75ef0dd3bee1b6a413bd8e78df544e34a522a",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.779Z"
+    },
+    "when-ai-writes-humans-must-think": {
+      "contentFilePath": "public/blog/content/when_ai_writes_humans_must_think.md",
+      "sourceHash": "f6a46698b222044efe72d1c71bcf4320ee9666b73097f84a98fba59d8b2c0b1d",
+      "targetHash": "822b6b713afa7a5c7507b1151d10d6dc18f850b6cdccf2f858695af6ffaa3792",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.781Z"
+    },
+    "why-generative-ai-compels-us-to-reinvent-the-university": {
+      "contentFilePath": "public/blog/content/why_generative_ai_compels_us_to_reinvent_the_university.md",
+      "sourceHash": "c12fb1688b8df25976e17f8ce257cdcb6bfd1ef76cba7e735f951bf203590153",
+      "targetHash": "0bc0f23edc57e02ad2794c33c01f7c2a8ef89a3c23d0f6253091362e069eb852",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.784Z"
+    },
+    "ai-boosted-religion-neolithic-art-spirituality": {
+      "contentFilePath": "public/blog/content/ai_boosted_religion_neolithic_art_spirituality.md",
+      "sourceHash": "9809dcbc4d0986708973b47ace7cd81787f7c4339e9118bcb364d56ce7e70177",
+      "targetHash": "11bdaebdd4536ef85885347da5703e5e969362f4d5c7abaabc9788e425abfe79",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.786Z"
+    },
+    "why-self-help-replaced-philosophy": {
+      "contentFilePath": "public/blog/content/self_help_replaced_philosophy.md",
+      "sourceHash": "5d517d24f905d9b6c4c7e2e318ebda639ff948a6b4ea8f9579cd0b4ff89f78b4",
+      "targetHash": "5f41b25abb7892adf49c07719eae740277ccc95f845cd8215269be70e88d542d",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.789Z"
+    },
+    "philosophy-of-power": {
+      "contentFilePath": "public/blog/content/philosophy_of_power.md",
+      "sourceHash": "9d9852eb8a4c8ceedef504a2b0fb880ab903ddae9acc29114755eab9316110fc",
+      "targetHash": "61642b4daa18483169b9d6080e3bfffb08f5dfb30840ce72bd3f730e41bb1617",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.481Z"
+    },
+    "plato-vs-aristotle": {
+      "contentFilePath": "public/blog/content/plato_vs_aristotle.md",
+      "sourceHash": "b3a250eb2abe582a95d1f3f0fa43f619c32ab2cf114a683c387d4e748f78b239",
+      "targetHash": "47aeba9d87b0a6cdde060f02f6368cfc86a8c99bfd7296bf2a5dda3b8700a656",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.484Z"
+    },
+    "what-is-epistemology": {
+      "contentFilePath": "public/blog/content/what_is_epistemology.md",
+      "sourceHash": "12ac371b63a551f5670771bf01da53cc14c1c6d830890580d3990efe426257ab",
+      "targetHash": "40c2a914021c36b42f1653b6687e63a4d557d51cf749753f8fce28b5817fdda0",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.487Z"
+    },
+    "the-background-story": {
+      "contentFilePath": "public/blog/content/socratic_ai_story.md",
+      "sourceHash": "5346c8b147c9d17eb3e923c4d7759b9be91f88c5e6e086b5996c48c9337f26f9",
+      "targetHash": "05dbf39808a21df3dd3da9c890463c3c82308e215cef182e01e8f341ebd0f0b1",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.493Z"
+    },
+    "critical-thinking-in-ai-era": {
+      "contentFilePath": "public/blog/content/critical-thinking-ai-era.md",
+      "sourceHash": "ab073ee091e610736338bb8a76b7adb99866bfe6cecf0fc57e4157650f90c8d5",
+      "targetHash": "39c800f772d3a9c32121d7ce01566ecf28c9a2bd9bdb2888d38101f0882bcb27",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.497Z"
+    },
+    "what-is-consciousness": {
+      "contentFilePath": "public/blog/content/what_is_consciousness.md",
+      "sourceHash": "76a1fefc85070026107fac099aad70c16ed5e23b28a637d2de7163d3cbdd8f27",
+      "targetHash": "d1d8fc723507faa56d640bd73c8e94648df413ce56e0e223d5af8cf292f4973e",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.680Z"
+    },
+    "debate-ai": {
+      "contentFilePath": "public/blog/content/debate_ai.md",
+      "sourceHash": "a010d97c6edf7ea438cda338549760dbeb8e59ebd33e9f4a8c9ffc356cf12159",
+      "targetHash": "14369f9fcd2c43e453a6bc8daeb339bbfeb8d4b26f1f239b7424e4886756f4df",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.685Z"
+    },
+    "does-god-exist": {
+      "contentFilePath": "public/blog/content/does_god_exists.md",
+      "sourceHash": "eaa0dbaac745419c44ffc4477a6712e1c2cc0f5bb7a1dae22747c7dfe150927a",
+      "targetHash": "ebc639c320bc4a447e8c0fdbd00a44ee45c9f65ed627cce4c4fab3a37d0ec791",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.688Z"
+    },
+    "soren-kierkegaard-and-existentialism": {
+      "contentFilePath": "public/blog/content/søren_kierkegaard_and_existentialism.md",
+      "sourceHash": "c7fef2f3fdba01a1cb169039a8948d789b02a5b9b3bd778faaffb032b35a721f",
+      "targetHash": "a791d3170034691fc36083450f74f5cc5d6aca70c6405b75fb285e2bdd9b9677",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.691Z"
+    },
+    "think-like-a-philosopher": {
+      "contentFilePath": "public/blog/content/think_like_a_philosopher.md",
+      "sourceHash": "4e857471ab776a5fb0e3d9bce5c390b651c3f98e114a3dbfc5efce351a7d1e7f",
+      "targetHash": "fca9b70be04aaf8bcfcecc0e91dc390a856bee2238213944f1f1e6cba6aaa3ac",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.694Z"
+    },
+    "philosophy-of-death": {
+      "contentFilePath": "public/blog/content/philosophy-of-death.md",
+      "sourceHash": "6207be10ce5c687a7862e9977c148eb8ee9392faece8c8aea1e0d3d9b77c4a94",
+      "targetHash": "69004c992d4cdf6cbc625949442f3632c488019375db5898fc29f1eebb08db9b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.729Z"
+    },
+    "meaning-of-life": {
+      "contentFilePath": "public/blog/content/meaning-of-life.md",
+      "sourceHash": "911654bfcbe40be02cb57b945a509f967365cc44d376c103083b82e36cb44461",
+      "targetHash": "bbbf238023120c08f732de3083e0d92a10d63da6a550b6ece3ac8c5852263ac5",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.733Z"
+    },
+    "is-ai-making-us-dumber": {
+      "contentFilePath": "public/blog/content/is_ai_making_us_dumber.md",
+      "sourceHash": "27be8976151b8797128c9a11e5b1f88dd51053997106d5e007fa4d6b1f78858c",
+      "targetHash": "6a885b318254293bbb171a83a7fb41f5577cefdf9a4652fc6f492d4bd21f459e",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.737Z"
+    },
+    "marcus-aurelius-and-stoicism": {
+      "contentFilePath": "public/blog/content/marcus_aurelius_stoicism.md",
+      "sourceHash": "d4ecbb2a468a8c1d773321d166e08dd1bf7ec0f4e3706990238b4333ef3a8e31",
+      "targetHash": "11dbbd2338f4b3657b810e999785721c83080d5038588c19a63ea219c198243b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.740Z"
+    },
+    "what-is-philosophy": {
+      "contentFilePath": "public/blog/content/what_is_philosophy.md",
+      "sourceHash": "236c3bdb782b7413318952c7832dbefd9499787201de3de061073cd31d7329fb",
+      "targetHash": "6afba0a40d79ef47f06907c5edf6e719245489d3f94954e601b139f59ef1ad7b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.744Z"
+    },
+    "free-will-vs-determinism": {
+      "contentFilePath": "public/blog/content/Free_will_vs_determinism.md",
+      "sourceHash": "4228193aa803db6fb6775e304b46d37bf1ef407e8eed3e658bb6404b37cda988",
+      "targetHash": "e8f494ff3ac4671e0973d178feebb74e6e1b3c5d7a669fed693f8e9d2763c790",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.749Z"
+    },
+    "ai-and-critical-thinking": {
+      "contentFilePath": "public/blog/content/ai_will_never_replace_thinking.md",
+      "sourceHash": "5b90cfa06451126010d6e5c2bb9a0c42f7d9c8cb40a50d53c0c57e7c9c0df8ed",
+      "targetHash": "d322b2db4f0e300bd11494fb523ff23930b6d8b24ed94e62809f04e0695b5571",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.752Z"
+    },
+    "nietzsche-philosophy": {
+      "contentFilePath": "public/blog/content/nietzsche_blog.md",
+      "sourceHash": "a5fc4439d50dd71b693ef33e4cf52c29dfb6e0cd9a5e741d5a7fea2b0f405ac7",
+      "targetHash": "b3b62cee94d3da0eea4d09bc2611fd78488d4fe8bca7938637b20cecd4f7a31b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.756Z"
+    },
+    "socratic-method": {
+      "contentFilePath": "public/blog/content/socratic_method_blog.md",
+      "sourceHash": "bfc4b743e317c198fd175f8f6f556bbbe61ab47c2d812bb9404a4aa8b3abd5e7",
+      "targetHash": "c66daba6eb2c4d9bf751293fdc59b017c79a16fbd3ab78e143e89ed816968166",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.764Z"
+    },
+    "what-is-socratic-ai": {
+      "contentFilePath": "public/blog/content/what_is_socratic_ai_blog.md",
+      "sourceHash": "2dd5e9d1bb7e456bea76f1645f791b4a06e89cb52fb717e1102736aa7eb3340d",
+      "targetHash": "622aaaf58aac56c40793d8ff1c606896e5105668a7e2a881c918ba69dc92aabd",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.768Z"
+    },
+    "what-is-stoicism": {
+      "contentFilePath": "public/blog/content/stoicism_blog_final.md",
+      "sourceHash": "5a9a189e4e07a39403275ccf59140c56434232acb46134a5678dd11277c0b51b",
+      "targetHash": "305992c5f543cd6a2fc480678fad125a0751d7b9068c5489015343d0a52df1bd",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.772Z"
+    }
+  },
+  "pt-BR": {
+    "philosophy-is-polluting-itself": {
+      "contentFilePath": "public/blog/content/philosophy_is_polluting_itself.md",
+      "sourceHash": "36d6e395aca8e917312a1eb28194e0b90ab973da2cfaf89633dda833c02e69a3",
+      "targetHash": "5dc524df1048c9f7c3b9499e4a035e7abd779cfd01e3792f365a0ca28a660c5c",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.792Z"
+    },
+    "when-ai-writes-humans-must-think": {
+      "contentFilePath": "public/blog/content/when_ai_writes_humans_must_think.md",
+      "sourceHash": "f6a46698b222044efe72d1c71bcf4320ee9666b73097f84a98fba59d8b2c0b1d",
+      "targetHash": "b5752303cfd48b6fe9e35a06de1e30076b5eca88ee845a11a3056a637668983a",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.794Z"
+    },
+    "why-generative-ai-compels-us-to-reinvent-the-university": {
+      "contentFilePath": "public/blog/content/why_generative_ai_compels_us_to_reinvent_the_university.md",
+      "sourceHash": "c12fb1688b8df25976e17f8ce257cdcb6bfd1ef76cba7e735f951bf203590153",
+      "targetHash": "6f6357a32f201ff95704dbb4c78636df48bf154b60c0645f52c1f3781903457d",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.796Z"
+    },
+    "ai-boosted-religion-neolithic-art-spirituality": {
+      "contentFilePath": "public/blog/content/ai_boosted_religion_neolithic_art_spirituality.md",
+      "sourceHash": "9809dcbc4d0986708973b47ace7cd81787f7c4339e9118bcb364d56ce7e70177",
+      "targetHash": "7959543866757b1ade59cd0c38836094a7ae7f9667f959912e50a5d01845785b",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.799Z"
+    },
+    "why-self-help-replaced-philosophy": {
+      "contentFilePath": "public/blog/content/self_help_replaced_philosophy.md",
+      "sourceHash": "5d517d24f905d9b6c4c7e2e318ebda639ff948a6b4ea8f9579cd0b4ff89f78b4",
+      "targetHash": "065abe57f3a85d246b23124ae08e924238f70244339ae9236650b052c45cba54",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T04:14:26.801Z"
+    },
+    "philosophy-of-power": {
+      "contentFilePath": "public/blog/content/philosophy_of_power.md",
+      "sourceHash": "9d9852eb8a4c8ceedef504a2b0fb880ab903ddae9acc29114755eab9316110fc",
+      "targetHash": "794b307dedeb0d02825df349f4a5394126a7879478c12e8191e9ae3c5d7819f0",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.502Z"
+    },
+    "plato-vs-aristotle": {
+      "contentFilePath": "public/blog/content/plato_vs_aristotle.md",
+      "sourceHash": "b3a250eb2abe582a95d1f3f0fa43f619c32ab2cf114a683c387d4e748f78b239",
+      "targetHash": "69c74d4a8da7504c8577121403423ea451717bc474ae0c15fe9f820e66c096e7",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.508Z"
+    },
+    "what-is-epistemology": {
+      "contentFilePath": "public/blog/content/what_is_epistemology.md",
+      "sourceHash": "12ac371b63a551f5670771bf01da53cc14c1c6d830890580d3990efe426257ab",
+      "targetHash": "73f57dabb7178335ecd0cd27e919bf41fc8ba25f911e3f02295e7203faaaea76",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.512Z"
+    },
+    "the-background-story": {
+      "contentFilePath": "public/blog/content/socratic_ai_story.md",
+      "sourceHash": "5346c8b147c9d17eb3e923c4d7759b9be91f88c5e6e086b5996c48c9337f26f9",
+      "targetHash": "379ef1fd8d768fc60f9547600d722d4a259f4d6020f5b3ab4ae8d03b978aa7de",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.516Z"
+    },
+    "critical-thinking-in-ai-era": {
+      "contentFilePath": "public/blog/content/critical-thinking-ai-era.md",
+      "sourceHash": "ab073ee091e610736338bb8a76b7adb99866bfe6cecf0fc57e4157650f90c8d5",
+      "targetHash": "9188c5d98c612d178ea2912595a6c6f2560914aa553b9739be851c41e6d86a21",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T06:46:52.521Z"
+    },
+    "what-is-consciousness": {
+      "contentFilePath": "public/blog/content/what_is_consciousness.md",
+      "sourceHash": "76a1fefc85070026107fac099aad70c16ed5e23b28a637d2de7163d3cbdd8f27",
+      "targetHash": "e804ec1a96905520e0e6e5733d97604ad2c4544c5e65d6dbf7db12e79c794565",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.697Z"
+    },
+    "debate-ai": {
+      "contentFilePath": "public/blog/content/debate_ai.md",
+      "sourceHash": "a010d97c6edf7ea438cda338549760dbeb8e59ebd33e9f4a8c9ffc356cf12159",
+      "targetHash": "98d1271c01a81ba9ef7bc039ce9e94e56092b629e3c18f609a0c23e6a24737bf",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.701Z"
+    },
+    "does-god-exist": {
+      "contentFilePath": "public/blog/content/does_god_exists.md",
+      "sourceHash": "eaa0dbaac745419c44ffc4477a6712e1c2cc0f5bb7a1dae22747c7dfe150927a",
+      "targetHash": "5c5a81e72a02af1e4769e58ef01a51e73311b3b99ac34f3f9accaa9d323a32a0",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.708Z"
+    },
+    "soren-kierkegaard-and-existentialism": {
+      "contentFilePath": "public/blog/content/søren_kierkegaard_and_existentialism.md",
+      "sourceHash": "c7fef2f3fdba01a1cb169039a8948d789b02a5b9b3bd778faaffb032b35a721f",
+      "targetHash": "adfa1597e660fab650b44fb9d71dc155df6d710bdaf101e413810a62473c90a3",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.712Z"
+    },
+    "think-like-a-philosopher": {
+      "contentFilePath": "public/blog/content/think_like_a_philosopher.md",
+      "sourceHash": "4e857471ab776a5fb0e3d9bce5c390b651c3f98e114a3dbfc5efce351a7d1e7f",
+      "targetHash": "73eff45ec106a0205136e79eea6cb31efef6f1bcd0709078b436a00d8a535a62",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T07:37:31.716Z"
+    },
+    "philosophy-of-death": {
+      "contentFilePath": "public/blog/content/philosophy-of-death.md",
+      "sourceHash": "6207be10ce5c687a7862e9977c148eb8ee9392faece8c8aea1e0d3d9b77c4a94",
+      "targetHash": "57f8dfbdef13fd69b8d76640c836624a423b07ea83679af1b2ab50cc5f66ea02",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.775Z"
+    },
+    "meaning-of-life": {
+      "contentFilePath": "public/blog/content/meaning-of-life.md",
+      "sourceHash": "911654bfcbe40be02cb57b945a509f967365cc44d376c103083b82e36cb44461",
+      "targetHash": "ddbafd2e03cfe51875da286b107a91312201f2146d438d6887c92633b4b91c24",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.781Z"
+    },
+    "is-ai-making-us-dumber": {
+      "contentFilePath": "public/blog/content/is_ai_making_us_dumber.md",
+      "sourceHash": "27be8976151b8797128c9a11e5b1f88dd51053997106d5e007fa4d6b1f78858c",
+      "targetHash": "308dd10a3217d200b9cb055041886300f63d013438524d2de4b8ec4393a9c3ba",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.784Z"
+    },
+    "marcus-aurelius-and-stoicism": {
+      "contentFilePath": "public/blog/content/marcus_aurelius_stoicism.md",
+      "sourceHash": "d4ecbb2a468a8c1d773321d166e08dd1bf7ec0f4e3706990238b4333ef3a8e31",
+      "targetHash": "b4cb2dbab81aea0fcbcb006aea500e2ab6777466750efdaf93858cce58832eb5",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.788Z"
+    },
+    "what-is-philosophy": {
+      "contentFilePath": "public/blog/content/what_is_philosophy.md",
+      "sourceHash": "236c3bdb782b7413318952c7832dbefd9499787201de3de061073cd31d7329fb",
+      "targetHash": "61b44f38be39aca35018aad45d6a52fd8c1d32007edd5156787008b48021c8c5",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.791Z"
+    },
+    "free-will-vs-determinism": {
+      "contentFilePath": "public/blog/content/Free_will_vs_determinism.md",
+      "sourceHash": "4228193aa803db6fb6775e304b46d37bf1ef407e8eed3e658bb6404b37cda988",
+      "targetHash": "cde3238e74f7da63e8f84c755008fe6156b836144b2b3f1ae380e21dcd4e17d5",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.794Z"
+    },
+    "ai-and-critical-thinking": {
+      "contentFilePath": "public/blog/content/ai_will_never_replace_thinking.md",
+      "sourceHash": "5b90cfa06451126010d6e5c2bb9a0c42f7d9c8cb40a50d53c0c57e7c9c0df8ed",
+      "targetHash": "5b3481081c300b3ed74ebdc4d654698bb3e2ad96af0ea5353f78b7ace68178da",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.798Z"
+    },
+    "nietzsche-philosophy": {
+      "contentFilePath": "public/blog/content/nietzsche_blog.md",
+      "sourceHash": "a5fc4439d50dd71b693ef33e4cf52c29dfb6e0cd9a5e741d5a7fea2b0f405ac7",
+      "targetHash": "8309aba0fd590dd4cb927a0d9b274554ab2b2b086bb5eeab51fd86b9eeb9ba72",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.801Z"
+    },
+    "socratic-method": {
+      "contentFilePath": "public/blog/content/socratic_method_blog.md",
+      "sourceHash": "bfc4b743e317c198fd175f8f6f556bbbe61ab47c2d812bb9404a4aa8b3abd5e7",
+      "targetHash": "24d5ff826341a9185919766066e2eb7c0cd4080d0bfedf6778c2a3435a65ac21",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.804Z"
+    },
+    "what-is-socratic-ai": {
+      "contentFilePath": "public/blog/content/what_is_socratic_ai_blog.md",
+      "sourceHash": "2dd5e9d1bb7e456bea76f1645f791b4a06e89cb52fb717e1102736aa7eb3340d",
+      "targetHash": "f04cc9227a8f409f9bb772bde591a09d1892b1401992be76a8ed3f960a052bac",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.808Z"
+    },
+    "what-is-stoicism": {
+      "contentFilePath": "public/blog/content/stoicism_blog_final.md",
+      "sourceHash": "5a9a189e4e07a39403275ccf59140c56434232acb46134a5678dd11277c0b51b",
+      "targetHash": "c0a1b36ee24d62ae8d689c68f20e2adb0307b3084f46ad1d985445ad1d53a4ff",
+      "model": "gpt-4o-mini",
+      "reviewed": false,
+      "updatedAt": "2026-10-07T10:57:20.812Z"
+    }
+  }
+}

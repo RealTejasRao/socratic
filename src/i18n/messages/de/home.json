@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "title": "Socratic AI | Philosophie, Kritisches Denken & Tiefe Gespräche",
+    "description": "Socratic AI: Ein KI-Denkerpartner für Philosophie, kritisches Denken und tiefgehende Gespräche. Basierend auf dem sokratischen Dialog fordert es dein Denken heraus, schärft deine Argumente und hilft dir, klarer zu denken.",
+    "ogAlt": "Socratic AI - KI für Philosophie und strategisches Denken"
+  },
+  "nav": {
+    "home": "Startseite",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "openApp": "App Öffnen",
+    "language": "Sprache",
+    "menuTagline": "Deine persönliche KI für Philosophie."
+  },
+  "hero": {
+    "srOnly": "Socratic AI: Deine persönliche KI für Philosophie, tiefe Gespräche, Weisheit und Wachstum.",
+    "headlinePrefix": "Socratic AI: Deine persönliche KI für",
+    "words": [
+      "Philosophie",
+      "Tiefe Gespräche",
+      "Weisheit",
+      "Wachstum"
+    ],
+    "signedOutCta": "Probiere Socratic AI aus",
+    "signedInCta": "Betrete Socratic AI",
+    "mobileImageAlt": "Socratic AI Heldenillustration für Philosophie und strategisches Denken",
+    "desktopImageAlt": "Socratic AI Heldenillustration für Philosophie und strategisches Denken"
+  },
+  "features": {
+    "headingSubject": "Philosophie",
+    "headingText": "Anders gebaut.\nFür Philosophie gebaut",
+    "highlightedTerms": [
+      "Anders",
+      "Philosophie"
+    ],
+    "cards": [
+      {
+        "id": "argues-back",
+        "title": "Es widerspricht.\nVon Natur aus.",
+        "description": "Die meisten KI sagen dir, was du hören möchtest. Diese hier ist darauf ausgelegt, dir entgegenzuwirken."
+      },
+      {
+        "id": "corpus",
+        "title": "Ein Korpus für\nPhilosophen gebaut",
+        "description": "Antworten basierend auf Originaltexten, nicht auf zusammengefassten Reddit-Beiträgen."
+      },
+      {
+        "id": "model-of-you",
+        "title": "Es baut ein Modell,\nvon dir",
+        "description": "Verfolgt aktiv deine Überzeugungen und Annahmen und verbindet sie zu einem lebendigen Modell deines Denkens."
+      },
+      {
+        "id": "clarity",
+        "title": "Klarheit, die du\nmitnehmen kannst",
+        "description": "Entdecke Positionen, von denen du nicht wusstest, dass du sie hattest, Lücken, von denen du nicht wusstest, dass sie existieren."
+      }
+    ]
+  },
+  "security": {
+    "message": "Deine Gespräche bleiben privat. Immer.",
+    "highlightedTerm": "privat",
+    "ariaLabel": "Chat-Sicherheitsseparator"
+  },
+  "useCases": {
+    "headingText": "Eine KI, endlose Richtungen",
+    "mobileFirstLine": "Eine KI",
+    "mobileSecondLine": "Endlose Richtungen",
+    "highlightedWord": "Endlos",
+    "items": [
+      {
+        "id": "deep-conversations",
+        "leftTitle": "Tiefe Gespräche",
+        "leftDescription": "Führe die Diskussionen, für die im Alltag kein Platz ist.",
+        "rightTitle": "Endlich jemand, mit dem man laut denken kann.",
+        "rightDescription": "Führe die tiefen Gespräche, die du dir immer gewünscht hast, zu jeder Stunde, mit jemandem, der dich ernst nimmt. Kein Urteil, keine Ablenkung. Nur Denken. Gemeinsam.",
+        "placeholderLabel": "Philosophische Gesprächsszene für tiefen Dialog"
+      },
+      {
+        "id": "debate-drills",
+        "leftTitle": "Debattierübungen",
+        "leftDescription": "Debattiere mit unserer KI, die dir nie entgegenkommt, damit das echte Gefühl mühelos erscheint.",
+        "rightTitle": "Verwandle deine Ideen in kraftvolle Argumente.",
+        "rightDescription": "Sie kartiert jeden Anspruch, den du erhebst, verfolgt deine Logik in Echtzeit und kontert mit dem präzisesten Gegenargument, das sie finden kann; dann dreht sie sich um und führt dich zur stärkeren Version davon.",
+        "placeholderLabel": "Debattierpraxisvisualisierung mit strukturierten Argumenten"
+      },
+      {
+        "id": "all-of-philosophy",
+        "leftTitle": "Die gesamte Philosophie",
+        "leftDescription": "Tauche in jede philosophische Idee oder Denker ein und verstehe sie tatsächlich.",
+        "rightTitle": "Die gesamte Geschichte des menschlichen Denkens, bereit zur Diskussion.",
+        "rightDescription": "Verstehe jeden Philosophen, jede Idee, so wie es immer gedacht war - durch Gespräche, nicht durch ein Lehrbuch. Von den alten Griechen bis zu modernen Existenzialisten, von Stoizismus bis Nihilismus.",
+        "placeholderLabel": "Klassische Architekturvisualisierung, die die Geschichte der Philosophie darstellt"
+      }
+    ]
+  },
+  "contact": {
+    "heading": "Wir würden uns freuen, von dir zu hören :)",
+    "mobileFirstLine": "Wir würden uns freuen,",
+    "mobileSecondLine": "von dir zu hören :)",
+    "highlightedTerms": [
+      "freuen",
+      ":)"
+    ],
+    "title": "Kontaktiere uns",
+    "name": "Name",
+    "namePlaceholder": "Dein Name",
+    "email": "E-Mail",
+    "emailPlaceholder": "du@example.com",
+    "message": "Nachricht",
+    "messagePlaceholder": "Teile deinen Vorschlag, dein Feedback oder etwas anderes mit...",
+    "wordsLeft": "{count} Wörter übrig",
+    "send": "Nachricht senden",
+    "sending": "Wird gesendet...",
+    "requiredError": "Bitte alle erforderlichen Felder ausfüllen.",
+    "invalidFieldError": "Bitte behebe die hervorgehobenen Felder, bevor du sendest.",
+    "invalidEmailError": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "tooLongError": "Nachricht ist zu lang. Maximal erlaubt sind 2000 Wörter.",
+    "rateLimitError": "Zu viele Nachrichten. Bitte versuche es später erneut.",
+    "sendError": "Konnte gerade nicht gesendet werden. Bitte versuche es in einem Moment erneut.",
+    "successMessage": "Nachricht erfolgreich gesendet. Danke fürs Teilen!",
+    "emailInvalidHint": "Gib eine gültige E-Mail-Adresse ein (beispiel@domain.com).",
+    "emailValidHint": "E-Mail sieht gut aus."
+  },
+  "footer": {
+    "descriptionLines": [
+      "Basierend auf den größten philosophischen Texten, die je geschrieben wurden.",
+      "Frag alles. Debattiere alles."
+    ],
+    "cta": "Probiere Socratic AI jetzt aus",
+    "explore": "Erforschen",
+    "account": "Konto",
+    "preferences": "Einstellungen",
+    "home": "Startseite",
+    "features": "Funktionen",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "pricing": "Preise",
+    "goToApp": "Zur App gehen",
+    "getSocraticPlus": "Socratic + erhalten",
+    "signUp": "Registrieren",
+    "signIn": "Anmelden",
+    "manageSubscription": "Abonnement verwalten",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "terms": "Allgemeine Geschäftsbedingungen",
+    "cookiePolicy": "Cookie-Richtlinie",
+    "consentPreferences": "Zustimmungseinstellungen",
+    "allRightsReserved": "Alle Rechte vorbehalten."
+  },
+  "standalone": {
+    "headline": "Dein Geist war für mehr bestimmt",
+    "body": "Dein geheimer Ort für tiefe Gedanken und Gespräche, die dich verändern, fernab von den Ablenkungen der Welt.",
+    "createAccount": "Konto erstellen",
+    "login": "Anmelden",
+    "imageAlt": "Bücher und Skulpturen umgeben von Blumen"
+  }
+}

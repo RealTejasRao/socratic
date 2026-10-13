@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
 type Particle = {
@@ -18,36 +18,39 @@ type Pulse = {
 };
 
 const PARTICLE_COUNT = 6;
+const DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
+
+function subscribeToDesktopChanges(onStoreChange: () => void) {
+  const mediaQuery = window.matchMedia(DESKTOP_MEDIA_QUERY);
+
+  if (mediaQuery.addEventListener) {
+    mediaQuery.addEventListener("change", onStoreChange);
+    return () => mediaQuery.removeEventListener("change", onStoreChange);
+  }
+
+  mediaQuery.addListener(onStoreChange);
+  return () => mediaQuery.removeListener(onStoreChange);
+}
+
+function getDesktopSnapshot() {
+  return window.matchMedia(DESKTOP_MEDIA_QUERY).matches;
+}
+
+function getServerDesktopSnapshot() {
+  return false;
+}
 
 export default function ClickPulse() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pulsesRef = useRef<Pulse[]>([]);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const isDesktop = useSyncExternalStore(
+    subscribeToDesktopChanges,
+    getDesktopSnapshot,
+    getServerDesktopSnapshot,
+  );
   const pathname = usePathname();
   const isHomeRoute = pathname === "/";
   const isEnabled = isDesktop && isHomeRoute;
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    const onChange = (event: MediaQueryListEvent) => {
-      setIsDesktop(event.matches);
-    };
-
-    setIsDesktop(mediaQuery.matches);
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", onChange);
-    } else {
-      mediaQuery.addListener(onChange);
-    }
-
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", onChange);
-      } else {
-        mediaQuery.removeListener(onChange);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (!isEnabled) return;

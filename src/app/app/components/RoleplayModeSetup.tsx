@@ -18,6 +18,7 @@ import {
   type RoleplayFlair,
   type RoleplayPhilosopherId,
 } from "src/lib/roleplay";
+import { useAppRoute } from "./app-route-context";
 
 interface Props {
   onChatNow: (philosopherId: RoleplayPhilosopherId) => void;
@@ -95,6 +96,7 @@ export default function RoleplayModeSetup({
   onChatNow,
   startingPhilosopherId = null,
 }: Props) {
+  const { copy } = useAppRoute();
   const [query, setQuery] = useState("");
   const [selectedFlair, setSelectedFlair] = useState<RoleplayFlair | "All">(
     "All",
@@ -221,12 +223,10 @@ export default function RoleplayModeSetup({
     <section className="app-roleplay-library mx-auto flex w-full max-w-300 flex-col px-0 pb-8">
       <div className="app-roleplay-library-header mx-auto w-full max-w-235 text-left">
         <h2 className="app-roleplay-heading text-[28px] leading-none tracking-[-0.04em] text-slate-950 font-[Georgia,serif] md:text-[36px]">
-          Some conversations change how you think forever.
+          {copy.roleplay.title}
         </h2>
         <p className="app-roleplay-muted mt-2 max-w-170 text-[13px] leading-5 text-slate-500">
-          Every philosopher here spent their life building a way of seeing. This
-          is your chance to borrow it, not through textbooks, but through real
-          back-and-forth conversation.
+          {copy.roleplay.copy}
         </p>
       </div>
 
@@ -242,7 +242,7 @@ export default function RoleplayModeSetup({
               showFilteringState();
               setQuery(event.target.value);
             }}
-            placeholder="Search philosopher or category..."
+            placeholder={copy.roleplay.searchPlaceholder}
             className="app-roleplay-search-input w-full rounded-[14px] border px-11 py-3 text-[14px] outline-none transition"
           />
           {query ? (
@@ -253,7 +253,7 @@ export default function RoleplayModeSetup({
                 setQuery("");
               }}
               className="app-roleplay-search-clear absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 cursor-pointer place-items-center rounded-full transition"
-              aria-label="Clear search"
+              aria-label={copy.roleplay.clearSearch}
             >
               <X size={14} />
             </button>
@@ -265,7 +265,7 @@ export default function RoleplayModeSetup({
             type="button"
             onClick={() => scrollFlairs("left")}
             className="app-roleplay-flair-arrow grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-[10px] border transition"
-            aria-label="Scroll flairs left"
+            aria-label={copy.roleplay.scrollLeft}
           >
             <ChevronLeft size={21} />
           </button>
@@ -296,7 +296,7 @@ export default function RoleplayModeSetup({
             type="button"
             onClick={() => scrollFlairs("right")}
             className="app-roleplay-flair-arrow grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-[10px] border transition"
-            aria-label="Scroll flairs right"
+            aria-label={copy.roleplay.scrollRight}
           >
             <ChevronRight size={21} />
           </button>
@@ -313,7 +313,7 @@ export default function RoleplayModeSetup({
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.16, ease: "easeOut" }}
               className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-              aria-label="Loading philosophers"
+              aria-label={copy.roleplay.loading}
             >
               {Array.from({ length: 8 }).map((_, index) => (
                 <div
@@ -429,8 +429,8 @@ export default function RoleplayModeSetup({
                         ) : null}
                         <span>
                           {startingPhilosopherId === philosopher.id
-                            ? "Opening..."
-                            : "Start now"}
+                            ? copy.roleplay.opening
+                            : copy.roleplay.startNow}
                         </span>
                       </button>
                     </div>
@@ -449,11 +449,10 @@ export default function RoleplayModeSetup({
               )}
             >
               <p className="app-roleplay-heading text-[18px] font-[Georgia,serif]">
-                No philosopher found.
+                {copy.roleplay.emptyTitle}
               </p>
               <p className="app-roleplay-muted mt-2 text-[12px]">
-                Try a school, a name, or a problem like power, anxiety, freedom,
-                or morality.
+                {copy.roleplay.emptyCopy}
               </p>
             </motion.div>
           )}
