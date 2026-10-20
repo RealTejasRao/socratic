@@ -7,6 +7,7 @@ import { LoadGate } from "@/src/components/ui/load-gate";
 import { getHomeCopy } from "@/src/i18n/home";
 import { getLocalizedPath, type SupportedLocale } from "@/src/i18n/locales";
 import { getPricingCopy } from "@/src/i18n/pricing";
+import { getAmbassadorSupportDiscount } from "@/src/lib/billing";
 import { prisma } from "@/src/server/db/client";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 import PricingCards from "./pricing-cards";
@@ -32,11 +33,21 @@ export async function LocalizedPricingPage({ locale }: LocalizedPricingPageProps
     ? await getUserBillingStateByClerkId(clerkUserId)
     : null;
   const currentPlanTier = billing?.planTier ?? "FREE";
-  const hasAmbassadorSupport = billing
-    ? (await prisma.referralCodeSubmission.count({
+  const referralSupport = billing
+    ? await prisma.referralCodeSubmission.findFirst({
         where: { userId: billing.userId },
-      })) > 0
-    : false;
+        orderBy: { createdAt: "asc" },
+        select: {
+          code: true,
+          ambassadorCode: { select: { normalizedCode: true } },
+        },
+      })
+    : null;
+  const ambassadorDiscountPercent = referralSupport
+    ? getAmbassadorSupportDiscount(
+        referralSupport.ambassadorCode?.normalizedCode ?? referralSupport.code,
+      ).percent
+    : 0;
   const homeCopy = getHomeCopy(locale);
   const pricingCopy = getPricingCopy(locale);
   const homeHref = getLocalizedPath("/", locale);
@@ -74,7 +85,8 @@ export async function LocalizedPricingPage({ locale }: LocalizedPricingPageProps
         <PricingCards
           isSignedIn={Boolean(clerkUserId)}
           currentPlanTier={currentPlanTier}
-          hasAmbassadorSupport={hasAmbassadorSupport}
+          ambassadorDiscountPercent={ambassadorDiscountPercent}
+          ambassadorCode={referralSupport?.code ?? null}
           copy={pricingCopy}
         />
 

@@ -32,6 +32,18 @@ export const AMBASSADOR_SUPPORT_DISCOUNT = {
   basisPoints: 1000,
 } as const;
 
+const SHAKAR_SUPPORT_DISCOUNT = {
+  code: "SHAKAR50",
+  percent: 50,
+  basisPoints: 5000,
+} as const;
+
+export function getAmbassadorSupportDiscount(code: string) {
+  return code.trim().toUpperCase() === "SHAKAR"
+    ? SHAKAR_SUPPORT_DISCOUNT
+    : AMBASSADOR_SUPPORT_DISCOUNT;
+}
+
 export const FREE_DAILY_QUOTAS = {
   messages: 25,
   imageUploads: 4,

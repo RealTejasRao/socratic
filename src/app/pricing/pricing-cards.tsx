@@ -10,14 +10,15 @@ import {
   BILLINGSDK_PLAN_IDS,
   type Plan,
 } from "@/src/lib/billingsdk-config";
-import { AMBASSADOR_SUPPORT_DISCOUNT, PLAN_LIMITS } from "@/src/lib/billing";
+import { PLAN_LIMITS } from "@/src/lib/billing";
 import { ROUTES } from "@/src/lib/routes";
 import type { PricingCopy } from "@/src/i18n/pricing";
 
 type Props = {
   isSignedIn: boolean;
   currentPlanTier: "FREE" | "PREMIUM_MONTHLY" | "PREMIUM_ANNUAL";
-  hasAmbassadorSupport: boolean;
+  ambassadorDiscountPercent: number;
+  ambassadorCode: string | null;
   copy: PricingCopy;
 };
 
@@ -28,15 +29,16 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
 });
 
-function applyDiscount(price: number) {
-  const discountMultiplier = 1 - AMBASSADOR_SUPPORT_DISCOUNT.percent / 100;
+function applyDiscount(price: number, discountPercent: number) {
+  const discountMultiplier = 1 - discountPercent / 100;
   return (price * discountMultiplier).toFixed(2);
 }
 
 export default function PricingCards({
   isSignedIn,
   currentPlanTier,
-  hasAmbassadorSupport,
+  ambassadorDiscountPercent,
+  ambassadorCode,
   copy,
 }: Props) {
   const [loadingPlan, setLoadingPlan] = useState<CheckoutPlan | null>(null);
@@ -56,8 +58,16 @@ export default function PricingCards({
         : copy.buttons.manageSubscription;
     const formatCount = (value: string, count: number) =>
       value.replace("{count}", String(count));
-    const premiumMonthlyPrice = hasAmbassadorSupport ? applyDiscount(9) : "9";
-    const premiumYearlyPrice = hasAmbassadorSupport ? applyDiscount(84) : "84";
+    const hasAmbassadorSupport = ambassadorDiscountPercent > 0;
+    const supportingLabel = ambassadorCode
+      ? `. ${copy.billing.supporting.replace("{code}", ambassadorCode)}`
+      : "";
+    const premiumMonthlyPrice = hasAmbassadorSupport
+      ? applyDiscount(9, ambassadorDiscountPercent)
+      : "9";
+    const premiumYearlyPrice = hasAmbassadorSupport
+      ? applyDiscount(84, ambassadorDiscountPercent)
+      : "84";
 
     return [
       {
@@ -104,7 +114,7 @@ export default function PricingCards({
         buttonText: premiumButtonText,
         highlight: true,
         badge: hasAmbassadorSupport
-          ? `${AMBASSADOR_SUPPORT_DISCOUNT.percent}% off`
+          ? `${ambassadorDiscountPercent}% ${copy.billing.percentOff}${supportingLabel}`
           : copy.plans.premium.badge,
         features: [
           { name: copy.plans.premium.features.everythingBasic, icon: "check" },
@@ -121,7 +131,7 @@ export default function PricingCards({
         ],
       },
     ] satisfies Plan[];
-  }, [copy, currentPlanTier, hasAmbassadorSupport, isSignedIn]);
+  }, [copy, currentPlanTier, ambassadorDiscountPercent, ambassadorCode, isSignedIn]);
 
   async function openPortal() {
     setError("");

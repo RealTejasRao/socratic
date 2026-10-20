@@ -3,7 +3,7 @@ import type DodoPayments from "dodopayments";
 import { NextResponse } from "next/server";
 import { prisma } from "src/server/db/client";
 import { getDodoClient } from "src/server/billing/dodo-client";
-import { AMBASSADOR_SUPPORT_DISCOUNT } from "src/lib/billing";
+import { getAmbassadorSupportDiscount } from "src/lib/billing";
 import { ROUTES } from "src/lib/routes";
 
 type CheckoutPlan = "monthly" | "annual";
@@ -30,10 +30,11 @@ function getConfiguredProductIds(currentProductId: string) {
 async function ensureAmbassadorSupportDiscount(
   dodo: DodoPayments,
   productIds: string[],
+  discount: ReturnType<typeof getAmbassadorSupportDiscount>,
 ) {
   try {
     const existingDiscount = await dodo.discounts.retrieveByCode(
-      AMBASSADOR_SUPPORT_DISCOUNT.code,
+      discount.code,
     );
     const isMissingProductRestriction =
       existingDiscount.restricted_to.length > 0 &&
@@ -43,36 +44,42 @@ async function ensureAmbassadorSupportDiscount(
 
     if (
       existingDiscount.type !== "percentage" ||
-      existingDiscount.amount !== AMBASSADOR_SUPPORT_DISCOUNT.basisPoints ||
+      existingDiscount.amount !== discount.basisPoints ||
       isMissingProductRestriction
     ) {
       await dodo.discounts.update(existingDiscount.discount_id, {
         type: "percentage",
-        amount: AMBASSADOR_SUPPORT_DISCOUNT.basisPoints,
+        amount: discount.basisPoints,
         restricted_to: productIds,
         preserve_on_plan_change: true,
         metadata: {
           source: "socratic_ambassador_support",
-          percent: String(AMBASSADOR_SUPPORT_DISCOUNT.percent),
+          percent: String(discount.percent),
         },
       });
     }
   } catch {
     try {
       await dodo.discounts.create({
-        code: AMBASSADOR_SUPPORT_DISCOUNT.code,
-        name: "Ambassador Support 10%",
+        code: discount.code,
+        name: `Ambassador Support ${discount.percent}%`,
         type: "percentage",
-        amount: AMBASSADOR_SUPPORT_DISCOUNT.basisPoints,
+        amount: discount.basisPoints,
         restricted_to: productIds,
         preserve_on_plan_change: true,
         metadata: {
           source: "socratic_ambassador_support",
-          percent: String(AMBASSADOR_SUPPORT_DISCOUNT.percent),
+          percent: String(discount.percent),
         },
       });
     } catch {
-      await dodo.discounts.retrieveByCode(AMBASSADOR_SUPPORT_DISCOUNT.code);
+      const existingDiscount = await dodo.discounts.retrieveByCode(discount.code);
+      if (
+        existingDiscount.type !== "percentage" ||
+        existingDiscount.amount !== discount.basisPoints
+      ) {
+        throw new Error("Ambassador discount could not be configured.");
+      }
     }
   }
 }
@@ -135,11 +142,16 @@ export async function POST(req: Request) {
 
   const dodo = getDodoClient();
   const referralSupport = dbUser.referralCodeSubmissions[0] ?? null;
-  const hasAmbassadorSupport = Boolean(referralSupport);
-  if (hasAmbassadorSupport) {
+  const ambassadorDiscount = referralSupport
+    ? getAmbassadorSupportDiscount(
+        referralSupport.ambassadorCode?.normalizedCode ?? referralSupport.code,
+      )
+    : null;
+  if (ambassadorDiscount) {
     await ensureAmbassadorSupportDiscount(
       dodo,
       getConfiguredProductIds(productId),
+      ambassadorDiscount,
     );
   }
 
@@ -147,12 +159,10 @@ export async function POST(req: Request) {
     appUserId: dbUser.id,
     clerkUserId: dbUser.clerkUserId,
     plan,
-    ...(referralSupport
+    ...(referralSupport && ambassadorDiscount
       ? {
-          ambassadorDiscountCode: AMBASSADOR_SUPPORT_DISCOUNT.code,
-          ambassadorDiscountPercent: String(
-            AMBASSADOR_SUPPORT_DISCOUNT.percent,
-          ),
+          ambassadorDiscountCode: ambassadorDiscount.code,
+          ambassadorDiscountPercent: String(ambassadorDiscount.percent),
           ambassadorCodeId: referralSupport.ambassadorCodeId ?? "",
           ambassadorCode:
             referralSupport.ambassadorCode?.normalizedCode ??
@@ -184,8 +194,8 @@ export async function POST(req: Request) {
     customer: customerPayload,
     return_url: returnUrl,
     cancel_url: cancelUrl,
-    ...(hasAmbassadorSupport
-      ? { discount_codes: [AMBASSADOR_SUPPORT_DISCOUNT.code] }
+    ...(ambassadorDiscount
+      ? { discount_codes: [ambassadorDiscount.code] }
       : {}),
     metadata: checkoutMetadata,
     customization: {

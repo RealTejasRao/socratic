@@ -374,7 +374,7 @@ export function PricingTableFour({
               {plan.badge && (
                 <Badge
                   className={cn(
-                    "absolute -top-3 left-1/2 z-20 -translate-x-1/2 transform",
+                    "absolute -top-3 left-1/2 z-20 w-max max-w-[calc(100%_-_2rem)] -translate-x-1/2 transform whitespace-normal text-center wrap-anywhere",
                     theme === "classic"
                       ? "border-emerald-700/25 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg"
                       : "bg-primary text-primary-foreground",

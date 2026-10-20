@@ -63,6 +63,7 @@
     "perYear": "/year",
     "perMonth": "/month",
     "percentOff": "off",
+    "supporting": "Supporting {code}",
     "premiumPrice": "Premium price"
   },
   "status": {
