@@ -108,7 +108,7 @@ const cardVariants = cva(
 );
 
 const toggleVariants = cva(
-  "flex h-11 w-fit shrink-0 items-center rounded-md p-1 text-lg",
+  "flex min-h-11 w-fit max-w-full shrink-0 items-center rounded-md p-1 text-lg",
   {
     variants: {
       theme: {
@@ -187,6 +187,7 @@ const crossIconVariants = cva("h-[1lh] flex-none text-rose-500", {
 });
 
 export interface PricingTableFourProps extends VariantProps<typeof sectionVariants> {
+  dir?: "ltr" | "rtl";
   plans: Plan[];
   title?: ReactNode;
   description?: string;
@@ -218,6 +219,7 @@ const defaultIcons = {
 };
 
 export function PricingTableFour({
+  dir = "ltr",
   plans,
   title = "Choose Your Perfect Plan",
   description = "Transform your project with our comprehensive pricing options designed for every need.",
@@ -280,7 +282,7 @@ export function PricingTableFour({
   };
 
   return (
-    <section className={cn(sectionVariants({ size, theme }), className)}>
+    <section dir={dir} className={cn(sectionVariants({ size, theme }), className)}>
       <div className="relative mx-auto w-full max-w-7xl">
         <div className="mb-12 text-center">
           {subtitle && (
@@ -288,9 +290,9 @@ export function PricingTableFour({
               {subtitle}
             </p>
           )}
-          <h2 className={cn("hero-load-up hero-load-up-title-1", titleVariants({ size, theme }))}>
+          <h1 className={cn("hero-load-up hero-load-up-title-1", titleVariants({ size, theme }))}>
             {title}
-          </h2>
+          </h1>
           <p
             className={cn(
               "hero-load-up hero-load-up-hero-copy",
@@ -308,6 +310,7 @@ export function PricingTableFour({
               )}
             >
               <RadioGroup
+                dir={dir}
                 defaultValue="monthly"
                 className="grid-cols-2"
                 onValueChange={(value) => {
@@ -322,7 +325,7 @@ export function PricingTableFour({
                   />
                   <Label
                     htmlFor={`${uniqueId}-monthly`}
-                    className="text-muted-foreground peer-data-[state=checked]:text-primary hover:text-foreground flex h-9 cursor-pointer items-center justify-center px-2 font-semibold transition-all md:px-7"
+                    className="text-muted-foreground peer-data-[state=checked]:text-primary hover:text-foreground flex min-h-9 cursor-pointer items-center justify-center px-2 py-1 text-center font-semibold transition-all md:px-7"
                   >
                     {billingToggleLabels.monthly}
                   </Label>
@@ -335,11 +338,11 @@ export function PricingTableFour({
                   />
                   <Label
                     htmlFor={`${uniqueId}-annually`}
-                    className="text-muted-foreground peer-data-[state=checked]:text-primary hover:text-foreground flex h-9 cursor-pointer items-center justify-center gap-1 px-2 font-semibold transition-all md:px-7"
+                    className="text-muted-foreground peer-data-[state=checked]:text-primary hover:text-foreground flex min-h-9 cursor-pointer flex-wrap items-center justify-center gap-1 px-2 py-1 text-center font-semibold transition-all md:px-7"
                   >
                     {billingToggleLabels.yearly}
                     {yearlyPriceDiscount > 0 && (
-                      <span className="ml-1 rounded border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                      <span className="ms-1 rounded border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                         {priceLabels.save} {yearlyPriceDiscount}%
                       </span>
                     )}
@@ -431,12 +434,13 @@ export function PricingTableFour({
                         transition={{ duration: 0.2 }}
                       >
                         {isAnnually ? (
-                          <div className="flex items-baseline gap-1">
+                          <div className="flex flex-wrap items-baseline gap-1">
                             <span className={cn(priceTextVariants({ size, theme }))}>
                               {plan.highlight && (
                                 <span className="sr-only">{priceLabels.premiumPrice} </span>
                               )}
                               <span
+                                dir="ltr"
                                 className={cn(
                                   plan.highlight &&
                                     "bg-none bg-clip-border !text-emerald-600",
@@ -453,7 +457,7 @@ export function PricingTableFour({
                             {calculateDiscount(plan.monthlyPrice, plan.yearlyPrice) > 0 && (
                               <span
                                 className={cn(
-                                  "ml-2 text-xs",
+                                  "ms-2 text-xs",
                                   theme === "classic"
                                     ? "font-semibold text-emerald-500"
                                     : "text-primary font-medium",
@@ -464,12 +468,13 @@ export function PricingTableFour({
                             )}
                           </div>
                         ) : (
-                          <div className="flex items-baseline gap-1">
+                          <div className="flex flex-wrap items-baseline gap-1">
                             <span className={cn(priceTextVariants({ size, theme }))}>
                               {plan.highlight && (
                                 <span className="sr-only">{priceLabels.premiumPrice} </span>
                               )}
                               <span
+                                dir="ltr"
                                 className={cn(
                                   plan.highlight &&
                                     "bg-none bg-clip-border !text-emerald-600",
@@ -494,6 +499,7 @@ export function PricingTableFour({
                       onClick={() => handlePlanSelect(plan.id)}
                       className={cn(
                         buttonVariants({ theme }),
+                        "h-auto min-h-9 whitespace-normal",
                         plan.highlight &&
                           theme === "classic" &&
                           "border-emerald-800/40 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:shadow-emerald-200/70",

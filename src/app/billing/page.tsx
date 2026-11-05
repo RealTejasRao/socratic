@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { getBillingCopy } from "@/src/i18n/billing";
-import { createPageMetadata } from "@/src/lib/seo";
+import { createBillingMetadata } from "@/src/i18n/billing-metadata";
 import { LocalizedBillingPage, type BillingPageSearchParams } from "./localized-billing-page";
 
-export const metadata: Metadata = createPageMetadata({
-  title: getBillingCopy("en").metadata.title,
-  description: getBillingCopy("en").metadata.description,
-  path: "/billing",
-});
+export const metadata: Metadata = createBillingMetadata("en");
 
 type BillingPageProps = {
   searchParams?: BillingPageSearchParams;

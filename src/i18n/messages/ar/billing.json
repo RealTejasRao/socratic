@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "title": "الفوترة",
+    "description": "إدارة اشتراكك وإعدادات الفوترة في Socratic+.",
+    "ogAlt": "إعدادات فوترة Socratic Plus"
+  },
+  "hero": {
+    "welcome": "مرحبًا بك في",
+    "product": "Socratic Plus",
+    "description": "إدارة اشتراكك في Socratic+ وتجديده وتفاصيل الفوترة."
+  },
+  "summary": {
+    "status": "الحالة",
+    "active": "نشط",
+    "free": "مجاني",
+    "plan": "الخطة",
+    "renewsOn": "يتجدد في",
+    "notAvailable": "غير متوفر",
+    "notApplicable": "غير قابل للتطبيق",
+    "monthlyPlan": "Socratic + شهري",
+    "annualPlan": "Socratic + سنوي",
+    "freePlan": "مجاني"
+  },
+  "actions": {
+    "openingPortal": "فتح بوابة الفوترة...",
+    "manageSubscription": "إدارة الاشتراك",
+    "manageSubscriptionDescription": "تحديث طريقة الدفع، تفاصيل الفوترة، أو الإلغاء.",
+    "explorePerks": "استكشاف المزايا",
+    "explorePerksDescription": "اطلع على ما هو متضمن في خطتك.",
+    "goToApp": "الذهاب إلى التطبيق",
+    "goToAppDescription": "العودة إلى مساحة العمل والدردشات."
+  },
+  "statusLine": {
+    "prefix": "حالة الفوترة:",
+    "cancellationQueued": "تمت جدولة الإلغاء في نهاية الفترة.",
+    "statuses": {
+      "INACTIVE": "غير نشط",
+      "PENDING": "قيد الانتظار",
+      "ACTIVE": "نشط",
+      "ON_HOLD": "معلق",
+      "CANCELLED": "ملغى",
+      "FAILED": "فشل",
+      "EXPIRED": "منتهي"
+    }
+  },
+  "errors": {
+    "portalUrlMissing": "لم يتم إرجاع عنوان URL للبوابة.",
+    "portalOpenFailed": "تعذر فتح بوابة الفوترة."
+  }
+}

@@ -1,0 +1,35 @@
+.localized [data-post-title] {
+  font-size: 56px;
+}
+
+.localized [data-article-heading][class] {
+  font-family: var(--marketing-heading-font), serif !important;
+  font-size: 32px;
+  line-height: 1.5;
+}
+
+.localized ul {
+  padding-inline: 24px 0;
+}
+
+.localized :global(.lucide-arrow-left) {
+  scale: -1 1;
+}
+
+.localized[dir="ltr"] :global(.lucide-arrow-left) {
+  scale: 1;
+}
+
+.localized :global(.min-w-62) {
+  min-width: 0;
+}
+
+@media (max-width: 639px) {
+  .localized [data-post-title] {
+    font-size: 36px;
+  }
+
+  .localized [data-article-heading][class] {
+    font-size: 26px;
+  }
+}

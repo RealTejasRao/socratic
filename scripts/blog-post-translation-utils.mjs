@@ -5,12 +5,15 @@ import process from "node:process";
 import ts from "typescript";
 
 export const SOURCE_LOCALE = "en";
-export const TARGET_LOCALES = ["it", "fr", "de", "pt-BR"];
+export const TARGET_LOCALES = ["it", "fr", "de", "pt-BR", "ru", "ar"];
+export const DEFAULT_TARGET_LOCALES = TARGET_LOCALES;
 export const LOCALE_NAMES = {
   it: "Italian",
   fr: "French",
   de: "German",
   "pt-BR": "Brazilian Portuguese",
+  ru: "Russian",
+  ar: "Modern Standard Arabic",
 };
 
 export const BLOG_POSTS_SOURCE_PATH = path.join(
@@ -85,7 +88,7 @@ export async function writeJson(filePath, value) {
 }
 
 export function hashString(value) {
-  return crypto.createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256").update(value.replace(/\r\n/g, "\n")).digest("hex");
 }
 
 function getStringProperty(objectLiteral, propertyName) {

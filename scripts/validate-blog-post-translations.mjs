@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
 import process from "node:process";
+import { validateMarkdownPair } from "./blog-post-markdown-validation.mjs";
 import {
   TARGET_LOCALES,
+  DEFAULT_TARGET_LOCALES,
   getSourceContentPath,
   getTranslatedContentPath,
   readBlogPostManifest,
@@ -72,7 +74,7 @@ function parseArgs() {
     options.all = true;
   }
 
-  const locales = options.all ? TARGET_LOCALES : options.locales;
+  const locales = options.all ? DEFAULT_TARGET_LOCALES : options.locales;
   for (const locale of locales) {
     if (!TARGET_LOCALES.includes(locale)) {
       throw new Error(`Unsupported locale: ${locale}`);
@@ -82,95 +84,6 @@ function parseArgs() {
   return { ...options, locales };
 }
 
-function collectMarkdownLinks(value) {
-  return Array.from(value.matchAll(/!?\[[^\]]*]\(([^)\s]+)(?:\s+"[^"]*")?\)/g))
-    .map((match) => match[1])
-    .sort();
-}
-
-function collectUrls(value) {
-  return Array.from(value.matchAll(/https?:\/\/[^\s)"'<>]+/g))
-    .map((match) => match[0].replace(/[.,;:]$/, ""))
-    .sort();
-}
-
-function collectImagePaths(value) {
-  return Array.from(value.matchAll(/\/blog\/[^\s)"'<>]+/g))
-    .map((match) => match[0])
-    .sort();
-}
-
-function collectHeadingLevels(value) {
-  return value
-    .split(/\r?\n/)
-    .filter((line) => /^#{1,6}\s+/.test(line))
-    .map((line) => line.match(/^#+/)?.[0].length ?? 0);
-}
-
-function countCodeFenceMarkers(value) {
-  return Array.from(value.matchAll(/^```/gm)).length;
-}
-
-function compareArrays(label, source, target, issues, context) {
-  if (source.length !== target.length) {
-    issues.push(
-      `${context}: ${label} count mismatch (${source.length} -> ${target.length})`,
-    );
-    return;
-  }
-
-  for (let index = 0; index < source.length; index += 1) {
-    if (source[index] !== target[index]) {
-      issues.push(`${context}: ${label} changed at index ${index} (${source[index]} -> ${target[index]})`);
-    }
-  }
-}
-
-function validateMarkdownPair(source, target, context, issues, warnings) {
-  if (!target.trim()) {
-    issues.push(`${context}: translated markdown is empty`);
-    return;
-  }
-
-  compareArrays(
-    "markdown link targets",
-    collectMarkdownLinks(source),
-    collectMarkdownLinks(target),
-    issues,
-    context,
-  );
-  compareArrays("URLs", collectUrls(source), collectUrls(target), issues, context);
-  compareArrays(
-    "blog image paths",
-    collectImagePaths(source),
-    collectImagePaths(target),
-    issues,
-    context,
-  );
-  compareArrays(
-    "heading levels",
-    collectHeadingLevels(source),
-    collectHeadingLevels(target),
-    issues,
-    context,
-  );
-
-  const sourceFenceCount = countCodeFenceMarkers(source);
-  const targetFenceCount = countCodeFenceMarkers(target);
-  if (sourceFenceCount !== targetFenceCount) {
-    issues.push(
-      `${context}: code fence marker count mismatch (${sourceFenceCount} -> ${targetFenceCount})`,
-    );
-  }
-
-  if (source.trim() === target.trim()) {
-    warnings.push(`${context}: translation is identical to English`);
-  }
-
-  if (target.includes("\u2014")) {
-    issues.push(`${context}: translated markdown contains an em dash`);
-  }
-}
 
 async function main() {
   const options = parseArgs();

@@ -11,10 +11,13 @@ import {
   useState,
 } from "react";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { HighlightedText } from "./highlighted-text";
 
 type ContactSectionProps = {
   interClassName: string;
   copy?: Partial<ContactCopy>;
+  preserveLetterJoining?: boolean;
+  localizeResponses?: boolean;
 };
 
 type ContactCopy = {
@@ -52,7 +55,7 @@ const CONTACT_HEADING_TEXT = "We'd love to hear from you :)";
 const MOBILE_CONTACT_FIRST_LINE_TEXT = "We'd love to";
 const MOBILE_CONTACT_SECOND_LINE_TEXT = "hear from you :)";
 const MAX_MESSAGE_WORDS = 2000;
-const NAME_REGEX = /^[\p{L}][\p{L}\s'-]{0,79}$/u;
+const NAME_REGEX = /^[\p{L}][\p{L}\p{M}\s'\u200c-]{0,79}$/u;
 const CONTACT_EASE = [0.22, 1, 0.36, 1] as const;
 
 const leftArmVariants: Variants = {
@@ -155,7 +158,7 @@ const isValidEmail = (value: string) => {
   return true;
 };
 
-export function ContactSection({ interClassName, copy }: ContactSectionProps) {
+export function ContactSection({ interClassName, copy, preserveLetterJoining = false, localizeResponses = false }: ContactSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
@@ -198,7 +201,9 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
   const isAccentChar = (index: number) =>
     highlightRanges.some((range) => index >= range.start && index < range.end);
   const renderAccentedText = (text: string, absoluteStart: number) =>
-    text.split("").map((char, index) => {
+    preserveLetterJoining
+      ? <HighlightedText text={text} ranges={highlightRanges} offset={absoluteStart} className="text-[#A01717]" />
+      : text.split("").map((char, index) => {
       const absoluteIndex = absoluteStart + index;
       return (
         <span
@@ -369,7 +374,7 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
         setSubmitState({
           type: "error",
           message:
-            typeof result?.message === "string"
+            !localizeResponses && typeof result?.message === "string"
               ? result.message
               : fallbackMessage,
         });
@@ -379,7 +384,7 @@ export function ContactSection({ interClassName, copy }: ContactSectionProps) {
       setSubmitState({
         type: "success",
         message:
-          typeof result?.message === "string"
+          !localizeResponses && typeof result?.message === "string"
             ? result.message
             : (copy?.successMessage ??
               "Message sent successfully. Thanks for sharing!"),

@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion";
 import { LockKeyhole } from "lucide-react";
+import { HighlightedText } from "./highlighted-text";
 
 type SecuritySeparatorProps = {
   interClassName: string;
   message?: string;
   highlightedTerm?: string;
   ariaLabel?: string;
+  preserveLetterJoining?: boolean;
 };
 
 export function SecuritySeparator({
@@ -15,6 +17,7 @@ export function SecuritySeparator({
   message = "Your conversations stay private. Always.",
   highlightedTerm = "private",
   ariaLabel = "Chat security separator",
+  preserveLetterJoining = false,
 }: SecuritySeparatorProps) {
   const highlightedStart = message.indexOf(highlightedTerm);
   const highlightedEnd = highlightedStart + highlightedTerm.length;
@@ -61,7 +64,9 @@ export function SecuritySeparator({
           <p
             className={`${interClassName} mt-2 text-center text-[0.8rem] font-medium tracking-[0.01em] text-black/72 sm:text-[0.82rem]`}
           >
-            {renderedMessage}
+            {preserveLetterJoining
+              ? <HighlightedText text={message} ranges={highlightedStart >= 0 ? [{ start: highlightedStart, end: highlightedEnd }] : []} className="text-[#166534]" />
+              : renderedMessage}
           </p>
           <motion.div
             className="mx-auto mt-1 h-px w-full max-w-56 bg-gradient-to-r from-transparent via-[#166534]/24 to-transparent"

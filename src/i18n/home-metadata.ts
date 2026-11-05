@@ -3,14 +3,14 @@ import { absoluteUrl, seoConfig } from "@/src/lib/seo";
 import { getHomeCopy } from "@/src/i18n/home";
 import {
   LOCALE_OG_LOCALES,
-  SUPPORTED_LOCALES,
+  HOME_LOCALES,
   getHomePathForLocale,
-  type SupportedLocale,
+  type HomeLocale,
 } from "@/src/i18n/locales";
 
 function getLanguageAlternates() {
   return Object.fromEntries([
-    ...SUPPORTED_LOCALES.map((locale) => [
+    ...HOME_LOCALES.map((locale) => [
       locale,
       absoluteUrl(getHomePathForLocale(locale)),
     ]),
@@ -18,7 +18,7 @@ function getLanguageAlternates() {
   ]);
 }
 
-export function createHomeMetadata(locale: SupportedLocale): Metadata {
+export function createHomeMetadata(locale: HomeLocale): Metadata {
   const copy = getHomeCopy(locale);
   const path = getHomePathForLocale(locale);
   const canonical = absoluteUrl(path);

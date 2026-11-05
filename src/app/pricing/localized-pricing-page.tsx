@@ -3,9 +3,9 @@ import { Instrument_Serif, Inter } from "next/font/google";
 import { Footer } from "@/src/components/home/footer";
 import { MarketingLocaleSwitcher } from "@/src/components/navigation/marketing-locale-switcher";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
-import { LoadGate } from "@/src/components/ui/load-gate";
+import { getMarketingLocalePresentation } from "@/src/components/navigation/marketing-locale-typography";
 import { getHomeCopy } from "@/src/i18n/home";
-import { getLocalizedPath, type SupportedLocale } from "@/src/i18n/locales";
+import { getLocalizedPath, type PricingLocale } from "@/src/i18n/locales";
 import { getPricingCopy } from "@/src/i18n/pricing";
 import { getAmbassadorSupportDiscount } from "@/src/lib/billing";
 import { prisma } from "@/src/server/db/client";
@@ -24,7 +24,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 type LocalizedPricingPageProps = {
-  locale: SupportedLocale;
+  locale: PricingLocale;
 };
 
 export async function LocalizedPricingPage({ locale }: LocalizedPricingPageProps) {
@@ -54,13 +54,14 @@ export async function LocalizedPricingPage({ locale }: LocalizedPricingPageProps
   const pricingHref = getLocalizedPath("/pricing", locale);
   const billingHref = getLocalizedPath("/billing", locale);
   const blogHref = getLocalizedPath("/blog", locale);
+  const presentation = getMarketingLocalePresentation(locale);
 
   return (
-    <LoadGate
-      fallbackClassName={`min-h-screen w-full bg-white ${poppinsClassName}`}
-    >
       <main
-        className={`relative min-h-screen overflow-hidden bg-white text-black ${poppinsClassName}`}
+        lang={presentation.lang}
+        dir={presentation.dir}
+        style={presentation.style}
+        className={`relative min-h-screen overflow-hidden bg-white text-black ${poppinsClassName} ${presentation.className}`}
       >
         <MarketingNavbar
           interClassName={interClassName}
@@ -83,6 +84,7 @@ export async function LocalizedPricingPage({ locale }: LocalizedPricingPageProps
         />
 
         <PricingCards
+          locale={locale}
           isSignedIn={Boolean(clerkUserId)}
           currentPlanTier={currentPlanTier}
           ambassadorDiscountPercent={ambassadorDiscountPercent}
@@ -99,6 +101,5 @@ export async function LocalizedPricingPage({ locale }: LocalizedPricingPageProps
           copy={homeCopy.footer}
         />
       </main>
-    </LoadGate>
   );
 }

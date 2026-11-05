@@ -1,10 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { validateMarkdownPair } from "./blog-post-markdown-validation.mjs";
 import {
   BLOG_POST_TRANSLATION_STATE_PATH,
   LOCALE_NAMES,
   TARGET_LOCALES,
+  DEFAULT_TARGET_LOCALES,
   getSourceContentPath,
   getTranslatedContentPath,
   hashString,
@@ -30,9 +32,7 @@ function parseArgs() {
     locales: [],
     slugs: [],
     files: [],
-    model: process.env["OPENAI_BLOG_TRANSLATION_MODEL"] ||
-      process.env["OPENAI_TRANSLATION_MODEL"] ||
-      DEFAULT_MODEL,
+    model: null,
     requestTimeoutMs: Number.parseInt(
       process.env["OPENAI_BLOG_TRANSLATION_TIMEOUT_MS"] ||
         String(DEFAULT_REQUEST_TIMEOUT_MS),
@@ -144,7 +144,7 @@ function parseArgs() {
     options.all = true;
   }
 
-  const locales = options.all ? TARGET_LOCALES : options.locales;
+  const locales = options.all ? DEFAULT_TARGET_LOCALES : options.locales;
   for (const locale of locales) {
     if (!TARGET_LOCALES.includes(locale)) {
       throw new Error(`Unsupported locale: ${locale}`);
@@ -170,9 +170,12 @@ function getTranslatePrompt() {
     "Use your judgment: choose natural phrasing when literal translation sounds awkward, but preserve the meaning, argument, emphasis, and tone.",
     "Preserve the author's voice, intellectual seriousness, rhetorical force, and pacing.",
     "Preserve philosophical precision. Use standard target-language philosophical terms where they exist; if a term is commonly left in English or Latin/Greek, keep it.",
+    "Translate all prose, including headings, captions, and closing recommendations. Do not leave ordinary English words, partially translated words, or unrelated scripts embedded in the translation. Established brand names and conventional foreign-language philosophical terms are exceptions.",
+    "Preserve the brand names Socratic AI and Socratic Plus exactly.",
     "Do not simplify the reasoning. Do not add examples. Do not remove caveats. Do not add claims the author did not make.",
     "Preserve Markdown structure exactly: heading levels, paragraph breaks, lists, blockquotes, tables, code fences, inline code, links, image references, and HTML.",
-    "Preserve URLs, URL paths, slugs, image paths, file names, citations, proper nouns, book titles, philosopher names, dates, and numbers exactly. Never translate URL paths, slugs, domains, query strings, anchors, or file paths.",
+    "Preserve every link occurrence, including repeated links to the same URL. Translate link labels only. Never merge, remove, or deduplicate links or their surrounding paragraphs.",
+    "Preserve URLs, URL paths, slugs, image paths, file names, citations, dates, and numbers exactly. Preserve the identities of people and works; use established target-language renderings of philosopher names and book titles when customary. Never translate URL paths, slugs, domains, query strings, anchors, or file paths.",
     "Never use em dashes (U+2014). Use commas, colons, semicolons, parentheses, or a simple hyphen instead.",
     "Return only JSON in this exact shape: {\"markdown\":\"translated markdown\"}.",
   ].join(" ");
@@ -183,7 +186,10 @@ function getReviewPrompt() {
     "You are reviewing a translated Socratic AI philosophy blog post against its English source.",
     "Read the full source and the full translated draft before making changes.",
     "Correct only issues that harm meaning, philosophical precision, authorial tone, naturalness, or Markdown integrity.",
+    "Check the entire draft for untranslated prose, partly translated words, and accidental characters from unrelated scripts. Correct those fragments and use established target-language names for philosophers and technical concepts. Retain deliberate brand names and conventional foreign-language terms.",
+    "Check negation, causality, and who is doing what. Watch for misleading dictionary senses of words such as output, premium, and intelligence; interpret these in the full article's context.",
     "Do not rewrite for its own sake. Do not add or remove ideas. Preserve all Markdown structure, links, URLs, URL paths, slugs, image paths, code, names, dates, and numbers exactly.",
+    "Repeated links are intentional. Preserve every occurrence from the source, even if a URL has already appeared earlier. Do not turn linked text into plain text.",
     "Never use em dashes (U+2014). Replace any em dash with commas, colons, semicolons, parentheses, or a simple hyphen.",
     "Return only JSON in this exact shape: {\"markdown\":\"corrected translated markdown\"}.",
   ].join(" ");
@@ -243,7 +249,20 @@ async function callOpenAi({
         body: JSON.stringify({
           model,
           temperature: 0.25,
-          response_format: { type: "json_object" },
+          max_completion_tokens: model.startsWith("gpt-4.1") ? 32768 : 16384,
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "translated_blog_post",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: { markdown: { type: "string" } },
+                required: ["markdown"],
+                additionalProperties: false,
+              },
+            },
+          },
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: JSON.stringify(userPayload) },
@@ -257,6 +276,9 @@ async function callOpenAi({
       }
 
       const payload = await response.json();
+      if (payload?.choices?.[0]?.finish_reason === "length") {
+        throw new Error("Translation exceeded the model output limit; refusing to save an incomplete article.");
+      }
       const content = payload?.choices?.[0]?.message?.content;
       if (typeof content !== "string") {
         throw new Error("OpenAI response did not include message content.");
@@ -344,12 +366,15 @@ async function translatePost({
 
 function updateStateForPost(state, locale, post, sourceMarkdown, translatedMarkdown, options) {
   state[locale] = state[locale] || {};
+  const previous = state[locale][post.slug];
   state[locale][post.slug] = {
     contentFilePath: post.contentFilePath,
     sourceHash: hashString(sourceMarkdown),
     targetHash: hashString(translatedMarkdown),
-    model: options.model,
-    reviewed: options.review,
+    model: options.markCurrent ? (previous?.model ?? options.model) : options.model,
+    reviewed: options.markCurrent ? (options.review || previous?.reviewed === true) : options.review,
+    validated: true,
+    approved: options.markCurrent,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -373,6 +398,10 @@ async function main() {
   let stateChanged = false;
 
   for (const locale of options.locales) {
+    const localeOptions = {
+      ...options,
+      model: options.model || process.env["OPENAI_BLOG_TRANSLATION_MODEL"] || process.env["OPENAI_TRANSLATION_MODEL"] || DEFAULT_MODEL,
+    };
     for (const post of posts) {
       const sourcePath = getSourceContentPath(post);
       const targetPath = getTranslatedContentPath(post, locale);
@@ -395,7 +424,10 @@ async function main() {
           console.log(`${locale}/${post.slug}: no translated file to mark`);
           continue;
         }
-        updateStateForPost(state, locale, post, sourceMarkdown, existingTarget, options);
+        const issues = [];
+        validateMarkdownPair(sourceMarkdown, existingTarget, `${locale}/${post.slug}`, issues, []);
+        if (issues.length) throw new Error(issues.join("\n"));
+        updateStateForPost(state, locale, post, sourceMarkdown, existingTarget, localeOptions);
         stateChanged = true;
         console.log(`${locale}/${post.slug}: marked current translation as baseline`);
         continue;
@@ -407,7 +439,7 @@ async function main() {
       }
 
       console.log(
-        `${locale}/${post.slug}: translating with ${options.model}${options.review ? " + review" : ""}`,
+        `${locale}/${post.slug}: translating with ${localeOptions.model}${options.review ? " + review" : ""}`,
       );
 
       if (options.dryRun) {
@@ -417,7 +449,7 @@ async function main() {
 
       const translatedMarkdown = await translatePost({
         apiKey,
-        model: options.model,
+        model: localeOptions.model,
         locale,
         post,
         sourceMarkdown,
@@ -426,9 +458,22 @@ async function main() {
         maxRetries: options.maxRetries,
       });
 
+      const normalizedMarkdown = translatedMarkdown.trimEnd() + "\n";
+      const issues = [];
+      validateMarkdownPair(sourceMarkdown, normalizedMarkdown, `${locale}/${post.slug}`, issues, []);
+      if (issues.length) {
+        const draftPath = path.join(process.cwd(), ".i18n-drafts", "blog", locale, path.basename(post.contentFilePath));
+        await fs.mkdir(path.dirname(draftPath), { recursive: true });
+        await fs.writeFile(draftPath, normalizedMarkdown, "utf8");
+        await writeJson(`${draftPath}.validation.json`, {
+          locale, slug: post.slug, model: localeOptions.model, reviewed: options.review,
+          sourceHash: hashString(sourceMarkdown), issues,
+        });
+        throw new Error(`Translation was not published. Draft saved to ${path.relative(process.cwd(), draftPath)}:\n${issues.join("\n")}`);
+      }
       await fs.mkdir(path.dirname(targetPath), { recursive: true });
-      await fs.writeFile(targetPath, translatedMarkdown.trimEnd() + "\n", "utf8");
-      updateStateForPost(state, locale, post, sourceMarkdown, translatedMarkdown, options);
+      await fs.writeFile(targetPath, normalizedMarkdown, "utf8");
+      updateStateForPost(state, locale, post, sourceMarkdown, normalizedMarkdown, localeOptions);
       await writeJson(BLOG_POST_TRANSLATION_STATE_PATH, state);
       stateChanged = false;
       console.log(`${locale}/${post.slug}: wrote ${path.relative(process.cwd(), targetPath)}`);
@@ -442,5 +487,5 @@ async function main() {
 
 main().catch((error) => {
   console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+  process.exitCode = 1;
 });

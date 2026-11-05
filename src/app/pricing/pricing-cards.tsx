@@ -13,8 +13,10 @@ import {
 import { PLAN_LIMITS } from "@/src/lib/billing";
 import { ROUTES } from "@/src/lib/routes";
 import type { PricingCopy } from "@/src/i18n/pricing";
+import { LOCALE_DIRECTIONS, type PricingLocale } from "@/src/i18n/locales";
 
 type Props = {
+  locale: PricingLocale;
   isSignedIn: boolean;
   currentPlanTier: "FREE" | "PREMIUM_MONTHLY" | "PREMIUM_ANNUAL";
   ambassadorDiscountPercent: number;
@@ -35,6 +37,7 @@ function applyDiscount(price: number, discountPercent: number) {
 }
 
 export default function PricingCards({
+  locale,
   isSignedIn,
   currentPlanTier,
   ambassadorDiscountPercent,
@@ -136,18 +139,22 @@ export default function PricingCards({
   async function openPortal() {
     setError("");
     setLoadingPlan(null);
-    const response = await fetch("/api/v1/billing/portal", { method: "POST" });
-    if (!response.ok) {
-      setError(copy.status.customerPortalError);
-      return;
-    }
+    try {
+      const response = await fetch("/api/v1/billing/portal", { method: "POST" });
+      if (!response.ok) {
+        setError(copy.status.customerPortalError);
+        return;
+      }
 
-    const payload = (await response.json()) as { portalUrl?: string };
-    if (!payload.portalUrl) {
-      setError(copy.status.portalUrlMissing);
-      return;
+      const payload = (await response.json()) as { portalUrl?: string };
+      if (!payload.portalUrl) {
+        setError(copy.status.portalUrlMissing);
+        return;
+      }
+      window.location.href = payload.portalUrl;
+    } catch {
+      setError(copy.status.customerPortalError);
     }
-    window.location.href = payload.portalUrl;
   }
 
   async function startCheckout(plan: CheckoutPlan) {
@@ -161,8 +168,7 @@ export default function PricingCards({
       });
 
       if (!response.ok) {
-        const reason = await response.text();
-        setError(reason || copy.status.checkoutError);
+        setError(copy.status.checkoutError);
         return;
       }
 
@@ -206,6 +212,7 @@ export default function PricingCards({
     <section className="relative z-20 px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20">
       <div className="hero-load-up hero-load-up-image mx-auto w-full [--background:#ffffff] [--foreground:#171717] [--card:#ffffff] [--card-foreground:#171717] [--muted:#f5f5f5] [--muted-foreground:#5f6368] [--border:rgba(17,17,17,0.14)] [--primary:#111111] [--primary-foreground:#ffffff] [--secondary:#f1f1f1] [--secondary-foreground:#171717]">
         <PricingTableFour
+          dir={LOCALE_DIRECTIONS[locale]}
           plans={pricingPlans}
           title={
             <span className={`${instrumentSerif.className} text-[clamp(2.8rem,6.4vw,4.6rem)] font-normal tracking-[-0.022em] text-[#1f1b1b]`}>

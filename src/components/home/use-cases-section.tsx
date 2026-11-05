@@ -388,7 +388,7 @@ export function UseCasesSection({
               />
               <div className="grid grid-cols-1 lg:min-h-104 lg:grid-cols-[0.95fr_1.85fr]">
                 <motion.aside
-                  className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-r lg:border-black/10"
+                  className="border-b border-black/10 bg-[#f7f7f7] lg:flex lg:min-h-full lg:flex-col lg:border-b-0 lg:border-e lg:border-black/10"
                   initial={leftRailInitial}
                   animate={useCasesSceneInView ? leftRailInView : false}
                   transition={{
@@ -406,7 +406,7 @@ export function UseCasesSection({
                         key={`${item.id}-${restartLoadSignal}`}
                         type="button"
                         onClick={() => setActiveId(item.id)}
-                        className={`group relative block w-full cursor-pointer border-b border-black/10 px-4 py-3.5 text-left last:border-b-0 transition-colors duration-200 md:px-2.5 md:py-2.5 lg:flex-1 ${
+                        className={`group relative block w-full cursor-pointer border-b border-black/10 px-4 py-3.5 text-start last:border-b-0 transition-colors duration-200 md:px-2.5 md:py-2.5 lg:flex-1 ${
                           isActive
                             ? "bg-[#fefefc] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)] md:shadow-none"
                             : "bg-[#f7f7f7] hover:bg-black/2"
@@ -429,7 +429,7 @@ export function UseCasesSection({
                         }}
                       >
                         <span
-                          className={`absolute inset-y-0 left-0 w-1 bg-[#a01717] ${
+                          className={`absolute inset-y-0 start-0 w-1 bg-[#a01717] ${
                             isActive ? "opacity-100" : "opacity-0"
                           }`}
                           aria-hidden="true"

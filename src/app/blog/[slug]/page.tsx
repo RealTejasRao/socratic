@@ -9,12 +9,14 @@ import { Footer } from "@/src/components/home/footer";
 import { AuthAwareCtaLink } from "@/src/components/navigation/auth-aware-cta-link";
 import { MarketingLocaleSwitcher } from "@/src/components/navigation/marketing-locale-switcher";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
+import { getMarketingLocalePresentation } from "@/src/components/navigation/marketing-locale-typography";
+import { createBlogPostMetadata } from "@/src/i18n/blog-post-metadata";
 import { getBlogCopy } from "@/src/i18n/blog";
 import { getHomeCopy } from "@/src/i18n/home";
 import {
   DEFAULT_LOCALE,
   getLocalizedPath,
-  type SupportedLocale,
+  type BlogPostLocale,
 } from "@/src/i18n/locales";
 import {
   resolveOptimizedCloudinaryPublicAsset,
@@ -24,9 +26,11 @@ import { createBlogPostingSchema, createPageMetadata } from "@/src/lib/seo";
 import {
   getAllBlogSlugs,
   getBlogPostBySlug,
+  getAvailableBlogPostLocales,
   type BlogPost,
   type BlogPostCredit,
 } from "@/src/server/blog/posts";
+import styles from "./localized-blog-post.module.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -67,25 +71,13 @@ export async function generateMetadata({
     });
   }
 
-  return createPageMetadata({
-    title: `Socratic AI: ${post.title}`,
-    description: post.excerpt,
-    path: `/blog/${post.slug}`,
-    ogImage: post.coverImagePath,
-    keywords: [
-      "Socratic AI blog",
-      "philosophy",
-      "stoicism",
-      post.title.toLowerCase(),
-    ],
-  });
+  return createBlogPostMetadata(post, "en");
 }
 
 function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
   const lines = markdown.split(/\r?\n/);
   const blocks: MarkdownBlock[] = [];
   let paragraphBuffer: string[] = [];
-  let isKeyTakeawaysSection = false;
 
   const flushParagraph = () => {
     if (paragraphBuffer.length === 0) {
@@ -110,7 +102,6 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
     if (line === "---") {
       flushParagraph();
       blocks.push({ type: "hr" });
-      isKeyTakeawaysSection = false;
       continue;
     }
 
@@ -118,7 +109,6 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
       flushParagraph();
       const content = line.slice(2).trim();
       blocks.push({ type: "h1", content });
-      isKeyTakeawaysSection = normalizeHeadingText(content).includes("key takeaways");
       continue;
     }
 
@@ -126,7 +116,6 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
       flushParagraph();
       const content = line.slice(3).trim();
       blocks.push({ type: "h2", content });
-      isKeyTakeawaysSection = normalizeHeadingText(content).includes("key takeaways");
       continue;
     }
 
@@ -134,11 +123,10 @@ function toMarkdownBlocks(markdown: string): MarkdownBlock[] {
       flushParagraph();
       const content = line.slice(4).trim();
       blocks.push({ type: "h3", content });
-      isKeyTakeawaysSection = normalizeHeadingText(content).includes("key takeaways");
       continue;
     }
 
-    if (isKeyTakeawaysSection && line.startsWith("- ")) {
+    if (line.startsWith("- ")) {
       flushParagraph();
       const item = line.slice(2).trim();
       const previousBlock = blocks.at(-1);
@@ -272,9 +260,9 @@ function escapeRegExp(value: string) {
 function getLocalizedTitleHighlights(displayTitle: string) {
   const highlights: string[] = [];
   const colonMatch = displayTitle.match(/^(.+?[:：])\s*/);
-  const questionMatch = displayTitle.match(/^(.+?[?？])\s*/);
+  const questionMatch = displayTitle.match(/^(.+?[?？؟])\s*/);
   const sentenceMatch = displayTitle.match(/^(.+?[.!])\s+/);
-  const commaMatch = displayTitle.match(/,\s*(.+)$/);
+  const commaMatch = displayTitle.match(/[,،]\s*(.+)$/);
   const genericPattern =
     /\b(Socratic AI|Debate AI|AI|IA|KI|Intelligenza Artificiale|intelligence artificielle|künstliche Intelligenz|Inteligência Artificial|Filosofia|filosofia|Philosophie|philosophie|Stoicismo|Stoïcisme|Stoizismus|Estoicismo|Nietzsche|Søren Kierkegaard|Marco Aurelio|Marc Aurèle|Marcus Aurelius|Platon|Platone|Platão|Aristoteles|Aristotele|Aristote|Aristóteles|Socrate|Sokrates|Sócrates|Bewusstsein|Coscienza|conscience|Consciência|Dio|Dieu|Gott|Deus|Morte|Mort|Tod|Determinismo|Déterminisme|Determinismus)\b/gi;
 
@@ -295,6 +283,9 @@ function getLocalizedTitleHighlights(displayTitle: string) {
   }
 
   for (const match of displayTitle.matchAll(genericPattern)) {
+    highlights.push(match[0]);
+  }
+  for (const match of displayTitle.matchAll(/(?<![\p{L}\p{N}])(?:философ\p{L}*|ИИ|искусственн\p{L}*\s+интеллект\p{L}*|Сократ\p{L}*|الفلسفة|[وبف]?الذكاء الاصطناعي|سقراط|Socrates)(?![\p{L}\p{N}])/giu)) {
     highlights.push(match[0]);
   }
 
@@ -353,6 +344,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   if (block.type === "h2") {
     return (
       <h2
+        data-article-heading
         key={`h2-${index}`}
         className={`${instrumentSerif.className} mt-12 text-[1.9rem] leading-[1.18] tracking-normal text-[#a01717] sm:text-[2.25rem]`}
       >
@@ -364,6 +356,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
   if (block.type === "h3") {
     return (
       <h3
+        data-article-heading
         key={`h3-${index}`}
         className={`${instrumentSerif.className} mt-10 text-[1.55rem] leading-[1.2] tracking-normal text-[#a01717] sm:text-[1.8rem]`}
       >
@@ -396,7 +389,7 @@ function renderMarkdownBlock(block: MarkdownBlock, index: number) {
 }
 
 function normalizeHeadingText(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
 export function getMarkdownTitle(markdown: string) {
@@ -437,11 +430,11 @@ function AuthorName({ post }: { post: BlogPost }) {
   );
 }
 
-function AuthorCredit({ post }: { post: BlogPost }) {
+function AuthorCredit({ post, readTimeLabel }: { post: BlogPost; readTimeLabel: string }) {
   if (!post.credits && !post.authorImagePath && !post.authorTitle) {
     return (
       <p className={`${interClassName} mt-6 text-[0.84rem] text-black/56`}>
-        <AuthorName post={post} /> • {post.readTimeLabel}
+        <bdi><AuthorName post={post} /></bdi> • {readTimeLabel}
       </p>
     );
   }
@@ -698,7 +691,7 @@ export async function LocalizedBlogPostPage({
   locale,
 }: {
   slug: string;
-  locale: SupportedLocale;
+  locale: BlogPostLocale;
 }) {
   const post = getBlogPostBySlug(slug, locale);
 
@@ -713,6 +706,10 @@ export async function LocalizedBlogPostPage({
   const billingHref = getLocalizedPath("/billing", locale);
   const blogHref = getLocalizedPath("/blog", locale);
   const postPath = getLocalizedPath(`/blog/${post.slug}`, locale);
+  const presentation = getMarketingLocalePresentation(locale);
+  const availableLocales = getAvailableBlogPostLocales(post.slug);
+  const categoryLabel = blogCopy.categories.find((category) => category.sourceLabel === post.category)?.label ?? post.category;
+  const readTimeLabel = blogCopy.listing.readTime.replace("{minutes}", post.readTimeLabel.match(/\d+/)?.[0] ?? post.readTimeLabel);
   const displayTitle =
     locale === DEFAULT_LOCALE
       ? post.title
@@ -769,7 +766,7 @@ export async function LocalizedBlogPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
       />
-      <main className="min-h-screen bg-white text-black">
+      <main lang={locale} dir={presentation.dir} style={presentation.style} className={`min-h-screen bg-white text-black ${presentation.className} ${presentation.className ? styles["localized"] : ""}`}>
       <MarketingNavbar
         interClassName={interClassName}
         instrumentSerifClassName={instrumentSerif.className}
@@ -784,6 +781,7 @@ export async function LocalizedBlogPostPage({
             locale={locale}
             label={homeCopy.nav.language}
             path={`/blog/${post.slug}`}
+            availableLocales={availableLocales}
             className={`${interClassName} hero-load-up hero-load-up-nav-cta inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full outline-black outline-2 bg-transparent px-2.5 text-[0.72rem] font-medium tracking-[0.01em] text-black transition-all duration-200 hover:border-[#a01717] hover:text-[#a01717] disabled:cursor-wait disabled:opacity-65 sm:px-3.5 sm:text-[0.76rem]`}
           />
         }
@@ -822,9 +820,10 @@ export async function LocalizedBlogPostPage({
               <p
                 className={`${interClassName} text-[0.76rem] font-semibold tracking-[0.14em] text-[#a01717] uppercase`}
               >
-                {post.category}
+                {categoryLabel}
               </p>
               <h1
+                data-post-title
                 className={`${instrumentSerif.className} mt-4 text-[clamp(2.6rem,6vw,5.5rem)] leading-[1.02] tracking-normal text-black`}
               >
                 {renderStyledPostTitle(post, displayTitle)}
@@ -834,7 +833,7 @@ export async function LocalizedBlogPostPage({
               >
                 {displayExcerpt}
               </p>
-              <AuthorCredit post={post} />
+              <AuthorCredit post={post} readTimeLabel={readTimeLabel} />
 
               <div className="mt-12 border-t border-black/10 pt-6">
                 <PostContent

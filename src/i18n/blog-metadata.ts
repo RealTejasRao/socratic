@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import { getBlogCopy } from "@/src/i18n/blog";
 import {
   LOCALE_OG_LOCALES,
-  SUPPORTED_LOCALES,
+  BLOG_LOCALES,
   getLocalizedPath,
-  type SupportedLocale,
+  type BlogLocale,
 } from "@/src/i18n/locales";
 import { absoluteUrl, seoConfig } from "@/src/lib/seo";
 
 function getBlogLanguageAlternates() {
   return Object.fromEntries([
-    ...SUPPORTED_LOCALES.map((locale) => [
+    ...BLOG_LOCALES.map((locale) => [
       locale,
       absoluteUrl(getLocalizedPath("/blog", locale)),
     ]),
@@ -18,7 +18,7 @@ function getBlogLanguageAlternates() {
   ]);
 }
 
-export function createBlogMetadata(locale: SupportedLocale): Metadata {
+export function createBlogMetadata(locale: BlogLocale): Metadata {
   const copy = getBlogCopy(locale);
   const path = getLocalizedPath("/blog", locale);
   const canonical = absoluteUrl(path);

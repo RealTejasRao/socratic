@@ -1,15 +1,16 @@
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { Instrument_Serif, Inter } from "next/font/google";
 import { FallbackBlogImage } from "@/src/components/blog/fallback-blog-image";
 import { Footer } from "@/src/components/home/footer";
 import { MarketingLocaleSwitcher } from "@/src/components/navigation/marketing-locale-switcher";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
-import { LoadGate } from "@/src/components/ui/load-gate";
+import { getMarketingLocalePresentation } from "@/src/components/navigation/marketing-locale-typography";
 import { getBlogCopy, type BlogCopy } from "@/src/i18n/blog";
 import { getHomeCopy } from "@/src/i18n/home";
-import { getLocalizedPath, type SupportedLocale } from "@/src/i18n/locales";
+import { getLocalizedPath, isBlogPostLocale, LOCALE_DIRECTIONS, type BlogLocale } from "@/src/i18n/locales";
 import {
   resolveOptimizedCloudinaryPublicAsset,
 } from "@/src/lib/cloudinary-public-assets";
@@ -20,6 +21,7 @@ import {
   hasTranslatedBlogPost,
   type BlogSortOrder,
 } from "@/src/server/blog/posts";
+import styles from "./localized-blog-page.module.css";
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const inter = Inter({
@@ -43,7 +45,7 @@ export type BlogPageSearchParams =
     };
 
 type LocalizedBlogPageProps = {
-  locale: SupportedLocale;
+  locale: BlogLocale;
   searchParams?: BlogPageSearchParams | undefined;
 };
 
@@ -93,6 +95,11 @@ export async function LocalizedBlogPage({
   const pricingHref = getLocalizedPath("/pricing", locale);
   const billingHref = getLocalizedPath("/billing", locale);
   const blogHref = getLocalizedPath("/blog", locale);
+  const presentation = getMarketingLocalePresentation(locale);
+  const fontStyle = {
+    ...presentation.style,
+    "--blog-english-heading-font": instrumentSerif.style.fontFamily,
+  } as CSSProperties;
   const categoryBySlug = new Map(
     blogCopy.categories.map((category) => [
       slugifyCategory(category.sourceLabel),
@@ -115,11 +122,11 @@ export async function LocalizedBlogPage({
   );
 
   return (
-    <LoadGate
-      fallbackClassName={`min-h-screen w-full bg-[#fefefc] ${poppinsClassName}`}
-    >
       <main
-        className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName}`}
+        lang={locale}
+        dir={presentation.dir}
+        style={fontStyle}
+        className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName} ${presentation.className} ${presentation.className ? styles["localized"] : ""}`}
       >
         <div className="pointer-events-none absolute inset-0 opacity-50">
           <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-size-[22px_22px]" />
@@ -204,6 +211,7 @@ export async function LocalizedBlogPage({
           <div className="mx-auto w-full max-w-365 px-4 py-5 sm:px-8 sm:py-8">
             <div className="space-y-2.5">
               <h2
+                data-blog-list-heading
                 className={`${instrumentSerif.className} text-[2.2rem] leading-none font-normal tracking-[-0.02em] text-black/90 sm:text-[2.5rem]`}
               >
                 {blogCopy.listing.heading}
@@ -242,7 +250,7 @@ export async function LocalizedBlogPage({
                 })}
               </div>
 
-              <div className="flex items-center justify-start gap-2.5 lg:justify-end">
+              <div className="flex flex-wrap items-center justify-start gap-2.5 lg:justify-end">
                 <span
                   className={`${interClassName} text-[0.97rem] font-medium text-black/72`}
                 >
@@ -284,12 +292,12 @@ export async function LocalizedBlogPage({
                   "{minutes}",
                   getReadTimeMinutes(post.readTimeLabel),
                 );
-                const postHref =
-                  locale === "en" || !hasTranslatedBlogPost(post.slug, locale)
-                    ? (`${ROUTES.BLOG}/${post.slug}` as Route)
-                    : getLocalizedPath(`/blog/${post.slug}`, locale);
-                const localizedPost =
-                  locale === "en" ? null : getBlogPostBySlug(post.slug, locale);
+                const hasPublishedTranslation = isBlogPostLocale(locale) && locale !== "en" && hasTranslatedBlogPost(post.slug, locale);
+                const postLocale = hasPublishedTranslation ? locale : "en";
+                const postHref = hasPublishedTranslation
+                  ? getLocalizedPath(`/blog/${post.slug}`, locale)
+                  : (`${ROUTES.BLOG}/${post.slug}` as Route);
+                const localizedPost = hasPublishedTranslation ? getBlogPostBySlug(post.slug, locale) : null;
                 const displayTitle = localizedPost
                   ? (getMarkdownTitle(localizedPost.markdown) ?? post.title)
                   : post.title;
@@ -298,6 +306,7 @@ export async function LocalizedBlogPage({
                   <Link
                     key={post.slug}
                     href={postHref}
+                    hrefLang={postLocale}
                     className="group block h-full"
                   >
                     <article className="flex h-full flex-col overflow-hidden rounded-[14px] border border-black/7 bg-white/70 p-3.5 outline outline-black/8 transition-all duration-220 hover:-translate-y-1 hover:border-[#a01717]/25 hover:outline-[#a01717]/30 hover:shadow-[0_16px_30px_rgba(160,23,23,0.12)]">
@@ -324,6 +333,8 @@ export async function LocalizedBlogPage({
                         </span>
 
                         <h3
+                          lang={postLocale}
+                          dir={LOCALE_DIRECTIONS[postLocale]}
                           className={`${instrumentSerif.className} mt-2.5 text-[1.85rem] leading-[1.18] font-normal tracking-[-0.01em] text-black/90 transition-colors duration-220 group-hover:text-[#a01717]`}
                         >
                           {displayTitle}
@@ -336,10 +347,10 @@ export async function LocalizedBlogPage({
                             <span
                               className="relative z-10 text-black/62 transition-colors hover:text-[#a01717]"
                             >
-                              {post.author}
+                              <bdi>{post.author}</bdi>
                             </span>
                           ) : (
-                            post.author
+                            <bdi>{post.author}</bdi>
                           )}{" "}
                           - {readTime}
                         </p>
@@ -361,6 +372,5 @@ export async function LocalizedBlogPage({
           copy={homeCopy.footer}
         />
       </main>
-    </LoadGate>
   );
 }

@@ -7,7 +7,7 @@ import {
 } from "@/src/server/security/rate-limit";
 
 const MAX_MESSAGE_WORDS = 2000;
-const NAME_REGEX = /^[A-Za-z][A-Za-z\s'-]{0,79}$/;
+const NAME_REGEX = /^[\p{L}][\p{L}\p{M}\s'\u200c-]{0,79}$/u;
 
 function sanitizeField(value: string) {
   return value

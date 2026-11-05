@@ -8,7 +8,10 @@ import {
 } from "@/src/server/blog/posts";
 import {
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
+  HOME_LOCALES,
+  PRICING_LOCALES,
+  BLOG_LOCALES,
+  BLOG_POST_LOCALES,
   getHomePathForLocale,
   getLocalizedPath,
 } from "@/src/i18n/locales";
@@ -83,28 +86,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
-  const localizedHomeEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+  const localizedHomeEntries: MetadataRoute.Sitemap = HOME_LOCALES
     .filter((locale) => locale !== DEFAULT_LOCALE)
     .map((locale) => ({
       url: absoluteUrl(getHomePathForLocale(locale)),
-      lastModified: getFileLastModified("src/app/page.tsx"),
+      lastModified: getFileLastModified(`src/i18n/messages/${locale}/home.json`),
       changeFrequency: "weekly",
       priority: 0.95,
     }));
-  const localizedPricingEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+  const localizedPricingEntries: MetadataRoute.Sitemap = PRICING_LOCALES
     .filter((locale) => locale !== DEFAULT_LOCALE)
     .map((locale) => ({
       url: absoluteUrl(getLocalizedPath("/pricing", locale)),
-      lastModified: getFileLastModified("src/app/pricing/page.tsx"),
+      lastModified: getFileLastModified(`src/i18n/messages/${locale}/pricing.json`),
       changeFrequency: "weekly",
       priority: 0.75,
     }));
-  const localizedBlogEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+  const localizedBlogEntries: MetadataRoute.Sitemap = BLOG_LOCALES
     .filter((locale) => locale !== DEFAULT_LOCALE)
     .map((locale) => ({
       url: absoluteUrl(getLocalizedPath("/blog", locale)),
-      lastModified:
-        latestBlogLastModified ?? getFileLastModified("src/app/blog/page.tsx"),
+      lastModified: new Date(Math.max(
+        latestBlogLastModified?.getTime() ?? 0,
+        getFileLastModified(`src/i18n/messages/${locale}/blog.json`).getTime(),
+      )),
       changeFrequency: "daily",
       priority: 0.85,
     }));
@@ -115,7 +120,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "monthly",
     priority: 0.7,
   }));
-  const localizedBlogPostEntries: MetadataRoute.Sitemap = SUPPORTED_LOCALES
+  const localizedBlogPostEntries: MetadataRoute.Sitemap = BLOG_POST_LOCALES
     .filter((locale) => locale !== DEFAULT_LOCALE)
     .flatMap((locale) =>
       getTranslatedBlogPostSitemapEntries(locale).map((entry) => ({

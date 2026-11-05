@@ -29,6 +29,7 @@
     "i18n:validate:home": "node scripts/validate-home-translations.mjs",
     "i18n:validate:pricing": "node scripts/validate-home-translations.mjs --page pricing",
     "i18n:validate:billing": "node scripts/validate-home-translations.mjs --page billing",
+    "i18n:test:marketing": "node --test scripts/test-marketing-locales.mjs",
     "i18n:validate:blog": "node scripts/validate-home-translations.mjs --page blog",
     "i18n:validate:app": "node scripts/validate-home-translations.mjs --page app",
     "i18n:validate:blog-posts": "node scripts/validate-blog-post-translations.mjs"

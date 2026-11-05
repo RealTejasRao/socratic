@@ -7,12 +7,11 @@ import {
 } from "@/src/app/blog/[slug]/page";
 import {
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
-  getLocalizedPath,
-  isSupportedLocale,
-  type SupportedLocale,
+  BLOG_POST_LOCALES,
+  isBlogPostLocale,
+  type BlogPostLocale,
 } from "@/src/i18n/locales";
-import { createPageMetadata } from "@/src/lib/seo";
+import { createBlogPostMetadata } from "@/src/i18n/blog-post-metadata";
 import {
   getBlogPostBySlug,
   getTranslatedBlogPostSlugs,
@@ -28,7 +27,7 @@ type LocalizedBlogPostPageRouteProps = {
 };
 
 export function generateStaticParams() {
-  return SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).flatMap(
+  return BLOG_POST_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).flatMap(
     (locale) =>
       getTranslatedBlogPostSlugs(locale).map((slug) => ({
         locale,
@@ -39,10 +38,10 @@ export function generateStaticParams() {
 
 async function resolveParams(
   params: LocalizedBlogPostPageRouteProps["params"],
-): Promise<{ locale: SupportedLocale; slug: string }> {
+): Promise<{ locale: BlogPostLocale; slug: string }> {
   const { locale, slug } = await params;
 
-  if (!isSupportedLocale(locale) || locale === DEFAULT_LOCALE) {
+  if (!isBlogPostLocale(locale) || locale === DEFAULT_LOCALE) {
     notFound();
   }
 
@@ -66,18 +65,7 @@ export async function generateMetadata({
   const displayTitle = getMarkdownTitle(post.markdown) ?? post.title;
   const displayExcerpt = getMarkdownExcerpt(post.markdown, post.excerpt);
 
-  return createPageMetadata({
-    title: `Socratic AI: ${displayTitle}`,
-    description: displayExcerpt,
-    path: getLocalizedPath(`/blog/${post.slug}`, locale),
-    ogImage: post.coverImagePath,
-    keywords: [
-      "Socratic AI blog",
-      "philosophy",
-      "stoicism",
-      displayTitle.toLowerCase(),
-    ],
-  });
+  return createBlogPostMetadata(post, locale, displayTitle, displayExcerpt);
 }
 
 export default async function LocaleBlogPostPage({

@@ -32,7 +32,16 @@
   },
   "statusLine": {
     "prefix": "Status de cobrança:",
-    "cancellationQueued": "Cancelamento na fila para o final do período."
+    "cancellationQueued": "Cancelamento na fila para o final do período.",
+    "statuses": {
+      "INACTIVE": "Inativo",
+      "PENDING": "Pendente",
+      "ACTIVE": "Ativo",
+      "ON_HOLD": "Suspenso",
+      "CANCELLED": "Cancelado",
+      "FAILED": "Falhou",
+      "EXPIRED": "Expirado"
+    }
   },
   "errors": {
     "portalUrlMissing": "Nenhuma URL de portal retornada.",

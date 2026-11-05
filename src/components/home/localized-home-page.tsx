@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { Instrument_Serif, Inter } from "next/font/google";
+import { Instrument_Serif, Inter, Noto_Sans_Arabic, Noto_Serif } from "next/font/google";
+import type { CSSProperties } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { FeaturesSection } from "@/src/components/home/features-section";
@@ -23,12 +24,14 @@ import { getHomeCopy } from "@/src/i18n/home";
 import {
   getHomePathForLocale,
   getLocalizedPath,
-  type SupportedLocale,
+  LOCALE_DIRECTIONS,
+  type HomeLocale,
 } from "@/src/i18n/locales";
+import styles from "./localized-home-page.module.css";
 
 const poppinsClassName = "[font-family:Poppins,sans-serif]";
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600"],
 });
 const interClassName = inter.className;
@@ -36,11 +39,23 @@ const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin"],
 });
+const arabicFont = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  preload: false,
+});
+const cyrillicSerif = Noto_Serif({
+  subsets: ["cyrillic"],
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
 
 export async function LocalizedHomePage({
   locale,
 }: {
-  locale: SupportedLocale;
+  locale: HomeLocale;
 }) {
   const { userId: clerkUserId } = await auth();
   const copy = getHomeCopy(locale);
@@ -48,6 +63,12 @@ export async function LocalizedHomePage({
   const pricingHref = getLocalizedPath("/pricing", locale);
   const billingHref = getLocalizedPath("/billing", locale);
   const blogHref = getLocalizedPath("/blog", locale);
+  const isRtl = LOCALE_DIRECTIONS[locale] === "rtl";
+  const isInternational = isRtl || locale === "ru";
+  const fontStyle = {
+    "--home-body-font": isRtl ? arabicFont.style.fontFamily : inter.style.fontFamily,
+    "--home-heading-font": isRtl ? arabicFont.style.fontFamily : cyrillicSerif.style.fontFamily,
+  } as CSSProperties;
 
   return (
     <LoadGate
@@ -55,7 +76,8 @@ export async function LocalizedHomePage({
     >
       <main
         id="home"
-        className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName}`}
+        className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName} ${isInternational ? styles["international"] : ""} ${isRtl ? styles["rtl"] : ""}`}
+        style={isInternational ? fontStyle : undefined}
       >
         <div className="pwa-browser-only">
           <div className="pointer-events-none absolute inset-0 opacity-50">
@@ -171,12 +193,14 @@ export async function LocalizedHomePage({
             headingText={copy.features.headingText}
             highlightedTerms={copy.features.highlightedTerms}
             cardCopy={copy.features.cards}
+            preserveLetterJoining={isRtl}
           />
           <SecuritySeparator
             interClassName={interClassName}
             message={copy.security.message}
             highlightedTerm={copy.security.highlightedTerm}
             ariaLabel={copy.security.ariaLabel}
+            preserveLetterJoining={isRtl}
           />
           <UseCasesSection
             interClassName={interClassName}
@@ -186,7 +210,7 @@ export async function LocalizedHomePage({
             highlightedWord={copy.useCases.highlightedWord}
             itemCopy={copy.useCases.items}
           />
-          <ContactSection interClassName={interClassName} copy={copy.contact} />
+          <ContactSection interClassName={interClassName} copy={copy.contact} preserveLetterJoining={isRtl} localizeResponses={isInternational} />
           <Footer
             interClassName={interClassName}
             sectionPrefix={homeHref}

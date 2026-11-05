@@ -43,3 +43,6 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+# Unapproved translation drafts must not be deployed.
+/.i18n-drafts/

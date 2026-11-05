@@ -4,9 +4,9 @@ import { LocalizedBlogPage, type BlogPageSearchParams } from "@/src/app/blog/loc
 import { createBlogMetadata } from "@/src/i18n/blog-metadata";
 import {
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
-  isSupportedLocale,
-  type SupportedLocale,
+  BLOG_LOCALES,
+  isBlogLocale,
+  type BlogLocale,
 } from "@/src/i18n/locales";
 
 export const dynamicParams = false;
@@ -19,17 +19,17 @@ type LocalizedBlogPageRouteProps = {
 };
 
 export function generateStaticParams() {
-  return SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((locale) => ({
+  return BLOG_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((locale) => ({
     locale,
   }));
 }
 
 async function resolveLocale(
   params: LocalizedBlogPageRouteProps["params"],
-): Promise<SupportedLocale> {
+): Promise<BlogLocale> {
   const { locale } = await params;
 
-  if (!isSupportedLocale(locale) || locale === DEFAULT_LOCALE) {
+  if (!isBlogLocale(locale) || locale === DEFAULT_LOCALE) {
     notFound();
   }
 

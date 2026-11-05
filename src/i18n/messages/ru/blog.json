@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "Блог Socratic AI | Философия, ИИ и критическое мышление",
+    "description": "Читайте эссе о философии, стратегии и строгом мышлении в блоге Socratic AI.",
+    "ogAlt": "Эссе блога Socratic AI по философии, ИИ и критическому мышлению"
+  },
+  "hero": {
+    "brand": "Socratic AI",
+    "title": "Блог",
+    "description": "Размышления о философии, критическом мышлении, ИИ, обучении, будущем человеческого интеллекта и о нас!",
+    "imageAlt": "Иллюстрация блога Socratic AI о философии и глубоком мышлении"
+  },
+  "listing": {
+    "heading": "Блог",
+    "description": "Размышления о философии, критическом мышлении, ИИ, обучении, будущем человеческого интеллекта и о нас!",
+    "sortBy": "Сортировать по:",
+    "readTime": "{minutes} мин чтения"
+  },
+  "categories": [
+    {
+      "id": "all",
+      "sourceLabel": "All",
+      "label": "Все"
+    },
+    {
+      "id": "philosophy",
+      "sourceLabel": "Philosophy",
+      "label": "Философия"
+    },
+    {
+      "id": "ai-learning",
+      "sourceLabel": "AI & Learning",
+      "label": "ИИ и обучение"
+    },
+    {
+      "id": "essays",
+      "sourceLabel": "Essays",
+      "label": "Эссе"
+    },
+    {
+      "id": "about",
+      "sourceLabel": "About",
+      "label": "О нас"
+    }
+  ],
+  "sortOptions": {
+    "newest": "Сначала новые",
+    "oldest": "Сначала старые"
+  },
+  "post": {
+    "backToBlogs": "Назад к блогам",
+    "ctaTitle": "Socratic AI",
+    "ctaBody": "Socratic AI основан на величайших философских текстах, когда-либо написанных. Партнер по мышлению, которого у вас никогда не было, доступный даже в 2 часа ночи, когда вопросы не прекращаются. Спрашивайте что угодно. Обсуждайте все.",
+    "ctaButton": "Попробуйте Socratic AI сейчас"
+  }
+}

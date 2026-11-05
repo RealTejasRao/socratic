@@ -10,16 +10,18 @@ import {
   LOCALE_COOKIE_MAX_AGE_SECONDS,
   LOCALE_COOKIE_NAME,
   LOCALE_LABELS,
-  SUPPORTED_LOCALES,
+  LOCALE_DIRECTIONS,
+  getAvailableLocalesForPath,
   getLocalizedPath,
-  type SupportedLocale,
+  type HomeLocale,
 } from "@/src/i18n/locales";
 
 type MarketingLocaleSwitcherProps = {
-  locale: SupportedLocale;
+  locale: HomeLocale;
   label: string;
   path?: string;
   className?: string;
+  availableLocales?: readonly HomeLocale[];
 };
 
 export function MarketingLocaleSwitcher({
@@ -27,11 +29,12 @@ export function MarketingLocaleSwitcher({
   label,
   path = "/",
   className = "",
+  availableLocales,
 }: MarketingLocaleSwitcherProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [pendingLocale, setPendingLocale] = useState<SupportedLocale | null>(
+  const [pendingLocale, setPendingLocale] = useState<HomeLocale | null>(
     null,
   );
   const [isPending, startTransition] = useTransition();
@@ -83,8 +86,8 @@ export function MarketingLocaleSwitcher({
     };
   }, [pendingLocale]);
 
-  const changeLocale = (nextLocale: SupportedLocale) => {
-    if (isLoading) {
+  const changeLocale = (nextLocale: HomeLocale) => {
+    if (isLoading || (availableLocales && !availableLocales.includes(nextLocale))) {
       return;
     }
 
@@ -96,7 +99,8 @@ export function MarketingLocaleSwitcher({
     // eslint-disable-next-line react-hooks/immutability -- intentional browser cookie write from a click handler.
     document.cookie = `${LOCALE_COOKIE_NAME}=${nextLocale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
     const hash = typeof window !== "undefined" ? window.location.hash : "";
-    const nextPath = `${getLocalizedPath(path, nextLocale)}${hash}` as Route;
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    const nextPath = `${getLocalizedPath(path, nextLocale)}${search}${hash}` as Route;
 
     setPendingLocale(nextLocale);
     setIsOpen(false);
@@ -144,9 +148,9 @@ export function MarketingLocaleSwitcher({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 top-[calc(100%+0.55rem)] z-70 min-w-42 origin-top-right rounded-[12px] border border-black/10 bg-white p-1.5 shadow-[0_18px_44px_rgba(0,0,0,0.15)]"
+            className="absolute end-0 top-[calc(100%+0.55rem)] z-70 max-h-[min(28rem,70dvh)] min-w-42 overflow-y-auto overscroll-contain origin-top rounded-[12px] border border-black/10 bg-white p-1.5 shadow-[0_18px_44px_rgba(0,0,0,0.15)]"
           >
-            {SUPPORTED_LOCALES.map((option) => {
+            {(availableLocales ?? getAvailableLocalesForPath(path)).map((option) => {
               const isActive = option === locale;
               const isOptionLoading = pendingLocale === option;
 
@@ -167,7 +171,7 @@ export function MarketingLocaleSwitcher({
                       : "cursor-pointer"
                   }`}
                 >
-                  <span>{LOCALE_LABELS[option]}</span>
+                  <span lang={option} dir={LOCALE_DIRECTIONS[option]}>{LOCALE_LABELS[option]}</span>
                   {isOptionLoading ? (
                     <LoaderCircle className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
                   ) : isActive ? (

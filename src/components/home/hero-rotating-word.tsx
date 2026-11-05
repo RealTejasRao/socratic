@@ -30,7 +30,7 @@ export function HeroRotatingWord({
   return (
     <span
       className={`relative inline-grid align-baseline whitespace-nowrap text-[1.08em] ${className} ${
-        align === "center" ? "text-center" : "text-left"
+        align === "center" ? "text-center" : "text-start"
       }`}
     >
       <span className="invisible col-start-1 row-start-1 italic">
@@ -38,14 +38,14 @@ export function HeroRotatingWord({
           word.length > longest.length ? word : longest,
         )}
       </span>
-      <span className="col-start-1 row-start-1 inline-block h-[1em] overflow-hidden">
+      <span className="col-start-1 row-start-1 inline-block h-[1em] overflow-hidden rtl:h-[1.7em]">
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
             key={words[wordIndex]}
             className={
               align === "center"
                 ? "absolute left-1/2 top-0 inline-block -translate-x-1/2 italic text-[#A01717]"
-                : "absolute left-0 top-0 inline-block italic text-[#A01717]"
+                : "absolute start-0 top-0 inline-block italic text-[#A01717]"
             }
             initial={
               prefersReducedMotion

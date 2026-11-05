@@ -32,7 +32,16 @@
   },
   "statusLine": {
     "prefix": "Billing status:",
-    "cancellationQueued": "Cancellation queued at period end."
+    "cancellationQueued": "Cancellation queued at period end.",
+    "statuses": {
+      "INACTIVE": "Inactive",
+      "PENDING": "Pending",
+      "ACTIVE": "Active",
+      "ON_HOLD": "On hold",
+      "CANCELLED": "Cancelled",
+      "FAILED": "Failed",
+      "EXPIRED": "Expired"
+    }
   },
   "errors": {
     "portalUrlMissing": "No portal URL returned.",

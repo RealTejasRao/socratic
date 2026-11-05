@@ -6,10 +6,11 @@ import { SocraticPlusBillingExperience } from "@/src/components/billing/socratic
 import { Footer } from "@/src/components/home/footer";
 import { MarketingLocaleSwitcher } from "@/src/components/navigation/marketing-locale-switcher";
 import { MarketingNavbar } from "@/src/components/navigation/marketing-navbar";
+import { getMarketingLocalePresentation } from "@/src/components/navigation/marketing-locale-typography";
 import { LoadGate } from "@/src/components/ui/load-gate";
 import { getBillingCopy } from "@/src/i18n/billing";
 import { getHomeCopy } from "@/src/i18n/home";
-import { getLocalizedPath, type SupportedLocale } from "@/src/i18n/locales";
+import { getLocalizedPath, type BillingLocale } from "@/src/i18n/locales";
 import { ROUTES } from "@/src/lib/routes";
 import { getUserBillingStateByClerkId } from "@/src/server/billing/access";
 
@@ -32,7 +33,7 @@ export type BillingPageSearchParams =
     };
 
 type LocalizedBillingPageProps = {
-  locale: SupportedLocale;
+  locale: BillingLocale;
   searchParams?: BillingPageSearchParams | undefined;
 };
 
@@ -68,13 +69,17 @@ export async function LocalizedBillingPage({
   const pricingHref: Route = getLocalizedPath("/pricing", locale);
   const billingHref: Route = getLocalizedPath("/billing", locale);
   const blogHref: Route = getLocalizedPath("/blog", locale);
+  const presentation = getMarketingLocalePresentation(locale);
 
   return (
     <LoadGate
       fallbackClassName={`min-h-screen w-full bg-[#fefefc] ${poppinsClassName}`}
     >
       <main
-        className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName}`}
+        lang={presentation.lang}
+        dir={presentation.dir}
+        style={presentation.style}
+        className={`relative min-h-screen overflow-hidden bg-[#fefefc] ${poppinsClassName} ${presentation.className}`}
       >
         <div className="pointer-events-none absolute inset-0 opacity-50">
           <div className="h-full w-full bg-[radial-gradient(circle_at_center,rgba(160,23,23,0.12)_1px,transparent_1.5px)] bg-size-[22px_22px]" />

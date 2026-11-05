@@ -14,7 +14,7 @@ import { STANDALONE_MODE_INIT_SCRIPT } from "@/src/lib/pwa-standalone";
 import {
   DEFAULT_LOCALE,
   LOCALE_DIRECTIONS,
-  normalizeLocale,
+  normalizeHomeLocale,
 } from "@/src/i18n/locales";
 import "./globals.css";
 
@@ -109,7 +109,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const headerStore = await headers();
-  const locale = normalizeLocale(headerStore.get("x-socratic-locale") ?? DEFAULT_LOCALE);
+  const locale = normalizeHomeLocale(headerStore.get("x-socratic-locale") ?? DEFAULT_LOCALE);
 
   return (
     <html

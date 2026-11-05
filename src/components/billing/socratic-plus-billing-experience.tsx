@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import type { BillingCopy } from "@/src/i18n/billing";
-import type { SupportedLocale } from "@/src/i18n/locales";
+import type { BillingLocale } from "@/src/i18n/locales";
+import type { BillingSubscriptionStatus } from "@/src/types/billing";
 import { ROUTES } from "@/src/lib/routes";
 import { cn } from "@/src/lib/utils";
 
@@ -86,16 +87,16 @@ type BillingExperienceProps = {
   instrumentSerifClassName: string;
   isPremium: boolean;
   planTier: "FREE" | "PREMIUM_MONTHLY" | "PREMIUM_ANNUAL";
-  planStatus: string;
+  planStatus: BillingSubscriptionStatus;
   subscriptionCurrentPeriodEndIso: string | null;
   subscriptionCancelAtPeriodEnd: boolean;
   welcomeRequested: boolean;
-  locale: SupportedLocale;
+  locale: BillingLocale;
   copy: BillingCopy;
   pricingHref: Route;
 };
 
-function formatDate(dateIso: string | null, locale: SupportedLocale, fallback: string) {
+function formatDate(dateIso: string | null, locale: BillingLocale, fallback: string) {
   if (!dateIso) {
     return fallback;
   }
@@ -146,7 +147,9 @@ export function SocraticPlusBillingExperience({
     if (!welcomeRequested || !isPremium) {
       return;
     }
-    window.history.replaceState(null, "", ROUTES.APP_BILLING);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("welcome");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
   }, [isPremium, welcomeRequested]);
 
   async function openPortal() {
@@ -155,17 +158,19 @@ export function SocraticPlusBillingExperience({
     try {
       const response = await fetch("/api/v1/billing/portal", { method: "POST" });
       if (!response.ok) {
-        throw new Error(await response.text());
+        setPortalError(copy.errors.portalOpenFailed);
+        setIsPortalLoading(false);
+        return;
       }
       const payload = (await response.json()) as { portalUrl?: string };
       if (!payload.portalUrl) {
-        throw new Error(copy.errors.portalUrlMissing);
+        setPortalError(copy.errors.portalUrlMissing);
+        setIsPortalLoading(false);
+        return;
       }
       window.location.href = payload.portalUrl;
-    } catch (error) {
-      setPortalError(
-        error instanceof Error ? error.message : copy.errors.portalOpenFailed,
-      );
+    } catch {
+      setPortalError(copy.errors.portalOpenFailed);
       setIsPortalLoading(false);
     }
   }
@@ -205,8 +210,8 @@ export function SocraticPlusBillingExperience({
           className="mt-6 overflow-hidden rounded-2xl border border-[#e7e4df] bg-white shadow-[0_8px_26px_rgba(22,20,18,0.07)]"
           variants={panelVariants}
         >
-          <div className="grid gap-4 border-b border-[#ece9e4] px-5 py-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#ece9e4] sm:px-6">
-            <motion.div className="sm:pr-6" variants={itemVariants}>
+          <div className="grid gap-4 border-b border-[#ece9e4] px-5 py-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#ece9e4] sm:px-6 rtl:sm:divide-x-reverse">
+            <motion.div className="sm:pe-6" variants={itemVariants}>
               <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>{copy.summary.status}</p>
               <span
                 className={`${interClassName} mt-2 inline-flex rounded-md bg-[#e5f4e9] px-2.5 py-1 text-[0.75rem] font-medium text-[#2f8e48]`}
@@ -220,7 +225,7 @@ export function SocraticPlusBillingExperience({
                 {resolvePlanLabel(planTier, copy)}
               </p>
             </motion.div>
-            <motion.div className="sm:pl-6" variants={itemVariants}>
+            <motion.div className="sm:ps-6" variants={itemVariants}>
               <p className={`${interClassName} text-[0.75rem] text-[#7a7670]`}>{copy.summary.renewsOn}</p>
               <p className={`${interClassName} mt-2 text-[1.06rem] font-medium text-[#292723]`}>
                 {isPremium ? renewalDateLabel : copy.summary.notApplicable}
@@ -234,7 +239,7 @@ export function SocraticPlusBillingExperience({
                 type="button"
                 onClick={() => void openPortal()}
                 disabled={!isPremium || isPortalLoading}
-                className="group flex w-full cursor-pointer items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-[#faf9f7] disabled:cursor-not-allowed disabled:opacity-60 sm:px-6"
+                className="group flex w-full cursor-pointer items-center gap-4 px-5 py-4 text-start transition-colors hover:bg-[#faf9f7] disabled:cursor-not-allowed disabled:opacity-60 sm:px-6"
               >
                 <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[#e7e3dc] bg-[#f6f4f0] text-[#4f4a43]">
                   {isPortalLoading ? (
@@ -301,7 +306,7 @@ export function SocraticPlusBillingExperience({
           className={`${interClassName} mt-3 text-[0.82rem] text-[#7b7670]`}
           variants={itemVariants}
         >
-          {copy.statusLine.prefix} {planStatus}
+          {copy.statusLine.prefix} {copy.statusLine.statuses[planStatus]}
           {isPremium && subscriptionCancelAtPeriodEnd
             ? ` - ${copy.statusLine.cancellationQueued}`
             : ""}

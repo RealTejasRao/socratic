@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "title": "Цены",
+    "description": "Выберите план для Socratic +.",
+    "ogAlt": "Цены на планы Socratic AI"
+  },
+  "hero": {
+    "titlePrefix": "Идите дальше с",
+    "titleProduct": "Socratic Plus",
+    "description": "Один план для любопытства. Один для настоящих мыслителей!",
+    "subtitle": "Прозрачные цены"
+  },
+  "plans": {
+    "basic": {
+      "title": "Базовый",
+      "description": "Разумное пространство для повседневного любопытства. Ограниченный доступ к функциям.",
+      "features": {
+        "dailyMessages": "{count} сообщений в день",
+        "socraticMode": "Сократический режим",
+        "roleplayMode": "Режим ролевой игры",
+        "imageUploads": "{count} загрузок изображений",
+        "debateMode": "Режим дебатов",
+        "detailedDebateFeedback": "Подробная обратная связь по дебатам",
+        "ruthlessTone": "Жесткий, прямолинейный тон",
+        "globalMemory": "Глобальная память",
+        "longerHistory": "Более длинная история разговоров",
+        "newFeatureAccess": "Доступ к новым функциям",
+        "unlimitedImageUploads": "Неограниченная загрузка изображений"
+      }
+    },
+    "premium": {
+      "title": "Socratic Plus",
+      "description": "Создан для глубокого мышления без ограничений. Неограниченный доступ ко всем функциям.",
+      "badge": "Самый популярный",
+      "features": {
+        "everythingBasic": "Все возможности базового плана",
+        "unlimitedMessages": "Неограниченные сообщения",
+        "socraticMode": "Сократический режим",
+        "roleplayMode": "Режим ролевой игры",
+        "unlimitedImageUploads": "Неограниченная загрузка изображений",
+        "debateMode": "Режим дебатов",
+        "detailedDebateFeedback": "Подробная обратная связь по дебатам",
+        "ruthlessTone": "Жесткий, прямолинейный тон",
+        "globalMemory": "Глобальная память",
+        "longerHistory": "Более длинная история разговоров",
+        "newFeatureAccess": "Доступ к новым функциям"
+      }
+    }
+  },
+  "buttons": {
+    "signInToContinue": "Войдите, чтобы продолжить",
+    "currentPlan": "Текущий план",
+    "useBasic": "Использовать базовый план",
+    "signInToUpgrade": "Войдите, чтобы перейти на платный план",
+    "startPremium": "Подключить Socratic +",
+    "manageSubscription": "Управление подпиской",
+    "openBillingDashboard": "Открыть платёжный кабинет"
+  },
+  "billing": {
+    "monthly": "Ежемесячно",
+    "yearly": "Ежегодно",
+    "save": "Экономия",
+    "perYear": "/год",
+    "perMonth": "/месяц",
+    "percentOff": "скидка",
+    "supporting": "Поддержка {code}",
+    "premiumPrice": "Стоимость премиум-плана"
+  },
+  "status": {
+    "openingCheckout": "Открываем защищённую страницу оплаты...",
+    "customerPortalError": "Не удалось открыть портал клиента.",
+    "portalUrlMissing": "Не возвращен URL портала.",
+    "checkoutError": "Не удалось начать оформление заказа.",
+    "checkoutUrlMissing": "Не возвращен URL оформления заказа."
+  }
+}

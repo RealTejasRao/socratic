@@ -16,6 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
+import { HighlightedText } from "./highlighted-text";
 
 type FeaturesSectionProps = {
   interClassName: string;
@@ -24,6 +25,7 @@ type FeaturesSectionProps = {
   highlightedTerms?: readonly string[];
   cards?: FeatureCard[];
   cardCopy?: readonly FeatureCardCopy[];
+  preserveLetterJoining?: boolean;
 };
 
 export type FeatureCard = {
@@ -159,6 +161,7 @@ export function FeaturesSection({
   highlightedTerms,
   cards = homeFeatureCards,
   cardCopy,
+  preserveLetterJoining = false,
 }: FeaturesSectionProps) {
   const headingRef = useRef<HTMLSpanElement | null>(null);
   const headingInView = useInView(headingRef, { once: true, amount: 0.8 });
@@ -264,7 +267,9 @@ export function FeaturesSection({
                 {sectionHeadingText}
               </span>
               <span className="col-start-1 row-start-1 whitespace-pre-line">
-                {renderedTypedHeading}
+                {preserveLetterJoining
+                  ? <HighlightedText text={typedHeading} ranges={highlightRanges} className="text-[#a01717]" />
+                  : renderedTypedHeading}
                 <span className="hero-caret" aria-hidden="true" />
               </span>
             </span>

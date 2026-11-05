@@ -32,7 +32,16 @@
   },
   "statusLine": {
     "prefix": "Statut de facturation :",
-    "cancellationQueued": "Annulation en attente à la fin de la période."
+    "cancellationQueued": "Annulation en attente à la fin de la période.",
+    "statuses": {
+      "INACTIVE": "Inactif",
+      "PENDING": "En attente",
+      "ACTIVE": "Actif",
+      "ON_HOLD": "Suspendu",
+      "CANCELLED": "Annulé",
+      "FAILED": "Échec",
+      "EXPIRED": "Expiré"
+    }
   },
   "errors": {
     "portalUrlMissing": "Aucune URL de portail retournée.",

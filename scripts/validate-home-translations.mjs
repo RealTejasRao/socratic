@@ -4,6 +4,8 @@ import process from "node:process";
 
 const SOURCE_LOCALE = "en";
 const TARGET_LOCALES = ["it", "fr", "de", "pt-BR"];
+const EXTENDED_TARGET_LOCALES = [...TARGET_LOCALES, "ru", "ar"];
+const EXTENDED_PAGES = new Set(["home", "pricing", "billing", "blog"]);
 const MESSAGE_ROOT = path.join(process.cwd(), "src", "i18n", "messages");
 const PAGE_FILES = {
   home: "home.json",
@@ -79,6 +81,7 @@ function shouldWarnOnIdenticalString(prefix) {
     "nav.home",
     "nav.blog",
     "contact.email",
+    "contact.emailPlaceholder",
     "footer.home",
     "footer.blog",
     "footer.account",
@@ -117,8 +120,15 @@ function validateShape(source, target, locale, issues, warnings, prefix = "") {
       issues.push(`${locale}:${prefix} changed or removed Socratic AI brand name`);
     }
 
+    for (const brand of ["Socratic Plus", "Socratic +", "Socratic+"]) {
+      if (source.includes(brand) && !target.includes(brand)) {
+        issues.push(`${locale}:${prefix} changed or removed ${brand} product name`);
+      }
+    }
+
     if (
       target === source &&
+      !["Socratic AI", "Socratic Plus", "Socratic +", "Socratic+"].includes(source) &&
       shouldWarnOnIdenticalString(prefix) &&
       isLikelyTranslatable(source)
     ) {
@@ -176,9 +186,31 @@ async function main() {
   const issues = [];
   const warnings = [];
 
-  for (const locale of TARGET_LOCALES) {
+  const targetLocales = EXTENDED_PAGES.has(options.page) ? EXTENDED_TARGET_LOCALES : TARGET_LOCALES;
+  for (const locale of targetLocales) {
     const target = await readJson(path.join(MESSAGE_ROOT, locale, messageFile));
     validateShape(source, target, locale, issues, warnings);
+    if (options.page === "home" && ["ru", "ar"].includes(locale)) {
+      const highlightedGroups = [
+        [target.features.headingText, target.features.highlightedTerms],
+        [target.security.message, [target.security.highlightedTerm]],
+        [target.useCases.headingText, [target.useCases.highlightedWord]],
+        [target.contact.heading, target.contact.highlightedTerms],
+      ];
+      for (const [text, terms] of highlightedGroups) {
+        for (const term of terms) {
+          if (!text.includes(term)) issues.push(`${locale}: highlighted term "${term}" is absent from its heading or message`);
+        }
+      }
+      for (const [text, first, second] of [
+        [target.useCases.headingText, target.useCases.mobileFirstLine, target.useCases.mobileSecondLine],
+        [target.contact.heading, target.contact.mobileFirstLine, target.contact.mobileSecondLine],
+      ]) {
+        if (!text.startsWith(first) || text.indexOf(second) < first.length) {
+          issues.push(`${locale}: mobile heading lines do not match the full heading`);
+        }
+      }
+    }
   }
 
   for (const warning of warnings) {
@@ -192,7 +224,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`Validated ${options.page} translations for ${TARGET_LOCALES.join(", ")}.`);
+  console.log(`Validated ${options.page} translations for ${targetLocales.join(", ")}.`);
 }
 
 main().catch((error) => {

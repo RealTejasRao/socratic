@@ -1,5 +1,18 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
+import translationState from "@/src/i18n/messages/.blog-post-translation-state.json";
+import { BLOG_POST_LOCALES, isSupportedLocale } from "@/src/i18n/locales";
+
+type TranslationPublication = {
+  contentFilePath: string;
+  sourceHash: string;
+  targetHash: string;
+  reviewed?: boolean;
+  validated?: boolean;
+  approved?: boolean;
+};
+const publicationState = translationState as Record<string, Record<string, TranslationPublication>>;
 
 export type BlogSortOrder = "newest" | "oldest";
 
@@ -472,7 +485,15 @@ function getTranslatedMarkdownPath(relativePath: string, locale: string) {
 }
 
 function translatedMarkdownExists(relativePath: string, locale: string) {
-  return fs.existsSync(getTranslatedMarkdownPath(relativePath, locale));
+  const translatedPath = getTranslatedMarkdownPath(relativePath, locale);
+  if (!fs.existsSync(translatedPath)) return false;
+  // Keep existing published locales stable; new locales require a verified baseline.
+  if (isSupportedLocale(locale)) return true;
+  const entry = Object.values(publicationState[locale] ?? {}).find((item) => item.contentFilePath === relativePath);
+  if (!entry?.reviewed || !entry.validated || !entry.approved) return false;
+  // Git normalizes Markdown line endings between Windows and production checkouts.
+  const hash = (value: string) => createHash("sha256").update(value.replace(/\r\n/g, "\n")).digest("hex");
+  return hash(readMarkdownFile(relativePath)) === entry.sourceHash && hash(fs.readFileSync(translatedPath, "utf8")) === entry.targetHash;
 }
 
 function readTranslatedMarkdownFile(relativePath: string, locale: string) {
@@ -558,6 +579,11 @@ export function hasTranslatedBlogPost(slug: string, locale: string) {
       locale !== "en" &&
       translatedMarkdownExists(post.contentFilePath, locale),
   );
+}
+
+export function getAvailableBlogPostLocales(slug: string) {
+  if (!BLOG_POSTS.some((post) => post.slug === slug)) return [];
+  return BLOG_POST_LOCALES.filter((locale) => locale === "en" || hasTranslatedBlogPost(slug, locale));
 }
 
 export function getTranslatedBlogPostSlugs(locale: string) {

@@ -854,5 +854,441 @@
       "sourceHash": "c3f4c3b744be92c30417ce918a2cd8ded2b1fba9b953ce82450df4ad7e695575",
       "targetHash": "a8ed2d3ef9ad12e44afbc24fa2490688239cb81f7eb531e2e67e2d9d18cf4c80"
     }
+  },
+  "ru": {
+    "metadata.title": {
+      "sourceHash": "dfe95783edfef7918760312f94edd764f4ce3ffd38b90c2c955a0cc3b250f040",
+      "targetHash": "342dcbd35b70c1faef85be8dabd88ba7814ab0529c5d38bbbcf16ea814bda3da"
+    },
+    "metadata.description": {
+      "sourceHash": "9fa03e8d217174df439988e0a232df03d43213deff22a5b1c42da51db56392a8",
+      "targetHash": "17ca11427a5b75c3a335ced56b173c64f6ae3c46058b9e744702d1a4ba3e0617"
+    },
+    "metadata.ogAlt": {
+      "sourceHash": "3c9bbf2f0dfb146b3119589ef4c08d743e021ff0fd6fcb5cf375516839a8ccc9",
+      "targetHash": "7a49399e2fc9705915210ffd79b7e6ba1c395ad4efb06c252dbefa091bab249f"
+    },
+    "hero.titlePrefix": {
+      "sourceHash": "2d306d71074313942f705111c18c2723836068e3a8ad77cc3b8fe8d959004c08",
+      "targetHash": "cef27eab0e83e90483d3408904efd90727e753b88e2c91ce5c5b82c00e175a7a"
+    },
+    "hero.titleProduct": {
+      "sourceHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551",
+      "targetHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551"
+    },
+    "hero.description": {
+      "sourceHash": "15180c3357575651ccafbbd5ccba2415c29fd9faeebac34aa299966657fe122e",
+      "targetHash": "a1a853b1753e9f0a363b5ca4e5d05495d5049a98dcaa0e86ae2ce5ac55cba17d"
+    },
+    "hero.subtitle": {
+      "sourceHash": "2e8c0abd7b6a2994784ed06a167b444bc9d44f61bf2e742d8af0af754e8d5ead",
+      "targetHash": "0381f7545ae197004e57e84a94005ff4bf24ec24ff33888ecec21b3ce514a34f"
+    },
+    "plans.basic.title": {
+      "sourceHash": "0e35f6e9742e074dfd62e874de3c242c6d9b64c21bf9afbaf3d11f05579b4495",
+      "targetHash": "c609030887a2b52fbf5def52984fb6c8a3b7884a077c499a59f374fdc3241f8f"
+    },
+    "plans.basic.description": {
+      "sourceHash": "aa6d54b8d43c41509097c8e04eeb266b16595d160697637e7612969e5426f296",
+      "targetHash": "07b51332af3ba940c892091a7d48c56114d006a7b23d78cbd69aa17e8fa8b9b3"
+    },
+    "plans.basic.features.dailyMessages": {
+      "sourceHash": "37517fc5e505b691b5a30873b07d3880bd5f182b04777cab3df1665622957307",
+      "targetHash": "5e8339b339a5f04f980cb2728ad8d5266ed7b5c5efc411658f7e6932e6e38d6a"
+    },
+    "plans.basic.features.socraticMode": {
+      "sourceHash": "10a9708254aa77349a5ef6570ca345a12ddd2acf3391067faf3e6ee1be1a6419",
+      "targetHash": "68aff0337ce0510379e9494662c399875c0f8d648c1d13a139a82c2002626ba7"
+    },
+    "plans.basic.features.roleplayMode": {
+      "sourceHash": "abb92c986f1e4aaf6de2c550fc5fe69fdab1c0b7cbdcfe863d2bde62629e7c99",
+      "targetHash": "e58a4a5d5bd02bd37fe37c1fa6b74cdd28cf2f3ee6983c2709ac99ff889b1fea"
+    },
+    "plans.basic.features.imageUploads": {
+      "sourceHash": "279d8d7cca814a3496f53045f8cfe970e7d18e36f0edf100320083ab75cc4c8f",
+      "targetHash": "c235b06b6ee9401a26c54ab90df0194e6460f9a7f0c29c76b3b37bcc73026a24"
+    },
+    "plans.basic.features.debateMode": {
+      "sourceHash": "5f3e56515c1ef773074d712e2ea3a36a67d248309373b7310529d420d8552688",
+      "targetHash": "189350692a449d879ee5aaa813c33bc2eb9b5ef92c6a41f31a0d464eea2faba5"
+    },
+    "plans.basic.features.detailedDebateFeedback": {
+      "sourceHash": "e2a82193ff3fed7d6096a88bda17561122b233f3663ae04f6414131035562865",
+      "targetHash": "a9b865a7f4320528a24f5d52b8c1e727052b3c1ae92b869036136cbac4a1eb6a"
+    },
+    "plans.basic.features.ruthlessTone": {
+      "sourceHash": "3a78154f3afb7408eac9cfcdc3847b1f671cf809a54d10ce646b3c917ae49935",
+      "targetHash": "5ad559e67337b2932018201f3ee060efebaa6a420a2b3a4a91a89ce31d1c290e"
+    },
+    "plans.basic.features.globalMemory": {
+      "sourceHash": "f48643cc718465b9f1fc5623159a16588cf6f4cec23372593360d8a9898fdcc4",
+      "targetHash": "0c20f84b3f3c91f4a977dfa89638a38be44ac42535f5234eca7eb1b8f850e613"
+    },
+    "plans.basic.features.longerHistory": {
+      "sourceHash": "be73c04188b9146b1e472a96f7bcfe66f4a14a7ebaf2b294adc06cf9f62fa2df",
+      "targetHash": "8b6db3c32638095a96549d7b25091d0b395caacd22ac01fe1381da093cc9cbc8"
+    },
+    "plans.basic.features.newFeatureAccess": {
+      "sourceHash": "b6276e4dc4a920d9c22c3d0c87319b6cc37f6266a2f62ece3fd9781c46a2e34e",
+      "targetHash": "a47e3136859c8d9d8c465db91ff2b93f4989d5359aa106bd27c4b8e0cf0ec63a"
+    },
+    "plans.basic.features.unlimitedImageUploads": {
+      "sourceHash": "d7195082b8354e652c5722125bf6e485edd1b97471cb083a08a9f9a97592739d",
+      "targetHash": "b619a85e21fdb6d1d2e7bfccf84ecd664a92dbed2bb5c6b98abec81c0c8bad41"
+    },
+    "plans.premium.title": {
+      "sourceHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551",
+      "targetHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551"
+    },
+    "plans.premium.description": {
+      "sourceHash": "08eef3ef8511ca797f157dd0380cc472e8b3f2f0c4953f8597e427b85ef3a48f",
+      "targetHash": "27f3d626064e745419bf3bc5675829248b6a04424fec343ef265b89e7df95267"
+    },
+    "plans.premium.badge": {
+      "sourceHash": "9e1006a43da55967a4605ce1c118d45df1e47241aac1ca0bdf560116e642395e",
+      "targetHash": "3a14ffe0b718bb56cf605c0001c047f6f4a84fb9772dff19b32e33784abc6761"
+    },
+    "plans.premium.features.everythingBasic": {
+      "sourceHash": "4296860e62c8677f67f7894b12c4ee21938fc6e8609fbae2552cd3409426959a",
+      "targetHash": "296cd4c08e00bfa62dac27be39bdfce84a581ccf215c22688203929a3849ffe3"
+    },
+    "plans.premium.features.unlimitedMessages": {
+      "sourceHash": "baba02e12b872348516b10d40293a5eaaeb74cf73a960c231336f6f04371633f",
+      "targetHash": "1bf6e4e39b2b49e3fc75645407cd20acdd7a7667cc5612909c3111b82b6fab1f"
+    },
+    "plans.premium.features.socraticMode": {
+      "sourceHash": "10a9708254aa77349a5ef6570ca345a12ddd2acf3391067faf3e6ee1be1a6419",
+      "targetHash": "68aff0337ce0510379e9494662c399875c0f8d648c1d13a139a82c2002626ba7"
+    },
+    "plans.premium.features.roleplayMode": {
+      "sourceHash": "abb92c986f1e4aaf6de2c550fc5fe69fdab1c0b7cbdcfe863d2bde62629e7c99",
+      "targetHash": "e58a4a5d5bd02bd37fe37c1fa6b74cdd28cf2f3ee6983c2709ac99ff889b1fea"
+    },
+    "plans.premium.features.unlimitedImageUploads": {
+      "sourceHash": "d7195082b8354e652c5722125bf6e485edd1b97471cb083a08a9f9a97592739d",
+      "targetHash": "b619a85e21fdb6d1d2e7bfccf84ecd664a92dbed2bb5c6b98abec81c0c8bad41"
+    },
+    "plans.premium.features.debateMode": {
+      "sourceHash": "5f3e56515c1ef773074d712e2ea3a36a67d248309373b7310529d420d8552688",
+      "targetHash": "189350692a449d879ee5aaa813c33bc2eb9b5ef92c6a41f31a0d464eea2faba5"
+    },
+    "plans.premium.features.detailedDebateFeedback": {
+      "sourceHash": "e2a82193ff3fed7d6096a88bda17561122b233f3663ae04f6414131035562865",
+      "targetHash": "a9b865a7f4320528a24f5d52b8c1e727052b3c1ae92b869036136cbac4a1eb6a"
+    },
+    "plans.premium.features.ruthlessTone": {
+      "sourceHash": "3a78154f3afb7408eac9cfcdc3847b1f671cf809a54d10ce646b3c917ae49935",
+      "targetHash": "5ad559e67337b2932018201f3ee060efebaa6a420a2b3a4a91a89ce31d1c290e"
+    },
+    "plans.premium.features.globalMemory": {
+      "sourceHash": "f48643cc718465b9f1fc5623159a16588cf6f4cec23372593360d8a9898fdcc4",
+      "targetHash": "0c20f84b3f3c91f4a977dfa89638a38be44ac42535f5234eca7eb1b8f850e613"
+    },
+    "plans.premium.features.longerHistory": {
+      "sourceHash": "be73c04188b9146b1e472a96f7bcfe66f4a14a7ebaf2b294adc06cf9f62fa2df",
+      "targetHash": "8b6db3c32638095a96549d7b25091d0b395caacd22ac01fe1381da093cc9cbc8"
+    },
+    "plans.premium.features.newFeatureAccess": {
+      "sourceHash": "b6276e4dc4a920d9c22c3d0c87319b6cc37f6266a2f62ece3fd9781c46a2e34e",
+      "targetHash": "a47e3136859c8d9d8c465db91ff2b93f4989d5359aa106bd27c4b8e0cf0ec63a"
+    },
+    "buttons.signInToContinue": {
+      "sourceHash": "607a80121c655651dc14cbb057e035943bed91077283e9c6b8d709db1e25ef7f",
+      "targetHash": "b9075da8b7d5e9046669eec19ca6c484e5c6812fbfde55c5bd73b13b92078e2d"
+    },
+    "buttons.currentPlan": {
+      "sourceHash": "37ca715f53b6bb835e198f5b4fb1ed409792fe5a9f1e07d70536950e59524f15",
+      "targetHash": "cb635d1b3553abe61056d0a6a7bc6a6293c766988197ff4a72918c2d03f822e0"
+    },
+    "buttons.useBasic": {
+      "sourceHash": "84c0e724b9cdab0a2f2ce7c9a99d81f5ff9ead5b3d4b26af74f2edd0c9723777",
+      "targetHash": "25256112e7367225647135210f4c734997c45240ffb7b28d4dd656e4a7ad3dab"
+    },
+    "buttons.signInToUpgrade": {
+      "sourceHash": "ec2f895c88819247f78c5f13d5f7b60d5220c1827daa77c6d3a59a0b9a675c0c",
+      "targetHash": "6f2335b9f969384dc8d47c731e9933f533959190435f54e5ba6a4db40b43c99e"
+    },
+    "buttons.startPremium": {
+      "sourceHash": "0e3a9e9820fc800498da23185192bcb38d7f2af8a52351d5f5e6df01398fdeba",
+      "targetHash": "4c3a7bdf00887c458919a7e2d15a7b015dc50cef2c3da5a319c9bda00f4d9222"
+    },
+    "buttons.manageSubscription": {
+      "sourceHash": "9041c6aa2c3d4670f671ee3d31b06106f961054e1cdbe7d302ff6dc115a7d14a",
+      "targetHash": "f3c069e0b6cddeb68a863fcc1db18279e5a484cd4f546670caaced8ac4b721dc"
+    },
+    "buttons.openBillingDashboard": {
+      "sourceHash": "e4549d5016ccf7cde770bd7a1b2568b508bbf2b31e34823afdc59039385cfe54",
+      "targetHash": "7b0a58092378f32763715c592b9ac20e96944fa0a7cb66db4b31cb5e01fad32a"
+    },
+    "billing.monthly": {
+      "sourceHash": "9b11f6b707d2a03e0265465f32520bc1bc213de121de958539662d0ec1453fcb",
+      "targetHash": "983d575cfd44b196beb698de38d340a029d80a429fdd6faf8a041289d307f70a"
+    },
+    "billing.yearly": {
+      "sourceHash": "6e69b59ed34d42ef337ccc1910152d2cfa4b6ff831c21c5af5ef0f3bc84cbe89",
+      "targetHash": "503fd5d8d3b6d7a906c95f3d8405a378cc851263e17b53cbde04a33f1031db17"
+    },
+    "billing.save": {
+      "sourceHash": "1509f561f2416598629b886ad7d3c05a7e221e4e0675c84bbff4ee6d9e03913d",
+      "targetHash": "bae58eaec0125b828a6daaefb8fbdf515d1e3bef4ff03c5baea2e5210f5ccb6d"
+    },
+    "billing.perYear": {
+      "sourceHash": "a2d5f1bcdaab9ddc839c2812b46fcd5abaf86f7165e76ca9a3f7a93af10ad366",
+      "targetHash": "04ef8daa25a12d684cdebb3c306561373517522d05ad51a99a2dc8f7f59600d1"
+    },
+    "billing.perMonth": {
+      "sourceHash": "eec5d08bc9b2911d54d521e06aa51b72d0c8c8138a1ddaa104fb67fd76bc0ded",
+      "targetHash": "972d542877647eefa4e7c8c7e361aebc5baea00792e22c09e89dd2f8f0eb78b0"
+    },
+    "billing.percentOff": {
+      "sourceHash": "b4dc66dde806261bdda8607d8707aa727d308cd80272381a5583f63899918467",
+      "targetHash": "f3241fb60a3fe2dfde75f9e9d87044205b8dcf1a3305dffae3c1063af3a3f214"
+    },
+    "billing.supporting": {
+      "sourceHash": "baaf100051bcad1588890742c67bc29e9f04f71c5e884c4e6923b637af6d19b1",
+      "targetHash": "e61cef6ff77ad2a8f452b94318a788eb6c5cf4445058d3dc9e77912b3bcd2420"
+    },
+    "billing.premiumPrice": {
+      "sourceHash": "95967197abbeb8663731c461b169a4079065164921df91f5012e78e11511ffd6",
+      "targetHash": "4685d612b2bddcfe99570bd07240f89ecbdbe4cbe812d394f84f2311cbfdaf57"
+    },
+    "status.openingCheckout": {
+      "sourceHash": "d28077578be94af2d768bcc806b3f1da6b6b5d7a2dc735893e3b23ae37f7692c",
+      "targetHash": "92ab35fcae25627e4345a29478f74ca54a12bdf2c656c8379f7fb9ec1bc985e5"
+    },
+    "status.customerPortalError": {
+      "sourceHash": "8bbd7b08a620a4a0cf68443355e5a453e9145420338da538ed90bcd1d8ff7442",
+      "targetHash": "121ae5093c075baa30386811b41cb25e62946a37efb52d846b28dce77b6b1981"
+    },
+    "status.portalUrlMissing": {
+      "sourceHash": "0e20bc6efdcfccae7270e4c49ed6d507b35bac078bd4af8be52c6356754ca3ae",
+      "targetHash": "3e5d9f6b3749a759575a2cd1dde392e76cc70bc4e0ebd5e5af396ff37a63662f"
+    },
+    "status.checkoutError": {
+      "sourceHash": "827beb6ec9dcac2330832578c359a2eb719ae0e4931f972a293868dc412b2f91",
+      "targetHash": "5ac4012ad26ff77e6ef7bd421c88c4d565357c2dea48993234191418bcd31503"
+    },
+    "status.checkoutUrlMissing": {
+      "sourceHash": "c3f4c3b744be92c30417ce918a2cd8ded2b1fba9b953ce82450df4ad7e695575",
+      "targetHash": "bb1b519235d22943599c9029565e74d4d9fbf18b588d06dfb6458be040ee493d"
+    }
+  },
+  "ar": {
+    "metadata.title": {
+      "sourceHash": "dfe95783edfef7918760312f94edd764f4ce3ffd38b90c2c955a0cc3b250f040",
+      "targetHash": "540ecf1b863cc72ab449ea9ca38a129a25eb14e1a0e03dfba40e8db05a8513a7"
+    },
+    "metadata.description": {
+      "sourceHash": "9fa03e8d217174df439988e0a232df03d43213deff22a5b1c42da51db56392a8",
+      "targetHash": "af0705cea30bf1ae4136bce3b9d20ee19bba686dd8a83ca7cb390403f0c4d1a4"
+    },
+    "metadata.ogAlt": {
+      "sourceHash": "3c9bbf2f0dfb146b3119589ef4c08d743e021ff0fd6fcb5cf375516839a8ccc9",
+      "targetHash": "22c76f8923df98e0553d2bada1344d3a91cdf8755a23c9139ead35193bdac3d2"
+    },
+    "hero.titlePrefix": {
+      "sourceHash": "2d306d71074313942f705111c18c2723836068e3a8ad77cc3b8fe8d959004c08",
+      "targetHash": "ee389c292d573a4bd89e33ccfc46d2175a142be4547ee96849e51156dc4fd4c7"
+    },
+    "hero.titleProduct": {
+      "sourceHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551",
+      "targetHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551"
+    },
+    "hero.description": {
+      "sourceHash": "15180c3357575651ccafbbd5ccba2415c29fd9faeebac34aa299966657fe122e",
+      "targetHash": "d9cd00adb0f022ddd19a30dca27e32c9a2cdf4e678ebd681f19a4bb739b61818"
+    },
+    "hero.subtitle": {
+      "sourceHash": "2e8c0abd7b6a2994784ed06a167b444bc9d44f61bf2e742d8af0af754e8d5ead",
+      "targetHash": "961f09e2ca86609562325a440cc2fae0eeaf6d12962b9410bb0b89218657537d"
+    },
+    "plans.basic.title": {
+      "sourceHash": "0e35f6e9742e074dfd62e874de3c242c6d9b64c21bf9afbaf3d11f05579b4495",
+      "targetHash": "b0010a7718c64532b014f9f2649f53e71f84a7c979f704770f9f7e45f284bfbe"
+    },
+    "plans.basic.description": {
+      "sourceHash": "aa6d54b8d43c41509097c8e04eeb266b16595d160697637e7612969e5426f296",
+      "targetHash": "90260307e0b1f5d1ed6f44d43ec55a2a08d4e1434723215669fbac4a43446132"
+    },
+    "plans.basic.features.dailyMessages": {
+      "sourceHash": "37517fc5e505b691b5a30873b07d3880bd5f182b04777cab3df1665622957307",
+      "targetHash": "211ce48a88c01548cf5732ae3f4d009b0229cfb6049ef36dc2b1689b0adfbc6b"
+    },
+    "plans.basic.features.socraticMode": {
+      "sourceHash": "10a9708254aa77349a5ef6570ca345a12ddd2acf3391067faf3e6ee1be1a6419",
+      "targetHash": "0816012632f1179fd7d463dfcca019a901cace492799f8fec4e63d1394474c91"
+    },
+    "plans.basic.features.roleplayMode": {
+      "sourceHash": "abb92c986f1e4aaf6de2c550fc5fe69fdab1c0b7cbdcfe863d2bde62629e7c99",
+      "targetHash": "e800af1781af12d8f5e07a9cd4b5026fabd1c57fd1f91afd4aa051f3c1fbb63b"
+    },
+    "plans.basic.features.imageUploads": {
+      "sourceHash": "279d8d7cca814a3496f53045f8cfe970e7d18e36f0edf100320083ab75cc4c8f",
+      "targetHash": "db3550941547f8ca6816bcce3a978af036317e31a405aa9e505ed8e1227d2da8"
+    },
+    "plans.basic.features.debateMode": {
+      "sourceHash": "5f3e56515c1ef773074d712e2ea3a36a67d248309373b7310529d420d8552688",
+      "targetHash": "18b8e736c98ab2df3fcf39f70f87c38e4b76672e2f45114f534cc443a7b11b0d"
+    },
+    "plans.basic.features.detailedDebateFeedback": {
+      "sourceHash": "e2a82193ff3fed7d6096a88bda17561122b233f3663ae04f6414131035562865",
+      "targetHash": "bcc021ac78274b4868e7fd6ac94dc060cd2bdd445be89411fe79ae073b600859"
+    },
+    "plans.basic.features.ruthlessTone": {
+      "sourceHash": "3a78154f3afb7408eac9cfcdc3847b1f671cf809a54d10ce646b3c917ae49935",
+      "targetHash": "311b53d364e34dec8a44dfa39f2b204618e2654b1f3baf853ae4a45b090518a9"
+    },
+    "plans.basic.features.globalMemory": {
+      "sourceHash": "f48643cc718465b9f1fc5623159a16588cf6f4cec23372593360d8a9898fdcc4",
+      "targetHash": "512f90ec4e16942f02e9831fdafd9c841c2dd30c9fe079af7d0c67495612bd40"
+    },
+    "plans.basic.features.longerHistory": {
+      "sourceHash": "be73c04188b9146b1e472a96f7bcfe66f4a14a7ebaf2b294adc06cf9f62fa2df",
+      "targetHash": "e19758caa71d84e03aaf25693f11aa5fe6d48a6c198b1b4d794c8149eb6e8425"
+    },
+    "plans.basic.features.newFeatureAccess": {
+      "sourceHash": "b6276e4dc4a920d9c22c3d0c87319b6cc37f6266a2f62ece3fd9781c46a2e34e",
+      "targetHash": "882ca1e0e21e80876fbf2a4a7ca86c0304994b1ad9a5aadcd8a7ae9e3645417a"
+    },
+    "plans.basic.features.unlimitedImageUploads": {
+      "sourceHash": "d7195082b8354e652c5722125bf6e485edd1b97471cb083a08a9f9a97592739d",
+      "targetHash": "ebcb09673a469748803bacd5652445c5842cff3f27d9f2acbe2ed8d6b0b91e1a"
+    },
+    "plans.premium.title": {
+      "sourceHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551",
+      "targetHash": "233260750632c8fd4a66a1a28b2f4a438a1ecbec133b71bfd17d64d85ca0a551"
+    },
+    "plans.premium.description": {
+      "sourceHash": "08eef3ef8511ca797f157dd0380cc472e8b3f2f0c4953f8597e427b85ef3a48f",
+      "targetHash": "fc194374aba9c78bd887cfd1ccef591b8a4376126f13f7b965f27f33f7ff71b4"
+    },
+    "plans.premium.badge": {
+      "sourceHash": "9e1006a43da55967a4605ce1c118d45df1e47241aac1ca0bdf560116e642395e",
+      "targetHash": "8395d1cffc4795dff822400bc0d28eb7ab17602ba74f4ece7875aaa0cacf4d3d"
+    },
+    "plans.premium.features.everythingBasic": {
+      "sourceHash": "4296860e62c8677f67f7894b12c4ee21938fc6e8609fbae2552cd3409426959a",
+      "targetHash": "82d333c8193847ab0b07fa6bb88d1f04926cce91c85b92a1c17a26ad3572a2f4"
+    },
+    "plans.premium.features.unlimitedMessages": {
+      "sourceHash": "baba02e12b872348516b10d40293a5eaaeb74cf73a960c231336f6f04371633f",
+      "targetHash": "810dcd0768a456091b343ab9b0e71c050112f02f2d11bcd69cc433d603c395e5"
+    },
+    "plans.premium.features.socraticMode": {
+      "sourceHash": "10a9708254aa77349a5ef6570ca345a12ddd2acf3391067faf3e6ee1be1a6419",
+      "targetHash": "0816012632f1179fd7d463dfcca019a901cace492799f8fec4e63d1394474c91"
+    },
+    "plans.premium.features.roleplayMode": {
+      "sourceHash": "abb92c986f1e4aaf6de2c550fc5fe69fdab1c0b7cbdcfe863d2bde62629e7c99",
+      "targetHash": "e800af1781af12d8f5e07a9cd4b5026fabd1c57fd1f91afd4aa051f3c1fbb63b"
+    },
+    "plans.premium.features.unlimitedImageUploads": {
+      "sourceHash": "d7195082b8354e652c5722125bf6e485edd1b97471cb083a08a9f9a97592739d",
+      "targetHash": "ebcb09673a469748803bacd5652445c5842cff3f27d9f2acbe2ed8d6b0b91e1a"
+    },
+    "plans.premium.features.debateMode": {
+      "sourceHash": "5f3e56515c1ef773074d712e2ea3a36a67d248309373b7310529d420d8552688",
+      "targetHash": "18b8e736c98ab2df3fcf39f70f87c38e4b76672e2f45114f534cc443a7b11b0d"
+    },
+    "plans.premium.features.detailedDebateFeedback": {
+      "sourceHash": "e2a82193ff3fed7d6096a88bda17561122b233f3663ae04f6414131035562865",
+      "targetHash": "bcc021ac78274b4868e7fd6ac94dc060cd2bdd445be89411fe79ae073b600859"
+    },
+    "plans.premium.features.ruthlessTone": {
+      "sourceHash": "3a78154f3afb7408eac9cfcdc3847b1f671cf809a54d10ce646b3c917ae49935",
+      "targetHash": "311b53d364e34dec8a44dfa39f2b204618e2654b1f3baf853ae4a45b090518a9"
+    },
+    "plans.premium.features.globalMemory": {
+      "sourceHash": "f48643cc718465b9f1fc5623159a16588cf6f4cec23372593360d8a9898fdcc4",
+      "targetHash": "512f90ec4e16942f02e9831fdafd9c841c2dd30c9fe079af7d0c67495612bd40"
+    },
+    "plans.premium.features.longerHistory": {
+      "sourceHash": "be73c04188b9146b1e472a96f7bcfe66f4a14a7ebaf2b294adc06cf9f62fa2df",
+      "targetHash": "e19758caa71d84e03aaf25693f11aa5fe6d48a6c198b1b4d794c8149eb6e8425"
+    },
+    "plans.premium.features.newFeatureAccess": {
+      "sourceHash": "b6276e4dc4a920d9c22c3d0c87319b6cc37f6266a2f62ece3fd9781c46a2e34e",
+      "targetHash": "882ca1e0e21e80876fbf2a4a7ca86c0304994b1ad9a5aadcd8a7ae9e3645417a"
+    },
+    "buttons.signInToContinue": {
+      "sourceHash": "607a80121c655651dc14cbb057e035943bed91077283e9c6b8d709db1e25ef7f",
+      "targetHash": "b93169f32e6ab1051f7c3a12234b860e311a1ae92afab94424022d00df0d12a0"
+    },
+    "buttons.currentPlan": {
+      "sourceHash": "37ca715f53b6bb835e198f5b4fb1ed409792fe5a9f1e07d70536950e59524f15",
+      "targetHash": "a95d8a03fafab37264b54d866b60f6a46048532c2018f7c145eff36e38bcc50a"
+    },
+    "buttons.useBasic": {
+      "sourceHash": "84c0e724b9cdab0a2f2ce7c9a99d81f5ff9ead5b3d4b26af74f2edd0c9723777",
+      "targetHash": "79bc1ae41796feed75725d50e6b1964ae1048cc64f1f10210c451bb9a57c40ce"
+    },
+    "buttons.signInToUpgrade": {
+      "sourceHash": "ec2f895c88819247f78c5f13d5f7b60d5220c1827daa77c6d3a59a0b9a675c0c",
+      "targetHash": "581150330c922fd9d1f47ce7bc3bb669a28da6d6fcae0e59a1b11e5c52bc1b49"
+    },
+    "buttons.startPremium": {
+      "sourceHash": "0e3a9e9820fc800498da23185192bcb38d7f2af8a52351d5f5e6df01398fdeba",
+      "targetHash": "1736017dba52429ac2eeec40e71db7848af5e7fd4fcbb920fbece015081efb99"
+    },
+    "buttons.manageSubscription": {
+      "sourceHash": "9041c6aa2c3d4670f671ee3d31b06106f961054e1cdbe7d302ff6dc115a7d14a",
+      "targetHash": "432651e0ceb3d39bbeaeffc2b946641db92af66611e77a3bd7d5544a5d8143d4"
+    },
+    "buttons.openBillingDashboard": {
+      "sourceHash": "e4549d5016ccf7cde770bd7a1b2568b508bbf2b31e34823afdc59039385cfe54",
+      "targetHash": "68f762392d0e77f4449db6a044088703faa59973824e8416b3121f6253338445"
+    },
+    "billing.monthly": {
+      "sourceHash": "9b11f6b707d2a03e0265465f32520bc1bc213de121de958539662d0ec1453fcb",
+      "targetHash": "9c677bb93912ad30082823a0ec29e69c8094974bdc1dadb9fd964c6959112a50"
+    },
+    "billing.yearly": {
+      "sourceHash": "6e69b59ed34d42ef337ccc1910152d2cfa4b6ff831c21c5af5ef0f3bc84cbe89",
+      "targetHash": "1beeff0b0fec8a35c3aa868b73cea3a74d919037ff7a7d4f99032122276d5ae9"
+    },
+    "billing.save": {
+      "sourceHash": "1509f561f2416598629b886ad7d3c05a7e221e4e0675c84bbff4ee6d9e03913d",
+      "targetHash": "33c2d4974937d47ddd09a9bb24138d6c64d2b3a4d7aea43b0a45448ce44064c6"
+    },
+    "billing.perYear": {
+      "sourceHash": "a2d5f1bcdaab9ddc839c2812b46fcd5abaf86f7165e76ca9a3f7a93af10ad366",
+      "targetHash": "2a98e85c904839e6e7b881a836dd7517e58818deef4061273072a31de57c1635"
+    },
+    "billing.perMonth": {
+      "sourceHash": "eec5d08bc9b2911d54d521e06aa51b72d0c8c8138a1ddaa104fb67fd76bc0ded",
+      "targetHash": "d53abb020d0f4c9a1607d0ea1fe5525514772f4ac7dd7c738a4c38ee8868c07f"
+    },
+    "billing.percentOff": {
+      "sourceHash": "b4dc66dde806261bdda8607d8707aa727d308cd80272381a5583f63899918467",
+      "targetHash": "ec9ccd93320a30875361abcf63721a8970cd54fa648b12a7eea6ff3ecc535fa8"
+    },
+    "billing.supporting": {
+      "sourceHash": "baaf100051bcad1588890742c67bc29e9f04f71c5e884c4e6923b637af6d19b1",
+      "targetHash": "09681a36a1c59d4f80ca88eddb4e0fd20fdff4b0214f8bc732d2b590e5e78907"
+    },
+    "billing.premiumPrice": {
+      "sourceHash": "95967197abbeb8663731c461b169a4079065164921df91f5012e78e11511ffd6",
+      "targetHash": "e5c360685e21bf67013a6657b5dca19a93582c82af1d2fa506bf032980043f81"
+    },
+    "status.openingCheckout": {
+      "sourceHash": "d28077578be94af2d768bcc806b3f1da6b6b5d7a2dc735893e3b23ae37f7692c",
+      "targetHash": "4e9a1788794f7c3689674e98d2b223824747d3ae0337fa141c44c2a73aa32d7d"
+    },
+    "status.customerPortalError": {
+      "sourceHash": "8bbd7b08a620a4a0cf68443355e5a453e9145420338da538ed90bcd1d8ff7442",
+      "targetHash": "2c5df82cd855b541d080395a497873aa95ea914f7149de7b32b02052d7955ac3"
+    },
+    "status.portalUrlMissing": {
+      "sourceHash": "0e20bc6efdcfccae7270e4c49ed6d507b35bac078bd4af8be52c6356754ca3ae",
+      "targetHash": "2cb3690d3fcbca0436b7f9ad99c79391a89cd32aa31217919dc48a2df0486c03"
+    },
+    "status.checkoutError": {
+      "sourceHash": "827beb6ec9dcac2330832578c359a2eb719ae0e4931f972a293868dc412b2f91",
+      "targetHash": "03843bcf1b3ff8593f02ef227e6a76a164864fe5548a1129f53c77ac82b6aff9"
+    },
+    "status.checkoutUrlMissing": {
+      "sourceHash": "c3f4c3b744be92c30417ce918a2cd8ded2b1fba9b953ce82450df4ad7e695575",
+      "targetHash": "f236b2b416a5a2117723468728d6d7433bfe6b3d3bd355b230d566e46e1f4fba"
+    }
   }
 }

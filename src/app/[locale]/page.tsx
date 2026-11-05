@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { LocalizedHomePage } from "@/src/components/home/localized-home-page";
 import { createHomeMetadata } from "@/src/i18n/home-metadata";
 import {
-  SUPPORTED_LOCALES,
-  isSupportedLocale,
-  type SupportedLocale,
+  HOME_LOCALES,
+  isHomeLocale,
+  type HomeLocale,
 } from "@/src/i18n/locales";
 
 export const dynamicParams = false;
@@ -17,17 +17,17 @@ type LocalizedHomePageProps = {
 };
 
 export function generateStaticParams() {
-  return SUPPORTED_LOCALES.filter((locale) => locale !== "en").map((locale) => ({
+  return HOME_LOCALES.filter((locale) => locale !== "en").map((locale) => ({
     locale,
   }));
 }
 
 async function resolveLocale(
   params: LocalizedHomePageProps["params"],
-): Promise<SupportedLocale> {
+): Promise<HomeLocale> {
   const { locale } = await params;
 
-  if (!isSupportedLocale(locale) || locale === "en") {
+  if (!isHomeLocale(locale) || locale === "en") {
     notFound();
   }
 

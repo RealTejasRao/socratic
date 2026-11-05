@@ -1798,5 +1798,905 @@
       "sourceHash": "0a1686181617ba01b73aa531bd6cd0c088a9fa5af76e93e483b37c13a9e47d52",
       "targetHash": "0d3ff53dd255038a5cc90fdba9dfd055e61ad765ef98a37c0b07ec45bbb2b801"
     }
+  },
+  "ru": {
+    "metadata.title": {
+      "sourceHash": "12055590570876f0a3c2a6fb9a0ec48a9d9c8c6c95a2afe5979b20265a57f076",
+      "targetHash": "3b3194da06ade787a19613d96dcc16d0c97ffbc8a15df670eb3f542d45aafc39"
+    },
+    "metadata.description": {
+      "sourceHash": "9054675c756d50bb2b3ef0a6ca06ff8279c89b0b503f10455db8a9b55491523e",
+      "targetHash": "2a9c2ad4c039011d3cb0292c8b22930885d183e78551f1fb92b040f21df929fd"
+    },
+    "metadata.ogAlt": {
+      "sourceHash": "5207bc3337e9069f07da6a058caf6622cc33201a38b479ec145c0feff2ce434e",
+      "targetHash": "bb1b2034e68e951d4346078acc402b5a4edd8a61609a8e2d3b009b3425d78223"
+    },
+    "nav.home": {
+      "sourceHash": "3a78695388b38b5cceefaf6796b0137877514593543b91af2752d5a17e3d736c",
+      "targetHash": "d328e53dc4561e099c85d45d26fea5d20aac5ffc2b949a0388eb794e30db40cb"
+    },
+    "nav.features": {
+      "sourceHash": "5697d03daef4de9cf8db7cb11755f71358a32b4acca94909a9d449f71040d2dd",
+      "targetHash": "04afc09e60bdc004125c1607d212ffc9ae1b0dd17a2e260cb7a7cb57006a8fb8"
+    },
+    "nav.pricing": {
+      "sourceHash": "dfe95783edfef7918760312f94edd764f4ce3ffd38b90c2c955a0cc3b250f040",
+      "targetHash": "342dcbd35b70c1faef85be8dabd88ba7814ab0529c5d38bbbcf16ea814bda3da"
+    },
+    "nav.blog": {
+      "sourceHash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "targetHash": "c31cdbd07e6cc3a2d6686bd342dc144f273e82226b5c17b60037114524adcdaf"
+    },
+    "nav.contact": {
+      "sourceHash": "2b5c3d26721ae9c350cf3009318b626f0fc8a90b4a2ac0ca8099c05aa849282e",
+      "targetHash": "c1f51c3d5260fb776c498b921c2cd6e21c331f851dff214908b2cb946113ab2a"
+    },
+    "nav.openApp": {
+      "sourceHash": "9a1b5b70fb7fcb0dca7a4c779607583af026973502350e7ad3ed9b61cf61339d",
+      "targetHash": "be432c828c4d4b43bb1d3a14ab03197242fab3e4861b0e3b7c1ab7fef2450b6e"
+    },
+    "nav.language": {
+      "sourceHash": "a4fe65264ef7dbb38d104b1e81eb3350f3142f3d16f32bdec39b1d9b42c1b8d1",
+      "targetHash": "5bd57038dbadd6517fcaab9deb791efdc1c05a17fccdb975be51452a6c5326b2"
+    },
+    "nav.menuTagline": {
+      "sourceHash": "f1eca61622a46e269a5423e72452009c87e4b56aa7e9ef207c74f5cef2911d4d",
+      "targetHash": "5f8f8a7278c06dae4e89478aa2ef5726fa534e48b872ac47aa3149833f06a536"
+    },
+    "hero.srOnly": {
+      "sourceHash": "71b3cfe97823bc7329292f3f8891a43d05164e17239c3d98add594794c0fa015",
+      "targetHash": "18e5edc6532d53b02a75e20c3b35168a25f6417b9de2bf137235a6de94a2193d"
+    },
+    "hero.headlinePrefix": {
+      "sourceHash": "36b0609f0412509d659bc3b0ebd37b2e9495cf3bddd3f16eba21b3c08f09f085",
+      "targetHash": "a99d48b9332d9c5bb0e8fcd8a3b76ee1ca5d791dceebeca96c4b1187f492ef5b"
+    },
+    "hero.words.0": {
+      "sourceHash": "7f3d81eb0817c1bf0e04af5bc5888c49fc70fb1f11190b307c81a05f8ced39c2",
+      "targetHash": "47096a43b3f3e5bd3c393a26a22f21b4e6db973b4712de555f700569419a601f"
+    },
+    "hero.words.1": {
+      "sourceHash": "bb583d76295fcffc89f90c686f47a08234c172d9f30e7f199055d5c583abf43b",
+      "targetHash": "8a2c45be6fd3facaa0bd8787de9cdfc3a5020484b3d94db0e2a60b2b51123759"
+    },
+    "hero.words.2": {
+      "sourceHash": "834459084c92274c56c465ca9ced3c595a01a74dc85f6b5b63151b741f882521",
+      "targetHash": "80ef0edcd17474082cdc3e0cbf32f8250b5bf1016eb959e5b58deeab632fc761"
+    },
+    "hero.words.3": {
+      "sourceHash": "66b06e996553a4e70d0f3a5a50c6b6877d23fb448cad524fef307399ebe36d5e",
+      "targetHash": "d2b5ad958e33e7578f56244a8b60e718dce6194d50f8eeadaba96521f115f5d0"
+    },
+    "hero.signedOutCta": {
+      "sourceHash": "c2726fa6337b13d44a5d31abc3b7a356f4da68d45ea6a409a9c5cb24461513b0",
+      "targetHash": "85da3455d570aedb7d6ee96744a5f00fc2f4daa71dea628bbf40e7c1c2f99a5c"
+    },
+    "hero.signedInCta": {
+      "sourceHash": "446b999de6d8ac55fa88f4c7b67fecc47bf8f24039e310532ca411dfe6118d3f",
+      "targetHash": "7a1a1127b7c7b74d23f36f2c90cb002dfb610985f95cdfde7126ea603bf1eb46"
+    },
+    "hero.mobileImageAlt": {
+      "sourceHash": "9f73d310e19079f0fe15ff03f9f77a3161cb6f2b17ee51d9b1008e7444075a2d",
+      "targetHash": "6e3e7f583f4c342199d3987de228c1f0f0474847f1eb2b4e942f9659de328bea"
+    },
+    "hero.desktopImageAlt": {
+      "sourceHash": "9f73d310e19079f0fe15ff03f9f77a3161cb6f2b17ee51d9b1008e7444075a2d",
+      "targetHash": "6e3e7f583f4c342199d3987de228c1f0f0474847f1eb2b4e942f9659de328bea"
+    },
+    "features.headingSubject": {
+      "sourceHash": "7f3d81eb0817c1bf0e04af5bc5888c49fc70fb1f11190b307c81a05f8ced39c2",
+      "targetHash": "07fe3fbc4130944fbeb78b5878b7fedb02940dcea0c06ca23a73b9f13e8d1676"
+    },
+    "features.headingText": {
+      "sourceHash": "b86794902f06f80db7abbfc1f064eba6c3cf80dd8b7ea0c66955bd5babbfe4a1",
+      "targetHash": "4881825df5f79f6b4f0e0e6ed9fc63080d91de64d2cdfe3de6c8b0e23e77e75b"
+    },
+    "features.highlightedTerms.0": {
+      "sourceHash": "e9cdbd4dd56c72ee4be54e807000aed933a32ee8f6732ffa276def48d08d097d",
+      "targetHash": "cdb224710d2fe44b73bb24bb2a70bf593caf6f432ef18841067e8bbc6db3365f"
+    },
+    "features.highlightedTerms.1": {
+      "sourceHash": "7f3d81eb0817c1bf0e04af5bc5888c49fc70fb1f11190b307c81a05f8ced39c2",
+      "targetHash": "187a4ca7b8b30d96534928f02b32624c840f31c344d61f70ffdce5f6c895900b"
+    },
+    "features.cards.0.id": {
+      "sourceHash": "8fd83e0fb38f03a5f465b6e351bd25bb128f77a778f47cca11e69d909ea213ee",
+      "targetHash": "8fd83e0fb38f03a5f465b6e351bd25bb128f77a778f47cca11e69d909ea213ee"
+    },
+    "features.cards.0.title": {
+      "sourceHash": "cd68d1c30fed620cd60f51e217fd7bb8751136093c02aacd93c6105cc3e1c471",
+      "targetHash": "4009e3291e579b093dfc2ae79b635a189f605e6a3b3a726388c82faec64c5d36"
+    },
+    "features.cards.0.description": {
+      "sourceHash": "ce31a6f2e2b7c5cae455d23552d9fbe8511c407b84e10c319fdb5a8d9a5f384b",
+      "targetHash": "b04c458bf5c88f12419513da2a6f9ecac3f7052f6e2a23b39d40c74a3f3f3ab9"
+    },
+    "features.cards.1.id": {
+      "sourceHash": "6b17b8fcc411a533c822a5117e33cf73fa6766739d7d36ac86dc4bea883af4fe",
+      "targetHash": "6b17b8fcc411a533c822a5117e33cf73fa6766739d7d36ac86dc4bea883af4fe"
+    },
+    "features.cards.1.title": {
+      "sourceHash": "42b8ba95a1c5a00d758ca41b39624a3abb11a4e0472dd71ccd52233a1d16c068",
+      "targetHash": "64e2218098f23aca7efe7eea23444c9202e4131c49d38353836d4b7177b4d82e"
+    },
+    "features.cards.1.description": {
+      "sourceHash": "4150ffaaeeffc9919f48270fc42e3d03389af6e68e263054adec9913b4b168d3",
+      "targetHash": "875c663f5206bff030c066abc5e3d36ecd51f1457272628e3cd17058a3008259"
+    },
+    "features.cards.2.id": {
+      "sourceHash": "9aea04762b1e3fab20ee098b7d044529dcfa1f05790d2e33e9a69d8dad3c4f6b",
+      "targetHash": "9aea04762b1e3fab20ee098b7d044529dcfa1f05790d2e33e9a69d8dad3c4f6b"
+    },
+    "features.cards.2.title": {
+      "sourceHash": "deb6daf074faf1bc370eda69bcd7d68341de7120ce94e5c70d12ba59279888f2",
+      "targetHash": "9523922b1bf7635ff32921e1da11725a162ad07098b9d7afefc34960bbaa2b53"
+    },
+    "features.cards.2.description": {
+      "sourceHash": "32dc59e7a4d51216f32b0498db9e5dbbd8711478cbf33aada81374cf79283d3d",
+      "targetHash": "3db48b30cbd0f59fc971a997a286055350b04b49805df84d8ab3dd51c42a911e"
+    },
+    "features.cards.3.id": {
+      "sourceHash": "261b152862d1d614014496a635018719d34bb3965c5bd7a9f7bbebc7cd8b8696",
+      "targetHash": "261b152862d1d614014496a635018719d34bb3965c5bd7a9f7bbebc7cd8b8696"
+    },
+    "features.cards.3.title": {
+      "sourceHash": "aa1943e872d3c1991c96be4da9ed4fdcd912a6f32f1d6a8adf0b37aad5aefe1d",
+      "targetHash": "5873303f02c2e5d1418b871c36f3963ac12b2cdc547f03e7c7928ab3a62b8616"
+    },
+    "features.cards.3.description": {
+      "sourceHash": "28eb8fc33542689917787b09eab2276c41d8c85a807c106cec70324543337668",
+      "targetHash": "cd09c8c25fab9bc8697ed26e74278e76056aab9cbd80c77cc95d1ce232a27382"
+    },
+    "security.message": {
+      "sourceHash": "07da8785bcc31c7cbf4ac9f0b4decf64bf5097a8589614eebf22e12a437b9103",
+      "targetHash": "b5a12d473772c9a2553b9fe9959bf56ea952c3e88a0002c22e5fcfeb7f1a54a5"
+    },
+    "security.highlightedTerm": {
+      "sourceHash": "715dc8493c36579a5b116995100f635e3572fdf8703e708ef1a08d943b36774e",
+      "targetHash": "02961a444d94808395c12496e39b8af2567073686209a046c06cbc73d3576728"
+    },
+    "security.ariaLabel": {
+      "sourceHash": "4e9f7ab1a97495f937de62bc658d03b59e3df295473ac46a93cb1060660412a8",
+      "targetHash": "1d900711c5b4a7aba71d1ecc1ddcce7167b2febdfb71a369b5724e3431fba795"
+    },
+    "useCases.headingText": {
+      "sourceHash": "505bcbf57ccb62e55b080ff89d91bc023fa2a089374853d0b56c9c684d24c60d",
+      "targetHash": "fcba6af98f286a91d822dfc5e0f172e3a9af1ac91b3868046209bea3b570033f"
+    },
+    "useCases.mobileFirstLine": {
+      "sourceHash": "58f7ebf6ddc81ee2342460f45a5fc7ab6a121aaf5647a431ca6d67f70f221109",
+      "targetHash": "67a2bbaf0611e735b00633e24733d7c625fddc6ea53533fa05008e27197c33ad"
+    },
+    "useCases.mobileSecondLine": {
+      "sourceHash": "37f593aed777c829a5a33d873e7c8dddf8c54c8cea80c2cc46e1d7e355d9c9b5",
+      "targetHash": "05a8295b1a8c316ecfdf27bfa3b2d42eb6a3fb607605e5e3c5c6ed9b56185722"
+    },
+    "useCases.highlightedWord": {
+      "sourceHash": "adf7aba3a5acd9e631511f0e2559b934bb96233ca5829168d51cff845cc5c76c",
+      "targetHash": "5008fec554ab9bdb1b0a4768fd7d02ecddc26280ddcf98f469f26516b430cb15"
+    },
+    "useCases.items.0.id": {
+      "sourceHash": "ededcb9a82889d23ea28dbca2cbea4cb8ae7e867c7aa3b8b7046ea221f64656a",
+      "targetHash": "ededcb9a82889d23ea28dbca2cbea4cb8ae7e867c7aa3b8b7046ea221f64656a"
+    },
+    "useCases.items.0.leftTitle": {
+      "sourceHash": "e4b4b97befdcc810768c14a4fd490a9bfe90dbdd06f6e1b3fff6dd9bfcc2a2d5",
+      "targetHash": "56fa7c96c40780eb1af2cf02793244e5167ac5b2871694f881fec27ba9bf4fdc"
+    },
+    "useCases.items.0.leftDescription": {
+      "sourceHash": "8edf066a2e65b732680333adef490f4a43fe570867fc056fc16956b33ef0122a",
+      "targetHash": "f42726409156429591fb202a3be2dd30d2047a80d989ec46f22835cd32c913ee"
+    },
+    "useCases.items.0.rightTitle": {
+      "sourceHash": "78236ea421ae54c02dffb3c545a7563552d891f15b99c743928d2138d3cee5e5",
+      "targetHash": "611d90d5931c972ea2af2935d23f24c0f3337005e47ed1095d9599a1772e0d0e"
+    },
+    "useCases.items.0.rightDescription": {
+      "sourceHash": "af1b15632c59ab92a1c14bf5236997ae0cd1ab9af2b24ee7916a77a195a4572d",
+      "targetHash": "7e84ee292c28c255b9a3d50ed0a09a61fe1389a7470e2dba43d51cc1ed870b86"
+    },
+    "useCases.items.0.placeholderLabel": {
+      "sourceHash": "cf080ee6f6a9d45ed1cfd72f4dde559778a466b3208b7c77f9e6a0afae89cab9",
+      "targetHash": "a00c24734191faf7af857afbe0c05fa4329dde16fa71837a8eaafdb0f16cc3e8"
+    },
+    "useCases.items.1.id": {
+      "sourceHash": "a77af60148d692efa3afbb17ce4fb77c703bd201dbc51fcc5f02a5a3ef12d12b",
+      "targetHash": "a77af60148d692efa3afbb17ce4fb77c703bd201dbc51fcc5f02a5a3ef12d12b"
+    },
+    "useCases.items.1.leftTitle": {
+      "sourceHash": "47fb6ad0f013f031c05405e27b71d2744e0552470d146d3b73ae3b3f45559ab0",
+      "targetHash": "057e2b075a729692235cd0a9c2ed4efe10f5eb550dd1202a61d6559fcf8bc408"
+    },
+    "useCases.items.1.leftDescription": {
+      "sourceHash": "6d6b7fcb2cbcd15d43959f47931071afc48514a6b23dc614316f524512360382",
+      "targetHash": "7dd53f1f3c2cfcadf16a9ec749594e47d4ea2684737a974d2d52c2ed26ce34d1"
+    },
+    "useCases.items.1.rightTitle": {
+      "sourceHash": "72bcfa44e970e79c2ce4397b8e6e200a9421fc4c4c7db63e037b1ef3ebc27743",
+      "targetHash": "e43390ff13897a5609baa9f1175e8d2d4d43c88b6ea151784caf54ebdfdb2ec6"
+    },
+    "useCases.items.1.rightDescription": {
+      "sourceHash": "a63311f893b0cd55c2b67c3775cca556dfa9e019d9eaa931a686bd932cd75999",
+      "targetHash": "084382dce86eb85854ded6c021b16c382c0f4375b5130d091b801b8a86201daa"
+    },
+    "useCases.items.1.placeholderLabel": {
+      "sourceHash": "e7476b63034d4affab8e5414de3522b55878308dd40e70d191f4fc8d5d496098",
+      "targetHash": "a45c0f9df33f21d5db6ae30a672fb34269d1f4baed20b4cef84144caf66dfcbf"
+    },
+    "useCases.items.2.id": {
+      "sourceHash": "7fcb0b9fad157d967c96e9d0d8caec644d7b75d0754894d55e60caa13087645a",
+      "targetHash": "7fcb0b9fad157d967c96e9d0d8caec644d7b75d0754894d55e60caa13087645a"
+    },
+    "useCases.items.2.leftTitle": {
+      "sourceHash": "44e12c4b94752ddc85464d90d5fb751b1a999611cca60b0ed781ca69fca57156",
+      "targetHash": "33b1618d6cb2fe773601d540c86d3c36f0e74a28af7d76d282a188fd183eaea7"
+    },
+    "useCases.items.2.leftDescription": {
+      "sourceHash": "8674ed432f989967118260c899777d405d89f8be44dc3e9a7a3ac7f195576fa1",
+      "targetHash": "ea875c9cbf518f1755e8f73c42167681beaa94de8d15fc9fc24ef2cb1f04ca41"
+    },
+    "useCases.items.2.rightTitle": {
+      "sourceHash": "824e13d32141657226b02f85d2357262b38f6dede32097940c19e6a9f2923297",
+      "targetHash": "c2c58968baadbd05ef43c7089d2fffb150350948845d71b255102a4edcd8b322"
+    },
+    "useCases.items.2.rightDescription": {
+      "sourceHash": "67c6f988690bbd6a8f77faf4ac7666da8691000d50576ca9f9d43251c536e514",
+      "targetHash": "526e90da91838c2a1c8b4574b76999eaa6e167fde189165f4da92dc05e3cc031"
+    },
+    "useCases.items.2.placeholderLabel": {
+      "sourceHash": "f75aa6702da55fd02f682ba97b2e88bda29dbef23dd430b5b398b526f6dcd9a5",
+      "targetHash": "308d192cb9dbc430dc9ed9062b323236d1adcf324e2ebc56095c847721770667"
+    },
+    "contact.heading": {
+      "sourceHash": "30603bd9e7668cfad44606e51236409398ee5a707c2900fc32db30ab649cfa44",
+      "targetHash": "4f4afccc2ce0c5453878f503656ac1369bf80391a9eed34a66a1b8c8b5372088"
+    },
+    "contact.mobileFirstLine": {
+      "sourceHash": "69a3195e8cbd1ea4ecb368994932dc3950f302829a83eb3d047f1216bbb18b67",
+      "targetHash": "0d88c055a61c8a3133bee82c89a3b93636f26eaccc7044fc18411a97bec969bb"
+    },
+    "contact.mobileSecondLine": {
+      "sourceHash": "9b56e4110235bc238cdef4fd8ad1a705fba9a19af1c1bacac300b93399359084",
+      "targetHash": "362042e7d95204df84edaa270d36d7177ac2388fd03aa05c4e193b70f0a050ab"
+    },
+    "contact.highlightedTerms.0": {
+      "sourceHash": "686f746a95b6f836d7d70567c302c3f9ebb5ee0def3d1220ee9d4e9f34f5e131",
+      "targetHash": "92ba6a08c085436a548e7e47c688385e4008471a841a1e09b80ca1b834951496"
+    },
+    "contact.highlightedTerms.1": {
+      "sourceHash": "54d626e08c1c802b305dad30b7e54a82f102390cc92c7d4db112048935236e9c",
+      "targetHash": "54d626e08c1c802b305dad30b7e54a82f102390cc92c7d4db112048935236e9c"
+    },
+    "contact.title": {
+      "sourceHash": "98b67063cf8e584d75e53b88472ee85473e01e0ea16f29ece9cc98f4a2710494",
+      "targetHash": "c1f51c3d5260fb776c498b921c2cd6e21c331f851dff214908b2cb946113ab2a"
+    },
+    "contact.name": {
+      "sourceHash": "dcd1d5223f73b3a965c07e3ff5dbee3eedcfedb806686a05b9b3868a2c3d6d50",
+      "targetHash": "1da7e9372e2f45a27895aaa5f6bd05d1197c3b857ffa522fd01edb44efee0547"
+    },
+    "contact.namePlaceholder": {
+      "sourceHash": "2c6b2e253c01fb2ed7209c15766745ccee92a35ac8209f544789bdf9500e0944",
+      "targetHash": "429db4c662c34c5d2d9ae99074977ff974ce61dba7b2ce36cd27af3ea19957be"
+    },
+    "contact.email": {
+      "sourceHash": "969ccbd3cf6300ecd5c880459d81ae9027df7517563184a1b8b15282db230621",
+      "targetHash": "9738aeca24273360db1618eebd63d164960234d5d5f50c51e6336b7b1502c8d3"
+    },
+    "contact.emailPlaceholder": {
+      "sourceHash": "53e6cdc30765aade0129f85e5aeb50124b1d3f5bb9a70373be31e4eb328371e0",
+      "targetHash": "53e6cdc30765aade0129f85e5aeb50124b1d3f5bb9a70373be31e4eb328371e0"
+    },
+    "contact.message": {
+      "sourceHash": "2f77668a9dfbf8d5848b9eeb4a7145ca94c6ed9236e4a773f6dcafa5132b2f91",
+      "targetHash": "3e0ccd92fa15959c56fa51459a589a3a875291ed395bef4b4e3c583be86da5cd"
+    },
+    "contact.messagePlaceholder": {
+      "sourceHash": "59a905be85eadffd568395be3e4070a57f7188ad0e49e27f257486036b695ad5",
+      "targetHash": "c09bf7ce9008eacdeabad58b149d82e751db39583ded65922702d2cb0996f496"
+    },
+    "contact.wordsLeft": {
+      "sourceHash": "9fe35a629d0f8fe44957db7323fac88672a58f6d9af080902231a625fe8c8b31",
+      "targetHash": "f3db1537ff2f2acc2cd0f4690da7d17d3fbd615b44a421ee26ea7191857b3c26"
+    },
+    "contact.send": {
+      "sourceHash": "0fe0571facd9435c5b1dade499a4246b063c763b2b269c977cfa67fe166eebf9",
+      "targetHash": "c7557b58f1aad3561d07bfeb4473f30dcf15c0e4244fe26dbdf8a1d493ef55bd"
+    },
+    "contact.sending": {
+      "sourceHash": "286a3af7348e83123a2525936b12ff839504effef55b21c921edbb179247b523",
+      "targetHash": "8192855bc55af2fba5fd6a568f97d18bea2d72a5bfe9acaae2f0c47c116b0c8c"
+    },
+    "contact.requiredError": {
+      "sourceHash": "ad6acdb3e33d33bf158d311beac18733e871ac04a2596924864b1331f0bc17d9",
+      "targetHash": "0823c1366942f68c489c2db7f8750c2cf747da81f9952e8615e82b9e1328f810"
+    },
+    "contact.invalidFieldError": {
+      "sourceHash": "b5497d43dc0233e0a6139bc1222210e5d2e7a5cf94b3c0a51a62683c8b9792d8",
+      "targetHash": "1304580edb3d97ac4d1a8a58fc777e29d1fb3d17e7add3bfffb42a0bb34709a5"
+    },
+    "contact.invalidEmailError": {
+      "sourceHash": "958e4ccf2953d7470be4931035b3f6cb762f04d6bac8060e428412af3c904c40",
+      "targetHash": "efc5f964952480ad001cbcba5f1b38729fe69c13a0a974ffedfc56bbc0611310"
+    },
+    "contact.tooLongError": {
+      "sourceHash": "1b59c783e3b662ec4faebac88354f4b0a6406604fdcb42a4a5209ef1024a408b",
+      "targetHash": "e7b622effdf1b4ea299d06b1b8d2eb76035bda7d274ef7dd0ea25e5daf67b1d0"
+    },
+    "contact.rateLimitError": {
+      "sourceHash": "797b0c31fee4c4cf6b647d33d1d7464c97c1bd6f55eaef098c8d465cac14f058",
+      "targetHash": "9971489e106539adb5a56bf21cb2cc1c66f3ba8323b73ee1c8da0aa6fe6474c2"
+    },
+    "contact.sendError": {
+      "sourceHash": "ac54ac7157eb6e63355f839af56499d0219214a77e1d3119665c7de816692394",
+      "targetHash": "3bced50de80a60a745b6a41e94e9cf1ae2c84f64111b96370a347399cd096ed5"
+    },
+    "contact.successMessage": {
+      "sourceHash": "4ee599ea405ced1aec0216c4c8d205244790e3e1633e9da1487771be8d107135",
+      "targetHash": "5ff36666a6eca9d3ca9ce3829ec3b06197b2965167db4f35a1207af7594f3700"
+    },
+    "contact.emailInvalidHint": {
+      "sourceHash": "f180af6a9eb33e18db2edf095a31291ff2245be203b6457b8662719d65ba4476",
+      "targetHash": "03608ce9e21976c4766f237187dc3277a17aab4b3101d4083844a6eb809d1a5a"
+    },
+    "contact.emailValidHint": {
+      "sourceHash": "11f138594e8e0d1feabf1d542171c3804ab2758a19c8de49af22420dd4ece818",
+      "targetHash": "cdf28088c04d1a3cff1010fc8e31285fc6e837238a0a3674919b9c1d949ed9b0"
+    },
+    "footer.descriptionLines.0": {
+      "sourceHash": "4033f0e4498c812504b427cf0e41caa262df54d04ffe17409d9bc641a9339588",
+      "targetHash": "6998bf239b1ad586b4c0c53cfc4d2c6c296754282466a0b245f3d4528f3ad28d"
+    },
+    "footer.descriptionLines.1": {
+      "sourceHash": "8ce2a4594051846aa2615a51f1552bd9b56d6bf72d271b92514ed1f4ff16ef1f",
+      "targetHash": "fb09c3d885ecac034f0a3815798f920a38af57b4faa029cb246e94ff354b7a68"
+    },
+    "footer.cta": {
+      "sourceHash": "285c35e673c7ed97996e21a28900a924828787cbc13c1a3a2eb2ebf76e492fc1",
+      "targetHash": "50046f5ac6588b91897bca75c54a31886914b219de24d244a84247614cfed4fe"
+    },
+    "footer.explore": {
+      "sourceHash": "3b73900b8d29f963dece78edd4bd9529d855e50f2a3fcc39b3d66cd657630905",
+      "targetHash": "6eb0092c8df2a4c308fb292d30d34e1a7caefffd612098d38a0e592474e588b5"
+    },
+    "footer.account": {
+      "sourceHash": "7e1b0d5641f2640ce9a953ec231eea2c27a2a7633f7d3c273e5735e2b30c10b7",
+      "targetHash": "769c3ccb146957bf01060568a8cbcf801aac6b6f5e59633401b8395e54ee22f4"
+    },
+    "footer.preferences": {
+      "sourceHash": "66962f72a08883733c35df6f82a049b929f9579f19c4bc083ac99bead602eab3",
+      "targetHash": "985b5e0f2ccf1ba08ac53253af32d2e9a600b846d3f3b99978f28d177388b9fa"
+    },
+    "footer.home": {
+      "sourceHash": "3a78695388b38b5cceefaf6796b0137877514593543b91af2752d5a17e3d736c",
+      "targetHash": "d328e53dc4561e099c85d45d26fea5d20aac5ffc2b949a0388eb794e30db40cb"
+    },
+    "footer.features": {
+      "sourceHash": "5697d03daef4de9cf8db7cb11755f71358a32b4acca94909a9d449f71040d2dd",
+      "targetHash": "01cd89a2084dd4e7f4fd7dc8b136502b81bdc311713a528166b873d1968af22c"
+    },
+    "footer.blog": {
+      "sourceHash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "targetHash": "c31cdbd07e6cc3a2d6686bd342dc144f273e82226b5c17b60037114524adcdaf"
+    },
+    "footer.contact": {
+      "sourceHash": "2b5c3d26721ae9c350cf3009318b626f0fc8a90b4a2ac0ca8099c05aa849282e",
+      "targetHash": "5bc9a8a2e214064999744904bddd9dc8a6cca02f7905451f9fc33ad97d3fecf5"
+    },
+    "footer.pricing": {
+      "sourceHash": "dfe95783edfef7918760312f94edd764f4ce3ffd38b90c2c955a0cc3b250f040",
+      "targetHash": "342dcbd35b70c1faef85be8dabd88ba7814ab0529c5d38bbbcf16ea814bda3da"
+    },
+    "footer.goToApp": {
+      "sourceHash": "f7051718a102f06568373b309c53f150e2adfe95c54b7ad93c89b0aa5465b085",
+      "targetHash": "da94adfe4cea67082de5cfb90350b69a7ba2559cf84fd0d285b683c26b0e90c2"
+    },
+    "footer.getSocraticPlus": {
+      "sourceHash": "dab300240bffd464772c701fc798a90b7496bd9e6ee7c4ea49ce8aa189f53c2d",
+      "targetHash": "421d63dce6e2429c50699e07ad68f0eddb21b5e9742a0c854b10fe92eeac3ed0"
+    },
+    "footer.signUp": {
+      "sourceHash": "47de23586e49d83300bafc4feec21bfc1483d728d12bb000e99c31283206f2ce",
+      "targetHash": "6629491d4d2233255ad34ea1e40ef6896f388ce3fb94cfc56c08ee5fde6dbc5c"
+    },
+    "footer.signIn": {
+      "sourceHash": "bcc0bcc9140b0c97a6440ce56966a07a05e85bddd509ddc5e2ab98755f319af1",
+      "targetHash": "8fc9ab2eeb38ad7a5ee16c668e0b80d52041249411f886b28981e93ff32d52b9"
+    },
+    "footer.manageSubscription": {
+      "sourceHash": "cbc4ef9225a090f71dabb59517f0c2c23bc9670bcd8f54a45f1d1f752616708c",
+      "targetHash": "f3c069e0b6cddeb68a863fcc1db18279e5a484cd4f546670caaced8ac4b721dc"
+    },
+    "footer.privacyPolicy": {
+      "sourceHash": "506ff394621596dd88138642eddfc1e41833b3ae92d95e5c77c94327098abd9a",
+      "targetHash": "3ba8eaa5d624cefb4e4d3f6944683486dd44b0eb39ac7659f9c0db49f6560d75"
+    },
+    "footer.terms": {
+      "sourceHash": "173f5f9f26b455922e092b9d5ec237ec4aeccd07547dac7a16af5fce9fed7ba8",
+      "targetHash": "588628e5e5f3c2c2b0dc465ccc49e0f386d3f6a317381b77436a7b4eb51b3758"
+    },
+    "footer.cookiePolicy": {
+      "sourceHash": "ee290b3ddbc8e7e90bd0028e8315a02570ee24d83cc8b0c14f860146bb24fd80",
+      "targetHash": "bb6792b3038cfaaeff7e2e3257e1d5d1e5dc34b962271be5dcb624c00e8b69d5"
+    },
+    "footer.consentPreferences": {
+      "sourceHash": "c4dd4366be4e54a9ce83312aefcb62450f92d2e54d6d75eac1284d57f1f15e3a",
+      "targetHash": "d7cd18c79726dcaf9c22eaa811503ec23888aaad563bef208699940196418333"
+    },
+    "footer.allRightsReserved": {
+      "sourceHash": "21f29224bb655170d51b49b23015b779434d5540dc2825f5adf9a2bbc131b5f5",
+      "targetHash": "ac1d69d4619e59926c389d32369d07e547ac2d7ef3c79a60984349c8051a3d51"
+    },
+    "standalone.headline": {
+      "sourceHash": "75d10aa067e3871a901b5fc9819438cf9c8e7e38c89b95d50475d6b683c42f91",
+      "targetHash": "c4bd035ccfbdbe2c9f6aa901b66ba47d74caae4d0b465b804e7fa3090a4ce895"
+    },
+    "standalone.body": {
+      "sourceHash": "c74163c45ccad9915b91ff0c89a2cc1208cc231055c3c97590261bc64922a7f6",
+      "targetHash": "df81cd1eb42d852366b7721a74ec50729ac51505163b82afc120f6e28da6b104"
+    },
+    "standalone.createAccount": {
+      "sourceHash": "0dffe234b44793b6158e663740fc9cf1b45738bce4be453244c96e056e6207c3",
+      "targetHash": "0efafd8f61ab9afde8fbf4d1ed78f76350cd10ccf6142bf8ae3d581c6d207225"
+    },
+    "standalone.login": {
+      "sourceHash": "9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94",
+      "targetHash": "8fc9ab2eeb38ad7a5ee16c668e0b80d52041249411f886b28981e93ff32d52b9"
+    },
+    "standalone.imageAlt": {
+      "sourceHash": "0a1686181617ba01b73aa531bd6cd0c088a9fa5af76e93e483b37c13a9e47d52",
+      "targetHash": "f153a021bb1e6f25bd3f95487d7a0f8b63fcd3ed9b0be5d26ba5fe69f99cfbd8"
+    }
+  },
+  "ar": {
+    "metadata.title": {
+      "sourceHash": "12055590570876f0a3c2a6fb9a0ec48a9d9c8c6c95a2afe5979b20265a57f076",
+      "targetHash": "eb949b1ac556ebc03d07f2bc64ba6d2b2bab8fbbaf84cb6d30fba26aad678678"
+    },
+    "metadata.description": {
+      "sourceHash": "9054675c756d50bb2b3ef0a6ca06ff8279c89b0b503f10455db8a9b55491523e",
+      "targetHash": "003ff5df10ee0301d3fa83e81b8a8088f862367837db263c7d7fa42a7d88e420"
+    },
+    "metadata.ogAlt": {
+      "sourceHash": "5207bc3337e9069f07da6a058caf6622cc33201a38b479ec145c0feff2ce434e",
+      "targetHash": "cf1cef13e7e9f042e4a3a69d8c53d485a64c4a472f8b54c9a488dbc8d6383dc2"
+    },
+    "nav.home": {
+      "sourceHash": "3a78695388b38b5cceefaf6796b0137877514593543b91af2752d5a17e3d736c",
+      "targetHash": "bfcf48307970f45a81bec841cac2eaeb3a5f6e2966bc8a6bdb84b61b0f88b88b"
+    },
+    "nav.features": {
+      "sourceHash": "5697d03daef4de9cf8db7cb11755f71358a32b4acca94909a9d449f71040d2dd",
+      "targetHash": "0542daa7d982ff8aafce1d34442027921aac38313991f17ed0ee75fc646cd0d3"
+    },
+    "nav.pricing": {
+      "sourceHash": "dfe95783edfef7918760312f94edd764f4ce3ffd38b90c2c955a0cc3b250f040",
+      "targetHash": "540ecf1b863cc72ab449ea9ca38a129a25eb14e1a0e03dfba40e8db05a8513a7"
+    },
+    "nav.blog": {
+      "sourceHash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "targetHash": "c56501139dae912714f5c87363938d4974128201c778c1c70af70c9054341f70"
+    },
+    "nav.contact": {
+      "sourceHash": "2b5c3d26721ae9c350cf3009318b626f0fc8a90b4a2ac0ca8099c05aa849282e",
+      "targetHash": "285a4700edd4eaabbc86bae9d097cb6563335fcc0c464f4c5f73aa706d93c489"
+    },
+    "nav.openApp": {
+      "sourceHash": "9a1b5b70fb7fcb0dca7a4c779607583af026973502350e7ad3ed9b61cf61339d",
+      "targetHash": "bab8ca02553bed209b1121399577ad69387e8d5a42ebba5868e1005e3f8b73a2"
+    },
+    "nav.language": {
+      "sourceHash": "a4fe65264ef7dbb38d104b1e81eb3350f3142f3d16f32bdec39b1d9b42c1b8d1",
+      "targetHash": "6520b21edd4d2913932c5199cd995ad12154aa6baab1ef44a8b70b6b6f0207bd"
+    },
+    "nav.menuTagline": {
+      "sourceHash": "f1eca61622a46e269a5423e72452009c87e4b56aa7e9ef207c74f5cef2911d4d",
+      "targetHash": "60d88c1434900ed04fe3be6d6e102e0d18f428ea953f276c34f0f91008f255bd"
+    },
+    "hero.srOnly": {
+      "sourceHash": "71b3cfe97823bc7329292f3f8891a43d05164e17239c3d98add594794c0fa015",
+      "targetHash": "14f64c62b4832b9a5baff94b7b7916035200da72cb19b9d51c5581aabca6b317"
+    },
+    "hero.headlinePrefix": {
+      "sourceHash": "36b0609f0412509d659bc3b0ebd37b2e9495cf3bddd3f16eba21b3c08f09f085",
+      "targetHash": "1f7939367079cc8ec40b5662a0fc2e8becc09b04d76150128fa80362a14efb5c"
+    },
+    "hero.words.0": {
+      "sourceHash": "7f3d81eb0817c1bf0e04af5bc5888c49fc70fb1f11190b307c81a05f8ced39c2",
+      "targetHash": "c06187a192a3f123da11f626cbd08def1f8bb80e7a7407077d54cf11c7018e00"
+    },
+    "hero.words.1": {
+      "sourceHash": "bb583d76295fcffc89f90c686f47a08234c172d9f30e7f199055d5c583abf43b",
+      "targetHash": "138c9ff166da7828e35cd8d36a31d8e66e1bdaa74f466768911c0dc42c8f5ff9"
+    },
+    "hero.words.2": {
+      "sourceHash": "834459084c92274c56c465ca9ced3c595a01a74dc85f6b5b63151b741f882521",
+      "targetHash": "a9e8ab80c09ac6b060898b4dd986422ad9a96a398f236f9a600163b50cd014ba"
+    },
+    "hero.words.3": {
+      "sourceHash": "66b06e996553a4e70d0f3a5a50c6b6877d23fb448cad524fef307399ebe36d5e",
+      "targetHash": "49a91b16599221b30ac1ce7152ebc1ec7de682b260fa8e6054570274e4cb72c6"
+    },
+    "hero.signedOutCta": {
+      "sourceHash": "c2726fa6337b13d44a5d31abc3b7a356f4da68d45ea6a409a9c5cb24461513b0",
+      "targetHash": "025b5aa09356fd432373250bc88234a3da15f13fb4cc789be473faba13487c05"
+    },
+    "hero.signedInCta": {
+      "sourceHash": "446b999de6d8ac55fa88f4c7b67fecc47bf8f24039e310532ca411dfe6118d3f",
+      "targetHash": "6580227a61415509ffdfe0dc7b6606552c1d5d7ea6214ff57b43517242ca1f97"
+    },
+    "hero.mobileImageAlt": {
+      "sourceHash": "9f73d310e19079f0fe15ff03f9f77a3161cb6f2b17ee51d9b1008e7444075a2d",
+      "targetHash": "099bbe5b1fea8a556a190763b8a42aa8a986099bbf7ba56e7b8f0d265b207ee8"
+    },
+    "hero.desktopImageAlt": {
+      "sourceHash": "9f73d310e19079f0fe15ff03f9f77a3161cb6f2b17ee51d9b1008e7444075a2d",
+      "targetHash": "099bbe5b1fea8a556a190763b8a42aa8a986099bbf7ba56e7b8f0d265b207ee8"
+    },
+    "features.headingSubject": {
+      "sourceHash": "7f3d81eb0817c1bf0e04af5bc5888c49fc70fb1f11190b307c81a05f8ced39c2",
+      "targetHash": "c06187a192a3f123da11f626cbd08def1f8bb80e7a7407077d54cf11c7018e00"
+    },
+    "features.headingText": {
+      "sourceHash": "b86794902f06f80db7abbfc1f064eba6c3cf80dd8b7ea0c66955bd5babbfe4a1",
+      "targetHash": "740be8444debef4dcd4454fa4756222960ad50bc1c75becc7c5e6a2fec268154"
+    },
+    "features.highlightedTerms.0": {
+      "sourceHash": "e9cdbd4dd56c72ee4be54e807000aed933a32ee8f6732ffa276def48d08d097d",
+      "targetHash": "5b84cfb2d7963d4af1384383759f5e43af1c3e996a7e46961acef902c0001998"
+    },
+    "features.highlightedTerms.1": {
+      "sourceHash": "7f3d81eb0817c1bf0e04af5bc5888c49fc70fb1f11190b307c81a05f8ced39c2",
+      "targetHash": "00e836560487320ac59511cee9539ddb865de74cc2ca786d46b14139e3ceea2a"
+    },
+    "features.cards.0.id": {
+      "sourceHash": "8fd83e0fb38f03a5f465b6e351bd25bb128f77a778f47cca11e69d909ea213ee",
+      "targetHash": "8fd83e0fb38f03a5f465b6e351bd25bb128f77a778f47cca11e69d909ea213ee"
+    },
+    "features.cards.0.title": {
+      "sourceHash": "cd68d1c30fed620cd60f51e217fd7bb8751136093c02aacd93c6105cc3e1c471",
+      "targetHash": "6fe608ffa61c416d42da801b295c318ec40e0a5429f79a2750c06b14b58ebeb2"
+    },
+    "features.cards.0.description": {
+      "sourceHash": "ce31a6f2e2b7c5cae455d23552d9fbe8511c407b84e10c319fdb5a8d9a5f384b",
+      "targetHash": "7502c5daa5312fef762122e5820105b2e4ab6bde0b7e177d0ef4a77da306b20f"
+    },
+    "features.cards.1.id": {
+      "sourceHash": "6b17b8fcc411a533c822a5117e33cf73fa6766739d7d36ac86dc4bea883af4fe",
+      "targetHash": "6b17b8fcc411a533c822a5117e33cf73fa6766739d7d36ac86dc4bea883af4fe"
+    },
+    "features.cards.1.title": {
+      "sourceHash": "42b8ba95a1c5a00d758ca41b39624a3abb11a4e0472dd71ccd52233a1d16c068",
+      "targetHash": "6f720046098b61c3c7bfcafd25a3722229135ad06a2e81e024a832325221b5a4"
+    },
+    "features.cards.1.description": {
+      "sourceHash": "4150ffaaeeffc9919f48270fc42e3d03389af6e68e263054adec9913b4b168d3",
+      "targetHash": "308a542d0ea712b3488e2e07d9e42f73b90d94ab737a1b0c88e46a6cb5cf720b"
+    },
+    "features.cards.2.id": {
+      "sourceHash": "9aea04762b1e3fab20ee098b7d044529dcfa1f05790d2e33e9a69d8dad3c4f6b",
+      "targetHash": "9aea04762b1e3fab20ee098b7d044529dcfa1f05790d2e33e9a69d8dad3c4f6b"
+    },
+    "features.cards.2.title": {
+      "sourceHash": "deb6daf074faf1bc370eda69bcd7d68341de7120ce94e5c70d12ba59279888f2",
+      "targetHash": "8fa8785857226b9e9eebfd1a258d4b9136747fa2d765da0db42a1a1e3fc468f2"
+    },
+    "features.cards.2.description": {
+      "sourceHash": "32dc59e7a4d51216f32b0498db9e5dbbd8711478cbf33aada81374cf79283d3d",
+      "targetHash": "c4f65756af1d4f0da57f45e4735172ed571852e01a6e4209d6a54ca7a02a1ec3"
+    },
+    "features.cards.3.id": {
+      "sourceHash": "261b152862d1d614014496a635018719d34bb3965c5bd7a9f7bbebc7cd8b8696",
+      "targetHash": "261b152862d1d614014496a635018719d34bb3965c5bd7a9f7bbebc7cd8b8696"
+    },
+    "features.cards.3.title": {
+      "sourceHash": "aa1943e872d3c1991c96be4da9ed4fdcd912a6f32f1d6a8adf0b37aad5aefe1d",
+      "targetHash": "d16aca96b87432a04d08654a803e583fad37ca087a98840435ee6c14cf12f420"
+    },
+    "features.cards.3.description": {
+      "sourceHash": "28eb8fc33542689917787b09eab2276c41d8c85a807c106cec70324543337668",
+      "targetHash": "0cccae12aedfa8d73ec7840d8c7d8c09c22b140bdee921ef7f5ece7ed287af0e"
+    },
+    "security.message": {
+      "sourceHash": "07da8785bcc31c7cbf4ac9f0b4decf64bf5097a8589614eebf22e12a437b9103",
+      "targetHash": "f98bd1d6770e17271b36d682ccc5488609d60b6b882724489ccd25f5a4dde18e"
+    },
+    "security.highlightedTerm": {
+      "sourceHash": "715dc8493c36579a5b116995100f635e3572fdf8703e708ef1a08d943b36774e",
+      "targetHash": "344aa3d40d9cbfada7d24fa68d293ce54c9219ba0a6d7c53c6b2a99c7210d00a"
+    },
+    "security.ariaLabel": {
+      "sourceHash": "4e9f7ab1a97495f937de62bc658d03b59e3df295473ac46a93cb1060660412a8",
+      "targetHash": "ab26b94c0a1e86afcf2a3f550affe38f628f6fb396f798d3a66937c0d4f19a9d"
+    },
+    "useCases.headingText": {
+      "sourceHash": "505bcbf57ccb62e55b080ff89d91bc023fa2a089374853d0b56c9c684d24c60d",
+      "targetHash": "ab1e19aea672da0b6360ef39499a70810993a99305a9dbac97cfc70cec650a69"
+    },
+    "useCases.mobileFirstLine": {
+      "sourceHash": "58f7ebf6ddc81ee2342460f45a5fc7ab6a121aaf5647a431ca6d67f70f221109",
+      "targetHash": "c73dc47b182084a0b269c666e7e9f8523ff2e884230672c4ed10dc172a5eb6b1"
+    },
+    "useCases.mobileSecondLine": {
+      "sourceHash": "37f593aed777c829a5a33d873e7c8dddf8c54c8cea80c2cc46e1d7e355d9c9b5",
+      "targetHash": "07f9f80fe6ec593e2e5ac13eebb6c656c21d65ebed94adf5cd3db11d3297c6d3"
+    },
+    "useCases.highlightedWord": {
+      "sourceHash": "adf7aba3a5acd9e631511f0e2559b934bb96233ca5829168d51cff845cc5c76c",
+      "targetHash": "7e65eb530273ded4f693e7e479245766b07c80e403a3ce3c4ce1750372964f05"
+    },
+    "useCases.items.0.id": {
+      "sourceHash": "ededcb9a82889d23ea28dbca2cbea4cb8ae7e867c7aa3b8b7046ea221f64656a",
+      "targetHash": "ededcb9a82889d23ea28dbca2cbea4cb8ae7e867c7aa3b8b7046ea221f64656a"
+    },
+    "useCases.items.0.leftTitle": {
+      "sourceHash": "e4b4b97befdcc810768c14a4fd490a9bfe90dbdd06f6e1b3fff6dd9bfcc2a2d5",
+      "targetHash": "72c0185b8dcccc6b5a62e34318a0edda209b3c4049be337b1388d7eb40dddc4b"
+    },
+    "useCases.items.0.leftDescription": {
+      "sourceHash": "8edf066a2e65b732680333adef490f4a43fe570867fc056fc16956b33ef0122a",
+      "targetHash": "81e85c40ce689c981589a8d386d22bb2767852a55e7c57db95cfdfb085cd6278"
+    },
+    "useCases.items.0.rightTitle": {
+      "sourceHash": "78236ea421ae54c02dffb3c545a7563552d891f15b99c743928d2138d3cee5e5",
+      "targetHash": "1c5a7c375ea07da6e41c1eb72ba265515420f88ec8d8ec657147af4f96d41abe"
+    },
+    "useCases.items.0.rightDescription": {
+      "sourceHash": "af1b15632c59ab92a1c14bf5236997ae0cd1ab9af2b24ee7916a77a195a4572d",
+      "targetHash": "f59781770fc00da8437434515dba0cf899f9dec9382e21f32b650b9a044cacff"
+    },
+    "useCases.items.0.placeholderLabel": {
+      "sourceHash": "cf080ee6f6a9d45ed1cfd72f4dde559778a466b3208b7c77f9e6a0afae89cab9",
+      "targetHash": "53ec7932cd0843089e9b4345468908996e59fcb4aff2a88b1772a9bdd73fe929"
+    },
+    "useCases.items.1.id": {
+      "sourceHash": "a77af60148d692efa3afbb17ce4fb77c703bd201dbc51fcc5f02a5a3ef12d12b",
+      "targetHash": "a77af60148d692efa3afbb17ce4fb77c703bd201dbc51fcc5f02a5a3ef12d12b"
+    },
+    "useCases.items.1.leftTitle": {
+      "sourceHash": "47fb6ad0f013f031c05405e27b71d2744e0552470d146d3b73ae3b3f45559ab0",
+      "targetHash": "1f94a1b9f15b6d4669eedebcdc5247492aeb8a95a1e7dd1f4ba834e63c4df87b"
+    },
+    "useCases.items.1.leftDescription": {
+      "sourceHash": "6d6b7fcb2cbcd15d43959f47931071afc48514a6b23dc614316f524512360382",
+      "targetHash": "ed54a2a5d43e40caff89facb2d2e0ab308b19dc09ea257a3613fe92cc8a5c840"
+    },
+    "useCases.items.1.rightTitle": {
+      "sourceHash": "72bcfa44e970e79c2ce4397b8e6e200a9421fc4c4c7db63e037b1ef3ebc27743",
+      "targetHash": "fc726dca465bb50fb97d96518cf23874d9efe5a05ff4ea9e913f6ace588cee85"
+    },
+    "useCases.items.1.rightDescription": {
+      "sourceHash": "a63311f893b0cd55c2b67c3775cca556dfa9e019d9eaa931a686bd932cd75999",
+      "targetHash": "c09b18decfbb05e0f4eb4d12ca8a9c7b992b0486ba3ab1f2a4841d684f92235e"
+    },
+    "useCases.items.1.placeholderLabel": {
+      "sourceHash": "e7476b63034d4affab8e5414de3522b55878308dd40e70d191f4fc8d5d496098",
+      "targetHash": "e33e92d42f56461968c43ebc128cd506dd0b1ad468fc8ae072ab357e6b7468a4"
+    },
+    "useCases.items.2.id": {
+      "sourceHash": "7fcb0b9fad157d967c96e9d0d8caec644d7b75d0754894d55e60caa13087645a",
+      "targetHash": "7fcb0b9fad157d967c96e9d0d8caec644d7b75d0754894d55e60caa13087645a"
+    },
+    "useCases.items.2.leftTitle": {
+      "sourceHash": "44e12c4b94752ddc85464d90d5fb751b1a999611cca60b0ed781ca69fca57156",
+      "targetHash": "2bd2122f134cf520cbff94b503feb235219786bd3b3c7752abd3c14b32bb6edc"
+    },
+    "useCases.items.2.leftDescription": {
+      "sourceHash": "8674ed432f989967118260c899777d405d89f8be44dc3e9a7a3ac7f195576fa1",
+      "targetHash": "e891c386643e31264e67be02c594b26b61e0f3d26db73651f627774559d8846e"
+    },
+    "useCases.items.2.rightTitle": {
+      "sourceHash": "824e13d32141657226b02f85d2357262b38f6dede32097940c19e6a9f2923297",
+      "targetHash": "16e943ff41171da10a3082d5c8e0f57389d63a68eddefd5d154df06ee6290302"
+    },
+    "useCases.items.2.rightDescription": {
+      "sourceHash": "67c6f988690bbd6a8f77faf4ac7666da8691000d50576ca9f9d43251c536e514",
+      "targetHash": "8f5960873d9e644318ad0287760ec0069b36cd98a59daebf0af3f6c4cf4a92da"
+    },
+    "useCases.items.2.placeholderLabel": {
+      "sourceHash": "f75aa6702da55fd02f682ba97b2e88bda29dbef23dd430b5b398b526f6dcd9a5",
+      "targetHash": "2cb36408153a1f01894b9a1404643d441e557c0e7e657ec8110077fae8e66fcf"
+    },
+    "contact.heading": {
+      "sourceHash": "30603bd9e7668cfad44606e51236409398ee5a707c2900fc32db30ab649cfa44",
+      "targetHash": "fa6ea9dd4cf824176c28c5534f5fe409a529ae1da8f97b975c26079fef58e3ea"
+    },
+    "contact.mobileFirstLine": {
+      "sourceHash": "69a3195e8cbd1ea4ecb368994932dc3950f302829a83eb3d047f1216bbb18b67",
+      "targetHash": "6d2796625421b5b93f4ff8374ba4047edbfbb65c2af00fe4e599cc9bebdd7092"
+    },
+    "contact.mobileSecondLine": {
+      "sourceHash": "9b56e4110235bc238cdef4fd8ad1a705fba9a19af1c1bacac300b93399359084",
+      "targetHash": "50439a38519ac46aacab43e54e1efa6e566f653e0fe2c0fdd9e279a910d861c3"
+    },
+    "contact.highlightedTerms.0": {
+      "sourceHash": "686f746a95b6f836d7d70567c302c3f9ebb5ee0def3d1220ee9d4e9f34f5e131",
+      "targetHash": "dd905fd6a154dc3926124b02657619aacba674327361cb75ba1f8796e2a4fabf"
+    },
+    "contact.highlightedTerms.1": {
+      "sourceHash": "54d626e08c1c802b305dad30b7e54a82f102390cc92c7d4db112048935236e9c",
+      "targetHash": "54d626e08c1c802b305dad30b7e54a82f102390cc92c7d4db112048935236e9c"
+    },
+    "contact.title": {
+      "sourceHash": "98b67063cf8e584d75e53b88472ee85473e01e0ea16f29ece9cc98f4a2710494",
+      "targetHash": "285a4700edd4eaabbc86bae9d097cb6563335fcc0c464f4c5f73aa706d93c489"
+    },
+    "contact.name": {
+      "sourceHash": "dcd1d5223f73b3a965c07e3ff5dbee3eedcfedb806686a05b9b3868a2c3d6d50",
+      "targetHash": "52ab09847cf82787c5387305af3cc48d5b5e885b2f8340910478aeaedcaab56d"
+    },
+    "contact.namePlaceholder": {
+      "sourceHash": "2c6b2e253c01fb2ed7209c15766745ccee92a35ac8209f544789bdf9500e0944",
+      "targetHash": "84e2331eb0864840695b3d506e9ebd4c321af3410ba46c647a232d118dffd0de"
+    },
+    "contact.email": {
+      "sourceHash": "969ccbd3cf6300ecd5c880459d81ae9027df7517563184a1b8b15282db230621",
+      "targetHash": "ddf0fca39a4f67e17646447b5c3a61ef374b3b8a23f91125442e327ee487f121"
+    },
+    "contact.emailPlaceholder": {
+      "sourceHash": "53e6cdc30765aade0129f85e5aeb50124b1d3f5bb9a70373be31e4eb328371e0",
+      "targetHash": "53e6cdc30765aade0129f85e5aeb50124b1d3f5bb9a70373be31e4eb328371e0"
+    },
+    "contact.message": {
+      "sourceHash": "2f77668a9dfbf8d5848b9eeb4a7145ca94c6ed9236e4a773f6dcafa5132b2f91",
+      "targetHash": "c957bb1d9a4a70262976e381e02692b19473f4b9aee703538e1b4c51b4440380"
+    },
+    "contact.messagePlaceholder": {
+      "sourceHash": "59a905be85eadffd568395be3e4070a57f7188ad0e49e27f257486036b695ad5",
+      "targetHash": "3ab078ab0d319898a93b6ceeacef2352676f36c8b07c6ee9010bd82fbe88dd34"
+    },
+    "contact.wordsLeft": {
+      "sourceHash": "9fe35a629d0f8fe44957db7323fac88672a58f6d9af080902231a625fe8c8b31",
+      "targetHash": "37296a69734cf62e647e346b3550b40764a19807c3fb4d728c93cb679a1a4029"
+    },
+    "contact.send": {
+      "sourceHash": "0fe0571facd9435c5b1dade499a4246b063c763b2b269c977cfa67fe166eebf9",
+      "targetHash": "061ecda066462f52e354304606fde72750249cbbcb2eef793afc3d81174d0c0e"
+    },
+    "contact.sending": {
+      "sourceHash": "286a3af7348e83123a2525936b12ff839504effef55b21c921edbb179247b523",
+      "targetHash": "5c94b7a19206515c2050453941252b041772c4858f5dd8aea05b5864e78bd661"
+    },
+    "contact.requiredError": {
+      "sourceHash": "ad6acdb3e33d33bf158d311beac18733e871ac04a2596924864b1331f0bc17d9",
+      "targetHash": "7a3732857af0f2047349f0f6a13de29d9b4edadc4f2ee65aceb93bb0796301c0"
+    },
+    "contact.invalidFieldError": {
+      "sourceHash": "b5497d43dc0233e0a6139bc1222210e5d2e7a5cf94b3c0a51a62683c8b9792d8",
+      "targetHash": "a5f09fb9219cfc5dc4e378218f4ab7f53f287b12ed512f3cf6fc60e47bbeac13"
+    },
+    "contact.invalidEmailError": {
+      "sourceHash": "958e4ccf2953d7470be4931035b3f6cb762f04d6bac8060e428412af3c904c40",
+      "targetHash": "4a5161fe126b3bcfb19acfd0c29cbc661f35d9ab28db465a2b5d1653f2dbc2ea"
+    },
+    "contact.tooLongError": {
+      "sourceHash": "1b59c783e3b662ec4faebac88354f4b0a6406604fdcb42a4a5209ef1024a408b",
+      "targetHash": "f26dbc0c6a51448d4ed1570f4b4edb45949aa418aeb7f020fdf7c138b3e4bcbd"
+    },
+    "contact.rateLimitError": {
+      "sourceHash": "797b0c31fee4c4cf6b647d33d1d7464c97c1bd6f55eaef098c8d465cac14f058",
+      "targetHash": "53b247f16e383fd4b66495b61eb2cdf67f28642362e02089b0ad847571d96bd8"
+    },
+    "contact.sendError": {
+      "sourceHash": "ac54ac7157eb6e63355f839af56499d0219214a77e1d3119665c7de816692394",
+      "targetHash": "70e0fb17779ab51dff73a0cfe16aec008d534c70e151ac5ac3b30efc05799af9"
+    },
+    "contact.successMessage": {
+      "sourceHash": "4ee599ea405ced1aec0216c4c8d205244790e3e1633e9da1487771be8d107135",
+      "targetHash": "a0372b77b4716acb25feccd3ff06137b0f46a91531ab010350c150303d68d717"
+    },
+    "contact.emailInvalidHint": {
+      "sourceHash": "f180af6a9eb33e18db2edf095a31291ff2245be203b6457b8662719d65ba4476",
+      "targetHash": "1825e3ad8b2602114ee3e00636eb75c3fb824c2d5ab958d7f78c42edaab4ee42"
+    },
+    "contact.emailValidHint": {
+      "sourceHash": "11f138594e8e0d1feabf1d542171c3804ab2758a19c8de49af22420dd4ece818",
+      "targetHash": "c21504abe7d2dec153b1583ea8f871098a1f04619ad3c12f2a212519874c3b3b"
+    },
+    "footer.descriptionLines.0": {
+      "sourceHash": "4033f0e4498c812504b427cf0e41caa262df54d04ffe17409d9bc641a9339588",
+      "targetHash": "1604d6ff6da33004a02730dd3d7a4c04aa71948ee3142f6d72a2d7f89d13282f"
+    },
+    "footer.descriptionLines.1": {
+      "sourceHash": "8ce2a4594051846aa2615a51f1552bd9b56d6bf72d271b92514ed1f4ff16ef1f",
+      "targetHash": "bcb4cd7a61289c13b9f7dddd5b4e3bc294ee810f16bda9fb31dc9d9582e0736d"
+    },
+    "footer.cta": {
+      "sourceHash": "285c35e673c7ed97996e21a28900a924828787cbc13c1a3a2eb2ebf76e492fc1",
+      "targetHash": "2fbbb54c550ae8350edbd83afe46a45de8c6584e522fa8c760c4d38bbc8f6565"
+    },
+    "footer.explore": {
+      "sourceHash": "3b73900b8d29f963dece78edd4bd9529d855e50f2a3fcc39b3d66cd657630905",
+      "targetHash": "bb824fc4bede63be4751da4f6f1e92dff54b9b65206b18b9831db9d6d28e7836"
+    },
+    "footer.account": {
+      "sourceHash": "7e1b0d5641f2640ce9a953ec231eea2c27a2a7633f7d3c273e5735e2b30c10b7",
+      "targetHash": "66dcee1f461697dda3b35bbd0d11a69f061415cbe91c471831eaed6f16a98467"
+    },
+    "footer.preferences": {
+      "sourceHash": "66962f72a08883733c35df6f82a049b929f9579f19c4bc083ac99bead602eab3",
+      "targetHash": "73a1b439e5bb3f9a520ce6cbc90454c562f62227bb981a871f52270b76bbc8df"
+    },
+    "footer.home": {
+      "sourceHash": "3a78695388b38b5cceefaf6796b0137877514593543b91af2752d5a17e3d736c",
+      "targetHash": "bfcf48307970f45a81bec841cac2eaeb3a5f6e2966bc8a6bdb84b61b0f88b88b"
+    },
+    "footer.features": {
+      "sourceHash": "5697d03daef4de9cf8db7cb11755f71358a32b4acca94909a9d449f71040d2dd",
+      "targetHash": "0542daa7d982ff8aafce1d34442027921aac38313991f17ed0ee75fc646cd0d3"
+    },
+    "footer.blog": {
+      "sourceHash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "targetHash": "c56501139dae912714f5c87363938d4974128201c778c1c70af70c9054341f70"
+    },
+    "footer.contact": {
+      "sourceHash": "2b5c3d26721ae9c350cf3009318b626f0fc8a90b4a2ac0ca8099c05aa849282e",
+      "targetHash": "e0bf9d3e144d288339fcb1ebddac736bed504edb661ba3bb90463902fd61b688"
+    },
+    "footer.pricing": {
+      "sourceHash": "dfe95783edfef7918760312f94edd764f4ce3ffd38b90c2c955a0cc3b250f040",
+      "targetHash": "540ecf1b863cc72ab449ea9ca38a129a25eb14e1a0e03dfba40e8db05a8513a7"
+    },
+    "footer.goToApp": {
+      "sourceHash": "f7051718a102f06568373b309c53f150e2adfe95c54b7ad93c89b0aa5465b085",
+      "targetHash": "a21f60caf12d420063d1487ccefd64513d720b1a3c22c4e64ecaf9b7e55dd188"
+    },
+    "footer.getSocraticPlus": {
+      "sourceHash": "dab300240bffd464772c701fc798a90b7496bd9e6ee7c4ea49ce8aa189f53c2d",
+      "targetHash": "96802bb1985651da58f0655b6cd1f380b5aeaf360be3328941534b6d6c441431"
+    },
+    "footer.signUp": {
+      "sourceHash": "47de23586e49d83300bafc4feec21bfc1483d728d12bb000e99c31283206f2ce",
+      "targetHash": "a925525adbfc89072f0eef25abcb921a82d375d13c41d25cade19579f7e3706e"
+    },
+    "footer.signIn": {
+      "sourceHash": "bcc0bcc9140b0c97a6440ce56966a07a05e85bddd509ddc5e2ab98755f319af1",
+      "targetHash": "beb869eecc12ef01a03379ecbcc74d7c7c4a8ae809ba7423ab0172e8246d9d4f"
+    },
+    "footer.manageSubscription": {
+      "sourceHash": "cbc4ef9225a090f71dabb59517f0c2c23bc9670bcd8f54a45f1d1f752616708c",
+      "targetHash": "432651e0ceb3d39bbeaeffc2b946641db92af66611e77a3bd7d5544a5d8143d4"
+    },
+    "footer.privacyPolicy": {
+      "sourceHash": "506ff394621596dd88138642eddfc1e41833b3ae92d95e5c77c94327098abd9a",
+      "targetHash": "23a13bc51d58f3f0a49205aa65f7fe51f5a4cf0e5c1e208bb819d82e6336bdd2"
+    },
+    "footer.terms": {
+      "sourceHash": "173f5f9f26b455922e092b9d5ec237ec4aeccd07547dac7a16af5fce9fed7ba8",
+      "targetHash": "370b1e9cba0aeb3416075236c41cee4539bf6afdce2ffe12cd967fc42ad20d9a"
+    },
+    "footer.cookiePolicy": {
+      "sourceHash": "ee290b3ddbc8e7e90bd0028e8315a02570ee24d83cc8b0c14f860146bb24fd80",
+      "targetHash": "e063aa8769924783222c2a373c8d75a3f2f4b8797c8dcc9bbfa8051b850e7696"
+    },
+    "footer.consentPreferences": {
+      "sourceHash": "c4dd4366be4e54a9ce83312aefcb62450f92d2e54d6d75eac1284d57f1f15e3a",
+      "targetHash": "f52b2b6507686a61eda0dea2dfb5eca1e26ed4852f5c65c7827031bf742f56b3"
+    },
+    "footer.allRightsReserved": {
+      "sourceHash": "21f29224bb655170d51b49b23015b779434d5540dc2825f5adf9a2bbc131b5f5",
+      "targetHash": "d334cc3f8352dc134898fed458f5f635c0308785d728f434de7042e7a346fc8e"
+    },
+    "standalone.headline": {
+      "sourceHash": "75d10aa067e3871a901b5fc9819438cf9c8e7e38c89b95d50475d6b683c42f91",
+      "targetHash": "068456e6dbcdc189ced7f5e4e969802a1e3e9e0bc1e5fb12aa61ba8f1eecb46a"
+    },
+    "standalone.body": {
+      "sourceHash": "c74163c45ccad9915b91ff0c89a2cc1208cc231055c3c97590261bc64922a7f6",
+      "targetHash": "2319011e8db338419f193ffb44d82de54a613c11e6bc21688703841342532f7e"
+    },
+    "standalone.createAccount": {
+      "sourceHash": "0dffe234b44793b6158e663740fc9cf1b45738bce4be453244c96e056e6207c3",
+      "targetHash": "af21ddc4ae9de640c2ea843de0cdf1ce3813dbd13265f023e3cfb182f88c6903"
+    },
+    "standalone.login": {
+      "sourceHash": "9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94",
+      "targetHash": "beb869eecc12ef01a03379ecbcc74d7c7c4a8ae809ba7423ab0172e8246d9d4f"
+    },
+    "standalone.imageAlt": {
+      "sourceHash": "0a1686181617ba01b73aa531bd6cd0c088a9fa5af76e93e483b37c13a9e47d52",
+      "targetHash": "09a0f8bca6843a6fb71c8f0c0b4f3377e3ab21e2262f636adcc4d12a48fc554a"
+    }
   }
 }

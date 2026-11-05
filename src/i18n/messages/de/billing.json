@@ -32,7 +32,16 @@
   },
   "statusLine": {
     "prefix": "Abrechnungsstatus:",
-    "cancellationQueued": "Kündigung zum Ende der Periode in Warteschlange."
+    "cancellationQueued": "Kündigung zum Ende der Periode in Warteschlange.",
+    "statuses": {
+      "INACTIVE": "Inaktiv",
+      "PENDING": "Ausstehend",
+      "ACTIVE": "Aktiv",
+      "ON_HOLD": "Pausiert",
+      "CANCELLED": "Gekündigt",
+      "FAILED": "Fehlgeschlagen",
+      "EXPIRED": "Abgelaufen"
+    }
   },
   "errors": {
     "portalUrlMissing": "Keine Portal-URL zurückgegeben.",

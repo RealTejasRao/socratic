@@ -1,0 +1,70 @@
+.international,
+.international [class] {
+  font-family: var(--home-body-font), sans-serif !important;
+  letter-spacing: 0 !important;
+}
+
+.international :is(h1, h2),
+.international :is(h1, h2) * {
+  font-family: var(--home-heading-font), serif !important;
+}
+
+.international h1 {
+  max-width: 960px;
+  font-size: 30px !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere;
+}
+
+.international h1 > span {
+  font-size: inherit !important;
+}
+
+.international h1 > span[aria-hidden="true"] {
+  font-size: 36px !important;
+}
+
+.international :is(h2, h3, p, label, button, a) {
+  overflow-wrap: anywhere;
+}
+
+.international :global(#features) {
+  height: auto;
+  min-height: calc(100svh - 4.25rem);
+  padding-block: 48px;
+}
+
+.rtl :is(h1, h2, h3),
+.rtl :is(h1, h2, h3) * {
+  line-height: 1.65 !important;
+  font-style: normal !important;
+}
+
+.rtl :global(.lucide-arrow-right) {
+  scale: -1 1;
+}
+
+.rtl input[type="email"] {
+  direction: ltr;
+  text-align: start;
+}
+
+.rtl :global(#features) article > div {
+  padding-inline: 0 12px;
+  margin-inline: 0;
+  transform: none;
+}
+
+@media (max-width: 639px) {
+  .international h1 {
+    font-size: 24px !important;
+  }
+
+  .international h1 > span[aria-hidden="true"] {
+    font-size: 30px !important;
+  }
+
+  .international h2 {
+    font-size: 30px !important;
+  }
+}

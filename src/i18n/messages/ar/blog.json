@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "مدونة Socratic AI | الفلسفة والذكاء الاصطناعي والتفكير النقدي",
+    "description": "اقرأ مدونة Socratic AI لمقالات حول الفلسفة، الاستراتيجية، والتفكير الدقيق.",
+    "ogAlt": "مقالات مدونة Socratic AI حول الفلسفة، الذكاء الاصطناعي، والتفكير النقدي"
+  },
+  "hero": {
+    "brand": "Socratic AI",
+    "title": "المدونة",
+    "description": "أفكار عن الفلسفة والتفكير النقدي والذكاء الاصطناعي والتعلّم ومستقبل الذكاء البشري، وعنّا!",
+    "imageAlt": "الرسم الرئيسي لمدونة Socratic AI حول الفلسفة والتفكير العميق"
+  },
+  "listing": {
+    "heading": "المدونة",
+    "description": "أفكار عن الفلسفة والتفكير النقدي والذكاء الاصطناعي والتعلّم ومستقبل الذكاء البشري، وعنّا!",
+    "sortBy": "ترتيب حسب:",
+    "readTime": "{minutes} د للقراءة"
+  },
+  "categories": [
+    {
+      "id": "all",
+      "sourceLabel": "All",
+      "label": "الكل"
+    },
+    {
+      "id": "philosophy",
+      "sourceLabel": "Philosophy",
+      "label": "الفلسفة"
+    },
+    {
+      "id": "ai-learning",
+      "sourceLabel": "AI & Learning",
+      "label": "الذكاء الاصطناعي والتعلم"
+    },
+    {
+      "id": "essays",
+      "sourceLabel": "Essays",
+      "label": "مقالات"
+    },
+    {
+      "id": "about",
+      "sourceLabel": "About",
+      "label": "من نحن"
+    }
+  ],
+  "sortOptions": {
+    "newest": "الأحدث",
+    "oldest": "الأقدم"
+  },
+  "post": {
+    "backToBlogs": "العودة إلى المدونات",
+    "ctaTitle": "Socratic AI",
+    "ctaBody": "Socratic AI مبني على أعظم النصوص الفلسفية التي كُتبت على الإطلاق. شريك التفكير الذي لم يكن لديك، متاح حتى في الساعة 2 صباحًا عندما لا تتوقف الأسئلة. اسأل أي شيء. ناقش كل شيء.",
+    "ctaButton": "جرّب Socratic AI الآن"
+  }
+}

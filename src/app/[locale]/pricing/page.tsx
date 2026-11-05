@@ -4,9 +4,9 @@ import { LocalizedPricingPage } from "@/src/app/pricing/localized-pricing-page";
 import { createPricingMetadata } from "@/src/i18n/pricing-metadata";
 import {
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
-  isSupportedLocale,
-  type SupportedLocale,
+  PRICING_LOCALES,
+  isPricingLocale,
+  type PricingLocale,
 } from "@/src/i18n/locales";
 
 export const dynamicParams = false;
@@ -18,17 +18,17 @@ type LocalizedPricingPageRouteProps = {
 };
 
 export function generateStaticParams() {
-  return SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((locale) => ({
+  return PRICING_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((locale) => ({
     locale,
   }));
 }
 
 async function resolveLocale(
   params: LocalizedPricingPageRouteProps["params"],
-): Promise<SupportedLocale> {
+): Promise<PricingLocale> {
   const { locale } = await params;
 
-  if (!isSupportedLocale(locale) || locale === DEFAULT_LOCALE) {
+  if (!isPricingLocale(locale) || locale === DEFAULT_LOCALE) {
     notFound();
   }
 

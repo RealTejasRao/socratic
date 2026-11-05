@@ -1,0 +1,44 @@
+.international,
+.international [class] {
+  font-family: var(--marketing-body-font), sans-serif !important;
+  letter-spacing: 0 !important;
+}
+
+.international :is(h1, h2)[class],
+.international :is(h1, h2)[class] * {
+  font-family: var(--marketing-heading-font), serif !important;
+}
+
+.international :is(h1, h2) {
+  font-size: 48px;
+  line-height: 1.35;
+}
+
+.international :is(h1, h2) > span {
+  font-size: inherit !important;
+}
+
+.international :is(h1, h2, h3, p, label, button, a) {
+  overflow-wrap: anywhere;
+}
+
+.rtl :is(h1, h2, h3, p, label, button, a),
+.rtl :is(h1, h2) * {
+  line-height: 1.7;
+  font-style: normal;
+}
+
+.rtl :global(.text-left) {
+  text-align: start;
+}
+
+.rtl :global(.lucide-chevron-right),
+.rtl :global(.lucide-arrow-right) {
+  scale: -1 1;
+}
+
+@media (max-width: 639px) {
+  .international :is(h1, h2) {
+    font-size: 32px;
+  }
+}

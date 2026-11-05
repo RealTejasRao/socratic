@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "title": "Оплата и подписка",
+    "description": "Управляйте подпиской Socratic+ и настройками оплаты.",
+    "ogAlt": "Настройки оплаты Socratic Plus"
+  },
+  "hero": {
+    "welcome": "Добро пожаловать в",
+    "product": "Socratic Plus",
+    "description": "Управляйте подпиской Socratic+, её продлением и платёжными данными."
+  },
+  "summary": {
+    "status": "Статус",
+    "active": "Активно",
+    "free": "Бесплатно",
+    "plan": "План",
+    "renewsOn": "Продление",
+    "notAvailable": "Недоступно",
+    "notApplicable": "Не применимо",
+    "monthlyPlan": "Socratic + Ежемесячный",
+    "annualPlan": "Socratic + Годовой",
+    "freePlan": "Бесплатно"
+  },
+  "actions": {
+    "openingPortal": "Открываем платёжный кабинет...",
+    "manageSubscription": "Управление подпиской",
+    "manageSubscriptionDescription": "Обновите способ оплаты, платёжные данные или отмените подписку.",
+    "explorePerks": "Изучите преимущества",
+    "explorePerksDescription": "Посмотрите, что включено в ваш план.",
+    "goToApp": "Перейти в приложение",
+    "goToAppDescription": "Вернуться к вашему рабочему пространству и чатам."
+  },
+  "statusLine": {
+    "prefix": "Статус оплаты:",
+    "cancellationQueued": "Отмена запланирована на конец текущего периода.",
+    "statuses": {
+      "INACTIVE": "Неактивно",
+      "PENDING": "В ожидании",
+      "ACTIVE": "Активно",
+      "ON_HOLD": "Приостановлено",
+      "CANCELLED": "Отменено",
+      "FAILED": "Не удалось",
+      "EXPIRED": "Срок истёк"
+    }
+  },
+  "errors": {
+    "portalUrlMissing": "Не возвращен URL портала.",
+    "portalOpenFailed": "Не удалось открыть платёжный кабинет."
+  }
+}

@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import { getPricingCopy } from "@/src/i18n/pricing";
 import {
   LOCALE_OG_LOCALES,
-  SUPPORTED_LOCALES,
+  PRICING_LOCALES,
   getLocalizedPath,
-  type SupportedLocale,
+  type PricingLocale,
 } from "@/src/i18n/locales";
 import { absoluteUrl, seoConfig } from "@/src/lib/seo";
 
 function getPricingLanguageAlternates() {
   return Object.fromEntries([
-    ...SUPPORTED_LOCALES.map((locale) => [
+    ...PRICING_LOCALES.map((locale) => [
       locale,
       absoluteUrl(getLocalizedPath("/pricing", locale)),
     ]),
@@ -18,7 +18,7 @@ function getPricingLanguageAlternates() {
   ]);
 }
 
-export function createPricingMetadata(locale: SupportedLocale): Metadata {
+export function createPricingMetadata(locale: PricingLocale): Metadata {
   const copy = getPricingCopy(locale);
   const path = getLocalizedPath("/pricing", locale);
   const canonical = absoluteUrl(path);

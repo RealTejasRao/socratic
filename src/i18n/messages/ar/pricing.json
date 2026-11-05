@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "title": "التسعير",
+    "description": "اختر خطة لـ Socratic +.",
+    "ogAlt": "خطط تسعير Socratic AI"
+  },
+  "hero": {
+    "titlePrefix": "اذهب أبعد مع",
+    "titleProduct": "Socratic Plus",
+    "description": "خطة واحدة للفضول. واحدة للمفكرين الحقيقيين!",
+    "subtitle": "تسعير شفاف"
+  },
+  "plans": {
+    "basic": {
+      "title": "أساسي",
+      "description": "مساحة مدروسة للفضول اليومي. وصول محدود إلى الميزات.",
+      "features": {
+        "dailyMessages": "الرسائل يوميًا: {count}",
+        "socraticMode": "الوضع السقراطي",
+        "roleplayMode": "وضع تمثيل الأدوار",
+        "imageUploads": "عمليات رفع الصور: {count}",
+        "debateMode": "وضع المناظرة",
+        "detailedDebateFeedback": "ملاحظات مفصلة حول المناظرة",
+        "ruthlessTone": "وضع النبرة الحادة والصريحة",
+        "globalMemory": "ذاكرة عبر المحادثات",
+        "longerHistory": "سجل محادثات أطول",
+        "newFeatureAccess": "الوصول إلى ميزات جديدة",
+        "unlimitedImageUploads": "رفع صور بلا حدود"
+      }
+    },
+    "premium": {
+      "title": "Socratic Plus",
+      "description": "مصمم للتفكير العميق دون حدود. وصول غير محدود إلى جميع الميزات.",
+      "badge": "الأكثر شعبية",
+      "features": {
+        "everythingBasic": "كل ميزات الخطة الأساسية",
+        "unlimitedMessages": "رسائل غير محدودة",
+        "socraticMode": "الوضع السقراطي",
+        "roleplayMode": "وضع تمثيل الأدوار",
+        "unlimitedImageUploads": "رفع صور بلا حدود",
+        "debateMode": "وضع المناظرة",
+        "detailedDebateFeedback": "ملاحظات مفصلة حول المناظرة",
+        "ruthlessTone": "وضع النبرة الحادة والصريحة",
+        "globalMemory": "ذاكرة عبر المحادثات",
+        "longerHistory": "سجل محادثات أطول",
+        "newFeatureAccess": "الوصول إلى ميزات جديدة"
+      }
+    }
+  },
+  "buttons": {
+    "signInToContinue": "تسجيل الدخول للمتابعة",
+    "currentPlan": "الخطة الحالية",
+    "useBasic": "استخدام الخطة الأساسية",
+    "signInToUpgrade": "تسجيل الدخول للترقية",
+    "startPremium": "ابدأ Socratic +",
+    "manageSubscription": "إدارة الاشتراك",
+    "openBillingDashboard": "فتح لوحة الفوترة"
+  },
+  "billing": {
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "save": "وفر",
+    "perYear": "/سنة",
+    "perMonth": "/شهر",
+    "percentOff": "خصم",
+    "supporting": "دعم {code}",
+    "premiumPrice": "سعر الخطة المميزة"
+  },
+  "status": {
+    "openingCheckout": "فتح عملية الدفع الآمنة...",
+    "customerPortalError": "تعذر فتح بوابة العملاء.",
+    "portalUrlMissing": "لم يتم إرجاع عنوان URL للبوابة.",
+    "checkoutError": "تعذر بدء عملية الدفع.",
+    "checkoutUrlMissing": "لم يتم إرجاع عنوان URL لعملية الدفع."
+  }
+}

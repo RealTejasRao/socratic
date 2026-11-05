@@ -32,7 +32,16 @@
   },
   "statusLine": {
     "prefix": "Stato di fatturazione:",
-    "cancellationQueued": "Cancellazione in coda alla fine del periodo."
+    "cancellationQueued": "Cancellazione in coda alla fine del periodo.",
+    "statuses": {
+      "INACTIVE": "Inattivo",
+      "PENDING": "In attesa",
+      "ACTIVE": "Attivo",
+      "ON_HOLD": "In sospeso",
+      "CANCELLED": "Annullato",
+      "FAILED": "Non riuscito",
+      "EXPIRED": "Scaduto"
+    }
   },
   "errors": {
     "portalUrlMissing": "Nessun URL del portale restituito.",

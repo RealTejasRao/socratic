@@ -8,11 +8,15 @@ const DEFAULT_MODEL = "gpt-4o-mini";
 const DEFAULT_BATCH_SIZE = 35;
 const SOURCE_LOCALE = "en";
 const TARGET_LOCALES = ["it", "fr", "de", "pt-BR"];
+const EXTENDED_TARGET_LOCALES = [...TARGET_LOCALES, "ru", "ar"];
+const EXTENDED_PAGES = new Set(["home", "pricing", "billing", "blog"]);
 const LOCALE_NAMES = {
   it: "Italian",
   fr: "French",
   de: "German",
   "pt-BR": "Brazilian Portuguese",
+  ru: "Russian",
+  ar: "Modern Standard Arabic",
 };
 const MESSAGE_ROOT = path.join(process.cwd(), "src", "i18n", "messages");
 const PAGE_FILES = {
@@ -26,7 +30,7 @@ const PAGE_CONTENT_TYPES = {
   home: "ui",
   pricing: "ui",
   billing: "ui",
-  blog: "blog",
+  blog: "ui",
   app: "ui",
 };
 
@@ -38,7 +42,7 @@ function parseArgs() {
     force: false,
     markCurrent: false,
     locales: [],
-    model: process.env["OPENAI_TRANSLATION_MODEL"] || DEFAULT_MODEL,
+    model: process.env["OPENAI_TRANSLATION_MODEL"] || null,
     batchSize: Number.parseInt(
       process.env["OPENAI_TRANSLATION_BATCH_SIZE"] || String(DEFAULT_BATCH_SIZE),
       10,
@@ -120,13 +124,14 @@ function parseArgs() {
     options.all = true;
   }
 
-  const locales = options.all ? TARGET_LOCALES : options.locales;
+  const targetLocales = EXTENDED_PAGES.has(options.page) ? EXTENDED_TARGET_LOCALES : TARGET_LOCALES;
+  const locales = options.all ? targetLocales : options.locales;
   if (!Number.isInteger(options.batchSize) || options.batchSize < 1) {
     throw new Error("--batch-size must be a positive integer.");
   }
 
   for (const locale of locales) {
-    if (!TARGET_LOCALES.includes(locale)) {
+    if (!targetLocales.includes(locale)) {
       throw new Error(`Unsupported locale: ${locale}`);
     }
   }
@@ -417,6 +422,7 @@ function getSystemPrompt(page) {
     "Preserve placeholders exactly, including {count}.",
     "Preserve every URL exactly, byte-for-byte. Never translate URL paths, slugs, domains, query strings, anchors, or file paths.",
     "Preserve the brand name Socratic AI exactly.",
+    "Preserve product names Socratic Plus, Socratic +, and Socratic+ exactly. Translate surrounding words, not the product name.",
     "Do not add, remove, rename, or reorder keys.",
     "Do not summarize. Do not explain.",
   ];
@@ -438,6 +444,10 @@ function getSystemPrompt(page) {
     `You are translating Socratic AI ${page} UI copy.`,
     ...sharedInstructions,
     "Keep the tone sharp, reflective, philosophical, and natural.",
+    ...(page === "blog" ? ["This is the blog listing interface, not an article. About is the category about Socratic AI and its team, not the preposition about. Preserve the {minutes} reading-time placeholder. Use established philosophical terminology and natural, concise interface labels."] : []),
+    ...(page === "pricing" || page === "billing" ? ["A plan means a subscription plan. Save means spending less money, not saving a file. Off means a discount, not closing something. Billing means payments and invoices. Global Memory means memory across conversations. Use identical localized names for the same features in both plans."] : []),
+    "Use the full source context to keep related strings consistent. Highlighted terms must occur verbatim in their corresponding translated headings or messages. Mobile heading lines must be parts of the translated full heading in the same order.",
+    "The hero headline prefix and each rotating word must form a natural sentence together. Keep rotating words concise. Do not append the full source sentence to each word.",
   ].join(" ");
 }
 
@@ -445,9 +455,10 @@ function removeEmDashes(value) {
   return value.replace(/\u2014/g, "-");
 }
 
-async function translateStrings({ apiKey, model, page, locale, strings }) {
+async function translateStrings({ apiKey, model, page, locale, strings, sourceContext }) {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
+    signal: AbortSignal.timeout(180000),
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
@@ -455,7 +466,20 @@ async function translateStrings({ apiKey, model, page, locale, strings }) {
     body: JSON.stringify({
       model,
       temperature: 0.2,
-      response_format: { type: "json_object" },
+      max_completion_tokens: 6000,
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "translated_strings",
+          strict: true,
+          schema: {
+            type: "object",
+            properties: Object.fromEntries(Object.keys(strings).map((key) => [key, { type: "string" }])),
+            required: Object.keys(strings),
+            additionalProperties: false,
+          },
+        },
+      },
       messages: [
         {
           role: "system",
@@ -466,6 +490,7 @@ async function translateStrings({ apiKey, model, page, locale, strings }) {
           content: JSON.stringify({
             targetLocale: locale,
             targetLanguage: LOCALE_NAMES[locale],
+            ...(EXTENDED_PAGES.has(page) ? { sourceContext } : {}),
             strings,
           }),
         },
@@ -484,6 +509,10 @@ async function translateStrings({ apiKey, model, page, locale, strings }) {
     throw new Error("OpenAI translation response did not include message content.");
   }
 
+  if (payload.choices[0].finish_reason === "length") {
+    throw new Error("Translation exceeded the output limit. Retry with a smaller --batch-size.");
+  }
+
   const parsed = extractJsonObject(content);
   const expectedKeys = Object.keys(strings);
 
@@ -496,7 +525,12 @@ async function translateStrings({ apiKey, model, page, locale, strings }) {
 
     if (missingKeys.length === 0) {
       for (const key of expectedKeys) {
-        normalizedTranslations[key] = removeEmDashes(parsedStrings[key]);
+        const translated = ["Socratic AI", "Socratic Plus", "Socratic +", "Socratic+"].includes(strings[key])
+          ? strings[key]
+          : removeEmDashes(parsedStrings[key]);
+        normalizedTranslations[key] = strings[key].includes("\n")
+          ? translated.replace(/\\n/g, "\n")
+          : translated;
       }
 
       return normalizedTranslations;
@@ -554,6 +588,7 @@ async function main() {
   let stateChanged = false;
 
   for (const locale of options.locales) {
+    const model = options.model || process.env["OPENAI_TRANSLATION_MODEL"] || DEFAULT_MODEL;
     const targetPath = path.join(MESSAGE_ROOT, locale, messageFile);
     const currentTarget = await readJson(targetPath, {});
 
@@ -578,7 +613,7 @@ async function main() {
     }
 
     console.log(
-      `${locale}: translating ${changedCount} string${changedCount === 1 ? "" : "s"} with ${options.model}`,
+      `${locale}: translating ${changedCount} string${changedCount === 1 ? "" : "s"} with ${model}`,
     );
 
     if (options.dryRun) {
@@ -600,10 +635,11 @@ async function main() {
         translations,
         await translateStrings({
           apiKey,
-          model: options.model,
+          model,
           page: options.page,
           locale,
           strings: batch,
+          sourceContext: source,
         }),
       );
     }
@@ -624,5 +660,5 @@ async function main() {
 
 main().catch((error) => {
   console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+  process.exitCode = 1;
 });
