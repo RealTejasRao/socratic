@@ -62,6 +62,19 @@ type BlogPostRecord = BlogPostSummary & {
 
 const BLOG_POSTS: BlogPostRecord[] = [
   {
+    slug: "world-philosophy-day-2026",
+    title: "How to Live on a Crowded Planet: What Philosophy Learned the Hard Way",
+    category: "Philosophy",
+    author: "Socratic AI team",
+    publishedAt: "2026-11-19T12:00:00+05:30",
+    updatedAt: "2026-11-19T12:00:00+05:30",
+    readTimeLabel: "6 min read",
+    excerpt:
+      "For World Philosophy Day 2026, explore what philosophers can teach us about sharing a planet shaped by climate change, AI, migration, and health inequities.",
+    coverImagePath: "/blog/images/world-philosophy-day-2026.webp",
+    contentFilePath: "public/blog/content/world-philosophy-day-2026.md",
+  },
+  {
     slug: "philosophy-is-polluting-itself",
     title: "Philosophy Is Not Being Polluted From Outside. It Is Polluting Itself.",
     category: "Philosophy",
