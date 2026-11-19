@@ -12,6 +12,13 @@ export const SUPPORTED_LOCALES = [
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
+export const APP_LOCALES = [...SUPPORTED_LOCALES, "ru", "ar"] as const;
+export type AppLocale = (typeof APP_LOCALES)[number];
+
+export function normalizeAppLocale(value: string | undefined): AppLocale {
+  return APP_LOCALES.find((locale) => locale === value) ?? DEFAULT_LOCALE;
+}
+
 // New languages are published per page as their translations become available.
 export const HOME_LOCALES = [...SUPPORTED_LOCALES, "ru", "ar"] as const;
 export type HomeLocale = (typeof HOME_LOCALES)[number];

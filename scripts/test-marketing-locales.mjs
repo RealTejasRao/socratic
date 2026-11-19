@@ -48,7 +48,7 @@ const { getAmbassadorSupportDiscount } = load("src/lib/billing.ts");
 const blogPosts = load("src/server/blog/posts.ts");
 const { createBlogPostMetadata } = load("src/i18n/blog-post-metadata.ts");
 
-test("new languages are published only on translated marketing pages", () => {
+test("locale-prefixed URLs are limited to translated marketing pages", () => {
   for (const locale of newLocales) {
     for (const page of publishedPages) {
       const localizedPath = page === "/" ? `/${locale}` : `/${locale}${page}`;

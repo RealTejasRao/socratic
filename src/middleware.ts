@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server";
 import {
   DEFAULT_LOCALE,
   getLocaleFromPathname,
+  normalizeAppLocale,
+  LOCALE_COOKIE_NAME,
 } from "@/src/i18n/locales";
 
 const PUBLIC_FILE_REGEX =
@@ -58,7 +60,16 @@ function isTwaLaunchRequest(req: NextRequest): boolean {
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const requestHeaders = new Headers(req.headers);
-  requestHeaders.set(LOCALE_HEADER, getLocaleFromPathname(pathname) ?? DEFAULT_LOCALE);
+  if (matchesRoutePrefix(pathname, APP_ROUTE_PREFIX)) {
+    requestHeaders.set("x-socratic-app", "1");
+  } else {
+    requestHeaders.delete("x-socratic-app");
+  }
+  requestHeaders.set(LOCALE_HEADER,
+    matchesRoutePrefix(pathname, APP_ROUTE_PREFIX)
+      ? normalizeAppLocale(req.cookies.get(LOCALE_COOKIE_NAME)?.value)
+      : getLocaleFromPathname(pathname) ?? DEFAULT_LOCALE,
+  );
   const nextWithLocale = () =>
     NextResponse.next({
       request: {

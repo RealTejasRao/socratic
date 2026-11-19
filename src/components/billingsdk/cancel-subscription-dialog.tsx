@@ -12,6 +12,10 @@ import {
 } from "@/src/components/ui/dialog";
 import { type Plan } from "@/src/lib/billingsdk-config";
 import { cn } from "@/src/lib/utils";
+import type { AppCopy } from "@/src/i18n/app";
+import enApp from "@/src/i18n/messages/en/app.json";
+import type { AppLocale } from "@/src/i18n/locales";
+import { getAppLocalePresentation } from "@/src/i18n/app-presentation";
 import { X, Circle } from "lucide-react";
 
 export interface CancelSubscriptionDialogProps {
@@ -33,6 +37,8 @@ export interface CancelSubscriptionDialogProps {
   onKeepSubscription?: (planId: string) => Promise<void> | void;
   onDialogClose?: () => void;
   className?: string;
+  labels?: AppCopy["billingUi"]["cancel"];
+  locale?: AppLocale;
 }
 
 export function CancelSubscriptionDialog({
@@ -54,7 +60,10 @@ export function CancelSubscriptionDialog({
   onKeepSubscription,
   onDialogClose,
   className,
+  labels = enApp.billingUi.cancel,
+  locale = "en",
 }: CancelSubscriptionDialogProps) {
+  const presentation = getAppLocalePresentation(locale);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +82,7 @@ export function CancelSubscriptionDialog({
       handleDialogClose();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to cancel subscription",
+        err instanceof Error ? err.message : labels.cancelFailed,
       );
     } finally {
       setIsLoading(false);
@@ -90,7 +99,7 @@ export function CancelSubscriptionDialog({
       handleDialogClose();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to keep subscription",
+        err instanceof Error ? err.message : labels.keepFailed,
       );
     } finally {
       setIsLoading(false);
@@ -142,10 +151,15 @@ export function CancelSubscriptionDialog({
         </Button>
       </DialogTrigger>
       <DialogContent
+        closeLabel={labels.close}
+        lang={presentation.lang}
+        dir={presentation.dir}
+        style={presentation.style}
         className={cn(
           "text-foreground flex w-[95%] flex-col overflow-hidden p-0 sm:max-w-[1000px] md:w-[100%] md:flex-row",
           leftPanelImageUrl ? "" : "sm:max-w-[500px]",
           className,
+          presentation.className,
         )}
       >
         <DialogTitle className="sr-only">{title}</DialogTitle>
@@ -154,7 +168,7 @@ export function CancelSubscriptionDialog({
           onClick={handleDialogClose}
         >
           <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{labels.close}</span>
         </DialogClose>
         {leftPanelImageUrl && (
           <div className="relative hidden min-h-[500px] w-full overflow-hidden md:block md:w-1/2">
@@ -192,16 +206,16 @@ export function CancelSubscriptionDialog({
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                   <span className="text-lg font-semibold">
-                    {plan.title} Plan
+                    {labels.planTitle.replace("{plan}", plan.title)}
                   </span>
                   <span className="text-muted-foreground text-sm">
-                    Current subscription
+                    {labels.currentSubscription}
                   </span>
                 </div>
                 <Badge variant="secondary">
                   {parseFloat(plan.monthlyPrice) >= 0
-                    ? `${plan.currency}${plan.monthlyPrice}/monthly`
-                    : `${plan.monthlyPrice}/monthly`}
+                    ? `${plan.currency}${plan.monthlyPrice}/${labels.monthly}`
+                    : `${plan.monthlyPrice}/${labels.monthly}`}
                 </Badge>
               </div>
               <div className="flex flex-col gap-2">
@@ -239,7 +253,7 @@ export function CancelSubscriptionDialog({
                 disabled={isLoading}
               >
                 {isLoading
-                  ? "Processing..."
+                  ? labels.processing
                   : keepButtonText || "Keep My Subscription"}
               </Button>
               <Button
@@ -282,7 +296,7 @@ export function CancelSubscriptionDialog({
                   disabled={isLoading}
                 >
                   {isLoading
-                    ? "Cancelling..."
+                    ? labels.cancelling
                     : confirmButtonText || "Yes, Cancel Subscription"}
                 </Button>
               </div>

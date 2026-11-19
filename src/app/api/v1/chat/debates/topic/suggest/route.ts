@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { normalizeLocale } from "@/src/i18n/locales";
+import { normalizeAppLocale } from "@/src/i18n/locales";
 import type { DebateDurationPreset, DebateTone } from "src/lib/debate";
 import { generateDebateTopicSuggestions } from "src/server/debate/service";
 import { prisma } from "src/server/db/client";
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const tone = body?.tone;
   const durationPreset = body?.durationPreset;
-  const locale = normalizeLocale(
+  const locale = normalizeAppLocale(
     typeof body?.locale === "string" ? body.locale : undefined,
   );
 

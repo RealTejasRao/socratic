@@ -692,6 +692,7 @@ export default function MessageList({
                 <div className="app-user-edit-shell w-full max-w-140 rounded-[14px] border border-slate-300 bg-[#f4f4f4] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
                   <textarea
                     ref={editTextareaRef}
+                    dir="auto"
                     value={editDraft}
                     onChange={(event) => onEditDraftChange(event.target.value)}
                     autoFocus
@@ -705,7 +706,7 @@ export default function MessageList({
                       disabled={isStreaming}
                       className="app-user-edit-cancel cursor-pointer rounded-[10px] border border-slate-300 bg-white px-3.5 py-1.5 text-[11px] text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                      Cancel
+                      {copy.ui.editCancel}
                     </button>
                     <button
                       type="button"
@@ -713,12 +714,13 @@ export default function MessageList({
                       disabled={isStreaming || !editDraft.trim()}
                       className="app-user-edit-send cursor-pointer rounded-[10px] bg-slate-900 px-3.5 py-1.5 text-[11px] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                      Send
+                      {copy.ui.editSend}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div
+                  dir="auto"
                   className={cn(
                     "whitespace-pre-wrap px-3 py-2",
                     isUser

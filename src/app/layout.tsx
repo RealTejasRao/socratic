@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { arSA, ruRU } from "@clerk/localizations";
+import { getAppCopy } from "@/src/i18n/app";
 import { headers } from "next/headers";
 import ClickPulse from "@/src/components/ClickPulse";
 import { CookieConsentManager } from "@/src/components/cookie-consent/cookie-consent-manager";
@@ -110,6 +112,9 @@ export default async function RootLayout({
 }) {
   const headerStore = await headers();
   const locale = normalizeHomeLocale(headerStore.get("x-socratic-locale") ?? DEFAULT_LOCALE);
+  const accountLocalization = headerStore.get("x-socratic-app") === "1"
+    ? locale === "ru" ? ruRU : locale === "ar" ? arSA : undefined
+    : undefined;
 
   return (
     <html
@@ -136,7 +141,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <ClerkProvider>
+        <ClerkProvider {...(accountLocalization ? { localization: accountLocalization } : {})}>
           {structuredData.map((schema, index) => (
             <script
               key={`ld-json-${index}`}
@@ -145,7 +150,7 @@ export default async function RootLayout({
             />
           ))}
           <ClickPulse />
-          <CookieConsentManager />
+          <CookieConsentManager {...(accountLocalization ? { locale, copy: getAppCopy(locale).cookieConsent } : {})} />
           {children}
         </ClerkProvider>
       </body>

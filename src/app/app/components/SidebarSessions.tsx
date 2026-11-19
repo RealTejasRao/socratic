@@ -532,7 +532,7 @@ export default function SidebarSessions({
                       </span>
                     )
                   )}
-                  <p className="truncate text-[14px] leading-5 lg:text-[14px] lg:leading-5">
+                  <p dir="auto" className="truncate text-[14px] leading-5 lg:text-[14px] lg:leading-5">
                     {session.title || copy.sessions.untitled}
                   </p>
                   {showModeBadges && session.mode !== "SOCRATIC" && !isActive && (

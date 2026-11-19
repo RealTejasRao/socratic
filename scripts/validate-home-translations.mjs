@@ -5,7 +5,7 @@ import process from "node:process";
 const SOURCE_LOCALE = "en";
 const TARGET_LOCALES = ["it", "fr", "de", "pt-BR"];
 const EXTENDED_TARGET_LOCALES = [...TARGET_LOCALES, "ru", "ar"];
-const EXTENDED_PAGES = new Set(["home", "pricing", "billing", "blog"]);
+const EXTENDED_PAGES = new Set(["home", "pricing", "billing", "blog", "app"]);
 const MESSAGE_ROOT = path.join(process.cwd(), "src", "i18n", "messages");
 const PAGE_FILES = {
   home: "home.json",
@@ -17,7 +17,7 @@ const PAGE_FILES = {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const options = { page: "home" };
+  const options = { page: "home", locales: [] };
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -32,11 +32,24 @@ function parseArgs() {
       continue;
     }
 
+    if (arg === "--locale") {
+      const value = args[index + 1];
+      if (!value) throw new Error("--locale requires a language code.");
+      options.locales.push(value);
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown argument: ${arg}`);
   }
 
   if (!Object.hasOwn(PAGE_FILES, options.page)) {
     throw new Error(`Unsupported page: ${options.page}`);
+  }
+
+  const allowed = EXTENDED_PAGES.has(options.page) ? EXTENDED_TARGET_LOCALES : TARGET_LOCALES;
+  for (const locale of options.locales) {
+    if (!allowed.includes(locale)) throw new Error(`Unsupported locale: ${locale}`);
   }
 
   return options;
@@ -186,7 +199,8 @@ async function main() {
   const issues = [];
   const warnings = [];
 
-  const targetLocales = EXTENDED_PAGES.has(options.page) ? EXTENDED_TARGET_LOCALES : TARGET_LOCALES;
+  const targetLocales = options.locales.length ? [...new Set(options.locales)]
+    : EXTENDED_PAGES.has(options.page) ? EXTENDED_TARGET_LOCALES : TARGET_LOCALES;
   for (const locale of targetLocales) {
     const target = await readJson(path.join(MESSAGE_ROOT, locale, messageFile));
     validateShape(source, target, locale, issues, warnings);

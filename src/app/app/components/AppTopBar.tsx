@@ -29,6 +29,7 @@ import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { getLocalizedDebateDurationMeta } from "@/src/i18n/app-config";
 import { formatDebateCountdown } from "src/lib/debate";
 import { ROUTES } from "src/lib/routes";
+import { getLocalizedPath } from "@/src/i18n/locales";
 import type { DebateSessionState, RoleplaySessionState } from "src/types/chat";
 import AppUserButton from "./AppUserButton";
 import { useAppRoute } from "./app-route-context";
@@ -69,7 +70,7 @@ const inter = Inter({
 export default function AppTopBar({ sessions, isPremium = false }: Props) {
   const pathname = usePathname();
   const router = useRouter();
-  const { appBasePath, matchSessionPath, isSessionPath, copy } = useAppRoute();
+  const { appBasePath, matchSessionPath, isSessionPath, copy, locale } = useAppRoute();
   const isStandalone = useStandaloneMode();
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
@@ -127,7 +128,10 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
       ? copy.topbar.shareTextWithTitle.replace("{title}", shareTitle)
       : copy.topbar.shareText,
   );
-  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
+  const billingCtaHref = getLocalizedPath(
+    isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING,
+    appBasePath === ROUTES.APP ? locale : "en",
+  );
   const billingCtaTarget = isStandalone ? undefined : "_blank";
   const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
 
@@ -710,7 +714,7 @@ export default function AppTopBar({ sessions, isPremium = false }: Props) {
                         data-tooltip={copy.topbar.shareViaEmail}
                       >
                         <EmailIcon />
-                        <span>Email</span>
+                        <span>{copy.ui.email}</span>
                       </button>
                     </div>
 

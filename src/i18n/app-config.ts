@@ -16,6 +16,29 @@ import {
   type SocraticTone,
 } from "@/src/lib/socratic";
 import { CHAT_FONT_SIZE_OPTIONS } from "@/src/lib/chat-display";
+import { socraticPlans, BILLINGSDK_PLAN_IDS } from "@/src/lib/billingsdk-config";
+import { PLAN_LIMITS } from "@/src/lib/billing";
+
+export function getLocalizedBillingPlans(copy: AppCopy) {
+  return socraticPlans.map((plan) => {
+    const free = plan.id === BILLINGSDK_PLAN_IDS.FREE;
+    const labels = free ? copy.billingUi.plans.free
+      : plan.id === BILLINGSDK_PLAN_IDS.PREMIUM_ANNUAL ? copy.billingUi.plans.annual
+      : copy.billingUi.plans.monthly;
+    const features = free ? copy.billingUi.plans.free.features : copy.billingUi.plans.premiumFeatures;
+    return {
+      ...plan,
+      title: labels.title,
+      description: labels.description,
+      buttonText: labels.button,
+      ...(plan.badge ? { badge: copy.billingUi.plans.annual.badge } : {}),
+      features: plan.features.map((feature, index) => ({
+        ...feature,
+        name: (features[index] ?? feature.name).replace("{count}", String(PLAN_LIMITS.FREE_DAILY_MESSAGES)),
+      })),
+    };
+  });
+}
 
 export function getLocalizedChatFontSizeOptions(copy: AppCopy) {
   return CHAT_FONT_SIZE_OPTIONS.map((option) => ({
@@ -53,7 +76,7 @@ export function getLocalizedDebateToneMeta(tone: DebateTone, copy: AppCopy) {
   return (
     getLocalizedDebateToneOptions(copy).find(
       (option) => option.value === tone,
-    ) ?? getLocalizedDebateToneOptions(copy)[0]
+    ) ?? getLocalizedDebateToneOptions(copy)[0]!
   );
 }
 
@@ -71,7 +94,7 @@ export function getLocalizedDebateDurationMeta(
   return (
     getLocalizedDebateDurationOptions(copy).find(
       (option) => option.value === duration,
-    ) ?? getLocalizedDebateDurationOptions(copy)[2]
+    ) ?? getLocalizedDebateDurationOptions(copy)[2]!
   );
 }
 
@@ -98,6 +121,7 @@ export function getLocalizedRoleplayPhilosopher<
 
   return {
     ...philosopher,
+    name: copy.philosopherNames[philosopher.id as keyof typeof copy.philosopherNames] ?? philosopher.name,
     expertise: localized.expertise,
     shortDescription: localized.shortDescription,
     bestFor: localized.bestFor,

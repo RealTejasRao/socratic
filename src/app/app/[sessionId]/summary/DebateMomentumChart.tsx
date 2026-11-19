@@ -1,5 +1,8 @@
 "use client";
 
+import type { AppCopy } from "@/src/i18n/app";
+import enApp from "@/src/i18n/messages/en/app.json";
+
 import {
   CartesianGrid,
   Label,
@@ -22,6 +25,7 @@ type MomentumPoint = {
 type Props = {
   data: MomentumPoint[];
   className?: string;
+  copy?: AppCopy["summary"];
 };
 
 type TooltipPayload = {
@@ -37,9 +41,11 @@ type ChartPoint = MomentumPoint & {
 function MomentumTooltip({
   active,
   payload,
+  copy,
 }: {
   active?: boolean;
   payload?: TooltipPayload[];
+  copy: AppCopy["summary"];
 }) {
   const point = payload?.[0]?.payload;
 
@@ -48,10 +54,10 @@ function MomentumTooltip({
   }
 
   return (
-    <div className="summary-chart-tooltip rounded-lg border border-slate-200 bg-white px-3 py-2 text-[12px] shadow-sm">
-      <p className="font-medium text-slate-950">Exchange {point.exchange}</p>
-      <p className="mt-1 text-slate-600">{point.label || "No label"}</p>
-      <p className="mt-1 text-slate-500">Score: {point.score}</p>
+    <div dir="auto" className="summary-chart-tooltip rounded-lg border border-slate-200 bg-white px-3 py-2 text-[12px] shadow-sm">
+      <p className="font-medium text-slate-950">{copy.exchange.replace("{number}", String(point.exchange))}</p>
+      <p className="mt-1 text-slate-600">{point.label || copy.noLabel}</p>
+      <p className="mt-1 text-slate-500">{copy.score.replace("{score}", String(point.score))}</p>
     </div>
   );
 }
@@ -101,7 +107,7 @@ function toChartData(data: MomentumPoint[]) {
   return chartData;
 }
 
-export function DebateMomentumChart({ data, className }: Props) {
+export function DebateMomentumChart({ data, className, copy = enApp.summary }: Props) {
   const chartData = toChartData(data);
   const highest = findPoint(data, (current, next) =>
     next.score > current.score ? next : current,
@@ -119,14 +125,13 @@ export function DebateMomentumChart({ data, className }: Props) {
       <div
         className={`summary-chart-empty flex min-h-[260px] items-center justify-center border-y border-dashed border-slate-200 px-6 text-center text-[13px] leading-6 text-slate-500 ${className ?? ""}`}
       >
-        Momentum data was not available for this debate. Future completed
-        debates will show round-by-round movement here.
+        {copy.chartEmpty}
       </div>
     );
   }
 
   return (
-    <div className={`summary-chart h-[320px] w-full ${className ?? ""}`}>
+    <div dir="ltr" className={`summary-chart h-[320px] w-full ${className ?? ""}`}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
@@ -151,7 +156,7 @@ export function DebateMomentumChart({ data, className }: Props) {
             tick={{ fill: "var(--text-muted, #64748b)", fontSize: 12 }}
             width={36}
           />
-          <Tooltip content={<MomentumTooltip />} cursor={false} />
+          <Tooltip content={<MomentumTooltip copy={copy} />} cursor={false} />
           <ReferenceLine
             y={0}
             stroke="rgba(100, 116, 139, 0.55)"

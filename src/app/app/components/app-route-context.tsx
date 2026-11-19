@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useMemo } from "react";
 import type { Route } from "next";
 import enAppCopy from "@/src/i18n/messages/en/app.json";
 import type { AppCopy } from "@/src/i18n/app";
-import { DEFAULT_LOCALE, type SupportedLocale } from "@/src/i18n/locales";
+import { DEFAULT_LOCALE, type AppLocale } from "@/src/i18n/locales";
 import { ROUTES } from "@/src/lib/routes";
 import type { SessionMode } from "@/src/types/chat";
 
@@ -22,7 +22,7 @@ type AppRouteContextValue = {
   appBasePath: string;
   marketingHomePath: Route;
   defaultNewChatMode: SessionMode;
-  locale: SupportedLocale;
+  locale: AppLocale;
   copy: AppCopy;
 };
 
@@ -47,7 +47,7 @@ export function AppRouteProvider({
   appBasePath?: string;
   marketingHomePath?: Route;
   defaultNewChatMode?: SessionMode;
-  locale?: SupportedLocale;
+  locale?: AppLocale;
   copy?: AppRouteCopyOverrides;
   children: React.ReactNode;
 }) {

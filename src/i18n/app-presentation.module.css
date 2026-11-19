@@ -1,0 +1,53 @@
+.international,
+.international [class] {
+  font-family: var(--app-body-font), sans-serif !important;
+  letter-spacing: 0 !important;
+}
+
+.international :is(h1, h2, h3) {
+  font-family: var(--app-heading-font), serif !important;
+  line-height: 1.45;
+}
+
+.international :is(pre, code),
+.international :is(pre, code) [class] {
+  font-family: ui-monospace, monospace !important;
+}
+
+.international :is(button, a, label, p, h1, h2, h3) {
+  overflow-wrap: anywhere;
+}
+
+.rtl :global(.text-left) {
+  text-align: start;
+}
+
+.rtl :global(.lucide-arrow-left),
+.rtl :global(.lucide-arrow-right) {
+  scale: -1 1;
+}
+
+.rtl :global(.app-sidebar) {
+  border-inline-end-width: 1px;
+  border-inline-start-width: 0;
+}
+
+.rtl :global(.app-sidebar-toggle) {
+  inset-inline-end: -12px;
+  inset-inline-start: auto;
+}
+
+.rtl :global(.app-settings-close) {
+  inset-inline-end: 16px;
+  inset-inline-start: auto;
+}
+
+.rtl :global(.app-roleplay-search-clear) {
+  inset-inline-end: 12px;
+  inset-inline-start: auto;
+}
+
+.rtl :global(.app-input-textarea),
+.rtl :global(.app-user-edit-textarea) {
+  text-align: start;
+}

@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getAppCopy } from "@/src/i18n/app";
-import { LOCALE_COOKIE_NAME, normalizeLocale } from "@/src/i18n/locales";
+import { LOCALE_COOKIE_NAME, normalizeAppLocale, getLocalizedPath } from "@/src/i18n/locales";
+import { getBillingCopy } from "@/src/i18n/billing";
 import { ROUTES } from "src/lib/routes";
 import { getUserBillingStateByClerkId, resolveUserTierLabel } from "src/server/billing/access";
 import { SOCRATIC_PLUS_NAME } from "src/lib/billing";
@@ -23,8 +24,9 @@ export default async function BillingPage() {
 
   const tierLabel = resolveUserTierLabel(billing.planTier);
   const cookieStore = await cookies();
-  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value);
+  const locale = normalizeAppLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value);
   const copy = getAppCopy(locale);
+  const billingCopy = getBillingCopy(locale);
 
   return (
     <div className="mx-auto w-full max-w-160 px-4 py-8 md:px-8">
@@ -45,7 +47,7 @@ export default async function BillingPage() {
               {copy.billing.currentPlan}
             </p>
             <p className="mt-1.5 text-[20px] text-[#211b14] font-[Georgia,serif]">
-              {tierLabel}
+              {billing.planTier === "FREE" ? copy.billingUi.plans.free.title : tierLabel}
             </p>
           </div>
           <div className="rounded-2xl border border-[#d6c9b4] bg-[#f9f4e9] px-4 py-3">
@@ -53,7 +55,7 @@ export default async function BillingPage() {
               {copy.billing.subscriptionStatus}
             </p>
             <p className="mt-1.5 text-[20px] text-[#211b14] font-[Georgia,serif]">
-              {billing.planStatus}
+              {billingCopy.statusLine.statuses[billing.planStatus]}
             </p>
           </div>
           <div className="rounded-2xl border border-[#d6c9b4] bg-[#f9f4e9] px-4 py-3">
@@ -62,7 +64,7 @@ export default async function BillingPage() {
             </p>
             <p className="mt-1.5 text-[16px] text-[#211b14]">
               {billing.subscriptionCurrentPeriodEnd
-                ? billing.subscriptionCurrentPeriodEnd.toLocaleDateString()
+                ? billing.subscriptionCurrentPeriodEnd.toLocaleDateString(locale)
                 : copy.billing.notAvailable}
             </p>
           </div>
@@ -81,7 +83,7 @@ export default async function BillingPage() {
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <BillingPortalButton />
           <a
-            href={ROUTES.PRICING}
+            href={getLocalizedPath(ROUTES.PRICING, locale)}
             className="inline-flex items-center rounded-full border border-[#cabda8] bg-[#efe5d2] px-4 py-2 text-[13px] text-[#504334] transition hover:bg-[#e8dcc7]"
           >
             {copy.billing.viewPricing}

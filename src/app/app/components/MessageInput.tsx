@@ -910,6 +910,7 @@ export default function MessageInput({
 
         <textarea
           ref={textareaRef}
+          dir="auto"
           value={content}
           onChange={(event) => setContentOverride(event.target.value)}
           onPaste={handleTextareaPaste}

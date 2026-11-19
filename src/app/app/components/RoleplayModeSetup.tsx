@@ -230,7 +230,7 @@ export default function RoleplayModeSetup({
 
   return (
     <section className="app-roleplay-library mx-auto flex w-full max-w-300 flex-col px-0 pb-8">
-      <div className="app-roleplay-library-header mx-auto w-full max-w-235 text-left">
+      <div className="app-roleplay-library-header mx-auto w-full max-w-235 text-start">
         <h2 className="app-roleplay-heading text-[28px] leading-none tracking-[-0.04em] text-slate-950 font-[Georgia,serif] md:text-[36px]">
           {copy.roleplay.title}
         </h2>
@@ -243,7 +243,7 @@ export default function RoleplayModeSetup({
         <div className="app-roleplay-search relative">
           <Search
             size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"
           />
           <input
             value={query}
@@ -269,7 +269,7 @@ export default function RoleplayModeSetup({
           ) : null}
         </div>
 
-        <div className="app-roleplay-flair-shell mt-3 flex items-center gap-2">
+        <div dir="ltr" className="app-roleplay-flair-shell mt-3 flex items-center gap-2">
           <button
             type="button"
             onClick={() => scrollFlairs("left")}
@@ -394,7 +394,7 @@ export default function RoleplayModeSetup({
                           />
                           <Image
                             src={philosopher.imagePath}
-                            alt={`${philosopher.name} portrait`}
+                            alt={philosopher.name}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
                             className="app-roleplay-card-image-main object-cover transition duration-500 group-hover:scale-[1.045]"

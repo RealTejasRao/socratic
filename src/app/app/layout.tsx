@@ -8,7 +8,10 @@ import { getAppCopy } from "@/src/i18n/app";
 import {
   LOCALE_COOKIE_NAME,
   normalizeLocale,
+  normalizeAppLocale,
+  getHomePathForLocale,
 } from "@/src/i18n/locales";
+import { getAppLocalePresentation } from "@/src/i18n/app-presentation";
 import { prisma } from "src/server/db/client";
 import { ensureUserForClerkId } from "src/server/auth/ensure-user";
 import { ROUTES } from "src/lib/routes";
@@ -78,7 +81,11 @@ export async function AppLayoutShell({
 
   const dbUser = await ensureUserForClerkId(clerkUserId);
   const cookieStore = await cookies();
-  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value);
+  const preference = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
+  const locale = appBasePath === ROUTES.APP
+    ? normalizeAppLocale(preference)
+    : normalizeLocale(preference);
+  const presentation = getAppLocalePresentation(appBasePath === ROUTES.APP ? locale : "en");
   const resolvedCopy = copy ?? getAppCopy(locale);
   const [billing, allVisibleSessions] = await Promise.all([
     getUserBillingStateByUserId(dbUser.id),
@@ -133,12 +140,12 @@ export async function AppLayoutShell({
   return (
     <AppRouteProvider
       appBasePath={appBasePath}
-      marketingHomePath={marketingHomePath}
+      marketingHomePath={appBasePath === ROUTES.APP ? getHomePathForLocale(locale) : marketingHomePath}
       defaultNewChatMode={defaultNewChatMode}
       locale={locale}
       copy={resolvedCopy}
     >
-      <div className="app-layout h-svh bg-[#fefefc]">
+      <div lang={presentation.lang} dir={presentation.dir} style={presentation.style} className={`app-layout h-svh bg-[#fefefc] ${presentation.className}`}>
         <div className="app-layout-inner flex h-full min-h-0 flex-col overflow-hidden bg-[#fefefc]">
           <div className="flex min-h-0 flex-1">
             <AppSidebar
@@ -151,7 +158,7 @@ export async function AppLayoutShell({
                 sessions={sidebarSessions}
                 isPremium={billing?.isPremium ?? false}
               />
-              <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pr-0 md:px-6 md:py-5 md:pr-0">
+              <main className="app-chat-main min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 pe-0 md:px-6 md:py-5 md:pe-0">
                 {children}
               </main>
             </section>

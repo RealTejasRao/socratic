@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { normalizeLocale } from "@/src/i18n/locales";
+import { normalizeAppLocale } from "@/src/i18n/locales";
 import { DEBATE_TOPIC_MAX_CHARS } from "src/lib/debate";
 import {
   consumeUserRateLimit,
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const topic = typeof body?.topic === "string" ? body.topic : "";
-  const locale = normalizeLocale(
+  const locale = normalizeAppLocale(
     typeof body?.locale === "string" ? body.locale : undefined,
   );
 

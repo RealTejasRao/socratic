@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { normalizeLocale } from "@/src/i18n/locales";
+import { normalizeAppLocale } from "@/src/i18n/locales";
+import { getAppCopy } from "@/src/i18n/app";
 import {
   DEBATE_TOPIC_MAX_CHARS,
   type DebateDurationPreset,
@@ -112,7 +113,7 @@ export async function POST(req: Request) {
   const durationPreset = body?.durationPreset;
   const topic = typeof body?.topic === "string" ? body.topic : "";
   const topicSource = body?.topicSource;
-  const locale = normalizeLocale(
+  const locale = normalizeAppLocale(
     typeof body?.locale === "string" ? body.locale : undefined,
   );
   const userSide =
@@ -132,7 +133,7 @@ export async function POST(req: Request) {
   if (topic.trim().length > DEBATE_TOPIC_MAX_CHARS) {
     return NextResponse.json(
       {
-        reason: `Keep the topic under ${DEBATE_TOPIC_MAX_CHARS} characters.`,
+        reason: getAppCopy(locale).debateFallback.tooLong.replace("{count}", String(DEBATE_TOPIC_MAX_CHARS)),
       },
       { status: 400 },
     );

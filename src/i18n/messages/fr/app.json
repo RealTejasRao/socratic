@@ -1,4 +1,276 @@
 {
+  "cookieConsent": {
+    "closeAccept": "Close and accept all cookies",
+    "title": "Cookies, but on your terms :)",
+    "description": "We use cookies for security, performance, and experience. Choose what to allow now, and update your preferences anytime.",
+    "closingNotice": "Closing this prompt accepts all cookies. Read our",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "and": "and",
+    "preferences": "Preferences",
+    "accept": "Accept",
+    "preferencesTitle": "Cookie Preferences",
+    "preferencesSubtitle": "Minimal controls, full transparency",
+    "closePreferences": "Close cookie preferences",
+    "chooseOptional": "Choose which optional cookies we can use. Essential cookies stay on for security and core functionality.",
+    "learnMore": "Learn more in our",
+    "alwaysOn": "Always on",
+    "details": "Details",
+    "back": "Back",
+    "provider": "Provider",
+    "name": "Name",
+    "purpose": "Purpose",
+    "type": "Type",
+    "expiresIn": "Expires In",
+    "noCookies": "No cookies are currently mapped in this category.",
+    "declineAll": "Decline All",
+    "savePreferences": "Save Preferences",
+    "allowAll": "Allow All",
+    "categories": {
+      "essential": {
+        "title": "Essential Cookies",
+        "description": "These cookies are required for core functionality such as security, routing, and account access."
+      },
+      "performance": {
+        "title": "Performance and Functionality Cookies",
+        "description": "These cookies improve reliability and performance. Turning them off can limit some functionality."
+      },
+      "analytics": {
+        "title": "Analytics and Customization Cookies",
+        "description": "These cookies help us understand website usage and measure effectiveness so we can improve experience."
+      },
+      "advertising": {
+        "title": "Advertising Cookies",
+        "description": "These cookies support advertising relevance and campaign measurement across services."
+      },
+      "social": {
+        "title": "Social Networking Cookies",
+        "description": "These cookies support sharing features and social integrations with third-party platforms."
+      },
+      "unclassified": {
+        "title": "Unclassified Cookies",
+        "description": "These cookies are being reviewed and categorized as part of ongoing cookie-audit work."
+      }
+    },
+    "purposes": {
+      "__cf_bm": "Cloudflare bot-management cookie used to protect the site from malicious traffic.",
+      "__clerk_db_jwt": "Clerk session cookie that keeps authenticated users signed in securely.",
+      "__session": "App-level session cookie used for secure request continuity.",
+      "_cfuvid": "Cloudflare cookie used for rate-limiting and secure performance handling across requests.",
+      "__cflb": "Cloudflare load-balancer cookie used to maintain consistency across requests.",
+      "cf_ob_info": "Cloudflare Always Online metadata cookie used during fallback responses.",
+      "cf_use_ob": "Cloudflare Always Online cookie to control origin fallback behavior.",
+      "cfz_google-analytics_v4": "Cloudflare Zaraz cookie key used for optional analytics integration."
+    },
+    "expiries": {
+      "30 minutes": "30 minutes",
+      "Session": "Session",
+      "1 day": "1 day",
+      "30 seconds": "30 seconds",
+      "Persistent": "Persistent"
+    }
+  },
+  "billingUi": {
+    "subscription": {
+      "title": "Current Subscription",
+      "description": "Manage your billing and subscription settings",
+      "planTitle": "{plan} Plan",
+      "month": "month",
+      "year": "year",
+      "billingInformation": "Billing Information",
+      "nextBillingDate": "Next billing date",
+      "paymentMethod": "Payment method",
+      "features": "Current Plan Features",
+      "statuses": {
+        "active": "active",
+        "inactive": "inactive",
+        "past_due": "past_due",
+        "cancelled": "cancelled"
+      }
+    },
+    "update": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "noPlans": "No plans available",
+      "currentPlan": "Current Plan",
+      "upgrade": "Upgrade",
+      "month": "month",
+      "year": "year",
+      "close": "Close"
+    },
+    "cancel": {
+      "trigger": "Cancel Subscription",
+      "keep": "Keep My Subscription",
+      "finalTitle": "Final Confirmation",
+      "finalSubtitle": "Are you sure you want to cancel your subscription?",
+      "finalWarning": "This action cannot be undone and you'll lose access to all premium features.",
+      "goBack": "Go Back",
+      "close": "Close",
+      "processing": "Processing...",
+      "cancelling": "Cancelling...",
+      "currentSubscription": "Current subscription",
+      "planTitle": "{plan} Plan",
+      "monthly": "monthly",
+      "cancelFailed": "Failed to cancel subscription",
+      "keepFailed": "Failed to keep subscription"
+    },
+    "plans": {
+      "free": {
+        "title": "Free",
+        "description": "Core Socratic chat and reflection.",
+        "button": "Keep Free",
+        "features": [
+          "{count} messages/day",
+          "Standard conversations",
+          "Shorter history",
+          "Roleplay mode"
+        ]
+      },
+      "monthly": {
+        "title": "Socratic+ Monthly",
+        "description": "Full premium access paid monthly.",
+        "button": "Start Monthly"
+      },
+      "annual": {
+        "title": "Socratic+ Annual",
+        "description": "$7/month billed annually.",
+        "button": "Start Annual",
+        "badge": "Recommended"
+      },
+      "premiumFeatures": [
+        "Unlimited messages",
+        "Debate mode access",
+        "Detailed debate feedback",
+        "Ruthless / blunt tone",
+        "Global memory",
+        "Early access features"
+      ]
+    }
+  },
+  "ui": {
+    "invalidReferralFormat": "Use letters, numbers, hyphens, or underscores in the referral code.",
+    "invalidAmbassadorCode": "Invalid ambassador code.",
+    "newBadge": "NEW",
+    "socraticMode": "Socratic",
+    "debateMode": "Debate",
+    "roleplayMode": "Roleplay",
+    "email": "Email",
+    "reportPreviewTitle": "Post Match Report Preview",
+    "reportPreviewAlt": "Preview of the Debate Mode post-match report",
+    "upgradePrefix": "Go Unlimited with",
+    "viewPricing": "View Pricing",
+    "keepFree": "Keep exploring free",
+    "editCancel": "Cancel",
+    "editSend": "Send",
+    "friend": "friend",
+    "you": "You",
+    "generationStopped": "Generation stopped."
+  },
+  "summary": {
+    "won": "won",
+    "lost": "lost",
+    "contested": "contested",
+    "strengths": "Strengths",
+    "weaknesses": "Weaknesses",
+    "missingStrength": "No specific transcript-backed strength was available for this slot.",
+    "missingWeakness": "No specific transcript-backed weakness was available for this slot.",
+    "back": "Back to debate",
+    "title": "Post-match report",
+    "youArgued": "You argued",
+    "aiArgued": "AI argued",
+    "scoreDirection": "Positive scores favor you. Negative scores favor the AI.",
+    "scoreCaveat": "Scores estimate pressure and control; the transcript is the source of truth.",
+    "verdict": "Verdict",
+    "userWon": "You won",
+    "aiWon": "AI won",
+    "draw": "Draw",
+    "missingVerdict": "The debate ended, but the verdict summary was not available.",
+    "analysis": "Match analysis",
+    "roundDistribution": "Round distribution",
+    "rhetoricalStyle": "Rhetorical style",
+    "strongestMoment": "Strongest moment",
+    "weakestMoment": "Weakest moment",
+    "unavailable": "Not available",
+    "feedback": "Strengths and weaknesses",
+    "feedbackNote": "Paired evidence from the debate, not generic advice.",
+    "practice": "Your Next Practice",
+    "practiceNote": "Highest leverage drill before your next debate.",
+    "practiceFallback": "Before your next debate, practice stating one premise clearly and defending it against the strongest objection before adding a new claim.",
+    "practiceInstruction": "Use this after the graph: identify the exchange where momentum shifted, then practice the drill against that exact weakness.",
+    "exchange": "Exchange {number}",
+    "score": "Score: {score}",
+    "noLabel": "No label",
+    "chartEmpty": "Momentum data was not available for this debate. Future completed debates will show round-by-round movement here."
+  },
+  "philosopherNames": {
+    "SOCRATES": "Socrates",
+    "PLATO": "Plato",
+    "ARISTOTLE": "Aristotle",
+    "EPICTETUS": "Epictetus",
+    "MARCUS_AURELIUS": "Marcus Aurelius",
+    "SENECA": "Seneca",
+    "NIETZSCHE": "Friedrich Nietzsche",
+    "KANT": "Immanuel Kant",
+    "MACHIAVELLI": "Niccolo Machiavelli",
+    "DOSTOEVSKY": "Fyodor Dostoevsky",
+    "HOBBES": "Thomas Hobbes",
+    "ROUSSEAU": "Jean-Jacques Rousseau",
+    "MILL": "John Stuart Mill",
+    "HUME": "David Hume",
+    "SPINOZA": "Baruch Spinoza",
+    "SCHOPENHAUER": "Arthur Schopenhauer",
+    "KIERKEGAARD": "Soren Kierkegaard",
+    "CAMUS": "Albert Camus",
+    "SARTRE": "Jean-Paul Sartre",
+    "FREUD": "Sigmund Freud",
+    "THOREAU": "Henry David Thoreau",
+    "WILLIAM_JAMES": "William James",
+    "ADAM_SMITH": "Adam Smith",
+    "AL_GHAZALI": "Al Ghazali",
+    "BUDDHA": "Buddha",
+    "CONFUCIUS": "Confucius",
+    "LAOZI": "Laozi",
+    "DIOGENES": "Diogenes",
+    "SUN_TZU": "Sun Tzu",
+    "VOLTAIRE": "Voltaire",
+    "WITTGENSTEIN": "Ludwig Wittgenstein",
+    "BERTRAND_RUSSELL": "Bertrand Russell",
+    "BEAUVOIR": "Simone de Beauvoir",
+    "HANNAH_ARENDT": "Hannah Arendt",
+    "FOUCAULT": "Michel Foucault",
+    "SIMONE_WEIL": "Simone Weil",
+    "AYN_RAND": "Ayn Rand",
+    "NUSSBAUM": "Martha Nussbaum",
+    "KAUTILYA": "Kautilya"
+  },
+  "debateFallback": {
+    "topics": [
+      "Free will is an illusion people defend for emotional reasons.",
+      "Stoicism is emotionally overrated in modern life.",
+      "Moral progress is mostly a comforting myth.",
+      "Authenticity is often just socially approved performance.",
+      "Compassion without hierarchy of duties produces moral chaos.",
+      "Most political tolerance masks contempt rather than respect.",
+      "Consciousness is narrative theater, not a stable self.",
+      "Justice and mercy are structurally incompatible in law.",
+      "Human dignity is rhetoric unless backed by material guarantees."
+    ],
+    "opening": "Your defense of {userSide} sounds confident, but it leans on an unproven premise. I will defend {aiSide}, and you now need to justify your core assumption directly.",
+    "emptyTopic": "Enter a philosophy topic or ask Socratic AI to generate one.",
+    "tooLong": "Keep the topic under {count} characters.",
+    "tooShort": "Make the topic a full debatable claim or question (at least 5 words), not a single keyword.",
+    "notPhilosophy": "That topic does not read as philosophy yet. Reframe it as a claim about truth, value, mind, meaning, ethics, freedom, knowledge, or political theory.",
+    "emptySuggestions": [
+      "Is free will an illusion?",
+      "Does morality require God?",
+      "Is stoicism emotionally dishonest?"
+    ],
+    "reframingSuggestions": [
+      "Is ambition morally corrosive?",
+      "Is happiness a poor standard for a good life?",
+      "Do humans have intrinsic worth?"
+    ]
+  },
   "locale": {
     "label": "Langue",
     "changeLabel": "Changer de langue"

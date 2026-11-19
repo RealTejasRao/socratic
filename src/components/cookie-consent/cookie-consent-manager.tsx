@@ -16,6 +16,12 @@ import {
 } from "@/src/lib/cookie-consent";
 import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { ROUTES } from "@/src/lib/routes";
+import enApp from "@/src/i18n/messages/en/app.json";
+import type { AppCopy } from "@/src/i18n/app";
+import type { AppLocale } from "@/src/i18n/locales";
+import { getAppLocalePresentation } from "@/src/i18n/app-presentation";
+
+type CookieCopy = AppCopy["cookieConsent"];
 
 type CookieEntry = {
   name: string;
@@ -175,11 +181,13 @@ function CookieCategoryRow({
   checked,
   onToggle,
   onDetails,
+  copy,
 }: {
   category: CookieCategoryConfig;
   checked: boolean;
   onToggle: (category: CookieConsentCategory, value: boolean) => void;
   onDetails: (category: CookieConsentCategory) => void;
+  copy: CookieCopy;
 }) {
   return (
     <div className="rounded-xl border border-black/10 bg-white/95 px-4 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.04)]">
@@ -197,8 +205,8 @@ function CookieCategoryRow({
               {category.title} ({category.cookies.length})
             </span>
             {category.required ? (
-              <span className="ml-2 inline-flex rounded-full bg-black/7 px-2.5 py-0.5 text-[0.74rem] font-medium text-black/70">
-                Always on
+              <span className="ms-2 inline-flex rounded-full bg-black/7 px-2.5 py-0.5 text-[0.74rem] font-medium text-black/70">
+                {copy.alwaysOn}
               </span>
             ) : null}
           </span>
@@ -209,17 +217,27 @@ function CookieCategoryRow({
           onClick={() => onDetails(category.id)}
           className="shrink-0 cursor-pointer rounded-full border border-black/14 px-3 py-1 text-[0.84rem] font-medium text-black/80 transition-colors hover:bg-black/5"
         >
-          Details
+          {copy.details}
         </button>
       </div>
 
-      <p className="mt-2 pl-8 pr-1 text-[0.94rem] leading-relaxed text-black/72">{category.description}</p>
+      <p className="mt-2 ps-8 pe-1 text-[0.94rem] leading-relaxed text-black/72">{category.description}</p>
     </div>
   );
 }
 
-export function CookieConsentManager() {
+export function CookieConsentManager({ copy = enApp.cookieConsent, locale }: { copy?: CookieCopy; locale?: AppLocale }) {
   const pathname = usePathname();
+  const presentation = locale ? getAppLocalePresentation(locale) : undefined;
+  const categories = useMemo(() => COOKIE_CATEGORIES.map(category => ({
+    ...category,
+    ...copy.categories[category.id],
+    cookies: category.cookies.map(cookie => ({
+      ...cookie,
+      purpose: copy.purposes[cookie.name as keyof CookieCopy["purposes"]] ?? cookie.purpose,
+      expiresIn: copy.expiries[cookie.expiresIn as keyof CookieCopy["expiries"]] ?? cookie.expiresIn,
+    })),
+  })), [copy]);
   const isStandalone = useStandaloneMode();
   const initialConsent = useMemo(() => getInitialCookieConsentState(), []);
   const [isReady, setIsReady] = useState(false);
@@ -236,8 +254,8 @@ export function CookieConsentManager() {
     () =>
       isPolicyPage
         ? null
-        : (COOKIE_CATEGORIES.find((category) => category.id === detailCategory) ?? null),
-    [detailCategory, isPolicyPage],
+        : (categories.find((category) => category.id === detailCategory) ?? null),
+    [categories, detailCategory, isPolicyPage],
   );
 
   useEffect(() => {
@@ -343,15 +361,15 @@ export function CookieConsentManager() {
   };
 
   return (
-    <>
+    <div lang={presentation?.lang} dir={presentation?.dir} className={presentation?.className} style={presentation?.style}>
       {showBanner ? (
         <section className="fixed inset-0 z-120 flex items-center justify-center bg-black/45 px-4 py-5 backdrop-blur-[2px] sm:px-6">
           <div className="relative w-full max-w-140 overflow-hidden rounded-2xl border border-black/12 bg-white p-6 shadow-[0_28px_70px_rgba(0,0,0,0.35)] sm:p-7">
             <button
               type="button"
               onClick={allowAll}
-              className="absolute right-5 top-5 z-10 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-black/12 text-[1.25rem] leading-none text-black/72 transition-transform transition-colors duration-200 hover:rotate-90 hover:bg-black/5 hover:text-black sm:right-6 sm:top-6"
-              aria-label="Close and accept all cookies"
+              className="absolute end-5 top-5 z-10 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-black/12 text-[1.25rem] leading-none text-black/72 transition-transform transition-colors duration-200 hover:rotate-90 hover:bg-black/5 hover:text-black sm:end-6 sm:top-6"
+              aria-label={copy.closeAccept}
             >
               ×
             </button>
@@ -363,26 +381,25 @@ export function CookieConsentManager() {
                 <Cookie className="h-6 w-6" />
               </div>
               <h2 className="mt-4 text-[1.55rem] leading-tight font-semibold text-black">
-                Cookies, but on your terms :)
+                {copy.title}
               </h2>
               <p className="mt-2 text-[0.98rem] leading-relaxed text-black/74">
-                We use cookies for security, performance, and experience. Choose
-                what to allow now, and update your preferences anytime.
+                {copy.description}
               </p>
               <p className="mt-3 text-[0.88rem] leading-relaxed text-black/60">
-                Closing this prompt accepts all cookies. Read our{" "}
+                {copy.closingNotice}{" "}
                 <Link
                   className="underline underline-offset-2"
                   href={ROUTES.PRIVACY_POLICY}
                 >
-                  Privacy Policy
+                  {copy.privacyPolicy}
                 </Link>{" "}
-                and{" "}
+                {copy.and}{" "}
                 <Link
                   className="underline underline-offset-2"
                   href={ROUTES.COOKIE_POLICY}
                 >
-                  Cookie Policy
+                  {copy.cookiePolicy}
                 </Link>
                 .
               </p>
@@ -397,14 +414,14 @@ export function CookieConsentManager() {
                 }}
                 className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-black/25 px-5 text-[0.95rem] font-medium text-black transition-colors hover:bg-black/5"
               >
-                Preferences
+                {copy.preferences}
               </button>
               <button
                 type="button"
                 onClick={allowAll}
                 className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md bg-[#a01717] px-6 text-[0.95rem] font-semibold text-white transition-colors hover:bg-[#871313]"
               >
-                Accept
+                {copy.accept}
               </button>
             </div>
           </div>
@@ -416,20 +433,20 @@ export function CookieConsentManager() {
           className="fixed inset-0 z-130 flex items-end justify-center bg-black/45 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
           aria-modal="true"
           role="dialog"
-          aria-label="Cookie preferences"
+          aria-label={copy.preferencesTitle}
         >
           <div className="flex h-[92vh] w-full max-w-215x flex-col rounded-t-2xl border border-black/12 bg-[#f7f7f7] shadow-[0_30px_80px_rgba(0,0,0,0.34)] sm:h-[88vh] sm:rounded-2xl">
-            <div className="relative flex items-center justify-between border-b border-black/10 px-5 py-4 pr-16 sm:px-6 sm:pr-16">
+            <div className="relative flex items-center justify-between border-b border-black/10 px-5 py-4 pe-16 sm:px-6 sm:pe-16">
               <div className="flex items-center gap-3">
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div>
                   <h2 className="text-[1.28rem] font-semibold text-black">
-                    Cookie Preferences
+                    {copy.preferencesTitle}
                   </h2>
                   <p className="text-[0.82rem] text-black/58">
-                    Minimal controls, full transparency
+                    {copy.preferencesSubtitle}
                   </p>
                 </div>
               </div>
@@ -439,8 +456,8 @@ export function CookieConsentManager() {
                   setDetailCategory(null);
                   setIsPreferencesOpen(false);
                 }}
-                className="absolute right-5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-black/12 text-[1.25rem] leading-none text-black/72 transition-transform transition-colors duration-200 hover:rotate-90 hover:bg-black/5 hover:text-black sm:right-6"
-                aria-label="Close cookie preferences"
+                className="absolute end-5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-black/12 text-[1.25rem] leading-none text-black/72 transition-transform transition-colors duration-200 hover:rotate-90 hover:bg-black/5 hover:text-black sm:end-6"
+                aria-label={copy.closePreferences}
               >
                 ×
               </button>
@@ -451,36 +468,36 @@ export function CookieConsentManager() {
                 <>
                   <div className="rounded-xl border border-black/10 bg-white px-4 py-4 sm:px-5">
                     <p className="text-[0.96rem] leading-relaxed text-black/78">
-                      Choose which optional cookies we can use. Essential
-                      cookies stay on for security and core functionality.
+                      {copy.chooseOptional}
                     </p>
                     <p className="mt-2 text-[0.93rem] leading-relaxed text-black/68">
-                      Learn more in our{" "}
+                      {copy.learnMore}{" "}
                       <Link
                         className="underline underline-offset-2"
                         href={ROUTES.COOKIE_POLICY}
                       >
-                        Cookie Policy
+                        {copy.cookiePolicy}
                       </Link>{" "}
-                      and{" "}
+                      {copy.and}{" "}
                       <Link
                         className="underline underline-offset-2"
                         href={ROUTES.PRIVACY_POLICY}
                       >
-                        Privacy Policy
+                        {copy.privacyPolicy}
                       </Link>
                       .
                     </p>
                   </div>
 
                   <div className="mt-4 grid gap-3">
-                    {COOKIE_CATEGORIES.map((category) => (
+                    {categories.map((category) => (
                       <CookieCategoryRow
                         key={category.id}
                         category={category}
                         checked={preferences[category.id]}
                         onToggle={toggleCategory}
                         onDetails={setDetailCategory}
+                        copy={copy}
                       />
                     ))}
                   </div>
@@ -492,7 +509,7 @@ export function CookieConsentManager() {
                     onClick={() => setDetailCategory(null)}
                     className="inline-flex min-h-10 cursor-pointer items-center justify-center gap-1 rounded-md border border-black/22 bg-white px-4 text-[0.94rem] font-medium text-black transition-colors hover:bg-black/5"
                   >
-                    <span aria-hidden="true">‹</span> Back
+                    <span aria-hidden="true">‹</span> {copy.back}
                   </button>
 
                   <h3 className="mt-5 text-[1.7rem] leading-tight font-semibold text-black sm:text-[1.9rem]">
@@ -504,26 +521,26 @@ export function CookieConsentManager() {
                   </p>
 
                   <h4 className="mt-6 text-[1.35rem] leading-tight font-semibold text-black sm:text-[1.5rem]">
-                    Provider{" "}
+                    {copy.provider}{" "}
                     {detailCategoryConfig.cookies[0]?.provider ??
                       ".usesocratic.com"}
                   </h4>
 
                   <div className="mt-3 overflow-x-auto rounded-xl border border-black/15 bg-white">
-                    <table className="w-full min-w-160 border-collapse text-left">
+                    <table className="w-full min-w-160 border-collapse text-start">
                       <thead className="bg-black text-white">
                         <tr>
                           <th className="px-5 py-3.5 text-[0.95rem] font-semibold">
-                            Name
+                            {copy.name}
                           </th>
                           <th className="px-5 py-3.5 text-[0.95rem] font-semibold">
-                            Purpose
+                            {copy.purpose}
                           </th>
                           <th className="px-5 py-3.5 text-[0.95rem] font-semibold">
-                            Type
+                            {copy.type}
                           </th>
                           <th className="px-5 py-3.5 text-[0.95rem] font-semibold">
-                            Expires In
+                            {copy.expiresIn}
                           </th>
                         </tr>
                       </thead>
@@ -543,7 +560,7 @@ export function CookieConsentManager() {
                                     rel="noreferrer noopener"
                                     className="mt-1 inline-block text-[0.86rem] text-black/72 underline underline-offset-2"
                                   >
-                                    Privacy policy
+                                    {copy.privacyPolicy}
                                   </a>
                                 ) : null}
                               </td>
@@ -564,7 +581,7 @@ export function CookieConsentManager() {
                               colSpan={4}
                               className="px-5 py-5 text-[0.95rem] text-black/72"
                             >
-                              No cookies are currently mapped in this category.
+                              {copy.noCookies}
                             </td>
                           </tr>
                         )}
@@ -583,21 +600,21 @@ export function CookieConsentManager() {
                     onClick={declineAll}
                     className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-black/20 bg-white px-4 text-[0.95rem] font-semibold text-black transition-colors hover:bg-black/5"
                   >
-                    Decline All
+                    {copy.declineAll}
                   </button>
                   <button
                     type="button"
                     onClick={saveSelectedPreferences}
                     className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md bg-black px-4 text-[0.95rem] font-semibold text-white transition-colors hover:bg-black/86"
                   >
-                    Save Preferences
+                    {copy.savePreferences}
                   </button>
                   <button
                     type="button"
                     onClick={allowAll}
                     className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md bg-[#a01717] px-4 text-[0.95rem] font-semibold text-white transition-colors hover:bg-[#871313]"
                   >
-                    Allow All
+                    {copy.allowAll}
                   </button>
                 </div>
               </div>
@@ -605,6 +622,6 @@ export function CookieConsentManager() {
           </div>
         </section>
       ) : null}
-    </>
+    </div>
   );
 }

@@ -1,8 +1,9 @@
 import { Prisma } from "@prisma/client";
 import {
   DEFAULT_LOCALE,
-  type SupportedLocale,
+  type AppLocale,
 } from "@/src/i18n/locales";
+import { getAppCopy } from "@/src/i18n/app";
 import type { DebateTopicSource, DebateWinner } from "src/types/chat";
 import {
   deepseek,
@@ -75,7 +76,7 @@ Return only the JSON. No markdown, no preamble.`;
 type DebateSuggestionParams = {
   tone: DebateTone;
   durationPreset: DebateDurationPreset;
-  locale?: SupportedLocale | undefined;
+  locale?: AppLocale | undefined;
   userId?: string;
 };
 
@@ -85,7 +86,7 @@ type DebateOpeningParams = {
   durationPreset: DebateDurationPreset;
   userSide: string;
   aiSide: string;
-  locale?: SupportedLocale | undefined;
+  locale?: AppLocale | undefined;
 };
 
 type DebateVerdictParams = {
@@ -177,7 +178,9 @@ const FALLBACK_TOPICS_BY_LOCALE = {
     "Justiça e misericórdia são estruturalmente incompatíveis na lei.",
     "A dignidade humana é retórica sem garantias materiais.",
   ],
-} satisfies Record<SupportedLocale, string[]>;
+  ru: getAppCopy("ru").debateFallback.topics,
+  ar: getAppCopy("ar").debateFallback.topics,
+} satisfies Record<AppLocale, string[]>;
 
 const DEBATE_LANGUAGE_NAMES = {
   en: "English",
@@ -185,13 +188,15 @@ const DEBATE_LANGUAGE_NAMES = {
   fr: "French",
   de: "German",
   "pt-BR": "Brazilian Portuguese",
-} satisfies Record<SupportedLocale, string>;
+  ru: "Russian",
+  ar: "Modern Standard Arabic",
+} satisfies Record<AppLocale, string>;
 
-function getDebateLanguageName(locale: SupportedLocale = DEFAULT_LOCALE) {
+function getDebateLanguageName(locale: AppLocale = DEFAULT_LOCALE) {
   return DEBATE_LANGUAGE_NAMES[locale] ?? DEBATE_LANGUAGE_NAMES[DEFAULT_LOCALE];
 }
 
-function getFallbackTopics(locale: SupportedLocale = DEFAULT_LOCALE) {
+function getFallbackTopics(locale: AppLocale = DEFAULT_LOCALE) {
   return FALLBACK_TOPICS_BY_LOCALE[locale] ?? FALLBACK_TOPICS;
 }
 
@@ -200,6 +205,11 @@ function getLocalizedFallbackOpening(params: DebateOpeningParams) {
   const aiSide = params.aiSide.toLowerCase();
 
   switch (params.locale) {
+    case "ru":
+    case "ar":
+      return getAppCopy(params.locale).debateFallback.opening
+        .replace("{userSide}", params.userSide)
+        .replace("{aiSide}", params.aiSide);
     case "it":
       return `La tua difesa di ${userSide} sembra sicura, ma poggia su una premessa non dimostrata. Io difenderò ${aiSide}, e ora devi giustificare direttamente il nucleo della tua posizione.`;
     case "fr":
@@ -554,9 +564,24 @@ export function getDebateTimeRemainingSeconds(params: {
 
 export async function validateDebateTopic(
   topic: string,
-  locale: SupportedLocale = DEFAULT_LOCALE,
+  locale: AppLocale = DEFAULT_LOCALE,
 ) {
   const lightweight = validatePhilosophyTopicLightweight(topic);
+  if ((locale === "ru" || locale === "ar") && !lightweight.isValid) {
+    const copy = getAppCopy(locale).debateFallback;
+    const count = lightweight.normalizedTopic.split(/\s+/).filter(Boolean).length;
+    if (!lightweight.normalizedTopic) {
+      lightweight.reason = copy.emptyTopic;
+      lightweight.reframingSuggestions = copy.emptySuggestions;
+    } else if (lightweight.normalizedTopic.length > DEBATE_TOPIC_MAX_CHARS) {
+      lightweight.reason = copy.tooLong.replace("{count}", String(DEBATE_TOPIC_MAX_CHARS));
+    } else if (count < 5) {
+      lightweight.reason = copy.tooShort;
+    } else {
+      lightweight.reason = copy.notPhilosophy;
+      lightweight.reframingSuggestions = copy.reframingSuggestions;
+    }
+  }
   const languageName = getDebateLanguageName(locale);
   const topicWordCount = lightweight.normalizedTopic
     .split(/\s+/)
@@ -1281,7 +1306,7 @@ export async function createDebateSession(params: {
   topicSource: DebateTopicSource;
   userSide: string;
   aiSide: string;
-  locale?: SupportedLocale | undefined;
+  locale?: AppLocale | undefined;
 }) {
   const normalizedTopic = normalizeDebateTopic(params.topic);
   const normalizedUserSide = normalizeDebateTopic(params.userSide);

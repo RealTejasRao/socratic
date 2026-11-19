@@ -1,4 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
+import { getAppCopy, type AppCopy } from "@/src/i18n/app";
+import { LOCALE_COOKIE_NAME, normalizeAppLocale } from "@/src/i18n/locales";
+import { getLocalizedDebateDurationMeta, getLocalizedDebateToneMeta } from "@/src/i18n/app-config";
 import type { Route } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -16,7 +20,6 @@ import {
 } from "lucide-react";
 import { prisma } from "src/server/db/client";
 import { ROUTES } from "src/lib/routes";
-import { getDebateDurationMeta, getDebateToneMeta } from "src/lib/debate";
 import { getOrCreateDebateDashboard } from "src/server/debate/service";
 import { DebateMomentumChart } from "./DebateMomentumChart";
 
@@ -34,10 +37,12 @@ function RatioBar({
   won,
   lost,
   contested,
+  copy,
 }: {
   won: number;
   lost: number;
   contested: number;
+  copy: AppCopy["summary"];
 }) {
   const total = Math.max(won + lost + contested, 1);
   const wonWidth = `${(won / total) * 100}%`;
@@ -53,13 +58,13 @@ function RatioBar({
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-[12px] text-[#666a63]">
         <span>
-          <strong className="text-[#285f53]">{won}</strong> won
+          <strong className="text-[#285f53]">{won}</strong> {copy.won}
         </span>
         <span>
-          <strong className="text-[#a33c32]">{lost}</strong> lost
+          <strong className="text-[#a33c32]">{lost}</strong> {copy.lost}
         </span>
         <span>
-          <strong className="text-[#955b25]">{contested}</strong> contested
+          <strong className="text-[#955b25]">{contested}</strong> {copy.contested}
         </span>
       </div>
     </div>
@@ -69,13 +74,15 @@ function RatioBar({
 function FeedbackTable({
   strengths,
   weaknesses,
+  copy,
 }: {
   strengths: string[];
   weaknesses: string[];
+  copy: AppCopy["summary"];
 }) {
   const rows = strengths.map((strength, index) => ({
     strength,
-    weakness: weaknesses[index] ?? "No specific transcript-backed weakness was available.",
+    weakness: weaknesses[index] ?? copy.missingWeakness,
   }));
 
   return (
@@ -86,13 +93,13 @@ function FeedbackTable({
             <th className="w-1/2 px-6 py-5">
               <span className="inline-flex items-center gap-2 text-[#285f53]">
                 <CircleCheck size={19} />
-                Strengths
+                {copy.strengths}
               </span>
             </th>
             <th className="w-1/2 border-l border-[#d8d4ca] px-6 py-5">
               <span className="inline-flex items-center gap-2 text-[#a33c32]">
                 <CircleAlert size={19} />
-                Weaknesses
+                {copy.weaknesses}
               </span>
             </th>
           </tr>
@@ -147,11 +154,15 @@ export async function DebateSummaryPageContent({
   }
 
   const { session, dashboard } = result;
-  const toneMeta = getDebateToneMeta(session.debateTone!);
-  const durationMeta = getDebateDurationMeta(session.debateDurationPreset!);
+  const cookieStore = await cookies();
+  const locale = appBasePath === ROUTES.APP ? normalizeAppLocale(cookieStore.get(LOCALE_COOKIE_NAME)?.value) : "en";
+  const appCopy = getAppCopy(locale);
+  const copy = appCopy.summary;
+  const toneMeta = getLocalizedDebateToneMeta(session.debateTone!, appCopy);
+  const durationMeta = getLocalizedDebateDurationMeta(session.debateDurationPreset!, appCopy);
   const winner = session.debateWinner ?? "DRAW";
   const winnerLabel =
-    winner === "USER" ? "You won" : winner === "ASSISTANT" ? "AI won" : "Draw";
+    winner === "USER" ? copy.userWon : winner === "ASSISTANT" ? copy.aiWon : copy.draw;
   const winnerClass =
     winner === "USER"
       ? "text-[#285f53]"
@@ -174,11 +185,11 @@ export async function DebateSummaryPageContent({
     );
   const strengths = normalizeBullets(
     dashboard.userStrengths,
-    "No specific transcript-backed strength was available for this slot.",
+    copy.missingStrength,
   );
   const weaknesses = normalizeBullets(
     dashboard.userWeaknesses,
-    "No specific transcript-backed weakness was available for this slot.",
+    copy.missingWeakness,
   );
   const roundsWon = dashboard.roundsWon ?? null;
   const roundsLost = dashboard.roundsLost ?? null;
@@ -196,11 +207,11 @@ export async function DebateSummaryPageContent({
             className="summary-back-link inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] font-medium text-[#30342f] transition hover:bg-[#f2f0e9]"
           >
             <ArrowLeft size={15} />
-            Back to debate
+            {copy.back}
           </Link>
           <div className="summary-generated hidden items-center gap-2 text-[13px] text-[#666a63] sm:flex">
             <Clock3 size={14} />
-            {new Date(dashboard.generatedAt).toLocaleString()}
+            {new Date(dashboard.generatedAt).toLocaleString(appBasePath === ROUTES.APP ? locale : undefined)}
           </div>
         </div>
       </header>
@@ -211,7 +222,7 @@ export async function DebateSummaryPageContent({
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
               <div>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[14px] font-medium text-[#555a54]">
-                  <span>Post-match report</span>
+                  <span>{copy.title}</span>
                   <span className="h-1 w-1 rounded-full bg-[#b8b3a8]" />
                   <span>{toneMeta.label}</span>
                   <span className="h-1 w-1 rounded-full bg-[#b8b3a8]" />
@@ -230,7 +241,7 @@ export async function DebateSummaryPageContent({
               <dl className="summary-result-grid grid grid-cols-2 gap-5 border-t border-[#e3e1d8] pt-4 text-[14px] xl:self-center xl:border-t-0 xl:pt-0">
                 <div>
                   <dt className="summary-note text-[13px] font-medium text-[#666a63]">
-                    You argued
+                    {copy.youArgued}
                   </dt>
                   <dd className="summary-body mt-2 text-[17px] font-semibold leading-7 text-[#20211f]">
                     {session.userDebateSide}
@@ -238,7 +249,7 @@ export async function DebateSummaryPageContent({
                 </div>
                 <div>
                   <dt className="summary-note text-[13px] font-medium text-[#666a63]">
-                    AI argued
+                    {copy.aiArgued}
                   </dt>
                   <dd className="summary-body mt-2 text-[17px] font-semibold leading-7 text-[#20211f]">
                     {session.aiDebateSide}
@@ -249,14 +260,15 @@ export async function DebateSummaryPageContent({
 
             <div className="summary-chart-wrap min-h-[520px]">
               <DebateMomentumChart
+                copy={copy}
                 data={dashboard.momentumScores ?? []}
                 className="h-full min-h-[520px] w-full"
               />
             </div>
 
             <div className="summary-chart-note flex flex-wrap items-center justify-between gap-3 border-t border-[#e3e1d8] pt-4 text-[13px] text-[#666a63]">
-              <p>Positive scores favor you. Negative scores favor the AI.</p>
-              <p>Scores estimate pressure and control; the transcript is the source of truth.</p>
+              <p>{copy.scoreDirection}</p>
+              <p>{copy.scoreCaveat}</p>
             </div>
           </div>
         </section>
@@ -265,7 +277,7 @@ export async function DebateSummaryPageContent({
           <div className="mx-auto grid max-w-[1480px] gap-7 lg:grid-cols-[310px_minmax(0,1fr)]">
             <div>
               <h2 className="summary-section-heading text-[34px] leading-none text-[#171916] [font-family:Georgia,serif] md:text-[44px]">
-                Verdict
+                {copy.verdict}
               </h2>
               <div className={`mt-5 h-1.5 w-32 rounded-full bg-gradient-to-r ${resultAccent}`} />
               <p className={`mt-5 inline-flex items-center gap-2 text-[15px] font-semibold ${winnerClass}`}>
@@ -276,7 +288,7 @@ export async function DebateSummaryPageContent({
             <div className="border-l-4 border-[#2c3a4b] bg-[#f7f4ed] px-6 py-6">
               <p className="summary-body max-w-[980px] text-[22px] leading-10 text-[#20211f]">
                 {session.debateVerdictSummary ||
-                  "The debate ended, but the verdict summary was not available."}
+                  copy.missingVerdict}
               </p>
             </div>
           </div>
@@ -286,7 +298,7 @@ export async function DebateSummaryPageContent({
           <div className="mx-auto max-w-[1480px]">
             <div className="mb-7 border-t border-[#d8d4ca] pt-8">
               <h2 className="summary-section-heading text-[34px] leading-none text-[#171916] [font-family:Georgia,serif] md:text-[44px]">
-                Match analysis
+                {copy.analysis}
               </h2>
             </div>
 
@@ -294,9 +306,10 @@ export async function DebateSummaryPageContent({
               <div className="border-b border-[#ddd8cd] bg-[#fbfaf6] p-6">
                 <div className="mb-6 flex items-center gap-2 text-[18px] font-semibold text-[#20211f]">
                   <BarChart3 size={20} />
-                  Round distribution
+                  {copy.roundDistribution}
                 </div>
                 <RatioBar
+                  copy={copy}
                   won={wonCount}
                   lost={lostCount}
                   contested={contestedCount}
@@ -307,26 +320,26 @@ export async function DebateSummaryPageContent({
                   <tbody className="divide-y divide-[#ddd8cd]">
                     <tr>
                       <th className="w-[230px] bg-[#fbfaf6] px-6 py-5 text-[14px] font-semibold text-[#555a54]">
-                        Rhetorical style
+                        {copy.rhetoricalStyle}
                       </th>
                       <td className="border-l border-[#ddd8cd] px-6 py-5 text-[18px] font-semibold text-[#20211f]">
-                        {dashboard.rhetoricalStyle || "Not available"}
+                        {dashboard.rhetoricalStyle || copy.unavailable}
                       </td>
                     </tr>
                     <tr>
                       <th className="w-[230px] bg-[#fbfaf6] px-6 py-5 text-[14px] font-semibold text-[#285f53]">
-                        Strongest moment
+                        {copy.strongestMoment}
                       </th>
                       <td className="border-l border-[#c8ded4] bg-[#eef7f2] px-6 py-6 text-[17px] font-semibold leading-8 text-[#243f36]">
-                        {dashboard.strongestMoment || "Not available"}
+                        {dashboard.strongestMoment || copy.unavailable}
                       </td>
                     </tr>
                     <tr>
                       <th className="w-[230px] bg-[#fbfaf6] px-6 py-5 text-[14px] font-semibold text-[#a33c32]">
-                        Weakest moment
+                        {copy.weakestMoment}
                       </th>
                       <td className="border-l border-[#efcfc9] bg-[#fff0ee] px-6 py-6 text-[17px] font-semibold leading-8 text-[#55302c]">
-                        {dashboard.weakestMoment || "Not available"}
+                        {dashboard.weakestMoment || copy.unavailable}
                       </td>
                     </tr>
                   </tbody>
@@ -341,14 +354,14 @@ export async function DebateSummaryPageContent({
             <div className="mb-7 grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
               <div>
                 <h2 className="summary-section-heading text-[34px] leading-none text-[#171916] [font-family:Georgia,serif] md:text-[44px]">
-                  Strengths and weaknesses
+                  {copy.feedback}
                 </h2>
               </div>
               <p className="summary-note border-l-2 border-[#d8d4ca] pl-4 text-[14px] leading-6 text-[#666a63]">
-                Paired evidence from the debate, not generic advice.
+                {copy.feedbackNote}
               </p>
             </div>
-            <FeedbackTable strengths={strengths} weaknesses={weaknesses} />
+            <FeedbackTable strengths={strengths} weaknesses={weaknesses} copy={copy} />
           </div>
         </section>
 
@@ -361,22 +374,21 @@ export async function DebateSummaryPageContent({
                 </span>
                 <div>
                   <h2 className="summary-section-heading text-[28px] font-normal leading-tight text-[#171916] [font-family:Georgia,serif] md:text-[34px]">
-                    Your Next Practice
+                    {copy.practice}
                   </h2>
                   <p className="mt-2 text-[13px] leading-5 text-[#666a63]">
-                    Highest leverage drill before your next debate.
+                    {copy.practiceNote}
                   </p>
                 </div>
               </div>
               <div className="border-t border-[#e3e1d8] pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
                 <p className="summary-body max-w-[980px] text-[20px] leading-8 text-[#20211f] md:text-[22px] md:leading-9">
                   {dashboard.drillForNextTime ||
-                    "Before your next debate, practice stating one premise clearly and defending it against the strongest objection before adding a new claim."}
+                    copy.practiceFallback}
                 </p>
                 <p className="summary-note mt-5 flex max-w-[820px] items-start gap-3 text-[14px] leading-7 text-[#555a54]">
                   <ShieldAlert className="mt-1 shrink-0" size={16} />
-                  Use this after the graph: identify the exchange where momentum
-                  shifted, then practice the drill against that exact weakness.
+                  {copy.practiceInstruction}
                 </p>
               </div>
             </div>

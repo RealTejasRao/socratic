@@ -50,6 +50,7 @@ import { TypewriterHeading } from "@/src/components/ui/typewriter-heading";
 import { UPSC_SUGGESTION_QUESTIONS } from "@/src/lib/suggestion-questions";
 import { resolveOptimizedCloudinaryPublicAsset } from "@/src/lib/cloudinary-public-assets";
 import { ROUTES } from "@/src/lib/routes";
+import { getLocalizedPath } from "@/src/i18n/locales";
 import { PLAN_LIMITS } from "@/src/lib/billing";
 import { PremiumCrownIcon } from "@/src/components/billingsdk/premium-crown-icon";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
@@ -399,6 +400,7 @@ function AppQuickTour({
   onClose: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const { copy: appCopy } = useAppRoute();
   const [targetFrames, setTargetFrames] = useState<
     {
       top: number;
@@ -904,18 +906,18 @@ function AppQuickTour({
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3.5 py-2.5">
             <div>
               <p className="text-[13px] font-semibold text-white">
-                Post Match Report Preview
+                {appCopy.ui.reportPreviewTitle}
               </p>
             </div>
             <span className="rounded-full bg-[color:var(--tour-accent)] px-2 py-0.5 text-[10px] font-bold text-[#120c04]">
-              Debate
+              {appCopy.ui.debateMode}
             </span>
           </div>
 
           <div className="relative h-[145px] bg-[#f7f4ec] md:h-[165px]">
             <Image
               src="/app/debate-report-preview.png"
-              alt="Preview of the Debate Mode post-match report"
+              alt={appCopy.ui.reportPreviewAlt}
               fill
               sizes="(max-width: 767px) 360px, 340px"
               className="object-cover object-top"
@@ -966,6 +968,7 @@ export default function ChatContainer({
     draftKey,
     isAppRoot,
     defaultNewChatMode,
+    locale,
     copy,
   } = useAppRoute();
   const greetingSeed = useSyncExternalStore(
@@ -1045,9 +1048,9 @@ export default function ChatContainer({
   const isRoleplaySession = activeSessionMeta.mode === "ROLEPLAY";
   const isDebateCompleted = activeSessionMeta.debate?.status === "COMPLETED";
   const completedDebate = isDebateCompleted ? activeSessionMeta.debate : null;
-  const rawName = initialUserName?.trim() || "friend";
-  const name = rawName.length > 0 ? rawName : "friend";
-  const userLabel = name === "friend" ? "You" : name;
+  const rawName = initialUserName?.trim();
+  const name = rawName || copy.ui.friend;
+  const userLabel = rawName || copy.ui.you;
   const winnerLabel =
     completedDebate?.winner === "USER"
       ? userLabel
@@ -1079,7 +1082,7 @@ export default function ChatContainer({
 
         return {
           philosopherId: activeRoleplayPhilosopher.philosopherId,
-          philosopherName: activeRoleplayPhilosopher.philosopherName,
+          philosopherName: localized?.name ?? activeRoleplayPhilosopher.philosopherName,
           imagePath: activeRoleplayPhilosopher.imagePath,
           flairs: activeRoleplayPhilosopher.flairs,
           expertise:
@@ -1132,7 +1135,7 @@ export default function ChatContainer({
           "{name}",
           visibleRoleplayPhilosopher.philosopherName,
         )
-      : name === "friend"
+      : !rawName
         ? copy.input.placeholder
         : copy.input.namedPlaceholder.replace("{name}", name);
   const greetingLine = (() => {
@@ -1831,7 +1834,7 @@ export default function ChatContainer({
         >
           <h3 className="app-upgrade-title flex items-start justify-between gap-3 text-[31px] leading-[1.05] tracking-[-0.04em] text-[#2f2417] font-[Georgia,serif] max-[520px]:text-[29px]">
             <span className="min-w-0">
-              Go Unlimited with{" "}
+              {copy.ui.upgradePrefix}{" "}
               <span style={{ color: "#CFA43A" }}>
                 Socratic Plus
               </span>
@@ -1843,7 +1846,7 @@ export default function ChatContainer({
           </p>
           <div className="mt-5 flex items-center gap-2.5 max-[520px]:flex-col max-[520px]:items-stretch">
             <Link
-              href={ROUTES.PRICING}
+              href={appBasePath === ROUTES.APP ? getLocalizedPath(ROUTES.PRICING, locale) : ROUTES.PRICING}
               onClick={handlePricingClick}
               aria-busy={isPricingNavigationPending}
               className={cn(
@@ -1851,7 +1854,7 @@ export default function ChatContainer({
                 isPricingNavigationPending && "pointer-events-none opacity-90",
               )}
             >
-              View Pricing
+              {copy.ui.viewPricing}
               {isPricingNavigationPending ? (
                 <RoseCurveLoader className="h-[1.6em] w-[1.6em] !text-black [filter:none]" />
               ) : (
@@ -1863,7 +1866,7 @@ export default function ChatContainer({
               onClick={() => setShowUpgradePrompt(false)}
               className="app-upgrade-secondary inline-flex justify-center rounded-[14px] border border-[#d8ccbc] bg-[#fdf9f2] px-4 py-2 text-[13px] text-[#5f5344] transition hover:bg-[#f4ece0]"
             >
-              Keep exploring free
+              {copy.ui.keepFree}
             </button>
           </div>
         </motion.div>
@@ -1987,7 +1990,7 @@ export default function ChatContainer({
 
       next[absoluteIndex] = {
         ...target,
-        content: "Generation stopped.",
+        content: copy.ui.generationStopped,
       };
       return next;
     });
@@ -2165,7 +2168,7 @@ export default function ChatContainer({
               visibleRoleplayPhilosopher.imagePath,
               { width: 520, height: 420, crop: "fill", quality: "auto" },
             )}
-            alt={`${visibleRoleplayPhilosopher.philosopherName} portrait for Socratic AI roleplay mode`}
+            alt={visibleRoleplayPhilosopher.philosopherName}
             fill
             sizes="(max-width: 640px) 100vw, 192px"
             className="object-cover"
@@ -2540,7 +2543,7 @@ export default function ChatContainer({
                           size={15}
                           className="app-mode-switch-color-socratic"
                         />
-                        Socratic
+                        {copy.ui.socraticMode}
                       </span>
                       {visibleModeSelection === "SOCRATIC" ? (
                         <Check size={14} />
@@ -2571,7 +2574,7 @@ export default function ChatContainer({
                           size={15}
                           className="app-mode-switch-color-debate"
                         />
-                        Debate
+                        {copy.ui.debateMode}
                         {!billing.features.debateMode ? (
                           <Crown size={12} className="text-[#CFA43A]" />
                         ) : null}
@@ -2598,7 +2601,7 @@ export default function ChatContainer({
                           size={15}
                           className="app-mode-switch-color-roleplay"
                         />
-                        Roleplay
+                        {copy.ui.roleplayMode}
                       </span>
                       {visibleModeSelection === "ROLEPLAY" ? (
                         <Check size={14} />

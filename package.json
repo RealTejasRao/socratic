@@ -30,11 +30,13 @@
     "i18n:validate:pricing": "node scripts/validate-home-translations.mjs --page pricing",
     "i18n:validate:billing": "node scripts/validate-home-translations.mjs --page billing",
     "i18n:test:marketing": "node --test scripts/test-marketing-locales.mjs",
+    "i18n:test:app": "node --test scripts/test-app-locales.mjs",
     "i18n:validate:blog": "node scripts/validate-home-translations.mjs --page blog",
     "i18n:validate:app": "node scripts/validate-home-translations.mjs --page app",
     "i18n:validate:blog-posts": "node scripts/validate-blog-post-translations.mjs"
   },
   "dependencies": {
+    "@clerk/localizations": "3.35.0",
     "@clerk/nextjs": "^6.37.3",
     "@clerk/themes": "^2.4.57",
     "@dodopayments/nextjs": "^0.3.6",

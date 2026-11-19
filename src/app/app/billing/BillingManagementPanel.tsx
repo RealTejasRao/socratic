@@ -6,11 +6,11 @@ import { SubscriptionManagement } from "@/src/components/billingsdk/subscription
 import {
   BILLINGSDK_PLAN_IDS,
   getBillingSdkPlanByTier,
-  socraticPlans,
 } from "@/src/lib/billingsdk-config";
 import type { PlanTier, BillingSubscriptionStatus } from "@prisma/client";
 import type { CurrentPlan } from "@/src/lib/billingsdk-config";
 import { useAppRoute } from "../components/app-route-context";
+import { getLocalizedBillingPlans } from "@/src/i18n/app-config";
 
 type Props = {
   planTier: PlanTier;
@@ -36,10 +36,12 @@ export default function BillingManagementPanel({
   planStatus,
   subscriptionCurrentPeriodEnd,
 }: Props) {
-  const { copy } = useAppRoute();
+  const { copy, locale } = useAppRoute();
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState("");
-  const currentPlan = getBillingSdkPlanByTier(planTier);
+  const localizedPlans = useMemo(() => getLocalizedBillingPlans(copy), [copy]);
+  const originalPlan = getBillingSdkPlanByTier(planTier);
+  const currentPlan = localizedPlans.find((plan) => plan.id === originalPlan.id) ?? originalPlan;
   const canManageSubscription = planTier !== "FREE";
 
   const currentPlanModel = useMemo<CurrentPlan>(() => {
@@ -53,7 +55,7 @@ export default function BillingManagementPanel({
       plan: currentPlan,
       type: cycleType,
       nextBillingDate: subscriptionCurrentPeriodEnd
-        ? new Date(subscriptionCurrentPeriodEnd).toLocaleDateString()
+        ? new Date(subscriptionCurrentPeriodEnd).toLocaleDateString(locale)
         : copy.billing.notAvailable,
       paymentMethod: copy.billing.managedInDodo,
       status: mapStatus(planStatus),
@@ -67,7 +69,7 @@ export default function BillingManagementPanel({
     }
 
     return base;
-  }, [copy.billing.managedInDodo, copy.billing.notAvailable, currentPlan, planStatus, planTier, subscriptionCurrentPeriodEnd]);
+  }, [copy.billing.managedInDodo, copy.billing.notAvailable, currentPlan, planStatus, planTier, subscriptionCurrentPeriodEnd, locale]);
 
   async function openPortal() {
     setIsBusy(true);
@@ -98,7 +100,7 @@ export default function BillingManagementPanel({
         body: JSON.stringify({ plan: target }),
       });
       if (!response.ok) {
-        throw new Error(await response.text());
+        throw new Error(locale === "ru" || locale === "ar" ? copy.billing.checkoutError : await response.text());
       }
       const payload = (await response.json()) as { checkoutUrl?: string };
       if (!payload.checkoutUrl) {
@@ -127,11 +129,14 @@ export default function BillingManagementPanel({
     <div className="space-y-3">
       {canManageSubscription ? (
         <SubscriptionManagement
+          labels={copy.billingUi.subscription}
           className="border-[#d8c9ad] bg-[#f9f4e8] text-[#211b14]"
           currentPlan={currentPlanModel}
           updatePlan={{
+            locale,
             currentPlan,
-            plans: socraticPlans,
+            plans: localizedPlans,
+            labels: copy.billingUi.update,
             onPlanChange: (planId) => {
               void handlePlanChange(planId);
             },
@@ -139,6 +144,14 @@ export default function BillingManagementPanel({
             title: copy.billing.switchPlan,
           }}
           cancelSubscription={{
+            locale,
+            labels: copy.billingUi.cancel,
+            triggerButtonText: copy.billingUi.cancel.trigger,
+            keepButtonText: copy.billingUi.cancel.keep,
+            finalTitle: copy.billingUi.cancel.finalTitle,
+            finalSubtitle: copy.billingUi.cancel.finalSubtitle,
+            finalWarningText: copy.billingUi.cancel.finalWarning,
+            goBackButtonText: copy.billingUi.cancel.goBack,
             title: copy.billing.cancelManage,
             description: copy.billing.cancelDescription,
             plan: currentPlan,

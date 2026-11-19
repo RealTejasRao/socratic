@@ -8,6 +8,10 @@ import { Toggle } from "@/src/components/ui/toggle";
 import { Label } from "@/src/components/ui/label";
 import { type Plan } from "@/src/lib/billingsdk-config";
 import { cn } from "@/src/lib/utils";
+import type { AppCopy } from "@/src/i18n/app";
+import enApp from "@/src/i18n/messages/en/app.json";
+import type { AppLocale } from "@/src/i18n/locales";
+import { getAppLocalePresentation } from "@/src/i18n/app-presentation";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +28,8 @@ export interface UpdatePlanDialogProps {
   onPlanChange: (planId: string) => void;
   className?: string;
   title?: string;
+  labels?: AppCopy["billingUi"]["update"];
+  locale?: AppLocale;
 }
 
 const easing = [0.4, 0, 0.2, 1] as const;
@@ -35,7 +41,10 @@ export function UpdatePlanDialog({
   className,
   title,
   triggerText,
+  labels = enApp.billingUi.update,
+  locale = "en",
 }: UpdatePlanDialogProps) {
+  const presentation = getAppLocalePresentation(locale);
   const [isYearly, setIsYearly] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -62,11 +71,16 @@ export function UpdatePlanDialog({
         <Button>{triggerText || "Update Plan"}</Button>
       </DialogTrigger>
       <DialogContent
+        closeLabel={labels.close}
+        lang={presentation.lang}
+        dir={presentation.dir}
+        style={presentation.style}
         className={cn(
           "text-foreground flex max-h-[95vh] flex-col gap-3 sm:max-h-[90vh] sm:gap-4",
           "w-[calc(100vw-2rem)] max-w-2xl sm:w-full",
           "p-4 sm:p-6",
           className,
+          presentation.className,
         )}
       >
         <DialogHeader className="flex flex-col gap-3 pb-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-0">
@@ -80,7 +94,7 @@ export function UpdatePlanDialog({
               onPressedChange={(pressed) => setIsYearly(!pressed)}
               className="h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
             >
-              Monthly
+              {labels.monthly}
             </Toggle>
             <Toggle
               size="sm"
@@ -88,7 +102,7 @@ export function UpdatePlanDialog({
               onPressedChange={(pressed) => setIsYearly(pressed)}
               className="h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
             >
-              Yearly
+              {labels.yearly}
             </Toggle>
           </div>
         </DialogHeader>
@@ -102,11 +116,11 @@ export function UpdatePlanDialog({
           {plans.length === 0 ? (
             <div className="flex items-center justify-center py-12 text-center">
               <p className="text-muted-foreground text-sm">
-                No plans available
+                {labels.noPlans}
               </p>
             </div>
           ) : (
-            <RadioGroup value={selectedPlan} onValueChange={handlePlanChange}>
+            <RadioGroup dir={presentation.dir} value={selectedPlan} onValueChange={handlePlanChange}>
               <div className="space-y-2.5 pr-0.5 pb-2 sm:space-y-3">
                 {plans.map((plan, index) => (
                   <motion.div
@@ -197,7 +211,7 @@ export function UpdatePlanDialog({
                               : getCurrentPrice(plan)}
                           </div>
                           <div className="text-muted-foreground mt-0.5 text-[10px] sm:text-xs">
-                            /{isYearly ? "year" : "month"}
+                            /{isYearly ? labels.year : labels.month}
                           </div>
                         </div>
                       </div>
@@ -252,8 +266,8 @@ export function UpdatePlanDialog({
                               }}
                             >
                               {selectedPlan === currentPlan.id
-                                ? "Current Plan"
-                                : "Upgrade"}
+                                ? labels.currentPlan
+                                : labels.upgrade}
                             </Button>
                           </motion.div>
                         </motion.div>

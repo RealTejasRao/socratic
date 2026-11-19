@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -48,8 +49,12 @@ import {
   LOCALE_COOKIE_NAME,
   LOCALE_LABELS,
   SUPPORTED_LOCALES,
-  type SupportedLocale,
+  APP_LOCALES,
+  LOCALE_DIRECTIONS,
+  getLocalizedPath,
+  type AppLocale,
 } from "@/src/i18n/locales";
+import { getAppLocalePresentation } from "@/src/i18n/app-presentation";
 import { useStandaloneMode } from "@/src/hooks/use-standalone-mode";
 import { Switch } from "@/src/components/ui/switch";
 import { RoseCurveLoader } from "@/src/components/ui/rose-curve-loader";
@@ -219,6 +224,9 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   } =
     useAppRoute();
   const showUpscBrandGraphic = appBasePath === ROUTES.UPSC_APP;
+  const availableLocales = showUpscBrandGraphic ? SUPPORTED_LOCALES : APP_LOCALES;
+  const localizeReferralMessages = !showUpscBrandGraphic && (locale === "ru" || locale === "ar");
+  const presentation = getAppLocalePresentation(showUpscBrandGraphic ? "en" : locale);
   const isStandalone = useStandaloneMode();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -239,7 +247,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     top: number;
     width: number;
   } | null>(null);
-  const [pendingLocale, setPendingLocale] = useState<SupportedLocale | null>(
+  const [pendingLocale, setPendingLocale] = useState<AppLocale | null>(
     null,
   );
   const [isLocaleTransitionPending, startLocaleTransition] = useTransition();
@@ -270,10 +278,35 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
   const resetToastTimeoutRef = useRef<number | null>(null);
   const newChatFeedbackTimeoutRef = useRef<number | null>(null);
   const billingFeedbackTimeoutRef = useRef<number | null>(null);
-  const billingCtaHref = isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING;
+  const billingCtaHref = getLocalizedPath(
+    isPremium ? ROUTES.APP_BILLING : ROUTES.PRICING,
+    showUpscBrandGraphic ? "en" : locale,
+  );
   const billingCtaLabel = isPremium ? copy.nav.billingLabel : copy.nav.upgradeLabel;
   const billingCtaTarget = isStandalone ? undefined : "_blank";
   const billingCtaRel = isStandalone ? undefined : "noreferrer noopener";
+  const updateLocaleMenuPosition = useCallback(() => {
+    const trigger = localeDropdownRef.current;
+    if (!trigger) {
+      return;
+    }
+
+    const rect = trigger.getBoundingClientRect();
+    const viewportPadding = 12;
+    const menuGap = 8;
+    const estimatedMenuHeight = Math.min(availableLocales.length * 40 + 10, window.innerHeight - viewportPadding * 2 - menuGap);
+    const maxLeft = window.innerWidth - rect.width - viewportPadding;
+    const top =
+      window.innerHeight - rect.bottom - viewportPadding >= estimatedMenuHeight
+        ? rect.bottom + menuGap
+        : Math.max(viewportPadding, rect.top - estimatedMenuHeight - menuGap);
+
+    setLocaleMenuPosition({
+      left: Math.max(viewportPadding, Math.min(rect.left, maxLeft)),
+      top,
+      width: rect.width,
+    });
+  }, [availableLocales.length]);
   const isLocaleChanging =
     pendingLocale !== null || isLocaleTransitionPending;
   const displayedLocale = pendingLocale ?? locale;
@@ -413,7 +446,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         setReferralCode("");
         setReferralMessageTone("success");
         setReferralMessage(
-          payload.message ??
+          (!localizeReferralMessages ? payload.message : undefined) ??
             copy.settings.supporting.replace("{name}", ambassadorName),
         );
       } catch {
@@ -426,7 +459,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     return () => {
       isActive = false;
     };
-  }, [isSettingsOpen]);
+  }, [isSettingsOpen, localizeReferralMessages, copy.settings.supporting]);
 
   useEffect(() => {
     if (!isSettingsOpen || !isToneDropdownOpen) {
@@ -481,7 +514,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       window.removeEventListener("resize", syncLocaleMenuPosition);
       window.removeEventListener("scroll", syncLocaleMenuPosition, true);
     };
-  }, [isLocaleDropdownOpen, isSettingsOpen]);
+  }, [isLocaleDropdownOpen, isSettingsOpen, updateLocaleMenuPosition]);
 
   useEffect(() => {
     if (!pendingLocale || locale !== pendingLocale) {
@@ -703,28 +736,6 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     window.dispatchEvent(new CustomEvent("socratic:upgrade-prompt:open"));
   }
 
-  function updateLocaleMenuPosition() {
-    const trigger = localeDropdownRef.current;
-    if (!trigger) {
-      return;
-    }
-
-    const rect = trigger.getBoundingClientRect();
-    const viewportPadding = 12;
-    const menuGap = 8;
-    const estimatedMenuHeight = 240;
-    const maxLeft = window.innerWidth - rect.width - viewportPadding;
-    const top =
-      window.innerHeight - rect.bottom - viewportPadding >= estimatedMenuHeight
-        ? rect.bottom + menuGap
-        : Math.max(viewportPadding, rect.top - estimatedMenuHeight - menuGap);
-
-    setLocaleMenuPosition({
-      left: Math.max(viewportPadding, Math.min(rect.left, maxLeft)),
-      top,
-      width: rect.width,
-    });
-  }
 
   function handleLocaleDropdownToggle() {
     if (isLocaleChanging) {
@@ -750,7 +761,8 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
     setIsLocaleDropdownOpen(false);
   }
 
-  function handleLocaleChange(nextLocale: SupportedLocale) {
+  function handleLocaleChange(nextLocale: AppLocale) {
+    if (!(availableLocales as readonly string[]).includes(nextLocale)) return;
     if (nextLocale === locale || isLocaleChanging) {
       setIsLocaleDropdownOpen(false);
       return;
@@ -758,7 +770,6 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
     setPendingLocale(nextLocale);
     setIsLocaleDropdownOpen(false);
-    // eslint-disable-next-line react-hooks/immutability -- intentional browser cookie write from a settings control.
     document.cookie = `${LOCALE_COOKIE_NAME}=${nextLocale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
     startLocaleTransition(() => {
       router.refresh();
@@ -820,7 +831,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
         setReferralCode("");
         setReferralMessageTone("success");
         setReferralMessage(
-          payload.message ??
+          (!localizeReferralMessages ? payload.message : undefined) ??
             copy.settings.supporting.replace("{name}", ambassadorName),
         );
         return;
@@ -828,7 +839,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
       if (!response.ok) {
         setReferralMessageTone("error");
-        setReferralMessage(payload?.message ?? copy.settings.recordReferralFailed);
+        setReferralMessage(localizeReferralMessages
+          ? response.status === 400 ? copy.ui.invalidReferralFormat
+            : response.status === 404 ? copy.ui.invalidAmbassadorCode : copy.settings.recordReferralFailed
+          : payload?.message ?? copy.settings.recordReferralFailed);
         return;
       }
 
@@ -836,7 +850,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
       setSupportedAmbassadorName(payload?.ambassadorName ?? "ambassador");
       setReferralMessageTone("success");
       setReferralMessage(
-        payload?.message ??
+        (!localizeReferralMessages ? payload?.message : undefined) ??
           copy.settings.supporting.replace(
             "{name}",
             payload?.ambassadorName ?? "ambassador",
@@ -1063,7 +1077,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                     : "border-teal-200 bg-teal-50 text-teal-700"
                 }`}
               >
-                NEW
+                {copy.ui.newBadge}
               </motion.span>
             ) : null}
           </span>
@@ -1181,7 +1195,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                     : "border-purple-200 bg-purple-50 text-purple-700"
                 }`}
               >
-                NEW
+                {copy.ui.newBadge}
               </motion.span>
             </span>
           ) : null}
@@ -1478,10 +1492,10 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
 
       <motion.aside
         initial={false}
-        animate={{ x: isMobileSidebarOpen ? 0 : "-100%" }}
+        animate={{ x: isMobileSidebarOpen ? 0 : presentation.dir === "rtl" ? "100%" : "-100%" }}
         transition={{ type: "spring", stiffness: 320, damping: 34, mass: 0.9 }}
         style={{ willChange: "transform" }}
-        className={`${interClassName} app-sidebar fixed inset-y-0 left-0 z-109 flex w-[min(92vw,400px)] transform-gpu flex-col border-r border-transparent bg-[#f9f9f9] px-3 pb-3 pt-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.16)] lg:hidden`}
+        className={`${interClassName} app-sidebar fixed inset-y-0 start-0 z-109 flex w-[min(92vw,400px)] transform-gpu flex-col border-e border-transparent bg-[#f9f9f9] px-3 pb-3 pt-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.16)] lg:hidden`}
         aria-hidden={!isMobileSidebarOpen}
       >
         <div className="mb-2.5 flex items-center justify-between">
@@ -2335,12 +2349,16 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                     localeMenuPosition ? (
                                       <motion.div
                                         ref={localeDropdownMenuRef}
+                                        lang={presentation.lang}
+                                        dir={presentation.dir}
                                         style={{
+                                          ...presentation.style,
                                           position: "fixed",
                                           left: localeMenuPosition.left,
                                           top: localeMenuPosition.top,
                                           width: localeMenuPosition.width,
                                           zIndex: 10000,
+                                          maxHeight: "calc(100dvh - 24px)",
                                         }}
                                         initial={{
                                           opacity: 0,
@@ -2361,14 +2379,14 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                           duration: 0.16,
                                           ease: [0.22, 1, 0.36, 1],
                                         }}
-                                        className={`overflow-hidden rounded-[14px] border p-1 shadow-[0_18px_44px_rgba(15,23,42,0.16)] ${
+                                        className={`${presentation.className} overflow-y-auto overscroll-contain rounded-[14px] border p-1 shadow-[0_18px_44px_rgba(15,23,42,0.16)] ${
                                           isDarkMode
                                             ? "border-[#3f4045] bg-[#202125]"
                                             : "border-[#d8dee7] bg-white"
                                         }`}
                                         role="listbox"
                                       >
-                                        {SUPPORTED_LOCALES.map((option) => {
+                                        {availableLocales.map((option) => {
                                           const isSelected =
                                             option === locale;
                                           return (
@@ -2390,7 +2408,7 @@ export default function AppSidebar({ sessions, isPremium = false }: Props) {
                                               role="option"
                                               aria-selected={isSelected}
                                             >
-                                              <span>
+                                              <span lang={option} dir={LOCALE_DIRECTIONS[option]}>
                                                 {LOCALE_LABELS[option]}
                                               </span>
                                               {isSelected ? (

@@ -9,7 +9,7 @@ const DEFAULT_BATCH_SIZE = 35;
 const SOURCE_LOCALE = "en";
 const TARGET_LOCALES = ["it", "fr", "de", "pt-BR"];
 const EXTENDED_TARGET_LOCALES = [...TARGET_LOCALES, "ru", "ar"];
-const EXTENDED_PAGES = new Set(["home", "pricing", "billing", "blog"]);
+const EXTENDED_PAGES = new Set(["home", "pricing", "billing", "blog", "app"]);
 const LOCALE_NAMES = {
   it: "Italian",
   fr: "French",

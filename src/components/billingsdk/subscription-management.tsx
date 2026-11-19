@@ -12,6 +12,8 @@ import { Separator } from "@/src/components/ui/separator";
 import { Calendar, CreditCard } from "lucide-react";
 import { CurrentPlan } from "@/src/lib/billingsdk-config";
 import { cn } from "@/src/lib/utils";
+import type { AppCopy } from "@/src/i18n/app";
+import enApp from "@/src/i18n/messages/en/app.json";
 import {
   CancelSubscriptionDialog,
   type CancelSubscriptionDialogProps,
@@ -26,6 +28,7 @@ export interface SubscriptionManagementProps {
   currentPlan: CurrentPlan;
   cancelSubscription: CancelSubscriptionDialogProps;
   updatePlan: UpdatePlanDialogProps;
+  labels?: AppCopy["billingUi"]["subscription"];
 }
 
 export function SubscriptionManagement({
@@ -33,6 +36,7 @@ export function SubscriptionManagement({
   currentPlan,
   cancelSubscription,
   updatePlan,
+  labels = enApp.billingUi.subscription,
 }: SubscriptionManagementProps) {
   return (
     <div className={cn("w-full text-left", className)}>
@@ -42,10 +46,10 @@ export function SubscriptionManagement({
             <div className="bg-primary/10 ring-primary/20 rounded-lg p-1.5 ring-1 sm:p-2">
               <CreditCard className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            Current Subscription
+            {labels.title}
           </CardTitle>
           <CardDescription className="text-sm sm:text-base">
-            Manage your billing and subscription settings
+            {labels.description}
           </CardDescription>
         </CardHeader>
 
@@ -58,7 +62,7 @@ export function SubscriptionManagement({
                   <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold sm:text-xl">
-                        {currentPlan.plan.title} Plan
+                        {labels.planTitle.replace("{plan}", currentPlan.plan.title)}
                       </h3>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -71,16 +75,16 @@ export function SubscriptionManagement({
                         className="bg-primary/90 hover:bg-primary border-0 text-xs font-medium shadow-sm sm:text-sm"
                       >
                         {currentPlan.type === `monthly`
-                          ? `${currentPlan.plan.currency}${currentPlan.plan.monthlyPrice}/month`
+                          ? `${currentPlan.plan.currency}${currentPlan.plan.monthlyPrice}/${labels.month}`
                           : currentPlan.type === `yearly`
-                            ? `${currentPlan.plan.yearlyPrice}/year`
+                            ? `${currentPlan.plan.yearlyPrice}/${labels.year}`
                             : `${currentPlan.price}`}
                       </Badge>
                       <Badge
                         variant="outline"
                         className="border-border/60 bg-background/50 text-xs shadow-sm backdrop-blur-sm sm:text-sm"
                       >
-                        {currentPlan.status}
+                        {labels.statuses[currentPlan.status]}
                       </Badge>
                     </div>
                   </div>
@@ -101,12 +105,12 @@ export function SubscriptionManagement({
               <div className="bg-muted ring-border/50 rounded-md p-1 ring-1 sm:p-1.5">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
               </div>
-              Billing Information
+              {labels.billingInformation}
             </h4>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6">
               <div className="group from-muted to-background/10 border-border/30 hover:border-border/60 rounded-lg border bg-gradient-to-b p-2.5 transition-all duration-200 sm:p-3 md:bg-gradient-to-tl">
                 <span className="text-muted-foreground mb-1 block text-xs sm:text-sm">
-                  Next billing date
+                  {labels.nextBillingDate}
                 </span>
                 <div className="group-hover:text-primary text-sm font-medium transition-colors duration-200 sm:text-base">
                   {currentPlan.nextBillingDate}
@@ -114,7 +118,7 @@ export function SubscriptionManagement({
               </div>
               <div className="group from-muted to-background/10 border-border/30 hover:border-border/60 rounded-lg border bg-gradient-to-b p-2.5 transition-all duration-200 sm:p-3 md:bg-gradient-to-tr">
                 <span className="text-muted-foreground mb-1 block text-xs sm:text-sm">
-                  Payment method
+                  {labels.paymentMethod}
                 </span>
                 <div className="group-hover:text-primary text-sm font-medium transition-colors duration-200 sm:text-base">
                   {currentPlan.paymentMethod}
@@ -139,7 +143,7 @@ export function SubscriptionManagement({
 
           <div className="pt-4 sm:pt-6">
             <h4 className="mb-3 text-base font-medium sm:mb-4 sm:text-lg">
-              Current Plan Features
+              {labels.features}
             </h4>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {currentPlan.plan.features.map((feature, index) => (
