@@ -1,63 +1,202 @@
 # How to Live on a Crowded Planet: What Philosophy Learned the Hard Way
 
-*World Philosophy Day 2026, and the oldest problem we have: how to live together.*
+---
+
+## Living on a Crowded Planet
+
+Humans have incredible achievements today, from communicating across the globe in seconds to seeing the universe light-years away, manipulating basic building blocks of life, and developing intelligent systems that can think, write and create.
+
+Despite the incredible progress that our species has made, we still struggle to understand people.
+
+Conflicts occur due to differing opinions. People differ based on their religion, nationality, ideologies and identities.
+
+Although we have brought the world closer together, we still have many disagreements.
+
+Incredibly, despite humans being more connected, more advanced and more powerful than ever, we are facing the same question that our ancestors faced thousands of years ago.
+
+**How should we live together?**
+
+This is a key philosophical question.
+
+Not just philosophy in general, but philosophy in its most true sense. Challenging our views, questioning our assumptions and considering whether we are creating the best world.
+
+The issue of living on a crowded planet is about finding space and **making space for others’ ways of thinking.**
 
 ---
 
-On 19 November 2026, UNESCO is gathering thinkers and decision-makers in Paris for [World Philosophy Day](https://www.unesco.org/en/articles/world-philosophy-day-2026). The philosopher Souleymane Bachir Diagne is giving a lecture called "Living the Earth Together," built around the idea of the Universal Human. Later in the program, a round table with three students takes up four pressures: climate, AI, migration, and health.
+## People with Strong Beliefs
 
-Read that list again. Four different crises, one problem underneath them. There are a lot of us, we are packed close, we share a single planet, and we agree on very little about how to behave on it.
+In 399 BCE, Socrates was tried and sentenced to death in Athens.
 
-Philosophers have been working on this for longer than most countries have existed. They got some of it right and some of it badly wrong, and that record is worth reading before anyone tries to start from scratch.
+Despite the contributions to democracy, intellect and debate made by Athens, Socrates was sentenced to death in a time of great political change. Socrates had gained very negative opinions from many people due to constantly questioning people.
 
----
+Socrates had a bad habit.
 
-## The First Answers
+He asked people, *“What is justice? What is bravery? What makes you a good person?”*
 
-Confucius lived in a China splitting into rival states. His answer started small. Treat the person in front of you properly, and the larger order follows. Asked for a single word to live by, he offered reciprocity: don't do to others what you would hate to have done to you. He also drew a distinction worth stealing. Harmony and uniformity are different things, and a great deal of politics is the attempt to get the second while claiming the first.
+Although these seem like simple questions, people can find it very difficult to justify their personal beliefs in just a few minutes.
 
-A century or so later, Diogenes was living in a large storage jar in Athens and insulting powerful men for sport. Asked where he came from, he said he was a citizen of the world. The Greek word he used gave us "cosmopolitan." In a time when your identity was your city, that was an outrageous thing to say. It still sounds a little outrageous.
+Although Socrates was sentenced to death for impiety and corrupting youth, as well as due to extreme political tension within society, this case highlights a very extreme issue with intellectual freedom.
 
-The Buddha came at it from suffering. His insight was that nothing exists on its own. Everything arises from conditions, which means from everything else. Take that seriously and the clean line between "me" and "other people" starts to blur. A few centuries later, Emperor Ashoka, a conqueror shaken by the carnage of his own war, had edicts carved into rock across his empire urging his subjects to honor one another's beliefs. An emperor with an army chose to say that in stone, which is rare.
+Although a society may value people who are wise, they may still punish people for exposing their ignorance.
 
-Then there is Chanakya, the cold-eyed one. His *Arthashastra* is a manual of statecraft that assumes your neighbor is a likely rival and your neighbor's neighbor a likely friend. Peace, in this view, is maintained by calculation and leverage. It describes how a lot of states still behave, and any serious account of coexistence has to deal with it.
+Socrates was certainly not the only philosopher to face issues in an unstable world.
 
-So within a few centuries you already have three models on the table: an ethics of reciprocity, a citizenship that outruns borders, and hard realism. Most arguments since have been remixes.
+Confucius lived in Ancient China during a fragmented time. He recognised that in order for civilisation to be successful, it required people to have strong characters, responsibility, education and positive relationships with each other.
 
----
+In India, Buddhist philosophy considered the link between suffering, desire and compassion. It questioned the assumption that gaining more of something desired will increase happiness.
 
-## The Hard Lessons
+Despite different cultures, traditions and ideas, there is a striking similarity in the question they are asking.
 
-In 1762, a Protestant merchant named Jean Calas was executed in Toulouse for allegedly murdering his own son, a case poisoned by religious suspicion. Voltaire spent years campaigning, wrote his *Treatise on Tolerance*, and helped get the verdict overturned in 1765. Earlier he had visited the London Royal Exchange and written, delighted, that Jews, Muslims, and Christians traded with one another as if they shared a faith, and that the only person called an infidel was the one who went bankrupt. His lesson cuts both ways. Shared interest can pull strangers together, and it takes law to protect them when the interest runs out.
+**How can we become good individuals and live well with others?**
 
-The twentieth century showed what happens when a state decides who gets to belong. Hannah Arendt fled Germany in 1933, lost her citizenship, and lived for years as a stateless refugee. Out of that came her sharpest idea: the most basic right is the right to have rights, meaning a place in some political community at all. She also argued that plurality, the plain fact that we are many and different, is the condition of political life, something to be lived with and never solved. Writing about the Eichmann trial in 1961, she made the case that no one has the authority to decide who is allowed to share the earth.
+This was not a comfortable question to explore. All of these philosophies were developed in times of conflict, uncertainty, suffering and failing systems.
 
-Simone de Beauvoir pushed the same direction from another side. In *The Ethics of Ambiguity*, she argued that you cannot pursue your own freedom at the expense of others, because freedom only means something when the people around you have it too.
+Philosophy did not develop because people had solved issues in our world and had spare time to think.
 
-And John Rawls gave us the cleanest tool of the lot. In *A Theory of Justice*, he asked you to design a society without knowing who you would be in it: rich or poor, healthy or sick, native or newcomer. Self-interest, forced to work blind, starts to look a lot like fairness.
-
----
-
-## Four Pressures, Old Answers
-
-**Climate.** Interdependence stops being a metaphor when smoke from a wildfire in one country darkens the sky over three. The Buddha's point lands hard here. So does Chanakya's problem: the cost of acting falls on us now and the benefit is shared by everyone, which is exactly the setup in which a realist tells you to wait. Rawls added a piece the realists miss. The people who inherit the planet cannot vote, and a just society has to account for them anyway.
-
-**AI.** Machines can now draft, summarize, and explain faster than most of us. The questions that matter next are the Socratic kind. Who decides what a system should value? Whose interests does it serve? What do we owe the people it affects? Socrates wrote nothing down. He walked around Athens asking questions until the powerful lost patience and put him to death in 399 BCE. A society that hands its thinking to a tool loses the one muscle it needs to work out how to live together. That is why we built Socratic AI to ask questions back.
-
-**Migration.** Here the old ideas collide. Diogenes's world citizenship sounds wonderful from inside a jar in Athens. Arendt knew what it was to hold no passport, and she saw that a world citizen with no legal standing anywhere has nowhere to stand. Philosophy cannot draw the border for us. It can insist that the person arrives before the category does.
-
-**Health.** A virus does not check passports. The pandemic showed that your safety depends on someone else's access to care, which is Confucian reciprocity at planetary scale. Rawls gives the practical test: design the health system as if you might wake up as the patient with no money. Most of us would build a different system.
+Instead, it developed because people urgently needed it to.
 
 ---
 
-## What We Should Take From It
+## The Dangers of Being Human
 
-We are going to live next to each other. That part is settled. What stays open is how.
+Something very uncomfortable in the development of humanity is that people have done extremely terrible things whilst believing themselves to be doing what is right.
 
-The thinkers above disagreed about almost everything, and they still left us a usable kit. Treat people as you would want to be treated. Make room for difference without demanding sameness. Remember that your freedom is tied to someone else's. Design the rules as though you might be the one they were written against. Keep a realist's eye on leverage, and keep a moral compass anyway.
+Empires have justified attacking other countries as civilising. Inequalities have been justified as natural by societies. People in communities have justified putting others through suffering in the name of truth, order and the greater good.
 
-A poster on a wall does nothing here. Practice does, and practice needs reps. Argue with someone who sees it differently. Read the people who argued before you. Ask the next question, and then the one after that. Stay in the room.
+Even in philosophy, some extremely intelligent people with great insight into logic and morality have justified unjust hierarchical structures and exclusions.
 
-Pick a thinker today and put them to the test. Ask Arendt how to share a country with people you will never agree with. Ask Confucius whether harmony is worth the price of silence. Ask Chanakya whether peace ever survives without leverage. Then argue back.
+We have incredibly intelligent knowledge, but we also have incredibly blind knowledge.
 
-[Start the conversation at usesocratic.com](https://www.usesocratic.com/).
+**Intelligence does not guarantee wisdom.** Being educated doesn’t guarantee empathy. And knowing something with complete certainty does not guarantee that it is true.
+
+Later on, political philosopher Hannah Arendt reflected on the actions of Adolf Eichmann, an official in Nazi Germany. Her work, considering the banality of evil, posed a concerning question. What happens when people lose the ability to make ethical judgements for themselves, and allow decision making to be made by rules, systems or people in authority?
+
+When people make decisions without making their own ethical judgements, it can cause catastrophic results.
+
+Although it may seem as though the worst moments in history were caused by extreme people, Arendt asked people to consider how obeying others and conforming to rules can lead to extreme immoral actions.
+
+Perhaps one of the most difficult lessons that philosophy has taught us is that the greatest danger can come when people stop questioning what they think they know.
+
+This lesson is very relevant to us.
+
+---
+
+## Extraordinary Power, but Unfinished Wisdom
+
+Humans are beginning to ask questions that previous generations may not have even been able to.
+
+- **Artificial intelligence** is rapidly changing how we learn, work and make decisions.
+- **Climate change** requires us to work together across borders and generations.
+- **Migration** challenges our views on belonging, responsibility and dignity.
+- **Medical advances** are forcing us to reconsider what is fair, how to give people autonomy, and how we value human life.
+
+Technology can tell us what we are capable of doing. Economics can tell us what would be the most efficient. Science can tell us what is occurring and what may occur. None of these can tell us **what humans should value.**
+
+- Should we allow very powerful machines to make decisions that affect millions of people’s lives?
+- Having created huge wealth in our society, what responsibility do we have to people who aren’t benefiting from it?
+- Having protected our own interests, how much should we sacrifice for people we will never meet, or future generations?
+
+To answer these questions we not only need evidence and knowledge, but we need to form moral judgements, be creative, and consider conflicting values.
+
+This presents us with a great challenge.
+
+For the first time in history, humans have the capability to make drastic changes to civilisation, using powerful technology.
+
+However, our ability to work with others, be restrained, and make appropriate decisions may not match this.
+
+We are gaining power rapidly, but may not be gaining wisdom at a similar rate.
+
+This may be one of the biggest challenges this century presents.
+
+---
+
+## Diversity in Opinion
+
+Many people’s ‘perfect’ view of the future involves everyone sharing the same beliefs, principles and way of living so humans can finally be at peace.
+
+However, with 8 billion people in our world, we cannot expect everyone to share the same perfect view of life.
+
+And in fact, we shouldn’t.
+
+Diversity in humans allows discoveries, creativity and progression.
+
+We gain more insight from people with different perspectives.
+
+However, when we begin to treat people with different opinions as less human, when we begin to look down on people with strong convictions, and when we care more about being right, we encounter a problem.
+
+Philosophy can offer a solution.
+
+Trying to get people to agree, getting stuck with indecision, or giving equal credibility to all opinions can each get in the way. We should be able to do three things.
+
+- Be confident in our beliefs while staying willing to change them.
+- Listen to people and form our own judgements.
+- Differentiate between evidence and bias, disagreement and aggression, and confidence and arrogance.
+
+If people in our society started to do this regularly, we might see these changes.
+
+- Political debates would focus on finding solutions to problems.
+- Schools would reward creative thinking as highly as correct answers.
+- Leaders would consider it a strength to change their opinions based on new evidence.
+- Technologies would be designed to increase our understanding.
+
+These are very ambitious ideals.
+
+But all changes in human history began with someone deciding that the world didn’t have to be how it was.
+
+---
+
+## Dare to Question
+
+Often children are told that they will be the people shaping the future.
+
+However, they may also be told that they will be creating it.
+
+Along with tremendous opportunities, they will also be left with complex moral and philosophical questions which have not been successfully solved before.
+
+- What kind of meaningful lives should we be living in such an achievement-oriented world?
+- How can we balance freedom and responsibility?
+- Can technological advancement make us better people, or just more capable people?
+- What responsibility do we have for people we don’t know?
+- And perhaps most importantly, how can we create a world in which people can have very different opinions, but are still committed to treating each other with humanity?
+
+These questions cannot be solved by simply repeating theories put forward by famous Philosophers. We must be able to think philosophically for ourselves.
+
+This idea is central to Socratic AI. We believe that technology should not just be helping us discover more complex answers, but should also give people the confidence and ability to think independently, challenge their preconceptions, and discover new views.
+
+Because we want a future in which human curiosity is no longer unnecessary, but instead more powerful than ever.
+
+Although AI can give us easy access to knowledge, that is different from pursuing wisdom. Although we may be able to explore many answers with AI, **we must still decide which questions to ask.**
+
+---
+
+## A Crowded World, an Open Future
+
+Today, on World Philosophy Day, we can appreciate that philosophy does not promise an easy route to enlightenment.
+
+Throughout its history, there have been many disagreements, mistakes, oppression, changing views and struggles.
+
+Yet throughout this history, we can recognise something amazing in humans.
+
+We are able to challenge our own beliefs.
+
+We can realise injustices that previous generations considered normal. We can learn from people hundreds of years ago, challenge seemingly fixed systems, and imagine completely new possibilities.
+
+We can be wiser. Intentionally.
+
+As the world becomes more complicated, new technologies will challenge our judgements and new generations will face questions we have barely begun to understand. We may not always make wise decisions. If we promote intellectual humility, courage and empathy, we can make wiser ones.
+
+Perhaps this is the most important responsibility we have at this point in time.
+
+We do not need everyone to agree.
+
+**We just need everyone to be able to think.**
+---
+
+**World Philosophy Day 2026**
+
+Socratic AI
+
+*An AI that thinks with you, not for you.*
+
+[usesocratic.com](https://usesocratic.com)

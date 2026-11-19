@@ -214,6 +214,7 @@ function renderInlineMarkdown(text: string) {
 }
 
 const TITLE_HIGHLIGHTS_BY_SLUG: Record<string, string[]> = {
+  "world-philosophy-day-2026": ["How to Live on a Crowded Planet"],
   "what-is-philosophy": ["Philosophy", "Most Practical Thing"],
   "free-will-vs-determinism": ["Free Will", "Determinism"],
   "ai-and-critical-thinking": ["Thinking is Your Moat", "Never"],
